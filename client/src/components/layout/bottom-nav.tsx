@@ -1,0 +1,42 @@
+import { Home, Link, ShoppingBag, MessageCircle, Settings } from "lucide-react";
+import { useLocation } from "wouter";
+
+export default function BottomNav() {
+  const [location, setLocation] = useLocation();
+
+  const navItems = [
+    { path: "/dashboard", icon: Home, label: "홈" },
+    { path: "/links", icon: Link, label: "링크" },
+    { path: "/marketplace", icon: ShoppingBag, label: "마켓" },
+    { path: "/chat", icon: MessageCircle, label: "채팅" },
+    { path: "/settings", icon: Settings, label: "설정" },
+  ];
+
+  // Don't show bottom nav on landing and login pages
+  if (location === "/" || location === "/login") {
+    return null;
+  }
+
+  return (
+    <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 bottom-nav-shadow">
+      <div className="flex items-center justify-around py-2">
+        {navItems.map(({ path, icon: Icon, label }) => {
+          const isActive = location === path;
+          
+          return (
+            <button
+              key={path}
+              onClick={() => setLocation(path)}
+              className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                isActive ? "text-primary" : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <Icon className="w-6 h-6 mb-1" />
+              <span className="text-xs korean-text">{label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}
