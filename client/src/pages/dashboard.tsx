@@ -89,7 +89,7 @@ export default function DashboardPage() {
           <Card className="bg-white shadow-sm">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-primary">
-                {dashboardData?.stats?.connections || 127}
+                {typedData?.stats?.connections || 127}
               </p>
               <p className="text-xs text-gray-600 korean-text">연결</p>
             </CardContent>
@@ -98,7 +98,7 @@ export default function DashboardPage() {
           <Card className="bg-white shadow-sm">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-primary">
-                {dashboardData?.stats?.deals || 43}
+                {typedData?.stats?.deals || 43}
               </p>
               <p className="text-xs text-gray-600 korean-text">딜</p>
             </CardContent>
@@ -107,7 +107,7 @@ export default function DashboardPage() {
           <Card className="bg-white shadow-sm">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-primary">
-                {dashboardData?.stats?.revenue || 892}
+                {typedData?.stats?.revenue || 892}
               </p>
               <p className="text-xs text-gray-600 korean-text">수익</p>
             </CardContent>
@@ -150,8 +150,8 @@ export default function DashboardPage() {
           <CardContent className="p-4">
             <h3 className="font-medium mb-3 korean-text">최근 활동</h3>
             <div className="space-y-3">
-              {dashboardData?.activities?.length > 0 ? (
-                dashboardData.activities.map((activity: any) => (
+              {typedData?.activities?.length > 0 ? (
+                typedData.activities.map((activity: any) => (
                   <div key={activity.id} className="flex items-center justify-between">
                     <div className="flex items-center">
                       <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center mr-3">

@@ -235,7 +235,7 @@ export default function AnalyticsPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="text-center p-4 bg-green-50 rounded-lg">
                 <MousePointer className="w-6 h-6 text-green-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-green-600">{stats?.stats?.totalClicks || 0}</p>
+                <p className="text-2xl font-bold text-green-600">{(stats as any)?.stats?.totalClicks || 0}</p>
                 <p className="text-sm text-gray-600">총 클릭수</p>
               </div>
               <div className="text-center p-4 bg-blue-50 rounded-lg">

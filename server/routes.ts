@@ -146,7 +146,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         connections: 127,
         deals: deals.length,
         revenue: 892,
-        totalClicks: links.reduce((sum, link) => sum + link.clicks, 0),
+        totalClicks: links.reduce((sum, link) => sum + (link.clicks || 0), 0),
       };
 
       res.json({ stats, activities: activities.slice(0, 5) });
