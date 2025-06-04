@@ -9,6 +9,8 @@ import { AuthProvider } from "./hooks/use-auth";
 import LandingPage from "./pages/landing";
 import LoginPage from "./pages/login";
 import SignupPage from "./pages/signup";
+import SignupStep1 from "./pages/signup-step1";
+import SignupStep2 from "./pages/signup-step2";
 import DashboardPage from "./pages/dashboard";
 import LinksPage from "./pages/links";
 import MarketplacePage from "./pages/marketplace";
@@ -26,7 +28,7 @@ function Router() {
   const [location] = useLocation();
   
   // Pages that should not show bottom navigation
-  const hideNavPages = ["/login", "/signup", "/"];
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/"];
   const shouldShowBottomNav = !hideNavPages.includes(location);
 
   return (
@@ -35,6 +37,8 @@ function Router() {
         <Route path="/" component={LandingPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/signup" component={SignupPage} />
+        <Route path="/signup-step1" component={SignupStep1} />
+        <Route path="/signup-step2" component={SignupStep2} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/links" component={LinksPage} />
         <Route path="/marketplace" component={MarketplacePage} />
