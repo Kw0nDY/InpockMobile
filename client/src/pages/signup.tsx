@@ -80,8 +80,8 @@ export default function SignupPage() {
   const isFormValid = form.formState.isValid && form.watch("agreeToTerms");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white p-4 pb-28 md:pb-24">
+      <div className="w-full max-w-md mx-auto py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <button
@@ -270,7 +270,7 @@ export default function SignupPage() {
               </div>
 
               {/* Login Link */}
-              <div className="text-center pt-4">
+              <div className="text-center pt-4 pb-8">
                 <p className="text-sm text-gray-600">
                   이미 계정이 있으신가요?{" "}
                   <button
