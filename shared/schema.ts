@@ -1,5 +1,6 @@
 import { pgTable, text, serial, integer, boolean, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { relations } from "drizzle-orm";
 import { z } from "zod";
 
 export const users = pgTable("users", {
@@ -156,3 +157,63 @@ export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 
 export type Subscription = typeof subscriptions.$inferSelect;
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
+
+// Relations
+export const usersRelations = relations(users, ({ many, one }) => ({
+  links: many(links),
+  deals: many(deals),
+  sentMessages: many(messages),
+  activities: many(activities),
+  settings: one(userSettings),
+  subscription: one(subscriptions),
+}));
+
+export const linksRelations = relations(links, ({ one }) => ({
+  user: one(users, {
+    fields: [links.userId],
+    references: [users.id],
+  }),
+}));
+
+export const dealsRelations = relations(deals, ({ one }) => ({
+  user: one(users, {
+    fields: [deals.userId],
+    references: [users.id],
+  }),
+}));
+
+export const chatsRelations = relations(chats, ({ many }) => ({
+  messages: many(messages),
+}));
+
+export const messagesRelations = relations(messages, ({ one }) => ({
+  chat: one(chats, {
+    fields: [messages.chatId],
+    references: [chats.id],
+  }),
+  sender: one(users, {
+    fields: [messages.senderId],
+    references: [users.id],
+  }),
+}));
+
+export const activitiesRelations = relations(activities, ({ one }) => ({
+  user: one(users, {
+    fields: [activities.userId],
+    references: [users.id],
+  }),
+}));
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
+}));
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, {
+    fields: [subscriptions.userId],
+    references: [users.id],
+  }),
+}));

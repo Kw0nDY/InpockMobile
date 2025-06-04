@@ -476,4 +476,217 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq, and } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async getLinks(userId: number): Promise<Link[]> {
+    return await db.select().from(links).where(eq(links.userId, userId));
+  }
+
+  async getLink(id: number): Promise<Link | undefined> {
+    const [link] = await db.select().from(links).where(eq(links.id, id));
+    return link || undefined;
+  }
+
+  async getLinkByShortCode(shortCode: string): Promise<Link | undefined> {
+    const [link] = await db.select().from(links).where(eq(links.shortCode, shortCode));
+    return link || undefined;
+  }
+
+  async createLink(insertLink: InsertLink): Promise<Link> {
+    const [link] = await db
+      .insert(links)
+      .values(insertLink)
+      .returning();
+    return link;
+  }
+
+  async updateLink(id: number, updates: Partial<Link>): Promise<Link | undefined> {
+    const [link] = await db
+      .update(links)
+      .set(updates)
+      .where(eq(links.id, id))
+      .returning();
+    return link || undefined;
+  }
+
+  async deleteLink(id: number): Promise<boolean> {
+    const result = await db.delete(links).where(eq(links.id, id));
+    return result.rowCount > 0;
+  }
+
+  async incrementLinkClicks(id: number): Promise<void> {
+    await db
+      .update(links)
+      .set({ clicks: db.select().from(links).where(eq(links.id, id)).$dynamic() })
+      .where(eq(links.id, id));
+  }
+
+  async getDeals(): Promise<Deal[]> {
+    return await db.select().from(deals);
+  }
+
+  async getDealsByCategory(category: string): Promise<Deal[]> {
+    return await db.select().from(deals).where(eq(deals.category, category));
+  }
+
+  async getUserDeals(userId: number): Promise<Deal[]> {
+    return await db.select().from(deals).where(eq(deals.userId, userId));
+  }
+
+  async getDeal(id: number): Promise<Deal | undefined> {
+    const [deal] = await db.select().from(deals).where(eq(deals.id, id));
+    return deal || undefined;
+  }
+
+  async createDeal(insertDeal: InsertDeal): Promise<Deal> {
+    const [deal] = await db
+      .insert(deals)
+      .values(insertDeal)
+      .returning();
+    return deal;
+  }
+
+  async updateDeal(id: number, updates: Partial<Deal>): Promise<Deal | undefined> {
+    const [deal] = await db
+      .update(deals)
+      .set(updates)
+      .where(eq(deals.id, id))
+      .returning();
+    return deal || undefined;
+  }
+
+  async deleteDeal(id: number): Promise<boolean> {
+    const result = await db.delete(deals).where(eq(deals.id, id));
+    return result.rowCount > 0;
+  }
+
+  async getUserChats(userId: number): Promise<Chat[]> {
+    return await db.select().from(chats).where(eq(chats.userId, userId));
+  }
+
+  async getChat(id: number): Promise<Chat | undefined> {
+    const [chat] = await db.select().from(chats).where(eq(chats.id, id));
+    return chat || undefined;
+  }
+
+  async createChat(insertChat: InsertChat): Promise<Chat> {
+    const [chat] = await db
+      .insert(chats)
+      .values(insertChat)
+      .returning();
+    return chat;
+  }
+
+  async updateChat(id: number, updates: Partial<Chat>): Promise<Chat | undefined> {
+    const [chat] = await db
+      .update(chats)
+      .set(updates)
+      .where(eq(chats.id, id))
+      .returning();
+    return chat || undefined;
+  }
+
+  async getChatMessages(chatId: number): Promise<Message[]> {
+    return await db.select().from(messages).where(eq(messages.chatId, chatId));
+  }
+
+  async createMessage(insertMessage: InsertMessage): Promise<Message> {
+    const [message] = await db
+      .insert(messages)
+      .values(insertMessage)
+      .returning();
+    return message;
+  }
+
+  async getUserActivities(userId: number): Promise<Activity[]> {
+    return await db.select().from(activities).where(eq(activities.userId, userId));
+  }
+
+  async createActivity(insertActivity: InsertActivity): Promise<Activity> {
+    const [activity] = await db
+      .insert(activities)
+      .values(insertActivity)
+      .returning();
+    return activity;
+  }
+
+  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
+    return settings || undefined;
+  }
+
+  async createUserSettings(insertSettings: InsertUserSettings): Promise<UserSettings> {
+    const [settings] = await db
+      .insert(userSettings)
+      .values(insertSettings)
+      .returning();
+    return settings;
+  }
+
+  async updateUserSettings(userId: number, updates: Partial<UserSettings>): Promise<UserSettings | undefined> {
+    const [settings] = await db
+      .update(userSettings)
+      .set(updates)
+      .where(eq(userSettings.userId, userId))
+      .returning();
+    return settings || undefined;
+  }
+
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    const [subscription] = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId));
+    return subscription || undefined;
+  }
+
+  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
+    const [subscription] = await db
+      .insert(subscriptions)
+      .values(insertSubscription)
+      .returning();
+    return subscription;
+  }
+
+  async updateSubscription(userId: number, updates: Partial<Subscription>): Promise<Subscription | undefined> {
+    const [subscription] = await db
+      .update(subscriptions)
+      .set(updates)
+      .where(eq(subscriptions.userId, userId))
+      .returning();
+    return subscription || undefined;
+  }
+}
+
+export const storage = new DatabaseStorage();
