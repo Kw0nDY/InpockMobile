@@ -42,9 +42,15 @@ export function setupKakaoAuth(app: Express) {
   app.get('/api/auth/kakao', (req: Request, res: Response) => {
     const { state } = req.query;
     
+    // Check if required environment variables are present
+    if (!KAKAO_CLIENT_ID) {
+      console.error('KAKAO_CLIENT_ID is not configured');
+      return res.status(500).json({ error: 'Kakao OAuth not configured' });
+    }
+    
     // Build authorization URL with state parameter
     const params = new URLSearchParams({
-      client_id: KAKAO_CLIENT_ID!,
+      client_id: KAKAO_CLIENT_ID,
       redirect_uri: REDIRECT_URI,
       response_type: 'code',
       scope: 'profile_nickname,account_email'
@@ -55,6 +61,10 @@ export function setupKakaoAuth(app: Express) {
     }
     
     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
+    console.log('Redirecting to Kakao OAuth URL:', kakaoAuthURL);
+    console.log('Using CLIENT_ID:', KAKAO_CLIENT_ID?.substring(0, 8) + '...');
+    console.log('Using REDIRECT_URI:', REDIRECT_URI);
+    
     res.redirect(kakaoAuthURL);
   });
 
