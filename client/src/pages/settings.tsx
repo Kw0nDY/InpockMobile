@@ -64,16 +64,26 @@ export default function SettingsPage() {
     },
   });
 
-  // Sync local state with fetched settings
+  // Sync local state with fetched settings  
   useEffect(() => {
     if (userSettings) {
       setLocalSettings({
         notifications: userSettings.notifications ?? true,
         marketing: userSettings.marketing ?? false,
         darkMode: userSettings.darkMode ?? false,
-        language: userSettings.language ?? "한국어",
+        language: userSettings.language ?? "한국어", 
         timezone: userSettings.timezone ?? "Seoul (UTC+9)",
         currency: userSettings.currency ?? "KRW (₩)",
+      });
+    } else {
+      // Set default values when no settings are loaded
+      setLocalSettings({
+        notifications: true,
+        marketing: false,
+        darkMode: false,
+        language: "한국어",
+        timezone: "Seoul (UTC+9)",
+        currency: "KRW (₩)",
       });
     }
   }, [userSettings]);
@@ -149,7 +159,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">알림 설정</span>
               <Switch
-                checked={settings.notifications}
+                checked={localSettings.notifications}
                 onCheckedChange={(checked) =>
                   updateSetting("notifications", checked)
                 }
@@ -159,7 +169,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">마케팅 이메일</span>
               <Switch
-                checked={settings.marketing}
+                checked={localSettings.marketing}
                 onCheckedChange={(checked) =>
                   updateSetting("marketing", checked)
                 }
@@ -169,7 +179,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">다크 모드</span>
               <Switch
-                checked={settings.darkMode}
+                checked={localSettings.darkMode}
                 onCheckedChange={(checked) =>
                   updateSetting("darkMode", checked)
                 }
@@ -185,7 +195,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">언어</span>
               <Select
-                value={settings.language}
+                value={localSettings.language}
                 onValueChange={(value) => updateSetting("language", value)}
               >
                 <SelectTrigger className="w-32">
@@ -201,7 +211,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">시간대</span>
               <Select
-                value={settings.timezone}
+                value={localSettings.timezone}
                 onValueChange={(value) => updateSetting("timezone", value)}
               >
                 <SelectTrigger className="w-40">
@@ -217,7 +227,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">통화</span>
               <Select
-                value={settings.currency}
+                value={localSettings.currency}
                 onValueChange={(value) => updateSetting("currency", value)}
               >
                 <SelectTrigger className="w-32">
