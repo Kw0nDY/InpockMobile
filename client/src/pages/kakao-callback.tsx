@@ -12,17 +12,35 @@ export default function KakaoCallback() {
   useEffect(() => {
     const handleKakaoCallback = async () => {
       try {
-        // Extract code from URL parameters
+        // Extract parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
+        const errorDescription = urlParams.get('error_description');
+        const state = urlParams.get('state');
 
+        // Verify CSRF state parameter
+        const expectedState = sessionStorage.getItem('kakao_oauth_state');
+        if (state && expectedState && state !== expectedState) {
+          throw new Error('보안 검증에 실패했습니다. 다시 시도해주세요.');
+        }
+
+        // Handle Kakao OAuth errors
         if (error) {
-          throw new Error(`Kakao authentication failed: ${error}`);
+          const errorMessages = {
+            'access_denied': '사용자가 인증을 취소했습니다',
+            'invalid_request': '잘못된 OAuth 요청입니다',
+            'server_error': '카카오 서버 오류가 발생했습니다',
+            'temporarily_unavailable': '서비스가 일시적으로 이용 불가능합니다'
+          };
+          const message = errorMessages[error as keyof typeof errorMessages] || 
+                          errorDescription || 
+                          `Kakao authentication failed: ${error}`;
+          throw new Error(message);
         }
 
         if (!code) {
-          throw new Error('No authorization code received from Kakao');
+          throw new Error('카카오로부터 인증 코드를 받지 못했습니다');
         }
 
         // Exchange code for access token and user info
@@ -33,6 +51,9 @@ export default function KakaoCallback() {
         const result = await response.json();
 
         if (result.success) {
+          // Clear OAuth state
+          sessionStorage.removeItem('kakao_oauth_state');
+          
           toast({
             title: "로그인 성공",
             description: result.isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
@@ -41,7 +62,7 @@ export default function KakaoCallback() {
           // Redirect to dashboard
           setLocation("/dashboard");
         } else {
-          throw new Error(result.message || "Authentication failed");
+          throw new Error(result.message || "인증에 실패했습니다");
         }
 
       } catch (error: any) {

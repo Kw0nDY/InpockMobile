@@ -40,7 +40,21 @@ const REDIRECT_URI = 'http://localhost:5000/oauth/kakao/callback';
 export function setupKakaoAuth(app: Express) {
   // Kakao OAuth login initiation
   app.get('/api/auth/kakao', (req: Request, res: Response) => {
-    const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=profile_nickname,account_email`;
+    const { state } = req.query;
+    
+    // Build authorization URL with state parameter
+    const params = new URLSearchParams({
+      client_id: KAKAO_CLIENT_ID!,
+      redirect_uri: REDIRECT_URI,
+      response_type: 'code',
+      scope: 'profile_nickname,account_email'
+    });
+    
+    if (state) {
+      params.append('state', state as string);
+    }
+    
+    const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
     res.redirect(kakaoAuthURL);
   });
 

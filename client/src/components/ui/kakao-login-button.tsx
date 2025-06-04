@@ -7,7 +7,12 @@ interface KakaoLoginButtonProps {
 
 export default function KakaoLoginButton({ variant = "login", className = "" }: KakaoLoginButtonProps) {
   const handleKakaoAuth = () => {
-    window.location.href = "/api/auth/kakao";
+    // Generate CSRF protection state
+    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    sessionStorage.setItem('kakao_oauth_state', state);
+    
+    // Redirect with state parameter
+    window.location.href = `/api/auth/kakao?state=${encodeURIComponent(state)}`;
   };
 
   return (
