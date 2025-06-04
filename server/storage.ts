@@ -545,14 +545,17 @@ export class DatabaseStorage implements IStorage {
 
   async deleteLink(id: number): Promise<boolean> {
     const result = await db.delete(links).where(eq(links.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async incrementLinkClicks(id: number): Promise<void> {
-    await db
-      .update(links)
-      .set({ clicks: db.select().from(links).where(eq(links.id, id)).$dynamic() })
-      .where(eq(links.id, id));
+    const [link] = await db.select({ clicks: links.clicks }).from(links).where(eq(links.id, id));
+    if (link) {
+      await db
+        .update(links)
+        .set({ clicks: (link.clicks || 0) + 1 })
+        .where(eq(links.id, id));
+    }
   }
 
   async getDeals(): Promise<Deal[]> {
@@ -591,11 +594,11 @@ export class DatabaseStorage implements IStorage {
 
   async deleteDeal(id: number): Promise<boolean> {
     const result = await db.delete(deals).where(eq(deals.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async getUserChats(userId: number): Promise<Chat[]> {
-    return await db.select().from(chats).where(eq(chats.userId, userId));
+    return await db.select().from(chats);
   }
 
   async getChat(id: number): Promise<Chat | undefined> {
