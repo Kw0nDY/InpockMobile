@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertUserSchema, insertLinkSchema, insertDealSchema } from "@shared/schema";
+import { insertUserSchema, insertLinkSchema, insertDealSchema, insertUserSettingsSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -239,6 +239,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(mockChats);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Settings routes
+  app.get("/api/settings/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const settings = await storage.getUserSettings(userId);
+      
+      if (!settings) {
+        return res.status(404).json({ message: "Settings not found" });
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put("/api/settings/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updates = req.body;
+      
+      const settings = await storage.updateUserSettings(userId, updates);
+      if (!settings) {
+        return res.status(404).json({ message: "Settings not found" });
+      }
+      
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/settings", async (req, res) => {
+    try {
+      const settingsData = insertUserSettingsSchema.parse(req.body);
+      const settings = await storage.createUserSettings(settingsData);
+      res.status(201).json(settings);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid request data" });
+    }
+  });
+
+  // Subscription routes
+  app.get("/api/subscription/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const subscription = await storage.getUserSubscription(userId);
+      
+      if (!subscription) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+      
+      res.json(subscription);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put("/api/subscription/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updates = req.body;
+      
+      const subscription = await storage.updateSubscription(userId, updates);
+      if (!subscription) {
+        return res.status(404).json({ message: "Subscription not found" });
+      }
+      
+      res.json(subscription);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/subscription", async (req, res) => {
+    try {
+      const subscriptionData = insertSubscriptionSchema.parse(req.body);
+      const subscription = await storage.createSubscription(subscriptionData);
+      res.status(201).json(subscription);
+    } catch (error) {
+      res.status(400).json({ message: "Invalid request data" });
     }
   });
 

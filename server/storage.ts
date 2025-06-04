@@ -268,6 +268,7 @@ export class MemStorage implements IStorage {
       ...insertLink,
       id,
       clicks: 0,
+      isActive: insertLink.isActive !== undefined ? insertLink.isActive : true,
       createdAt: new Date(),
     };
     this.links.set(id, link);
@@ -289,7 +290,7 @@ export class MemStorage implements IStorage {
 
   async incrementLinkClicks(id: number): Promise<void> {
     const link = this.links.get(id);
-    if (link) {
+    if (link && link.clicks !== null) {
       link.clicks++;
       this.links.set(id, link);
     }
@@ -357,6 +358,8 @@ export class MemStorage implements IStorage {
     const chat: Chat = {
       ...insertChat,
       id,
+      lastMessage: insertChat.lastMessage || null,
+      isRead: insertChat.isRead !== undefined ? insertChat.isRead : false,
       lastMessageTime: new Date(),
     };
     this.chats.set(id, chat);
@@ -402,6 +405,7 @@ export class MemStorage implements IStorage {
     const activity: Activity = {
       ...insertActivity,
       id,
+      description: insertActivity.description || null,
       timestamp: new Date(),
     };
     this.activities.set(id, activity);
@@ -418,6 +422,13 @@ export class MemStorage implements IStorage {
     const settings: UserSettings = {
       ...insertSettings,
       id,
+      notifications: insertSettings.notifications !== undefined ? insertSettings.notifications : true,
+      marketing: insertSettings.marketing !== undefined ? insertSettings.marketing : false,
+      darkMode: insertSettings.darkMode !== undefined ? insertSettings.darkMode : false,
+      language: insertSettings.language || "한국어",
+      timezone: insertSettings.timezone || "Seoul (UTC+9)",
+      currency: insertSettings.currency || "KRW (₩)",
+      twoFactorEnabled: insertSettings.twoFactorEnabled !== undefined ? insertSettings.twoFactorEnabled : false,
       updatedAt: new Date(),
     };
     this.userSettings.set(id, settings);
@@ -443,6 +454,12 @@ export class MemStorage implements IStorage {
     const subscription: Subscription = {
       ...insertSubscription,
       id,
+      plan: insertSubscription.plan || "free",
+      status: insertSubscription.status || "active",
+      pricePerMonth: insertSubscription.pricePerMonth || null,
+      currentPeriodStart: insertSubscription.currentPeriodStart || null,
+      currentPeriodEnd: insertSubscription.currentPeriodEnd || null,
+      cancelAtPeriodEnd: insertSubscription.cancelAtPeriodEnd !== undefined ? insertSubscription.cancelAtPeriodEnd : false,
       createdAt: new Date(),
     };
     this.subscriptions.set(id, subscription);
