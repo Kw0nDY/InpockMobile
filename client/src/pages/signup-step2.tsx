@@ -123,13 +123,48 @@ export default function SignupStep2() {
   };
 
   const isFormValid = () => {
+    // Check all required fields are filled
     const requiredFields: (keyof SignupForm)[] = ['username', 'email', 'password', 'confirmPassword', 'name', 'role'];
-    const allFieldsFilled = requiredFields.every(field => formData[field].trim() !== '');
-    const passwordsMatch = formData.password === formData.confirmPassword;
-    const noErrors = Object.keys(errors).length === 0;
-    const passwordsNotEmpty = formData.password.length >= 8 && formData.confirmPassword.length >= 8;
+    const allFieldsFilled = requiredFields.every(field => {
+      const value = formData[field];
+      return value && value.trim() !== '';
+    });
     
-    return allFieldsFilled && passwordsMatch && noErrors && passwordsNotEmpty;
+    // Check passwords match
+    const passwordsMatch = formData.password === formData.confirmPassword && formData.password.length > 0;
+    
+    // Check password length
+    const passwordValid = formData.password.length >= 8;
+    
+    // Check email format (basic validation)
+    const emailValid = formData.email.includes('@') && formData.email.includes('.');
+    
+    // Check username length
+    const usernameValid = formData.username.length >= 3;
+    
+    // Check name length
+    const nameValid = formData.name.length >= 2;
+    
+    // Debug logging
+    console.log('Form validation check:', {
+      allFieldsFilled,
+      passwordsMatch,
+      passwordValid,
+      emailValid,
+      usernameValid,
+      nameValid,
+      formData: {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password ? '***' : '',
+        confirmPassword: formData.confirmPassword ? '***' : '',
+        name: formData.name,
+        role: formData.role
+      },
+      errors
+    });
+    
+    return allFieldsFilled && passwordsMatch && passwordValid && emailValid && usernameValid && nameValid;
   };
 
   return (
