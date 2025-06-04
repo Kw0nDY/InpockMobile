@@ -63,6 +63,71 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const { username, email, password, name, company, role } = req.body;
+      
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ error: "User already exists with this email" });
+      }
+
+      const existingUsername = await storage.getUserByUsername(username);
+      if (existingUsername) {
+        return res.status(400).json({ error: "Username already taken" });
+      }
+
+      // Create new user
+      const newUser = await storage.createUser({
+        username,
+        email,
+        password,
+        name,
+        company: company || "",
+        role: role || "user",
+      });
+
+      // Create default user settings
+      await storage.createUserSettings({
+        userId: newUser.id,
+        notifications: true,
+        marketing: false,
+        darkMode: false,
+        language: "한국어",
+        timezone: "Seoul (UTC+9)",
+        currency: "KRW (₩)",
+        twoFactorEnabled: false,
+      });
+
+      // Create default subscription
+      await storage.createSubscription({
+        userId: newUser.id,
+        plan: "free",
+        status: "active",
+        pricePerMonth: 0,
+        currentPeriodStart: new Date(),
+        currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        cancelAtPeriodEnd: false,
+      });
+
+      res.status(201).json({ 
+        message: "User created successfully",
+        user: { 
+          id: newUser.id, 
+          username: newUser.username, 
+          email: newUser.email, 
+          name: newUser.name, 
+          company: newUser.company, 
+          role: newUser.role 
+        } 
+      });
+    } catch (error) {
+      console.error("Signup error:", error);
+      res.status(500).json({ error: "Failed to create user" });
+    }
+  });
+
   // Dashboard routes
   app.get("/api/dashboard/stats/:userId", async (req, res) => {
     try {

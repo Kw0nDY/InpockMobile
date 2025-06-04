@@ -8,6 +8,7 @@ import { AuthProvider } from "./hooks/use-auth";
 // Pages
 import LandingPage from "./pages/landing";
 import LoginPage from "./pages/login";
+import SignupPage from "./pages/signup";
 import DashboardPage from "./pages/dashboard";
 import LinksPage from "./pages/links";
 import MarketplacePage from "./pages/marketplace";
@@ -25,6 +26,7 @@ function Router() {
       <Switch>
         <Route path="/" component={LandingPage} />
         <Route path="/login" component={LoginPage} />
+        <Route path="/signup" component={SignupPage} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/links" component={LinksPage} />
         <Route path="/marketplace" component={MarketplacePage} />
