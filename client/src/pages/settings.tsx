@@ -2,7 +2,13 @@ import { useState } from "react";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -12,7 +18,7 @@ export default function SettingsPage() {
   const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  
+
   const [settings, setSettings] = useState({
     notifications: true,
     marketing: false,
@@ -54,14 +60,14 @@ export default function SettingsPage() {
   };
 
   const updateSetting = (key: string, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <Header 
-        title="설정" 
-        rightAction={{ text: "저장", onClick: handleSaveSettings }} 
+    <div className={`min-h-screen ph-20${settings.darkMode ? " dark" : ""}`}>
+      <Header
+        title="설정"
+        rightAction={{ text: "저장", onClick: handleSaveSettings }}
       />
 
       <div className="divide-y divide-gray-100">
@@ -75,10 +81,12 @@ export default function SettingsPage() {
               </span>
             </div>
             <div className="flex-1">
-              <p className="font-medium korean-text">{user?.name || "사용자"}</p>
+              <p className="font-medium korean-text">
+                {user?.name || "사용자"}
+              </p>
               <p className="text-gray-500 text-sm">{user?.email}</p>
             </div>
-            <button 
+            <button
               onClick={() => handleSettingsAction("프로필 편집")}
               className="text-primary text-sm korean-text"
             >
@@ -95,7 +103,9 @@ export default function SettingsPage() {
               <span className="text-sm korean-text">알림 설정</span>
               <Switch
                 checked={settings.notifications}
-                onCheckedChange={(checked) => updateSetting("notifications", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("notifications", checked)
+                }
               />
             </div>
 
@@ -103,7 +113,9 @@ export default function SettingsPage() {
               <span className="text-sm korean-text">마케팅 이메일</span>
               <Switch
                 checked={settings.marketing}
-                onCheckedChange={(checked) => updateSetting("marketing", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("marketing", checked)
+                }
               />
             </div>
 
@@ -111,7 +123,9 @@ export default function SettingsPage() {
               <span className="text-sm korean-text">다크 모드</span>
               <Switch
                 checked={settings.darkMode}
-                onCheckedChange={(checked) => updateSetting("darkMode", checked)}
+                onCheckedChange={(checked) =>
+                  updateSetting("darkMode", checked)
+                }
               />
             </div>
           </div>
@@ -123,7 +137,10 @@ export default function SettingsPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">언어</span>
-              <Select value={settings.language} onValueChange={(value) => updateSetting("language", value)}>
+              <Select
+                value={settings.language}
+                onValueChange={(value) => updateSetting("language", value)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -136,7 +153,10 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">시간대</span>
-              <Select value={settings.timezone} onValueChange={(value) => updateSetting("timezone", value)}>
+              <Select
+                value={settings.timezone}
+                onValueChange={(value) => updateSetting("timezone", value)}
+              >
                 <SelectTrigger className="w-40">
                   <SelectValue />
                 </SelectTrigger>
@@ -149,7 +169,10 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between">
               <span className="text-sm korean-text">통화</span>
-              <Select value={settings.currency} onValueChange={(value) => updateSetting("currency", value)}>
+              <Select
+                value={settings.currency}
+                onValueChange={(value) => updateSetting("currency", value)}
+              >
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -200,7 +223,9 @@ export default function SettingsPage() {
               <span className="font-medium korean-text">INPOCK PRO</span>
               <span className="text-primary font-bold">₩19,000/월</span>
             </div>
-            <p className="text-sm text-gray-600 mb-3 korean-text">다음 결제일: 2024년 2월 15일</p>
+            <p className="text-sm text-gray-600 mb-3 korean-text">
+              다음 결제일: 2024년 2월 15일
+            </p>
             <Button
               onClick={() => handleSettingsAction("구독 관리")}
               className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90"

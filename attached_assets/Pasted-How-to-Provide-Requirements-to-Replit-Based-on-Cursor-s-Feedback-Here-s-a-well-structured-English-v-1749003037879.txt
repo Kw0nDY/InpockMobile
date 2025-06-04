@@ -1,0 +1,42 @@
+How to Provide Requirements to Replit Based on Cursor's Feedback
+Here’s a well-structured English version you can use to communicate your requirements to Replit, based on what Cursor requested:
+
+1. API/DB Design
+Please specify the structure of the settings data you want to save/load (e.g., profile, notifications, language preferences, etc.).
+
+Share your preferred DB schema (e.g., User, Settings, Subscription collections/tables) and the fields/types you want for each.
+
+Provide API specifications you need (e.g., /api/settings, /api/profile), including example requests and responses if possible.
+
+2. UI/UX
+Describe the user flow for each feature (e.g., profile editing, security, subscriptions): what actions should be possible, and what screens/buttons should trigger them.
+
+If you have a design guide (colors, buttons, layout, etc.), please share it.
+
+List any expected error/exception cases (e.g., password change failure, subscription expired, etc.).
+
+3. Integrations/Policies
+Subscription/Payment: Which payment service do you plan to use (e.g., Stripe, Toss, etc.)? Any specific policies?
+
+Notifications/Email: Which external service will you use (e.g., Firebase, custom SMTP, etc.)?
+
+Two-factor authentication: What method do you prefer (SMS, email, OTP, etc.)?
+
+4. Other
+Internationalization (i18n): What languages do you want to support? Please provide sample translation files if available.
+
+Roles/Permissions: Do you need to distinguish between admin and general users?
+
+Testing/Deployment: Any specific environments or policies for testing and deployment?
+
+5. Example Materials
+Wireframes or design mockups (Figma, images, etc.).
+
+Sample data for settings/profile/subscription (JSON, etc.).
+
+Reference sites or services you want to model after.
+
+Conclusion
+Providing any of the above information will help us work faster and more accurately.
+If you don’t have specific requirements or examples, we can proceed with standard SaaS/mobile service conventions.
+

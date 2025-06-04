@@ -1,11 +1,13 @@
 import { 
-  users, links, deals, chats, messages, activities,
+  users, links, deals, chats, messages, activities, userSettings, subscriptions,
   type User, type InsertUser,
   type Link, type InsertLink,
   type Deal, type InsertDeal,
   type Chat, type InsertChat,
   type Message, type InsertMessage,
-  type Activity, type InsertActivity
+  type Activity, type InsertActivity,
+  type UserSettings, type InsertUserSettings,
+  type Subscription, type InsertSubscription
 } from "@shared/schema";
 
 export interface IStorage {
@@ -47,6 +49,16 @@ export interface IStorage {
   // Activities
   getUserActivities(userId: number): Promise<Activity[]>;
   createActivity(activity: InsertActivity): Promise<Activity>;
+
+  // User Settings
+  getUserSettings(userId: number): Promise<UserSettings | undefined>;
+  createUserSettings(settings: InsertUserSettings): Promise<UserSettings>;
+  updateUserSettings(userId: number, updates: Partial<UserSettings>): Promise<UserSettings | undefined>;
+
+  // Subscriptions
+  getUserSubscription(userId: number): Promise<Subscription | undefined>;
+  createSubscription(subscription: InsertSubscription): Promise<Subscription>;
+  updateSubscription(userId: number, updates: Partial<Subscription>): Promise<Subscription | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -56,6 +68,8 @@ export class MemStorage implements IStorage {
   private chats: Map<number, Chat> = new Map();
   private messages: Map<number, Message> = new Map();
   private activities: Map<number, Activity> = new Map();
+  private userSettings: Map<number, UserSettings> = new Map();
+  private subscriptions: Map<number, Subscription> = new Map();
   
   private currentUserId = 1;
   private currentLinkId = 1;
@@ -63,6 +77,8 @@ export class MemStorage implements IStorage {
   private currentChatId = 1;
   private currentMessageId = 1;
   private currentActivityId = 1;
+  private currentUserSettingsId = 1;
+  private currentSubscriptionId = 1;
 
   constructor() {
     // Initialize with some demo data
@@ -84,6 +100,37 @@ export class MemStorage implements IStorage {
     };
     this.users.set(1, demoUser);
     this.currentUserId = 2;
+
+    // Create demo user settings
+    const demoSettings: UserSettings = {
+      id: 1,
+      userId: 1,
+      notifications: true,
+      marketing: false,
+      darkMode: false,
+      language: "한국어",
+      timezone: "Seoul (UTC+9)",
+      currency: "KRW (₩)",
+      twoFactorEnabled: false,
+      updatedAt: new Date(),
+    };
+    this.userSettings.set(1, demoSettings);
+    this.currentUserSettingsId = 2;
+
+    // Create demo subscription
+    const demoSubscription: Subscription = {
+      id: 1,
+      userId: 1,
+      plan: "pro",
+      status: "active",
+      pricePerMonth: 19000,
+      currentPeriodStart: new Date(),
+      currentPeriodEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      cancelAtPeriodEnd: false,
+      createdAt: new Date(),
+    };
+    this.subscriptions.set(1, demoSubscription);
+    this.currentSubscriptionId = 2;
 
     // Create demo links
     const demoLinks: Link[] = [
@@ -184,6 +231,9 @@ export class MemStorage implements IStorage {
     const user: User = {
       ...insertUser,
       id,
+      company: insertUser.company || null,
+      role: insertUser.role || null,
+      avatar: insertUser.avatar || null,
       createdAt: new Date(),
     };
     this.users.set(id, user);
@@ -356,6 +406,56 @@ export class MemStorage implements IStorage {
     };
     this.activities.set(id, activity);
     return activity;
+  }
+
+  // User Settings methods
+  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+    return Array.from(this.userSettings.values()).find(settings => settings.userId === userId);
+  }
+
+  async createUserSettings(insertSettings: InsertUserSettings): Promise<UserSettings> {
+    const id = this.currentUserSettingsId++;
+    const settings: UserSettings = {
+      ...insertSettings,
+      id,
+      updatedAt: new Date(),
+    };
+    this.userSettings.set(id, settings);
+    return settings;
+  }
+
+  async updateUserSettings(userId: number, updates: Partial<UserSettings>): Promise<UserSettings | undefined> {
+    const settings = await this.getUserSettings(userId);
+    if (!settings) return undefined;
+    
+    const updatedSettings = { ...settings, ...updates, updatedAt: new Date() };
+    this.userSettings.set(settings.id, updatedSettings);
+    return updatedSettings;
+  }
+
+  // Subscription methods
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    return Array.from(this.subscriptions.values()).find(sub => sub.userId === userId);
+  }
+
+  async createSubscription(insertSubscription: InsertSubscription): Promise<Subscription> {
+    const id = this.currentSubscriptionId++;
+    const subscription: Subscription = {
+      ...insertSubscription,
+      id,
+      createdAt: new Date(),
+    };
+    this.subscriptions.set(id, subscription);
+    return subscription;
+  }
+
+  async updateSubscription(userId: number, updates: Partial<Subscription>): Promise<Subscription | undefined> {
+    const subscription = await this.getUserSubscription(userId);
+    if (!subscription) return undefined;
+    
+    const updatedSubscription = { ...subscription, ...updates };
+    this.subscriptions.set(subscription.id, updatedSubscription);
+    return updatedSubscription;
   }
 }
 
