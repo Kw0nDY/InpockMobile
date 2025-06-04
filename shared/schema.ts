@@ -7,11 +7,14 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
   name: text("name").notNull(),
   company: text("company"),
   role: text("role").default("user"),
   avatar: text("avatar"),
+  profileImageUrl: text("profile_image_url"),
+  provider: text("provider").default("local"),
+  providerId: text("provider_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

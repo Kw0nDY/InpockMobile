@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { setupKakaoAuth } from "./kakao-auth";
 import { insertUserSchema, insertLinkSchema, insertDealSchema, insertUserSettingsSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -10,6 +11,9 @@ const loginSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Setup Kakao OAuth authentication
+  setupKakaoAuth(app);
+
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     try {
