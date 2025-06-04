@@ -1,6 +1,7 @@
 import { ArrowLeft, LucideIcon } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import NotificationDropdown from "@/components/ui/notification-dropdown";
 
 interface HeaderProps {
   title: string;
@@ -10,6 +11,7 @@ interface HeaderProps {
     text: string;
     onClick: () => void;
   };
+  showNotifications?: boolean;
 }
 
 export default function Header({ 

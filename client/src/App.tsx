@@ -15,6 +15,8 @@ import MarketplacePage from "./pages/marketplace";
 import ManagerPage from "./pages/manager";
 import SettingsPage from "./pages/settings";
 import ChatPage from "./pages/chat";
+import AnalyticsPage from "./pages/analytics";
+import ContactsPage from "./pages/contacts";
 import NotFound from "./pages/not-found";
 
 // Layout

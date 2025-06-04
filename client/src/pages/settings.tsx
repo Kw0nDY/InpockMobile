@@ -32,25 +32,33 @@ export default function SettingsPage() {
   });
 
   // Fetch user settings
-  const { data: userSettings, isLoading: settingsLoading } = useQuery<UserSettings>({
-    queryKey: [`/api/settings/${user?.id}`],
-    enabled: !!user?.id,
-  });
+  const { data: userSettings, isLoading: settingsLoading } =
+    useQuery<UserSettings>({
+      queryKey: [`/api/settings/${user?.id}`],
+      enabled: !!user?.id,
+    });
 
   // Fetch user subscription
-  const { data: subscription, isLoading: subscriptionLoading } = useQuery<Subscription>({
-    queryKey: [`/api/subscription/${user?.id}`],
-    enabled: !!user?.id,
-  });
+  const { data: subscription, isLoading: subscriptionLoading } =
+    useQuery<Subscription>({
+      queryKey: [`/api/subscription/${user?.id}`],
+      enabled: !!user?.id,
+    });
 
   // Update settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (updates: any) => {
-      const response = await apiRequest("PUT", `/api/settings/${user?.id}`, updates);
+      const response = await apiRequest(
+        "PUT",
+        `/api/settings/${user?.id}`,
+        updates,
+      );
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/settings/${user?.id}`],
+      });
       toast({
         title: "설정 저장됨",
         description: "변경사항이 성공적으로 저장되었습니다.",
@@ -65,14 +73,18 @@ export default function SettingsPage() {
     },
   });
 
-  // Sync local state with fetched settings  
+  // Sync local state with fetched settings
   useEffect(() => {
-    if (userSettings && typeof userSettings === 'object' && 'notifications' in userSettings) {
+    if (
+      userSettings &&
+      typeof userSettings === "object" &&
+      "notifications" in userSettings
+    ) {
       setLocalSettings({
         notifications: userSettings.notifications ?? true,
         marketing: userSettings.marketing ?? false,
         darkMode: userSettings.darkMode ?? false,
-        language: userSettings.language ?? "한국어", 
+        language: userSettings.language ?? "한국어",
         timezone: userSettings.timezone ?? "Seoul (UTC+9)",
         currency: userSettings.currency ?? "KRW (₩)",
       });
@@ -122,7 +134,9 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className={`min-h-screen pb-20 bg-gray-50${localSettings.darkMode ? " dark" : ""}`}>
+    <div
+      className={`min-h-screen pb-20 bg-gray-50${localSettings.darkMode ? "" : ""}`}
+    >
       <Header
         title="설정"
         rightAction={{ text: "저장", onClick: handleSaveSettings }}
