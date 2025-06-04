@@ -1,10 +1,11 @@
-import { Bell, Link, TrendingUp, MessageCircle } from "lucide-react";
+import { Bell, Link, TrendingUp, MessageCircle, BarChart3, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
+import NotificationDropdown from "@/components/ui/notification-dropdown";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -14,6 +15,8 @@ export default function DashboardPage() {
     queryKey: [`/api/dashboard/stats/${user?.id}`],
     enabled: !!user?.id,
   });
+
+  const typedData = dashboardData as any;
 
   const getInitials = (name: string) => {
     return name
@@ -77,9 +80,7 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
-        <button className="p-2">
-          <Bell className="w-6 h-6 text-gray-600" />
-        </button>
+        <NotificationDropdown />
       </header>
 
       <div className="p-4">
@@ -126,14 +127,18 @@ export default function DashboardPage() {
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="secondary"
-                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100"
+                onClick={() => setLocation("/analytics")}
+                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100 flex items-center justify-center gap-2"
               >
+                <BarChart3 className="w-4 h-4" />
                 분석 보기
               </Button>
               <Button
                 variant="secondary"
-                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100"
+                onClick={() => setLocation("/contacts")}
+                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100 flex items-center justify-center gap-2"
               >
+                <Users className="w-4 h-4" />
                 연락처 관리
               </Button>
             </div>

@@ -41,6 +41,8 @@ function Router() {
         <Route path="/manager" component={ManagerPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route path="/chat" component={ChatPage} />
+        <Route path="/analytics" component={AnalyticsPage} />
+        <Route path="/contacts" component={ContactsPage} />
         <Route component={NotFound} />
       </Switch>
       {shouldShowBottomNav && <BottomNav />}
