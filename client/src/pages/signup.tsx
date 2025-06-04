@@ -14,11 +14,27 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const signupSchema = z.object({
-  fullName: z.string().min(2, "이름은 최소 2자 이상이어야 합니다"),
-  email: z.string().email("올바른 이메일 주소를 입력해주세요"),
-  password: z.string().min(8, "비밀번호는 최소 8자 이상이어야 합니다"),
-  phoneNumber: z.string().min(10, "올바른 전화번호를 입력해주세요"),
-  dateOfBirth: z.string().min(1, "생년월일을 입력해주세요"),
+  fullName: z.string()
+    .min(2, "이름은 최소 2자 이상이어야 합니다")
+    .max(50, "이름은 50자를 초과할 수 없습니다")
+    .regex(/^[가-힣a-zA-Z\s]+$/, "이름은 한글, 영문, 공백만 입력 가능합니다"),
+  email: z.string()
+    .email("올바른 이메일 주소를 입력해주세요")
+    .min(1, "이메일을 입력해주세요"),
+  password: z.string()
+    .min(8, "비밀번호는 최소 8자 이상이어야 합니다")
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "비밀번호는 대문자, 소문자, 숫자를 포함해야 합니다"),
+  phoneNumber: z.string()
+    .min(10, "올바른 전화번호를 입력해주세요")
+    .regex(/^[0-9-+\s()]+$/, "올바른 전화번호 형식이 아닙니다"),
+  dateOfBirth: z.string()
+    .min(1, "생년월일을 입력해주세요")
+    .refine((date) => {
+      const birthDate = new Date(date);
+      const today = new Date();
+      const age = today.getFullYear() - birthDate.getFullYear();
+      return age >= 14 && age <= 120;
+    }, "만 14세 이상이어야 가입 가능합니다"),
   referralCode: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, {
     message: "서비스 이용약관에 동의해주세요"
@@ -47,27 +63,56 @@ export default function SignupPage() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
+      // Validate data before sending
+      const validatedData = signupSchema.parse(data);
+      
       const response = await apiRequest("POST", "/api/auth/signup", {
-        username: data.email.split("@")[0],
-        email: data.email,
-        password: data.password,
-        name: data.fullName,
+        username: validatedData.email.split("@")[0],
+        email: validatedData.email,
+        password: validatedData.password,
+        name: validatedData.fullName,
         company: "",
         role: "user",
+        phoneNumber: validatedData.phoneNumber,
+        dateOfBirth: validatedData.dateOfBirth,
+        referralCode: validatedData.referralCode || null,
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || errorData.message || "회원가입에 실패했습니다");
+      }
+      
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
-        title: "회원가입 완료",
-        description: "성공적으로 가입되었습니다. 로그인해주세요.",
+        title: "🎉 회원가입 완료",
+        description: `${data.user.name}님, INPOCK에 오신 것을 환영합니다! 로그인해주세요.`,
       });
-      setLocation("/login");
+      
+      // Clear form
+      form.reset();
+      
+      // Redirect to login after delay
+      setTimeout(() => {
+        setLocation("/login");
+      }, 2000);
     },
     onError: (error: any) => {
+      let errorMessage = "회원가입 중 오류가 발생했습니다.";
+      
+      if (error.message.includes("already exists")) {
+        errorMessage = "이미 가입된 이메일 주소입니다.";
+      } else if (error.message.includes("Username already taken")) {
+        errorMessage = "이미 사용 중인 사용자명입니다.";
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "회원가입 실패",
-        description: error.message || "다시 시도해주세요.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
@@ -77,7 +122,16 @@ export default function SignupPage() {
     signupMutation.mutate(data);
   };
 
-  const isFormValid = form.formState.isValid && form.watch("agreeToTerms");
+  // Enhanced form validation logic
+  const watchedFields = form.watch();
+  const isFormValid = 
+    watchedFields.fullName?.trim().length >= 2 &&
+    watchedFields.email?.includes("@") &&
+    watchedFields.password?.length >= 8 &&
+    watchedFields.phoneNumber?.length >= 10 &&
+    watchedFields.dateOfBirth?.length > 0 &&
+    watchedFields.agreeToTerms === true &&
+    Object.keys(form.formState.errors).length === 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white p-4 pb-28 md:pb-24">
@@ -259,14 +313,28 @@ export default function SignupPage() {
                 <Button
                   type="submit"
                   disabled={!isFormValid || signupMutation.isPending}
-                  className={`w-full py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
+                  className={`w-full py-3 text-sm font-medium rounded-lg transition-all duration-300 transform ${
                     isFormValid && !signupMutation.isPending
-                      ? "bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl"
-                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      ? "bg-orange-600 hover:bg-orange-700 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed opacity-60"
                   }`}
                 >
-                  {signupMutation.isPending ? "가입 중..." : "회원가입"}
+                  {signupMutation.isPending ? (
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>가입 처리 중...</span>
+                    </div>
+                  ) : (
+                    "회원가입"
+                  )}
                 </Button>
+                
+                {/* Form validation status */}
+                {!isFormValid && (
+                  <div className="mt-2 text-xs text-gray-500 text-center">
+                    모든 필수 항목을 올바르게 입력하고 약관에 동의해주세요
+                  </div>
+                )}
               </div>
 
               {/* Login Link */}
