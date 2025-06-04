@@ -80,6 +80,19 @@ export default function SignupStep2() {
         [field]: undefined
       }));
     }
+    
+    // Real-time validation for password confirmation
+    if (field === 'confirmPassword' && formData.password && value && formData.password !== value) {
+      setErrors(prev => ({
+        ...prev,
+        confirmPassword: '비밀번호가 일치하지 않습니다'
+      }));
+    } else if (field === 'confirmPassword' && formData.password === value) {
+      setErrors(prev => ({
+        ...prev,
+        confirmPassword: undefined
+      }));
+    }
   };
 
   const validateForm = () => {
@@ -111,9 +124,12 @@ export default function SignupStep2() {
 
   const isFormValid = () => {
     const requiredFields: (keyof SignupForm)[] = ['username', 'email', 'password', 'confirmPassword', 'name', 'role'];
-    return requiredFields.every(field => formData[field].trim() !== '') && 
-           formData.password === formData.confirmPassword &&
-           Object.keys(errors).length === 0;
+    const allFieldsFilled = requiredFields.every(field => formData[field].trim() !== '');
+    const passwordsMatch = formData.password === formData.confirmPassword;
+    const noErrors = Object.keys(errors).length === 0;
+    const passwordsNotEmpty = formData.password.length >= 8 && formData.confirmPassword.length >= 8;
+    
+    return allFieldsFilled && passwordsMatch && noErrors && passwordsNotEmpty;
   };
 
   return (
@@ -283,14 +299,17 @@ export default function SignupStep2() {
             disabled={!isFormValid() || signupMutation.isPending}
             className={`w-full py-4 rounded-xl font-medium text-lg transition-all duration-300 ${
               isFormValid() && !signupMutation.isPending
-                ? 'bg-primary hover:bg-primary/90 text-white shadow-lg'
+                ? 'bg-primary hover:bg-primary/90 text-white shadow-lg transform hover:scale-[1.02]'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
             {signupMutation.isPending ? (
-              <span className="korean-text">회원가입 중...</span>
+              <div className="flex items-center justify-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <span className="korean-text">회원가입 중...</span>
+              </div>
             ) : (
-              <span className="korean-text">회원가입</span>
+              <span className="korean-text">회원가입 완료</span>
             )}
           </Button>
 
