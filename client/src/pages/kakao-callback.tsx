@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 
@@ -14,57 +13,59 @@ export default function KakaoCallback() {
       try {
         // Extract parameters from URL
         const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        const error = urlParams.get('error');
-        const errorDescription = urlParams.get('error_description');
-        const state = urlParams.get('state');
+        const code = urlParams.get("code");
+        const error = urlParams.get("error");
+        const errorDescription = urlParams.get("error_description");
+        const state = urlParams.get("state");
 
         // Verify CSRF state parameter
-        const expectedState = sessionStorage.getItem('kakao_oauth_state');
+        const expectedState = sessionStorage.getItem("kakao_oauth_state");
         if (state && expectedState && state !== expectedState) {
-          throw new Error('보안 검증에 실패했습니다. 다시 시도해주세요.');
+          throw new Error("보안 검증에 실패했습니다. 다시 시도해주세요.");
         }
 
         // Handle Kakao OAuth errors
         if (error) {
           const errorMessages = {
-            'access_denied': '사용자가 인증을 취소했습니다',
-            'invalid_request': '잘못된 OAuth 요청입니다',
-            'server_error': '카카오 서버 오류가 발생했습니다',
-            'temporarily_unavailable': '서비스가 일시적으로 이용 불가능합니다'
+            access_denied: "사용자가 인증을 취소했습니다",
+            invalid_request: "잘못된 OAuth 요청입니다",
+            server_error: "카카오 서버 오류가 발생했습니다",
+            temporarily_unavailable: "서비스가 일시적으로 이용 불가능합니다",
           };
-          const message = errorMessages[error as keyof typeof errorMessages] || 
-                          errorDescription || 
-                          `Kakao authentication failed: ${error}`;
+          const message =
+            errorMessages[error as keyof typeof errorMessages] ||
+            errorDescription ||
+            `Kakao authentication failed: ${error}`;
           throw new Error(message);
         }
 
         if (!code) {
-          throw new Error('카카오로부터 인증 코드를 받지 못했습니다');
+          throw new Error("카카오로부터 인증 코드를 받지 못했습니다");
         }
 
         // Exchange code for access token and user info
         const response = await apiRequest("POST", "/api/auth/kakao/token", {
-          code: code
+          code: code,
         });
 
         const result = await response.json();
 
         if (result.success) {
           // Clear OAuth state
-          sessionStorage.removeItem('kakao_oauth_state');
-          
+          sessionStorage.removeItem("kakao_oauth_state");
+
           toast({
             title: "로그인 성공",
-            description: result.isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
+            description: result.isNewUser
+              ? "새 계정이 생성되었습니다."
+              : "카카오 로그인이 완료되었습니다.",
           });
-          
+
           // Redirect to dashboard
           setLocation("/dashboard");
         } else {
           throw new Error(result.message || "인증에 실패했습니다");
         }
-
       } catch (error: any) {
         console.error("Kakao OAuth error:", error);
         toast({
@@ -72,7 +73,7 @@ export default function KakaoCallback() {
           description: error.message || "카카오 로그인 중 오류가 발생했습니다.",
           variant: "destructive",
         });
-        
+
         // Redirect back to login page
         setLocation("/login");
       } finally {
@@ -98,9 +99,7 @@ export default function KakaoCallback() {
           <h1 className="text-xl font-semibold text-gray-800 korean-text mb-2">
             카카오 로그인 중...
           </h1>
-          <p className="text-gray-600 korean-text">
-            잠시만 기다려주세요
-          </p>
+          <p className="text-gray-600 korean-text">잠시만 기다려주세요</p>
           <div className="mt-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-yellow-400 mx-auto"></div>
           </div>
