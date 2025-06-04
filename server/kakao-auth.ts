@@ -52,8 +52,8 @@ export function setupKakaoAuth(app: Express) {
     const params = new URLSearchParams({
       client_id: KAKAO_CLIENT_ID,
       redirect_uri: REDIRECT_URI,
-      response_type: 'code',
-      scope: 'profile_nickname,account_email'
+      response_type: 'code'
+      // Note: Remove scope parameter - Kakao uses consent items configured in console
     });
     
     if (state) {
