@@ -35,7 +35,7 @@ interface KakaoUserInfo {
 
 const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const REDIRECT_URI = 'http://127.0.0.1:5000/oauth/kakao/callback';
+const REDIRECT_URI = 'http://localhost:5000/oauth/kakao/callback';
 
 export function setupKakaoAuth(app: Express) {
   // Kakao OAuth login initiation
