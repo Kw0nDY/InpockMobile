@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import Header from "@/components/layout/header";
+import type { UserSettings, Subscription } from "@shared/schema";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -31,13 +32,13 @@ export default function SettingsPage() {
   });
 
   // Fetch user settings
-  const { data: userSettings, isLoading: settingsLoading } = useQuery({
+  const { data: userSettings, isLoading: settingsLoading } = useQuery<UserSettings>({
     queryKey: [`/api/settings/${user?.id}`],
     enabled: !!user?.id,
   });
 
   // Fetch user subscription
-  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
+  const { data: subscription, isLoading: subscriptionLoading } = useQuery<Subscription>({
     queryKey: [`/api/subscription/${user?.id}`],
     enabled: !!user?.id,
   });
@@ -66,7 +67,7 @@ export default function SettingsPage() {
 
   // Sync local state with fetched settings  
   useEffect(() => {
-    if (userSettings) {
+    if (userSettings && typeof userSettings === 'object' && 'notifications' in userSettings) {
       setLocalSettings({
         notifications: userSettings.notifications ?? true,
         marketing: userSettings.marketing ?? false,
