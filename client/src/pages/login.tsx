@@ -115,7 +115,11 @@ export default function LoginPage() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 korean-text">계정이 없으신가요?</p>
-          <button className="text-primary font-medium korean-text">
+          <button 
+            type="button"
+            onClick={() => setLocation("/signup")}
+            className="text-primary font-medium korean-text hover:underline"
+          >
             회원가입
           </button>
         </div>
