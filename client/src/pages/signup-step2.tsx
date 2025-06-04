@@ -91,8 +91,9 @@ export default function SignupStep2() {
       if (error instanceof z.ZodError) {
         const newErrors: Partial<Record<keyof SignupForm, string>> = {};
         error.errors.forEach((err) => {
-          if (err.path[0]) {
-            newErrors[err.path[0] as keyof SignupForm] = err.message;
+          const path = err.path[0];
+          if (path && typeof path === 'string') {
+            newErrors[path as keyof SignupForm] = err.message;
           }
         });
         setErrors(newErrors);
