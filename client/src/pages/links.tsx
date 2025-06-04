@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Plus, Camera, Copy, Share2, Edit2, QrCode } from "lucide-react";
+import { Plus, Camera, Copy, Share2, Edit2, QrCode, Palette, TrendingUp, Sparkles, Target, Globe, BarChart3, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -118,6 +119,133 @@ export default function LinksPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Link Blocks Section */}
+        <div className="mb-6">
+          <h3 className="font-medium mb-4 korean-text text-lg">링크 도구</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Brand Kit Block */}
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mr-3">
+                      <Palette className="w-6 h-6 text-purple-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 korean-text">브랜드 키트 만들기</h4>
+                      <Badge variant="secondary" className="mt-1 text-xs bg-purple-100 text-purple-700">
+                        NEW
+                      </Badge>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+                <p className="text-sm text-gray-600 korean-text mb-4">
+                  나만의 브랜드 리소스를 직접 제작하고 활용하세요.
+                </p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-lg"
+                  onClick={() => window.open('#', '_blank')}
+                >
+                  시작하기
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* SNS Links Block */}
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mr-3">
+                      <Share2 className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 korean-text">SNS 링크 연결하기</h4>
+                      <Badge variant="secondary" className="mt-1 text-xs bg-orange-100 text-orange-700">
+                        인기
+                      </Badge>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+                <p className="text-sm text-gray-600 korean-text mb-4">
+                  나를 표현하는 SNS를 연결해보세요.
+                </p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg"
+                  onClick={() => window.open('#', '_blank')}
+                >
+                  연결하기
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Analytics Block */}
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mr-3">
+                      <TrendingUp className="w-6 h-6 text-green-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 korean-text">링크 통계 보기</h4>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+                <p className="text-sm text-gray-600 korean-text mb-4">
+                  누가 얼마나 클릭했는지 통계를 확인할 수 있어요.
+                </p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full bg-green-50 text-green-700 hover:bg-green-100 rounded-lg"
+                  onClick={() => window.open('/analytics', '_self')}
+                >
+                  통계 보기
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Premium Features Block */}
+            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group border-2 border-gradient-to-r from-yellow-200 to-orange-200">
+              <CardContent className="p-5">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-100 to-orange-200 rounded-xl flex items-center justify-center mr-3">
+                      <Sparkles className="w-6 h-6 text-orange-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-gray-800 korean-text">프리미엄 기능</h4>
+                      <Badge variant="default" className="mt-1 text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white">
+                        HOT
+                      </Badge>
+                    </div>
+                  </div>
+                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+                </div>
+                <p className="text-sm text-gray-600 korean-text mb-4">
+                  고급 분석, 커스텀 도메인, 무제한 링크를 사용하세요.
+                </p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="w-full bg-gradient-to-r from-yellow-50 to-orange-50 text-orange-700 hover:from-yellow-100 hover:to-orange-100 rounded-lg"
+                  onClick={() => window.open('#', '_blank')}
+                >
+                  업그레이드
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         {/* QR Code Display */}
         <Card className="bg-white shadow-sm mb-6">
