@@ -35,9 +35,7 @@ interface KakaoUserInfo {
 
 const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const REDIRECT_URI = process.env.NODE_ENV === 'production' 
-  ? 'https://your-domain.replit.app/api/auth/kakao/callback'
-  : 'http://localhost:5000/api/auth/kakao/callback';
+const REDIRECT_URI = 'http://localhost:5000/oauth/kakao/callback';
 
 export function setupKakaoAuth(app: Express) {
   // Kakao OAuth login initiation
@@ -46,7 +44,91 @@ export function setupKakaoAuth(app: Express) {
     res.redirect(kakaoAuthURL);
   });
 
-  // Kakao OAuth callback
+  // Frontend token exchange endpoint
+  app.post('/api/auth/kakao/token', async (req: Request, res: Response) => {
+    try {
+      const { code } = req.body;
+      
+      if (!code) {
+        return res.status(400).json({ success: false, message: 'Authorization code is required' });
+      }
+
+      // Exchange code for access token
+      const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: KAKAO_CLIENT_ID!,
+          client_secret: KAKAO_CLIENT_SECRET!,
+          redirect_uri: REDIRECT_URI,
+          code: code,
+        }),
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to exchange code for token');
+      }
+
+      const tokenData: KakaoTokenResponse = await tokenResponse.json();
+
+      // Get user info from Kakao
+      const userResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      });
+
+      if (!userResponse.ok) {
+        throw new Error('Failed to fetch user info');
+      }
+
+      const userData: KakaoUserInfo = await userResponse.json();
+
+      // Check if user exists
+      const existingUser = await storage.getUserByEmail(userData.kakao_account?.email || `kakao_${userData.id}@kakao.user`);
+      let user;
+      let isNewUser = false;
+
+      if (existingUser) {
+        // Update existing user's profile image if needed
+        user = await storage.updateUser(existingUser.id, {
+          profileImageUrl: userData.kakao_account?.profile?.profile_image_url || userData.properties?.profile_image,
+        });
+      } else {
+        // Create new user
+        isNewUser = true;
+        user = await storage.createUser({
+          username: userData.properties?.nickname || `kakao_${userData.id}`,
+          email: userData.kakao_account?.email || `kakao_${userData.id}@kakao.user`,
+          name: userData.properties?.nickname || userData.kakao_account?.profile?.nickname || 'Kakao User',
+          password: '', // OAuth users don't need passwords
+          role: 'user',
+          provider: 'kakao',
+          providerId: userData.id.toString(),
+          profileImageUrl: userData.kakao_account?.profile?.profile_image_url || userData.properties?.profile_image,
+        });
+      }
+
+      res.json({ 
+        success: true, 
+        user: user,
+        isNewUser: isNewUser,
+        message: isNewUser ? 'Account created successfully' : 'Login successful'
+      });
+
+    } catch (error: any) {
+      console.error('Kakao token exchange error:', error);
+      res.status(500).json({ 
+        success: false, 
+        message: error.message || 'Authentication failed' 
+      });
+    }
+  });
+
+  // Legacy callback route (keeping for compatibility)
   app.get('/api/auth/kakao/callback', async (req: Request, res: Response) => {
     const { code } = req.query;
 
