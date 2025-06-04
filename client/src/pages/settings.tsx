@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -12,6 +12,8 @@ import {
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import Header from "@/components/layout/header";
 
 export default function SettingsPage() {
@@ -19,7 +21,7 @@ export default function SettingsPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const [settings, setSettings] = useState({
+  const [localSettings, setLocalSettings] = useState({
     notifications: true,
     marketing: false,
     darkMode: false,
@@ -27,6 +29,54 @@ export default function SettingsPage() {
     timezone: "Seoul (UTC+9)",
     currency: "KRW (₩)",
   });
+
+  // Fetch user settings
+  const { data: userSettings, isLoading: settingsLoading } = useQuery({
+    queryKey: [`/api/settings/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
+  // Fetch user subscription
+  const { data: subscription, isLoading: subscriptionLoading } = useQuery({
+    queryKey: [`/api/subscription/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
+  // Update settings mutation
+  const updateSettingsMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      const response = await apiRequest("PUT", `/api/settings/${user?.id}`, updates);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+      toast({
+        title: "설정 저장됨",
+        description: "변경사항이 성공적으로 저장되었습니다.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "설정 저장 실패",
+        description: "설정 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Sync local state with fetched settings
+  useEffect(() => {
+    if (userSettings) {
+      setLocalSettings({
+        notifications: userSettings.notifications ?? true,
+        marketing: userSettings.marketing ?? false,
+        darkMode: userSettings.darkMode ?? false,
+        language: userSettings.language ?? "한국어",
+        timezone: userSettings.timezone ?? "Seoul (UTC+9)",
+        currency: userSettings.currency ?? "KRW (₩)",
+      });
+    }
+  }, [userSettings]);
 
   const getInitials = (name: string) => {
     return name
@@ -37,10 +87,7 @@ export default function SettingsPage() {
   };
 
   const handleSaveSettings = () => {
-    toast({
-      title: "설정 저장됨",
-      description: "변경사항이 성공적으로 저장되었습니다.",
-    });
+    updateSettingsMutation.mutate(localSettings);
   };
 
   const handleSettingsAction = (action: string) => {
@@ -60,11 +107,11 @@ export default function SettingsPage() {
   };
 
   const updateSetting = (key: string, value: any) => {
-    setSettings((prev) => ({ ...prev, [key]: value }));
+    setLocalSettings((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
-    <div className={`min-h-screen ph-20${settings.darkMode ? " dark" : ""}`}>
+    <div className={`min-h-screen pb-20 bg-gray-50${localSettings.darkMode ? " dark" : ""}`}>
       <Header
         title="설정"
         rightAction={{ text: "저장", onClick: handleSaveSettings }}
