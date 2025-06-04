@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, Shield, FileText, Eye, Bell } from "lucide-react";
+import KakaoLoginButton from "@/components/ui/kakao-login-button";
 
 export default function SignupStep1() {
   const [, setLocation] = useLocation();
@@ -162,19 +163,36 @@ export default function SignupStep1() {
           </CardContent>
         </Card>
 
-        {/* Next Button */}
-        <Button
-          onClick={handleNext}
-          disabled={!allRequiredChecked}
-          className={`w-full py-4 rounded-xl font-medium text-lg transition-all duration-300 ${
-            allRequiredChecked
-              ? 'bg-primary hover:bg-primary/90 text-white shadow-lg'
-              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-          }`}
-        >
-          <span className="korean-text">다음</span>
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Button>
+        {/* Signup Options */}
+        <div className="space-y-3">
+          {/* Continue with Form */}
+          <Button
+            onClick={handleNext}
+            disabled={!allRequiredChecked}
+            className={`w-full py-4 rounded-xl font-medium text-lg transition-all duration-300 ${
+              allRequiredChecked
+                ? 'bg-primary hover:bg-primary/90 text-white shadow-lg'
+                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
+          >
+            <span className="korean-text">다음</span>
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+
+          {/* Divider */}
+          {allRequiredChecked && (
+            <>
+              <div className="flex items-center">
+                <div className="flex-1 border-t border-gray-200"></div>
+                <span className="px-4 text-sm text-gray-500 korean-text">또는</span>
+                <div className="flex-1 border-t border-gray-200"></div>
+              </div>
+
+              {/* Kakao Signup */}
+              <KakaoLoginButton variant="signup" />
+            </>
+          )}
+        </div>
 
         {/* Back to Login */}
         <div className="text-center mt-6">

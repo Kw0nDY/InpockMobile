@@ -7,6 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useLocation } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
+import KakaoLoginButton from "@/components/ui/kakao-login-button";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -112,6 +113,16 @@ export default function LoginPage() {
             {isLoading ? "로그인 중..." : "로그인"}
           </Button>
         </form>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center">
+          <div className="flex-1 border-t border-gray-200"></div>
+          <span className="px-4 text-sm text-gray-500 korean-text">또는</span>
+          <div className="flex-1 border-t border-gray-200"></div>
+        </div>
+
+        {/* Kakao Login */}
+        <KakaoLoginButton variant="login" />
 
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-600 korean-text">계정이 없으신가요?</p>
