@@ -1,0 +1,11 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle for the icon -->
+  <circle cx="20" cy="20" r="18" fill="#4F46E5" stroke="#E5E7EB" stroke-width="1"/>
+  
+  <!-- Stylized "A" in the circle -->
+  <path d="M12 28L20 12L28 28M15 24H25" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Company name -->
+  <text x="45" y="15" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="700" fill="#1F2937">AmuseFit</text>
+  <text x="45" y="28" font-family="system-ui, -apple-system, sans-serif" font-size="9" font-weight="400" fill="#6B7280">Business Platform</text>
+</svg>

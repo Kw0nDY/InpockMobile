@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState("demo@inpock.com");
+  const [email, setEmail] = useState("demo@amusefit.com");
   const [password, setPassword] = useState("password123");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +26,7 @@ export default function LoginPage() {
       await login(email, password);
       toast({
         title: "로그인 성공",
-        description: "INPOCK에 오신 것을 환영합니다!",
+        description: "AmuseFit에 오신 것을 환영합니다!",
       });
       setLocation("/dashboard");
     } catch (error) {
@@ -50,7 +50,7 @@ export default function LoginPage() {
         <button className="p-2" onClick={() => setLocation("/")}>
           <ArrowLeft className="w-6 h-6 text-dark" />
         </button>
-        <h1 className="text-lg font-medium">INPOCK</h1>
+        <h1 className="text-lg font-medium">AmuseFit</h1>
         <div className="w-10"></div>
       </header>
 

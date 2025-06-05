@@ -108,16 +108,16 @@ export default function LandingPage() {
         <button className="p-2">
           <ArrowLeft className="w-6 h-6 text-dark" />
         </button>
-        <h1 className="text-lg font-medium text-dark">INPOCK</h1>
+        <h1 className="text-lg font-medium text-dark">AmuseFit</h1>
         <div className="w-10"></div>
       </header>
 
       {/* Hero Section */}
       <section className="px-6 py-8 text-center">
-        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">내가 진짜 만나는</h2>
-        <h2 className="text-2xl font-bold text-primary mb-4 korean-text">딜러는 퀄리티 기점</h2>
-        <p className="text-gray-600 text-sm mb-2 korean-text">100만원 거래 기준</p>
-        <p className="text-gray-600 text-sm mb-2 korean-text">비즈니스 네트워킹의 새로운 패러다임</p>
+        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">비즈니스를 즐겁게</h2>
+        <h2 className="text-2xl font-bold text-primary mb-4 korean-text">AmuseFit과 함께</h2>
+        <p className="text-gray-600 text-sm mb-2 korean-text">스마트한 비즈니스 관리</p>
+        <p className="text-gray-600 text-sm mb-2 korean-text">네트워킹의 새로운 패러다임</p>
         <p className="text-gray-600 text-sm mb-8 korean-text">전문적이고 신뢰할 수 있는 비즈니스 연결</p>
 
         {/* Feature Card 1 */}

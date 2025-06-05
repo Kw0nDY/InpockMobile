@@ -90,10 +90,10 @@ export class MemStorage implements IStorage {
     const demoUser: User = {
       id: 1,
       username: "demo_user",
-      email: "demo@inpock.com",
+      email: "demo@amusefit.com",
       password: "password123",
       name: "김철수",
-      company: "인포크 코리아",
+      company: "AmuseFit Korea",
       role: "user",
       avatar: null,
       createdAt: new Date(),
