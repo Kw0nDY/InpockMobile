@@ -96,17 +96,17 @@ export function setupKakaoAuth(app: Express) {
     });
     
     // Handle OAuth errors
-    // if (error) {
-    //   console.error('Kakao OAuth error:', { error, error_description });
-    //   const errorMessage = error_description || error;
-    //   return res.redirect(`/?oauth_error=${encodeURIComponent(errorMessage as string)}`);
-    // }
+    if (error) {
+      console.error('Kakao OAuth error:', { error, error_description });
+      const errorMessage = error_description || error;
+      return res.redirect(`/?oauth_error=${encodeURIComponent(errorMessage as string)}`);
+    }
     
     // Handle missing authorization code
-    // if (!code) {
-    //   console.error('Missing authorization code in callback');
-    //   return res.redirect('/?oauth_error=missing_code');
-    // }
+    if (!code) {
+      console.error('Missing authorization code in callback');
+      return res.redirect('/?oauth_error=missing_code');
+    }
 
     // Process token exchange immediately to prevent code expiration
     try {
@@ -138,16 +138,16 @@ export function setupKakaoAuth(app: Express) {
       console.log('Token exchange status:', tokenResponse.status);
       console.log('Token response body:', tokenResponseText);
       
-      // if (!tokenResponse.ok) {
-      //   console.error('Token exchange failed:', tokenResponseText);
-      //   try {
-      //     const errorData = JSON.parse(tokenResponseText);
-      //     const errorMsg = `토큰 교환 실패: ${errorData.error_description || errorData.error}`;
-      //     return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
-      //   } catch (e) {
-      //     return res.redirect(`/?oauth_error=${encodeURIComponent('토큰 교환 중 오류가 발생했습니다')}`);
-      //   }
-      // }
+      if (!tokenResponse.ok) {
+        console.error('Token exchange failed:', tokenResponseText);
+        try {
+          const errorData = JSON.parse(tokenResponseText);
+          const errorMsg = `토큰 교환 실패: ${errorData.error_description || errorData.error}`;
+          return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
+        } catch (e) {
+          return res.redirect(`/?oauth_error=${encodeURIComponent('토큰 교환 중 오류가 발생했습니다')}`);
+        }
+      }
 
       const tokenData: KakaoTokenResponse = JSON.parse(tokenResponseText);
       console.log('Token exchange successful, fetching user data...');
@@ -163,10 +163,10 @@ export function setupKakaoAuth(app: Express) {
       console.log('User info response status:', userResponse.status);
       console.log('User info response body:', userResponseText);
       
-      // if (!userResponse.ok) {
-      //   console.error('User info fetch failed:', userResponseText);
-      //   return res.redirect('/?oauth_error=' + encodeURIComponent('사용자 정보를 가져올 수 없습니다'));
-      // }
+      if (!userResponse.ok) {
+        console.error('User info fetch failed:', userResponseText);
+        return res.redirect('/?oauth_error=' + encodeURIComponent('사용자 정보를 가져올 수 없습니다'));
+      }
 
       const userData: KakaoUserInfo = JSON.parse(userResponseText);
       console.log('User data received for Kakao ID:', userData.id);
@@ -458,5 +458,61 @@ export function setupKakaoAuth(app: Express) {
       }
       res.json({ message: 'Logged out successfully' });
     });
+  });
+
+  // Test endpoint to verify Kakao API connection
+  app.get('/api/test/kakao', async (req: Request, res: Response) => {
+    console.log('=== Kakao API 연결 테스트 시작 ===');
+    
+    try {
+      // Test 1: Check environment variables
+      console.log('1. 환경변수 확인:');
+      console.log('   KAKAO_CLIENT_ID:', KAKAO_CLIENT_ID ? KAKAO_CLIENT_ID.substring(0, 8) + '...' : 'NOT SET');
+      console.log('   KAKAO_CLIENT_SECRET:', KAKAO_CLIENT_SECRET ? '설정됨' : 'NOT SET');
+      console.log('   REDIRECT_URI:', REDIRECT_URI);
+
+      // Test 2: Check Kakao OAuth endpoint accessibility
+      console.log('\n2. Kakao OAuth 엔드포인트 접근성 테스트:');
+      const oauthTestUrl = 'https://kauth.kakao.com/oauth/authorize?' + new URLSearchParams({
+        client_id: KAKAO_CLIENT_ID!,
+        redirect_uri: REDIRECT_URI,
+        response_type: 'code',
+        state: 'test_state'
+      }).toString();
+      
+      console.log('   OAuth URL 생성 성공:', oauthTestUrl.substring(0, 100) + '...');
+
+      // Test 3: Check if we can reach Kakao token endpoint (without making actual request)
+      console.log('\n3. Kakao API 서버 접근성:');
+      const testResponse = await fetch('https://kapi.kakao.com/v1/api/talk/profile', {
+        method: 'GET',
+        headers: {
+          'Authorization': 'Bearer invalid_token_for_test'
+        }
+      });
+      
+      console.log('   Kakao API 서버 응답 상태:', testResponse.status);
+      console.log('   (401 Unauthorized는 정상 - 서버 접근 가능함을 의미)');
+
+      res.json({
+        success: true,
+        message: '카카오 API 연결 테스트 완료',
+        results: {
+          clientId: KAKAO_CLIENT_ID ? '설정됨' : '미설정',
+          clientSecret: KAKAO_CLIENT_SECRET ? '설정됨' : '미설정',
+          redirectUri: REDIRECT_URI,
+          kakaoServerAccessible: testResponse.status === 401 ? '접근 가능' : '확인 필요',
+          oauthUrlGenerated: '성공'
+        }
+      });
+
+    } catch (error) {
+      console.error('카카오 API 테스트 중 오류:', error);
+      res.status(500).json({
+        success: false,
+        message: '카카오 API 테스트 실패',
+        error: error instanceof Error ? error.message : String(error)
+      });
+    }
   });
 }
