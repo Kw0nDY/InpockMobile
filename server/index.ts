@@ -66,7 +66,7 @@ app.use((req, res, next) => {
     reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
-    log(`OAuth callback accessible at: http://127.0.0.1:${port}/oauth/kakao/callback`);
+    log(`OAuth callback accessible at: http://localhost:${port}/oauth/kakao/callback`);
     log(`Local development URL: http://localhost:${port}`);
   });
 })();
