@@ -50,17 +50,16 @@ export function setupKakaoAuth(app: Express) {
       return res.status(500).json({ error: 'Kakao OAuth not configured' });
     }
     
-    // Build authorization URL with state parameter
+    // Generate random state for security
+    const randomState = Math.random().toString(36).substring(2, 15);
+    
+    // Build authorization URL with required parameters
     const params = new URLSearchParams({
       client_id: KAKAO_CLIENT_ID,
       redirect_uri: REDIRECT_URI,
-      response_type: 'code'
-      // Note: Remove scope parameter - Kakao uses consent items configured in console
+      response_type: 'code',
+      state: state as string || randomState
     });
-    
-    if (state) {
-      params.append('state', state as string);
-    }
     
     const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?${params.toString()}`;
     console.log('Redirecting to Kakao OAuth URL:', kakaoAuthURL);
@@ -84,6 +83,8 @@ export function setupKakaoAuth(app: Express) {
       error, 
       errorDescription: error_description,
       state,
+      fullQuery: req.query,
+      url: req.url,
       timestamp: new Date().toISOString()
     });
     
@@ -104,14 +105,18 @@ export function setupKakaoAuth(app: Express) {
     try {
       console.log('Processing OAuth callback immediately to prevent code expiration...');
       
-      // Exchange code for access token immediately
+      // Exchange code for access token immediately - MUST use same redirect_uri as authorization
       const tokenParams = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: KAKAO_CLIENT_ID!,
-        client_secret: KAKAO_CLIENT_SECRET!,
-        redirect_uri: REDIRECT_URI,
+        redirect_uri: REDIRECT_URI, // Must match authorization request exactly
         code: code as string,
       });
+      
+      // Only include client_secret if it's configured (카카오는 선택사항)
+      if (KAKAO_CLIENT_SECRET) {
+        tokenParams.append('client_secret', KAKAO_CLIENT_SECRET);
+      }
 
       const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
         method: 'POST',
@@ -123,13 +128,18 @@ export function setupKakaoAuth(app: Express) {
       });
 
       const tokenResponseText = await tokenResponse.text();
-      console.log('Immediate token exchange status:', tokenResponse.status);
+      console.log('Token exchange status:', tokenResponse.status);
+      console.log('Token response body:', tokenResponseText);
       
       if (!tokenResponse.ok) {
-        console.error('Immediate token exchange failed:', tokenResponseText);
-        const errorData = JSON.parse(tokenResponseText);
-        const errorMsg = `${errorData.error_code}: ${errorData.error_description || errorData.error}`;
-        return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
+        console.error('Token exchange failed:', tokenResponseText);
+        try {
+          const errorData = JSON.parse(tokenResponseText);
+          const errorMsg = `토큰 교환 실패: ${errorData.error_description || errorData.error}`;
+          return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
+        } catch (e) {
+          return res.redirect(`/?oauth_error=${encodeURIComponent('토큰 교환 중 오류가 발생했습니다')}`);
+        }
       }
 
       const tokenData: KakaoTokenResponse = JSON.parse(tokenResponseText);
@@ -143,9 +153,12 @@ export function setupKakaoAuth(app: Express) {
       });
 
       const userResponseText = await userResponse.text();
+      console.log('User info response status:', userResponse.status);
+      console.log('User info response body:', userResponseText);
+      
       if (!userResponse.ok) {
         console.error('User info fetch failed:', userResponseText);
-        return res.redirect('/?oauth_error=user_fetch_failed');
+        return res.redirect('/?oauth_error=' + encodeURIComponent('사용자 정보를 가져올 수 없습니다'));
       }
 
       const userData: KakaoUserInfo = JSON.parse(userResponseText);
@@ -409,8 +422,9 @@ export function setupKakaoAuth(app: Express) {
         });
       }
 
-      // Set user session
-      (req.session as any).user = {
+      // Set user session with proper typing
+      const session = req.session as any;
+      session.user = {
         id: user!.id,
         username: user!.username,
         email: user!.email,
@@ -419,8 +433,10 @@ export function setupKakaoAuth(app: Express) {
         profileImageUrl: user!.profileImageUrl,
       };
 
-      // Redirect to dashboard
-      res.redirect('/dashboard');
+      console.log('카카오 로그인 성공:', { userId: user!.id, email: user!.email });
+      
+      // Redirect to home page after successful login
+      res.redirect('/?login_success=true');
 
     } catch (error) {
       console.error('Kakao auth error:', error);
@@ -430,7 +446,8 @@ export function setupKakaoAuth(app: Express) {
 
   // Kakao logout
   app.post('/api/auth/kakao/logout', async (req: Request, res: Response) => {
-    req.session.destroy((err) => {
+    const session = req.session as any;
+    session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ message: 'Logout failed' });
       }

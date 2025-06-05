@@ -2,8 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
-import { setupOAuthTest } from "./test-oauth";
-import { insertUserSchema, insertLinkSchema, insertDealSchema, insertUserSettingsSchema, insertSubscriptionSchema } from "@shared/schema";
+import {
+  insertUserSchema,
+  insertLinkSchema,
+  insertDealSchema,
+  insertUserSettingsSchema,
+  insertSubscriptionSchema,
+} from "@shared/schema";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -14,47 +19,47 @@ const loginSchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Kakao OAuth authentication
   setupKakaoAuth(app);
-  
+
   // OAuth test endpoint for debugging
-  app.get('/test/oauth/config', (req, res) => {
+  app.get("/test/oauth/config", (req, res) => {
     const config = {
       hasClientId: !!process.env.KAKAO_CLIENT_ID,
       hasClientSecret: !!process.env.KAKAO_CLIENT_SECRET,
       clientIdLength: process.env.KAKAO_CLIENT_ID?.length || 0,
       secretLength: process.env.KAKAO_CLIENT_SECRET?.length || 0,
     };
-    
-    console.log('OAuth Configuration Check:', config);
+
+    console.log("OAuth Configuration Check:", config);
     res.json(config);
   });
 
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     try {
-      console.log('Login attempt:', { 
-        body: req.body, 
-        hasEmail: !!req.body?.email, 
-        hasPassword: !!req.body?.password 
+      console.log("Login attempt:", {
+        body: req.body,
+        hasEmail: !!req.body?.email,
+        hasPassword: !!req.body?.password,
       });
-      
+
       const { email, password } = loginSchema.parse(req.body);
-      console.log('Schema validation passed for email:', email);
-      
+      console.log("Schema validation passed for email:", email);
+
       const user = await storage.getUserByEmail(email);
-      console.log('User lookup result:', { found: !!user, email });
-      
+      console.log("User lookup result:", { found: !!user, email });
+
       if (!user) {
-        console.log('User not found for email:', email);
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-      
-      if (user.password !== password) {
-        console.log('Password mismatch for user:', email);
+        console.log("User not found for email:", email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      console.log('Login successful for user:', email);
-      
+      if (user.password !== password) {
+        console.log("Password mismatch for user:", email);
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+
+      console.log("Login successful for user:", email);
+
       // Create session (simplified)
       res.json({
         user: {
@@ -64,20 +69,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: user.name,
           company: user.company,
           role: user.role,
-        }
+        },
       });
     } catch (error: any) {
-      console.error('Login error:', error);
-      console.error('Request body:', req.body);
-      
-      if (error.name === 'ZodError') {
-        console.error('Validation errors:', error.errors);
-        return res.status(400).json({ 
-          message: "Invalid request format", 
-          details: error.errors 
+      console.error("Login error:", error);
+      console.error("Request body:", req.body);
+
+      if (error.name === "ZodError") {
+        console.error("Validation errors:", error.errors);
+        return res.status(400).json({
+          message: "Invalid request format",
+          details: error.errors,
         });
       }
-      
+
       res.status(400).json({ message: "Invalid request data" });
     }
   });
@@ -85,7 +90,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/register", async (req, res) => {
     try {
       const userData = insertUserSchema.parse(req.body);
-      
+
       // Check if user exists
       const existingUser = await storage.getUserByEmail(userData.email);
       if (existingUser) {
@@ -93,7 +98,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.createUser(userData);
-      
+
       res.status(201).json({
         user: {
           id: user.id,
@@ -102,7 +107,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           name: user.name,
           company: user.company,
           role: user.role,
-        }
+        },
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
@@ -112,11 +117,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/auth/signup", async (req, res) => {
     try {
       const { username, email, password, name, company, role } = req.body;
-      
+
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
       if (existingUser) {
-        return res.status(400).json({ error: "User already exists with this email" });
+        return res
+          .status(400)
+          .json({ error: "User already exists with this email" });
       }
 
       const existingUsername = await storage.getUserByUsername(username);
@@ -157,16 +164,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         cancelAtPeriodEnd: false,
       });
 
-      res.status(201).json({ 
+      res.status(201).json({
         message: "User created successfully",
-        user: { 
-          id: newUser.id, 
-          username: newUser.username, 
-          email: newUser.email, 
-          name: newUser.name, 
-          company: newUser.company, 
-          role: newUser.role 
-        } 
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          name: newUser.name,
+          company: newUser.company,
+          role: newUser.role,
+        },
       });
     } catch (error) {
       console.error("Signup error:", error);
@@ -179,7 +186,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -215,15 +222,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/links", async (req, res) => {
     try {
       const linkData = insertLinkSchema.parse(req.body);
-      
+
       // Generate short code
       const shortCode = Math.random().toString(36).substring(2, 8);
-      
+
       const link = await storage.createLink({
         ...linkData,
         shortCode,
       });
-      
+
       res.status(201).json(link);
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
@@ -234,12 +241,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const updates = req.body;
-      
+
       const link = await storage.updateLink(id, updates);
       if (!link) {
         return res.status(404).json({ message: "Link not found" });
       }
-      
+
       res.json(link);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -250,11 +257,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const deleted = await storage.deleteLink(id);
-      
+
       if (!deleted) {
         return res.status(404).json({ message: "Link not found" });
       }
-      
+
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -275,14 +282,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/deals", async (req, res) => {
     try {
       const category = req.query.category as string;
-      
+
       let deals;
       if (category && category !== "전체") {
         deals = await storage.getDealsByCategory(category);
       } else {
         deals = await storage.getDeals();
       }
-      
+
       res.json(deals);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -303,11 +310,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const id = parseInt(req.params.id);
       const deal = await storage.getDeal(id);
-      
+
       if (!deal) {
         return res.status(404).json({ message: "Deal not found" });
       }
-      
+
       res.json(deal);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -318,7 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/chats/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      
+
       // Return mock chat data for now
       const mockChats = [
         {
@@ -346,7 +353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           unread: false,
         },
       ];
-      
+
       res.json(mockChats);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -358,11 +365,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const settings = await storage.getUserSettings(userId);
-      
+
       if (!settings) {
         return res.status(404).json({ message: "Settings not found" });
       }
-      
+
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -373,12 +380,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const updates = req.body;
-      
+
       const settings = await storage.updateUserSettings(userId, updates);
       if (!settings) {
         return res.status(404).json({ message: "Settings not found" });
       }
-      
+
       res.json(settings);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -400,11 +407,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const subscription = await storage.getUserSubscription(userId);
-      
+
       if (!subscription) {
         return res.status(404).json({ message: "Subscription not found" });
       }
-      
+
       res.json(subscription);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
@@ -415,12 +422,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const updates = req.body;
-      
+
       const subscription = await storage.updateSubscription(userId, updates);
       if (!subscription) {
         return res.status(404).json({ message: "Subscription not found" });
       }
-      
+
       res.json(subscription);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
