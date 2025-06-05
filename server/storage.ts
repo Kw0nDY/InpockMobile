@@ -96,6 +96,9 @@ export class MemStorage implements IStorage {
       company: "AmuseFit Korea",
       role: "user",
       avatar: null,
+      profileImageUrl: null,
+      provider: null,
+      providerId: null,
       createdAt: new Date(),
     };
     this.users.set(1, demoUser);
@@ -229,11 +232,17 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.currentUserId++;
     const user: User = {
-      ...insertUser,
       id,
+      username: insertUser.username,
+      email: insertUser.email,
+      password: insertUser.password || null,
+      name: insertUser.name,
       company: insertUser.company || null,
       role: insertUser.role || null,
       avatar: insertUser.avatar || null,
+      profileImageUrl: insertUser.profileImageUrl || null,
+      provider: insertUser.provider || null,
+      providerId: insertUser.providerId || null,
       createdAt: new Date(),
     };
     this.users.set(id, user);
