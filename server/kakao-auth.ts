@@ -66,7 +66,32 @@ export function setupKakaoAuth(app: Express) {
     console.log('Using CLIENT_ID:', KAKAO_CLIENT_ID?.substring(0, 8) + '...');
     console.log('Using REDIRECT_URI:', REDIRECT_URI);
     
+    // Add CORS headers to handle OAuth redirects
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
     res.redirect(kakaoAuthURL);
+  });
+
+  // Alternative callback route for direct OAuth handling
+  app.get('/oauth/kakao/callback', async (req: Request, res: Response) => {
+    const { code, error, error_description, state } = req.query;
+    
+    console.log('Direct OAuth callback received:', { code: !!code, error, state });
+    
+    if (error) {
+      console.error('OAuth error:', error, error_description);
+      return res.redirect(`/login?error=${encodeURIComponent(error as string)}`);
+    }
+    
+    if (!code) {
+      console.error('No authorization code received');
+      return res.redirect('/login?error=no_code');
+    }
+    
+    // Redirect to frontend with code for processing
+    res.redirect(`/?oauth_code=${encodeURIComponent(code as string)}&state=${encodeURIComponent(state as string || '')}`);
   });
 
   // Frontend token exchange endpoint
