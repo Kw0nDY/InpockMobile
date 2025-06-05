@@ -31,13 +31,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     try {
+      console.log('Login attempt:', { 
+        body: req.body, 
+        hasEmail: !!req.body?.email, 
+        hasPassword: !!req.body?.password 
+      });
+      
       const { email, password } = loginSchema.parse(req.body);
+      console.log('Schema validation passed for email:', email);
       
       const user = await storage.getUserByEmail(email);
-      if (!user || user.password !== password) {
+      console.log('User lookup result:', { found: !!user, email });
+      
+      if (!user) {
+        console.log('User not found for email:', email);
+        return res.status(401).json({ message: "Invalid credentials" });
+      }
+      
+      if (user.password !== password) {
+        console.log('Password mismatch for user:', email);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
+      console.log('Login successful for user:', email);
+      
       // Create session (simplified)
       res.json({
         user: {
@@ -49,7 +66,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: user.role,
         }
       });
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Login error:', error);
+      console.error('Request body:', req.body);
+      
+      if (error.name === 'ZodError') {
+        console.error('Validation errors:', error.errors);
+        return res.status(400).json({ 
+          message: "Invalid request format", 
+          details: error.errors 
+        });
+      }
+      
       res.status(400).json({ message: "Invalid request data" });
     }
   });
