@@ -12,71 +12,89 @@ export default function LandingPage() {
   useEffect(() => {
     const handleOAuthCallback = async () => {
       const urlParams = new URLSearchParams(window.location.search);
-      const code = urlParams.get('oauth_code');
-      const state = urlParams.get('state');
+      const oauthSuccess = urlParams.get('oauth_success');
+      const isNewUser = urlParams.get('is_new_user') === 'true';
       const oauthError = urlParams.get('oauth_error');
+      
+      // Handle OAuth success from immediate backend processing
+      if (oauthSuccess === 'true') {
+        console.log("OAuth authentication successful:", { isNewUser });
+        window.history.replaceState({}, document.title, "/");
+        
+        toast({
+          title: "로그인 성공",
+          description: isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
+        });
+        
+        // Navigate to dashboard after showing success message
+        setTimeout(() => setLocation("/dashboard"), 1000);
+        return;
+      }
       
       // Handle OAuth errors from backend
       if (oauthError) {
         console.error("OAuth error from backend:", oauthError);
         window.history.replaceState({}, document.title, "/");
         
+        let errorMessage = "카카오 로그인 중 오류가 발생했습니다.";
+        
+        // Provide user-friendly error messages
+        if (oauthError.includes('KOE320')) {
+          errorMessage = "인증 코드가 만료되었습니다. 다시 시도해주세요.";
+        } else if (oauthError.includes('invalid_grant')) {
+          errorMessage = "인증 정보가 유효하지 않습니다. 다시 시도해주세요.";
+        } else if (oauthError.includes('user_fetch_failed')) {
+          errorMessage = "사용자 정보를 가져오는데 실패했습니다.";
+        }
+        
         toast({
           title: "로그인 실패",
-          description: `카카오 인증 오류: ${decodeURIComponent(oauthError)}`,
+          description: errorMessage,
           variant: "destructive",
         });
         return;
       }
       
-      // No OAuth code, continue to normal landing page
-      if (!code) return;
-
-      console.log("Processing OAuth callback:", { hasCode: !!code, state });
-
-      try {
-        // Validate state parameter for CSRF protection
-        const expectedState = sessionStorage.getItem('kakao_oauth_state');
-        if (state && expectedState && state !== expectedState) {
-          throw new Error('CSRF 보안 검증 실패');
-        }
-
-        console.log("Exchanging authorization code for token...");
+      // Check for legacy oauth_code parameter (fallback)
+      const code = urlParams.get('oauth_code');
+      const state = urlParams.get('state');
+      
+      if (code) {
+        console.log("Processing legacy OAuth callback:", { hasCode: !!code, state });
         
-        const response = await apiRequest("POST", "/api/auth/kakao/token", { code });
-        
-        if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`인증 서버 오류: ${response.status} - ${errorText}`);
-        }
-        
-        const result = await response.json();
-        console.log("Token exchange result:", { success: result.success, isNewUser: result.isNewUser });
+        try {
+          // Validate state parameter for CSRF protection
+          const expectedState = sessionStorage.getItem('kakao_oauth_state');
+          if (state && expectedState && state !== expectedState) {
+            throw new Error('CSRF 보안 검증 실패');
+          }
 
-        if (result.success) {
-          // Clean up
-          sessionStorage.removeItem('kakao_oauth_state');
+          const response = await apiRequest("POST", "/api/auth/kakao/token", { code });
+          const result = await response.json();
+
+          if (result.success) {
+            sessionStorage.removeItem('kakao_oauth_state');
+            window.history.replaceState({}, document.title, "/");
+            
+            toast({
+              title: "로그인 성공",
+              description: result.isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
+            });
+            
+            setTimeout(() => setLocation("/dashboard"), 500);
+          } else {
+            throw new Error(result.message || "인증 처리 실패");
+          }
+        } catch (error: any) {
+          console.error("Legacy OAuth callback error:", error);
           window.history.replaceState({}, document.title, "/");
           
           toast({
-            title: "로그인 성공",
-            description: result.isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
+            title: "로그인 실패",
+            description: "카카오 로그인 처리 중 오류가 발생했습니다.",
+            variant: "destructive",
           });
-          
-          // Small delay to show toast before navigation
-          setTimeout(() => setLocation("/dashboard"), 500);
-        } else {
-          throw new Error(result.message || "인증 처리 실패");
         }
-      } catch (error: any) {
-        console.error("OAuth callback processing error:", error);
-        window.history.replaceState({}, document.title, "/");
-        
-        toast({
-          title: "로그인 실패",
-          description: error.message || "카카오 로그인 중 예상치 못한 오류가 발생했습니다.",
-          variant: "destructive",
-        });
       }
     };
 

@@ -74,7 +74,7 @@ export function setupKakaoAuth(app: Express) {
     res.redirect(kakaoAuthURL);
   });
 
-  // Primary OAuth callback handler
+  // Primary OAuth callback handler - Process token exchange immediately
   app.get('/oauth/kakao/callback', async (req: Request, res: Response) => {
     const { code, error, error_description, state } = req.query;
     
@@ -83,7 +83,7 @@ export function setupKakaoAuth(app: Express) {
       error, 
       errorDescription: error_description,
       state,
-      fullQuery: req.query 
+      timestamp: new Date().toISOString()
     });
     
     // Handle OAuth errors
@@ -98,17 +98,102 @@ export function setupKakaoAuth(app: Express) {
       console.error('Missing authorization code in callback');
       return res.redirect('/?oauth_error=missing_code');
     }
-    
-    // Validate state parameter if present
-    if (state) {
-      console.log('State parameter received:', state);
+
+    // Process token exchange immediately to prevent code expiration
+    try {
+      console.log('Processing OAuth callback immediately to prevent code expiration...');
+      
+      // Exchange code for access token immediately
+      const tokenParams = new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: KAKAO_CLIENT_ID!,
+        client_secret: KAKAO_CLIENT_SECRET!,
+        redirect_uri: REDIRECT_URI,
+        code: code as string,
+      });
+
+      const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+        body: tokenParams,
+      });
+
+      const tokenResponseText = await tokenResponse.text();
+      console.log('Immediate token exchange status:', tokenResponse.status);
+      
+      if (!tokenResponse.ok) {
+        console.error('Immediate token exchange failed:', tokenResponseText);
+        const errorData = JSON.parse(tokenResponseText);
+        const errorMsg = `${errorData.error_code}: ${errorData.error_description || errorData.error}`;
+        return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
+      }
+
+      const tokenData: KakaoTokenResponse = JSON.parse(tokenResponseText);
+      console.log('Token exchange successful, fetching user data...');
+
+      // Get user info from Kakao
+      const userResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
+        headers: {
+          Authorization: `Bearer ${tokenData.access_token}`,
+        },
+      });
+
+      const userResponseText = await userResponse.text();
+      if (!userResponse.ok) {
+        console.error('User info fetch failed:', userResponseText);
+        return res.redirect('/?oauth_error=user_fetch_failed');
+      }
+
+      const userData: KakaoUserInfo = JSON.parse(userResponseText);
+      console.log('User data received for Kakao ID:', userData.id);
+
+      // Create or update user in database
+      const email = userData.kakao_account?.email || `kakao_${userData.id}@kakao.user`;
+      const nickname = userData.properties?.nickname || userData.kakao_account?.profile?.nickname || 'Kakao User';
+      const profileImage = userData.kakao_account?.profile?.profile_image_url || userData.properties?.profile_image;
+
+      const existingUser = await storage.getUserByEmail(email);
+      let user;
+      let isNewUser = false;
+
+      if (existingUser) {
+        user = await storage.updateUser(existingUser.id, {
+          profileImageUrl: profileImage,
+          providerId: userData.id.toString(),
+          provider: 'kakao',
+        });
+      } else {
+        isNewUser = true;
+        user = await storage.createUser({
+          username: `kakao_${userData.id}`,
+          email: email,
+          name: nickname,
+          password: '',
+          role: 'user',
+          provider: 'kakao',
+          providerId: userData.id.toString(),
+          profileImageUrl: profileImage,
+        });
+      }
+
+      console.log(`OAuth success: ${isNewUser ? 'Created new user' : 'Updated existing user'} for Kakao ID ${userData.id}`);
+      
+      // Redirect to dashboard with success indication
+      const successParams = new URLSearchParams({
+        oauth_success: 'true',
+        is_new_user: isNewUser.toString(),
+        user_id: user!.id.toString()
+      });
+      
+      res.redirect(`/?${successParams.toString()}`);
+
+    } catch (error: any) {
+      console.error('OAuth callback processing error:', error);
+      return res.redirect(`/?oauth_error=${encodeURIComponent('authentication_failed')}`);
     }
-    
-    // Redirect to frontend with authorization code
-    const redirectUrl = `/?oauth_code=${encodeURIComponent(code as string)}${state ? `&state=${encodeURIComponent(state as string)}` : ''}`;
-    console.log('Redirecting to frontend:', redirectUrl);
-    
-    res.redirect(redirectUrl);
   });
 
   // Frontend token exchange endpoint
@@ -134,8 +219,10 @@ export function setupKakaoAuth(app: Express) {
       }
 
       console.log('Exchanging authorization code for access token...');
+      console.log('Using client ID:', KAKAO_CLIENT_ID?.substring(0, 8) + '...');
+      console.log('Using redirect URI:', REDIRECT_URI);
 
-      // Exchange code for access token
+      // Exchange code for access token with exact Kakao API requirements
       const tokenParams = new URLSearchParams({
         grant_type: 'authorization_code',
         client_id: KAKAO_CLIENT_ID,
@@ -144,20 +231,37 @@ export function setupKakaoAuth(app: Express) {
         code: code,
       });
 
+      console.log('Token request parameters:', {
+        grant_type: 'authorization_code',
+        client_id: KAKAO_CLIENT_ID?.substring(0, 8) + '...',
+        redirect_uri: REDIRECT_URI,
+        code: code?.substring(0, 20) + '...'
+      });
+
       const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
         },
         body: tokenParams,
       });
 
       const tokenResponseText = await tokenResponse.text();
       console.log('Token response status:', tokenResponse.status);
-      console.log('Token response body:', tokenResponseText);
-
+      console.log('Token response headers:', Object.fromEntries(tokenResponse.headers.entries()));
+      
       if (!tokenResponse.ok) {
-        throw new Error(`Token exchange failed: ${tokenResponse.status} - ${tokenResponseText}`);
+        console.error('Token exchange failed - full response:', tokenResponseText);
+        
+        // Parse Kakao error for better debugging
+        try {
+          const errorData = JSON.parse(tokenResponseText);
+          const errorMsg = `Kakao OAuth Error ${errorData.error_code}: ${errorData.error_description || errorData.error}`;
+          throw new Error(errorMsg);
+        } catch (parseError) {
+          throw new Error(`Token exchange failed: ${tokenResponse.status} - ${tokenResponseText}`);
+        }
       }
 
       const tokenData: KakaoTokenResponse = JSON.parse(tokenResponseText);
