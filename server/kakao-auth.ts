@@ -1,6 +1,13 @@
 import type { Express, Request, Response } from "express";
 import { storage } from "./storage";
 
+// Extend Request type to include session
+declare module 'express-serve-static-core' {
+  interface Request {
+    session: any;
+  }
+}
+
 interface KakaoTokenResponse {
   access_token: string;
   refresh_token: string;
@@ -423,8 +430,7 @@ export function setupKakaoAuth(app: Express) {
       }
 
       // Set user session with proper typing
-      const session = req.session as any;
-      session.user = {
+      req.session.user = {
         id: user!.id,
         username: user!.username,
         email: user!.email,
@@ -446,8 +452,7 @@ export function setupKakaoAuth(app: Express) {
 
   // Kakao logout
   app.post('/api/auth/kakao/logout', async (req: Request, res: Response) => {
-    const session = req.session as any;
-    session.destroy((err: any) => {
+    req.session.destroy((err: any) => {
       if (err) {
         return res.status(500).json({ message: 'Logout failed' });
       }
