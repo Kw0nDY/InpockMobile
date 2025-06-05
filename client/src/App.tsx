@@ -8,7 +8,6 @@ import { AuthProvider } from "./hooks/use-auth";
 // Pages
 import LandingPage from "./pages/landing";
 import LoginPage from "./pages/login";
-import OAuthHandler from "./pages/oauth-handler";
 import SignupPage from "./pages/signup";
 import SignupStep1 from "./pages/signup-step1";
 import SignupStep2 from "./pages/signup-step2";

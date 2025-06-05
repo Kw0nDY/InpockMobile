@@ -1,9 +1,58 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function LandingPage() {
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    const handleOAuthCallback = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('oauth_code');
+      const state = urlParams.get('state');
+      
+      if (!code) return;
+
+      try {
+        const expectedState = sessionStorage.getItem('kakao_oauth_state');
+        if (state && expectedState && state !== expectedState) {
+          throw new Error('Invalid state parameter');
+        }
+
+        const response = await apiRequest("POST", "/api/auth/kakao/token", { code });
+        const result = await response.json();
+
+        if (result.success) {
+          sessionStorage.removeItem('kakao_oauth_state');
+          window.history.replaceState({}, document.title, "/");
+          
+          toast({
+            title: "로그인 성공",
+            description: result.isNewUser ? "새 계정이 생성되었습니다." : "카카오 로그인이 완료되었습니다.",
+          });
+          
+          setLocation("/dashboard");
+        } else {
+          throw new Error(result.message || "Authentication failed");
+        }
+      } catch (error: any) {
+        console.error("OAuth callback error:", error);
+        window.history.replaceState({}, document.title, "/");
+        
+        toast({
+          title: "로그인 실패",
+          description: error.message || "카카오 로그인 중 오류가 발생했습니다.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    handleOAuthCallback();
+  }, [setLocation, toast]);
 
   return (
     <div className="min-h-screen bg-gray-50">
