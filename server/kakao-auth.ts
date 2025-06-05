@@ -96,17 +96,17 @@ export function setupKakaoAuth(app: Express) {
     });
     
     // Handle OAuth errors
-    if (error) {
-      console.error('Kakao OAuth error:', { error, error_description });
-      const errorMessage = error_description || error;
-      return res.redirect(`/?oauth_error=${encodeURIComponent(errorMessage as string)}`);
-    }
+    // if (error) {
+    //   console.error('Kakao OAuth error:', { error, error_description });
+    //   const errorMessage = error_description || error;
+    //   return res.redirect(`/?oauth_error=${encodeURIComponent(errorMessage as string)}`);
+    // }
     
     // Handle missing authorization code
-    if (!code) {
-      console.error('Missing authorization code in callback');
-      return res.redirect('/?oauth_error=missing_code');
-    }
+    // if (!code) {
+    //   console.error('Missing authorization code in callback');
+    //   return res.redirect('/?oauth_error=missing_code');
+    // }
 
     // Process token exchange immediately to prevent code expiration
     try {
@@ -138,16 +138,16 @@ export function setupKakaoAuth(app: Express) {
       console.log('Token exchange status:', tokenResponse.status);
       console.log('Token response body:', tokenResponseText);
       
-      if (!tokenResponse.ok) {
-        console.error('Token exchange failed:', tokenResponseText);
-        try {
-          const errorData = JSON.parse(tokenResponseText);
-          const errorMsg = `토큰 교환 실패: ${errorData.error_description || errorData.error}`;
-          return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
-        } catch (e) {
-          return res.redirect(`/?oauth_error=${encodeURIComponent('토큰 교환 중 오류가 발생했습니다')}`);
-        }
-      }
+      // if (!tokenResponse.ok) {
+      //   console.error('Token exchange failed:', tokenResponseText);
+      //   try {
+      //     const errorData = JSON.parse(tokenResponseText);
+      //     const errorMsg = `토큰 교환 실패: ${errorData.error_description || errorData.error}`;
+      //     return res.redirect(`/?oauth_error=${encodeURIComponent(errorMsg)}`);
+      //   } catch (e) {
+      //     return res.redirect(`/?oauth_error=${encodeURIComponent('토큰 교환 중 오류가 발생했습니다')}`);
+      //   }
+      // }
 
       const tokenData: KakaoTokenResponse = JSON.parse(tokenResponseText);
       console.log('Token exchange successful, fetching user data...');
@@ -163,10 +163,10 @@ export function setupKakaoAuth(app: Express) {
       console.log('User info response status:', userResponse.status);
       console.log('User info response body:', userResponseText);
       
-      if (!userResponse.ok) {
-        console.error('User info fetch failed:', userResponseText);
-        return res.redirect('/?oauth_error=' + encodeURIComponent('사용자 정보를 가져올 수 없습니다'));
-      }
+      // if (!userResponse.ok) {
+      //   console.error('User info fetch failed:', userResponseText);
+      //   return res.redirect('/?oauth_error=' + encodeURIComponent('사용자 정보를 가져올 수 없습니다'));
+      // }
 
       const userData: KakaoUserInfo = JSON.parse(userResponseText);
       console.log('User data received for Kakao ID:', userData.id);
