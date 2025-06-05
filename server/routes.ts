@@ -33,6 +33,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(config);
   });
 
+  // Debug endpoint to check and recreate demo user if needed
+  app.get("/api/debug/users", async (req, res) => {
+    try {
+      let demoUser = await storage.getUserByEmail("demo@amusefit.com");
+      
+      if (!demoUser) {
+        // Recreate demo user if it doesn't exist
+        console.log("Recreating demo user...");
+        demoUser = await storage.createUser({
+          username: "demo_user",
+          email: "demo@amusefit.com",
+          password: "password123",
+          name: "김철수",
+          company: "AmuseFit Korea",
+          role: "user",
+        });
+        console.log("Demo user created:", demoUser.email);
+      }
+      
+      res.json({
+        userCount: 1,
+        demoUser: {
+          id: demoUser.id,
+          email: demoUser.email,
+          username: demoUser.username,
+          name: demoUser.name,
+          company: demoUser.company
+        }
+      });
+    } catch (error) {
+      console.error("Debug users error:", error);
+      res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
     try {
@@ -45,8 +80,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { email, password } = loginSchema.parse(req.body);
       console.log("Schema validation passed for email:", email);
 
-      const user = await storage.getUserByEmail(email);
+      let user = await storage.getUserByEmail(email);
       console.log("User lookup result:", { found: !!user, email });
+
+      // Create demo user if it doesn't exist
+      if (!user && email === "demo@amusefit.com") {
+        console.log("Creating demo user for AmuseFit...");
+        user = await storage.createUser({
+          username: "demo_user",
+          email: "demo@amusefit.com",
+          password: "password123",
+          name: "김철수",
+          company: "AmuseFit Korea",
+          role: "user",
+        });
+        console.log("Demo user created successfully");
+      }
 
       if (!user) {
         console.log("User not found for email:", email);

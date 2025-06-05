@@ -57,7 +57,9 @@ export default function LoginPage() {
       <div className="px-6 py-8">
         <div className="mb-8">
           <h2 className="text-xl font-bold mb-2 korean-text">로그인</h2>
-          <p className="text-gray-600 text-sm korean-text">비즈니스 계정으로 로그인하세요</p>
+          <p className="text-gray-600 text-sm korean-text">
+            비즈니스 계정으로 로그인하세요
+          </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
@@ -75,9 +77,12 @@ export default function LoginPage() {
               required
             />
           </div>
-          
+
           <div>
-            <Label htmlFor="password" className="block text-sm font-medium mb-2">
+            <Label
+              htmlFor="password"
+              className="block text-sm font-medium mb-2"
+            >
               비밀번호
             </Label>
             <Input
@@ -90,7 +95,7 @@ export default function LoginPage() {
               required
             />
           </div>
-          
+
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center">
               <Checkbox
@@ -104,7 +109,7 @@ export default function LoginPage() {
               비밀번호 찾기
             </button>
           </div>
-          
+
           <Button
             type="submit"
             disabled={isLoading}
@@ -125,8 +130,10 @@ export default function LoginPage() {
         <KakaoLoginButton variant="login" />
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600 korean-text">계정이 없으신가요?</p>
-          <button 
+          <p className="text-sm text-gray-600 korean-text">
+            계정이 없으신가요?
+          </p>
+          <button
             type="button"
             onClick={() => setLocation("/signup-step1")}
             className="text-primary font-medium korean-text hover:underline"
