@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
+import { setupOAuthTest } from "./test-oauth";
 import { insertUserSchema, insertLinkSchema, insertDealSchema, insertUserSettingsSchema, insertSubscriptionSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -13,6 +14,19 @@ const loginSchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup Kakao OAuth authentication
   setupKakaoAuth(app);
+  
+  // OAuth test endpoint for debugging
+  app.get('/test/oauth/config', (req, res) => {
+    const config = {
+      hasClientId: !!process.env.KAKAO_CLIENT_ID,
+      hasClientSecret: !!process.env.KAKAO_CLIENT_SECRET,
+      clientIdLength: process.env.KAKAO_CLIENT_ID?.length || 0,
+      secretLength: process.env.KAKAO_CLIENT_SECRET?.length || 0,
+    };
+    
+    console.log('OAuth Configuration Check:', config);
+    res.json(config);
+  });
 
   // Auth routes
   app.post("/api/auth/login", async (req, res) => {
