@@ -183,6 +183,10 @@ export function setupKakaoAuth(app: Express) {
       const email = userData.kakao_account?.email || `kakao_${userData.id}@kakao.user`;
       const nickname = userData.properties?.nickname || userData.kakao_account?.profile?.nickname || 'Kakao User';
       const profileImage = userData.kakao_account?.profile?.profile_image_url || userData.properties?.profile_image;
+      
+      // Create username from nickname (sanitized for database)
+      const sanitizedUsername = nickname.replace(/[^a-zA-Z0-9가-힣]/g, '').toLowerCase() || `kakao_${userData.id}`;
+      const uniqueUsername = `${sanitizedUsername}_${userData.id}`;
 
       const existingUser = await storage.getUserByEmail(email);
       let user;
@@ -190,6 +194,8 @@ export function setupKakaoAuth(app: Express) {
 
       if (existingUser) {
         user = await storage.updateUser(existingUser.id, {
+          username: uniqueUsername, // Update username with nickname
+          name: nickname,
           profileImageUrl: profileImage,
           providerId: userData.id.toString(),
           provider: 'kakao',
@@ -197,7 +203,7 @@ export function setupKakaoAuth(app: Express) {
       } else {
         isNewUser = true;
         user = await storage.createUser({
-          username: `kakao_${userData.id}`,
+          username: uniqueUsername, // Use nickname-based username
           email: email,
           name: nickname,
           password: '',
