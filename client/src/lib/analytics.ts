@@ -186,7 +186,7 @@ export const recordVisit = (url: string, userId?: string, parameters?: Record<st
   // Record visit count
   analytics.visits[url] = (analytics.visits[url] || 0) + 1;
   
-  // Record unique user
+  // Record unique user ONLY if this is an actual visit, not just URL addition
   if (userId && !analytics.users.includes(userId)) {
     analytics.users.push(userId);
   }
@@ -200,6 +200,12 @@ export const recordVisit = (url: string, userId?: string, parameters?: Record<st
   });
   
   saveLocalAnalytics(analytics);
+};
+
+// Add URL to tracking without recording a visit
+export const addUrlToTracking = (url: string) => {
+  // This function only adds URL to tracking list without incrementing any visit statistics
+  console.log(`URL added to tracking: ${url} (no visit recorded)`);
 };
 
 export const getAnalyticsData = async (userDefinedUrl?: string) => {

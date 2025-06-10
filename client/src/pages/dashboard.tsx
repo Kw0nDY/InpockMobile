@@ -20,8 +20,9 @@ import NotificationDropdown from "@/components/ui/notification-dropdown";
 import VisitCountWidget from "@/components/analytics/visit-count-widget";
 import { ImageModal, VideoModal, LinkPreview } from "@/components/ui/media-modal";
 import { useEffect, useState } from "react";
-import { trackPageView, trackCustomUrlVisit } from "@/lib/analytics";
+import { trackPageView } from "@/lib/analytics";
 import { useAnalyticsData, useUrlVisitCounts, useRealTimeVisits } from "@/hooks/use-analytics-data";
+import { clearAllAnalyticsData, initCleanAnalytics } from "@/lib/clear-analytics";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -114,6 +115,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) {
+      // Clear any existing analytics data that might cause automatic visitor increments
+      clearAllAnalyticsData();
+      initCleanAnalytics();
+      
       // Only track page view for analytics, not URL visits
       trackPageView('/dashboard', `/dashboard?user_id=${user.id}`);
       // Remove automatic URL visit tracking - only track when user explicitly clicks links
