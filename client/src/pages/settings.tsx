@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { MediaUpload } from "@/components/profile/media-upload";
+import { ImageCropModal } from '@/components/ui/image-crop-modal';
 
 export default function SettingsPage() {
   const { user, setUser } = useAuth();
@@ -36,6 +37,8 @@ export default function SettingsPage() {
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
   const [mediaImageUrl, setMediaImageUrl] = useState('');
   const [mediaVideoUrl, setMediaVideoUrl] = useState('');
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [tempImageUrl, setTempImageUrl] = useState('');
 
   // 기존 미디어 업로드 데이터를 불러오기
   const { data: mediaUploads } = useQuery({
@@ -96,7 +99,7 @@ export default function SettingsPage() {
 
   // Profile image upload mutation
   const uploadProfileImageMutation = useMutation({
-    mutationFn: async (file: File) => {
+    mutationFn: async (file: File | Blob) => {
       const formData = new FormData();
       formData.append('file', file);
       
@@ -181,11 +184,33 @@ export default function SettingsPage() {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        setIsUploadingProfile(true);
-        uploadProfileImageMutation.mutate(file);
+        // 임시 이미지 URL 생성하여 자르기 모달에 표시
+        const imageUrl = URL.createObjectURL(file);
+        setTempImageUrl(imageUrl);
+        setCropModalOpen(true);
       }
     };
     input.click();
+  };
+
+  const handleCropComplete = (croppedBlob: Blob) => {
+    setIsUploadingProfile(true);
+    uploadProfileImageMutation.mutate(croppedBlob);
+    
+    // 임시 URL 정리
+    if (tempImageUrl) {
+      URL.revokeObjectURL(tempImageUrl);
+      setTempImageUrl('');
+    }
+  };
+
+  const handleCropCancel = () => {
+    // 임시 URL 정리
+    if (tempImageUrl) {
+      URL.revokeObjectURL(tempImageUrl);
+      setTempImageUrl('');
+    }
+    setCropModalOpen(false);
   };
 
   const handleSaveProfile = async () => {
@@ -587,6 +612,14 @@ export default function SettingsPage() {
           </Card>
         )}
       </div>
+
+      {/* 이미지 자르기 모달 */}
+      <ImageCropModal
+        isOpen={cropModalOpen}
+        onClose={handleCropCancel}
+        imageUrl={tempImageUrl}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 }
