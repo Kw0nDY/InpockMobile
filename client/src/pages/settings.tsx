@@ -26,7 +26,10 @@ export default function SettingsPage() {
     introVideoUrl: (user as any)?.introVideoUrl || '',
     shortUrlType: 'default',
     customUrl: (user as any)?.customUrl || '',
-    contentType: 'links'
+    contentType: 'links',
+    linkTitle: '',
+    linkDescription: '',
+    linkUrl: ''
   });
 
   const [copied, setCopied] = useState(false);
@@ -95,7 +98,10 @@ export default function SettingsPage() {
         bio: (userSettings as any).bio || '',
         customUrl: (userSettings as any).customUrl || '',
         shortUrlType: (userSettings as any).customUrl ? 'custom' : 'default',
-        contentType: (userSettings as any).contentType || 'link'
+        contentType: (userSettings as any).contentType || 'links',
+        linkTitle: (userSettings as any).linkTitle || '',
+        linkDescription: (userSettings as any).linkDescription || '',
+        linkUrl: (userSettings as any).linkUrl || ''
       }));
     }
   }, [userSettings]);
@@ -128,11 +134,14 @@ export default function SettingsPage() {
         console.log('User update result:', userResult);
       }
 
-      // Save settings data (URLs, content type)
+      // Save settings data (URLs, content type, link settings)
       const settingsUpdateData = {
         bio: profileData.bio,
         customUrl: profileData.customUrl,
         contentType: profileData.contentType,
+        linkTitle: profileData.linkTitle,
+        linkDescription: profileData.linkDescription,
+        linkUrl: profileData.linkUrl,
       };
       console.log('Settings update data:', settingsUpdateData);
       const settingsResult = await updateSettingsMutation.mutateAsync(settingsUpdateData);
@@ -350,22 +359,164 @@ export default function SettingsPage() {
 
 
 
-        {/* Media Upload Section */}
+        {/* Content Type Selection */}
         <Card className="bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">미디어 업로드</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">콘텐츠 타입 선택</CardTitle>
           </CardHeader>
           <CardContent>
-            {user?.id && (
-              <MediaUpload
-                userId={user.id}
-                onUploadSuccess={handleMediaUpload}
-                currentImageUrl={profileData.profileImageUrl}
-                currentVideoUrl={profileData.introVideoUrl}
-              />
-            )}
+            <RadioGroup
+              value={profileData.contentType}
+              onValueChange={(value) => updateProfileData('contentType', value)}
+              className="grid grid-cols-3 gap-3"
+            >
+              {[
+                { value: 'image', label: '이미지', icon: Image },
+                { value: 'video', label: '동영상', icon: Video },
+                { value: 'links', label: '링크 카드', icon: ExternalLink }
+              ].map(({ value, label, icon: Icon }) => (
+                <div key={value} className="relative">
+                  <RadioGroupItem value={value} id={value} className="sr-only" />
+                  <Label
+                    htmlFor={value}
+                    className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      profileData.contentType === value
+                        ? 'border-primary bg-primary/5'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className={`w-8 h-8 mb-2 ${
+                      profileData.contentType === value ? 'text-primary' : 'text-gray-400'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      profileData.contentType === value ? 'text-primary' : 'text-gray-600'
+                    }`}>
+                      {label}
+                    </span>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
           </CardContent>
         </Card>
+
+        {/* Conditional Content Upload/Configuration */}
+        {profileData.contentType === 'image' && (
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">이미지 업로드</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {user?.id && (
+                <MediaUpload
+                  userId={user.id}
+                  onUploadSuccess={handleMediaUpload}
+                  currentImageUrl={profileData.profileImageUrl}
+                  currentVideoUrl=""
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {profileData.contentType === 'video' && (
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">동영상 업로드</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {user?.id && (
+                <MediaUpload
+                  userId={user.id}
+                  onUploadSuccess={handleMediaUpload}
+                  currentImageUrl=""
+                  currentVideoUrl={profileData.introVideoUrl}
+                />
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {profileData.contentType === 'links' && (
+          <Card className="bg-white shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold text-gray-800">링크 카드 설정</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">링크 제목</Label>
+                <Input
+                  id="linkTitle"
+                  value={profileData.linkTitle || ''}
+                  onChange={(e) => updateProfileData('linkTitle', e.target.value)}
+                  placeholder="링크 카드에 표시될 제목을 입력하세요"
+                  className="border-gray-200 focus:border-primary"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="linkDescription" className="text-sm font-medium text-gray-700">링크 설명</Label>
+                <Textarea
+                  id="linkDescription"
+                  value={profileData.linkDescription || ''}
+                  onChange={(e) => updateProfileData('linkDescription', e.target.value)}
+                  placeholder="링크에 대한 간단한 설명을 입력하세요"
+                  className="border-gray-200 focus:border-primary resize-none"
+                  rows={3}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="linkUrl" className="text-sm font-medium text-gray-700">링크 URL</Label>
+                <Input
+                  id="linkUrl"
+                  type="url"
+                  value={profileData.linkUrl || ''}
+                  onChange={(e) => updateProfileData('linkUrl', e.target.value)}
+                  placeholder="https://example.com"
+                  className="border-gray-200 focus:border-primary"
+                />
+              </div>
+
+              {/* Link Preview */}
+              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 mb-3">링크 카드 미리보기</p>
+                <div className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
+                  <div className="flex items-start space-x-3">
+                    {profileData.profileImageUrl ? (
+                      <img
+                        src={profileData.profileImageUrl}
+                        alt="Profile"
+                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                        <span className="text-white font-medium text-sm">
+                          {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <ExternalLink className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-gray-800">
+                          {profileData.linkTitle || `${profileData.name || user?.name || '사용자'}의 프로필`}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mt-1">
+                        {profileData.linkDescription || profileData.bio || '안녕하세요! 반갑습니다.'}
+                      </p>
+                      <div className="flex items-center space-x-1 mt-2 text-xs text-blue-600">
+                        <span>{profileData.linkUrl || shortUrl}</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
