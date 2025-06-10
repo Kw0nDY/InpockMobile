@@ -43,6 +43,18 @@ const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCa
   }
 };
 
+// Profile image filter that accepts any field name
+const profileImageFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+  console.log('Profile filter - Field:', file.fieldname, 'Type:', file.mimetype);
+  
+  // Accept any field name, but only image types
+  if (file.mimetype.startsWith('image/')) {
+    cb(null, true);
+  } else {
+    cb(new Error('Only image files are allowed for profile pictures.'));
+  }
+};
+
 export const upload = multer({
   storage: multerStorage,
   fileFilter,
@@ -51,7 +63,7 @@ export const upload = multer({
   }
 });
 
-// Simple multer instance for profile uploads without fileFilter
+// Profile image upload without fileFilter to avoid "Unexpected field" error
 export const profileImageUpload = multer({
   storage: multerStorage,
   limits: {
@@ -132,9 +144,14 @@ export const handleMediaUpload = async (req: Request, res: Response) => {
 export const handleProfileImageUpload = async (req: Request, res: Response) => {
   try {
     console.log('Profile upload request received');
-    console.log('File:', req.file);
+    console.log('Files array:', req.files);
+    console.log('Single file:', req.file);
     
-    const file = req.file;
+    // Handle files from any() middleware
+    let file = req.file;
+    if (!file && req.files && Array.isArray(req.files) && req.files.length > 0) {
+      file = req.files[0];
+    }
     
     if (!file) {
       console.log('No file found in request');
