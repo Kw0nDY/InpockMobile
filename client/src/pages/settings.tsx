@@ -21,13 +21,13 @@ export default function SettingsPage() {
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    bio: user?.bio || '',
+    bio: (user as any)?.bio || '',
     avatar: user?.avatar || '',
-    profileImageUrl: user?.profileImageUrl || '',
-    introVideoUrl: user?.introVideoUrl || '',
+    profileImageUrl: (user as any)?.profileImageUrl || '',
+    introVideoUrl: (user as any)?.introVideoUrl || '',
     shortUrlType: 'default',
-    customUrl: user?.customUrl || '',
-    contentType: user?.contentType || 'links'
+    customUrl: (user as any)?.customUrl || '',
+    contentType: (user as any)?.contentType || 'links'
   });
 
   const [copied, setCopied] = useState(false);
@@ -148,6 +148,18 @@ export default function SettingsPage() {
 
   const updateProfileData = (key: string, value: any) => {
     setProfileData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleMediaUpload = (fileUrl: string, mediaType: 'image' | 'video') => {
+    const updateData = mediaType === 'image' 
+      ? { profileImageUrl: fileUrl }
+      : { introVideoUrl: fileUrl };
+    
+    // Update local state
+    setProfileData(prev => ({ ...prev, ...updateData }));
+    
+    // Update user profile in database
+    updateUserMutation.mutate(updateData);
   };
 
   const shortUrl = profileData.shortUrlType === 'custom' && profileData.customUrl
