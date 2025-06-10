@@ -2,7 +2,8 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
-import { upload, profileImageUpload, handleMediaUpload, handleProfileImageUpload, serveUploadedFile } from "./upload";
+import { upload, handleMediaUpload, serveUploadedFile } from "./upload";
+import { handleProfileUploadDirect } from "./profile-upload";
 import {
   insertUserSchema,
   insertLinkSchema,
@@ -698,8 +699,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Media Upload routes
   app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
   
-  // Profile image upload route - accept any field name
-  app.post("/api/upload/profile", profileImageUpload.any(), handleProfileImageUpload);
+  // Profile image upload route - using direct busboy implementation
+  app.post("/api/upload/profile", handleProfileUploadDirect);
   
   app.get("/uploads/:filename", serveUploadedFile);
   

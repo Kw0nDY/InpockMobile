@@ -11,7 +11,7 @@ if (!fs.existsSync(uploadsDir)) {
 }
 
 // Configure multer for file uploads
-const multerStorage = multer.diskStorage({
+export const multerStorage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
   },
