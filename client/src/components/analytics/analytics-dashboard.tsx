@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -28,6 +28,76 @@ interface TrackedUrl {
 export default function AnalyticsDashboard() {
   const { user } = useAuth();
   const [trackedUrls, setTrackedUrls] = useState<TrackedUrl[]>([]);
+
+  // Load tracked URLs from localStorage
+  useEffect(() => {
+    if (user?.id) {
+      const stored = localStorage.getItem(`tracked_urls_${user.id}`);
+      if (stored) {
+        try {
+          const urls = JSON.parse(stored);
+          const trackedUrlObjects = urls.map((url: string, index: number) => ({
+            id: index.toString(),
+            url,
+            label: getUrlLabel(url),
+            parameters: getUrlParameters(url)
+          }));
+          setTrackedUrls(trackedUrlObjects);
+        } catch (e) {
+          console.error('Error loading tracked URLs:', e);
+        }
+      }
+    }
+  }, [user?.id]);
+
+  // Listen for tracked URL updates
+  useEffect(() => {
+    const handleTrackedUrlsUpdate = () => {
+      if (user?.id) {
+        const stored = localStorage.getItem(`tracked_urls_${user.id}`);
+        if (stored) {
+          try {
+            const urls = JSON.parse(stored);
+            const trackedUrlObjects = urls.map((url: string, index: number) => ({
+              id: index.toString(),
+              url,
+              label: getUrlLabel(url),
+              parameters: getUrlParameters(url)
+            }));
+            setTrackedUrls(trackedUrlObjects);
+          } catch (e) {
+            console.error('Error loading tracked URLs:', e);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('tracked-urls-updated', handleTrackedUrlsUpdate);
+    return () => window.removeEventListener('tracked-urls-updated', handleTrackedUrlsUpdate);
+  }, [user?.id]);
+
+  const getUrlLabel = (url: string) => {
+    if (url.includes('dashboard')) return '대시보드';
+    if (url.includes('marketplace')) return '마켓플레이스';
+    if (url.includes('links')) return '링크';
+    if (url.includes('analytics')) return '분석';
+    if (url.includes('settings')) return '설정';
+    if (url.includes('perplexity')) return 'Perplexity 검색';
+    return new URL(url).hostname || 'URL';
+  };
+
+  const getUrlParameters = (url: string) => {
+    try {
+      const urlObj = new URL(url.startsWith('http') ? url : `http://localhost${url}`);
+      const params: Record<string, string> = {};
+      urlObj.searchParams.forEach((value, key) => {
+        params[key] = value;
+      });
+      return Object.keys(params).length > 0 ? params : undefined;
+    } catch (e) {
+      return undefined;
+    }
+  };
   
   const [newUrl, setNewUrl] = useState('');
   const [newLabel, setNewLabel] = useState('');
@@ -64,25 +134,29 @@ export default function AnalyticsDashboard() {
   const addTrackedUrl = () => {
     if (!newUrl.trim() || !newLabel.trim()) return;
     
-    const urlParams = new URLSearchParams(newUrl.split('?')[1] || '');
-    const parameters: Record<string, string> = {};
-    urlParams.forEach((value, key) => {
-      parameters[key] = value;
-    });
+    // Add to localStorage for persistence across components
+    if (user?.id) {
+      const stored = localStorage.getItem(`tracked_urls_${user.id}`);
+      let urls: string[] = [];
+      if (stored) {
+        try {
+          urls = JSON.parse(stored);
+        } catch (e) {
+          console.error('Error parsing stored URLs:', e);
+        }
+      }
+      
+      if (!urls.includes(newUrl.trim())) {
+        urls.push(newUrl.trim());
+        localStorage.setItem(`tracked_urls_${user.id}`, JSON.stringify(urls));
+        
+        // Trigger update event
+        window.dispatchEvent(new Event('tracked-urls-updated'));
+      }
+    }
     
-    const newTrackedUrl: TrackedUrl = {
-      id: Date.now().toString(),
-      url: newUrl,
-      label: newLabel,
-      parameters: Object.keys(parameters).length > 0 ? parameters : undefined
-    };
-    
-    setTrackedUrls(prev => [...prev, newTrackedUrl]);
     setNewUrl('');
     setNewLabel('');
-    
-    // Track this URL addition event
-    trackCustomUrlVisit(newUrl, parameters, user?.id.toString());
   };
 
   const removeTrackedUrl = (id: string) => {

@@ -43,21 +43,65 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
   const { data: analyticsData, isLoading, refetch } = useAnalyticsData();
   
   const simulateVisit = (url: string) => {
+    // Track the visit first
     trackCustomUrlVisit(url, {}, user?.id.toString());
+    
+    // Navigate to the URL if it's an internal route
+    if (url.startsWith('/')) {
+      window.location.href = url;
+    } else {
+      // For external URLs, open in new tab
+      window.open(url, '_blank');
+    }
+    
     refetch();
   };
 
   const addUrl = () => {
     if (newUrl.trim() && !trackedUrls.includes(newUrl.trim())) {
-      setTrackedUrls([...trackedUrls, newUrl.trim()]);
+      const updatedUrls = [...trackedUrls, newUrl.trim()];
+      setTrackedUrls(updatedUrls);
+      
+      // Save to localStorage for persistence
+      if (user?.id) {
+        localStorage.setItem(`tracked_urls_${user.id}`, JSON.stringify(updatedUrls));
+      }
+      
       setNewUrl('');
       setShowAddForm(false);
+      
+      // Trigger a page refresh to update dashboard stats
+      window.dispatchEvent(new Event('tracked-urls-updated'));
     }
   };
 
   const removeUrl = (urlToRemove: string) => {
-    setTrackedUrls(trackedUrls.filter(url => url !== urlToRemove));
+    const updatedUrls = trackedUrls.filter(url => url !== urlToRemove);
+    setTrackedUrls(updatedUrls);
+    
+    // Update localStorage
+    if (user?.id) {
+      localStorage.setItem(`tracked_urls_${user.id}`, JSON.stringify(updatedUrls));
+    }
+    
+    // Trigger dashboard update
+    window.dispatchEvent(new Event('tracked-urls-updated'));
   };
+
+  // Load tracked URLs from localStorage on component mount
+  useEffect(() => {
+    if (user?.id) {
+      const stored = localStorage.getItem(`tracked_urls_${user.id}`);
+      if (stored) {
+        try {
+          const urls = JSON.parse(stored);
+          setTrackedUrls(urls);
+        } catch (e) {
+          console.error('Error loading tracked URLs:', e);
+        }
+      }
+    }
+  }, [user?.id]);
 
   const getUrlLabel = (url: string) => {
     if (url.includes('dashboard')) return '대시보드';

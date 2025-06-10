@@ -65,6 +65,26 @@ export default function DashboardPage() {
     }
   }, [user?.id]);
 
+  // Listen for tracked URL updates
+  useEffect(() => {
+    const handleTrackedUrlsUpdate = () => {
+      if (user?.id) {
+        const stored = localStorage.getItem(`tracked_urls_${user?.id}`);
+        if (stored) {
+          try {
+            const urls = JSON.parse(stored);
+            setTrackedUrls(urls);
+          } catch (e) {
+            console.error('Error parsing tracked URLs:', e);
+          }
+        }
+      }
+    };
+
+    window.addEventListener('tracked-urls-updated', handleTrackedUrlsUpdate);
+    return () => window.removeEventListener('tracked-urls-updated', handleTrackedUrlsUpdate);
+  }, [user?.id]);
+
   const { data: urlVisitData, isLoading: urlVisitsLoading } = useUrlVisitCounts(trackedUrls);
   const { visitCounts } = useRealTimeVisits(15000);
 
