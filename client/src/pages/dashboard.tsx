@@ -55,6 +55,9 @@ export default function DashboardPage() {
   const userLinks = linksData as any;
   const currentUser = userData as any;
 
+  // Get current content type, with previewType override for interactive preview
+  const currentContentType = previewType || userSettings?.contentType || 'links';
+
   useEffect(() => {
     if (user) {
       // Track dashboard visit with user context
@@ -206,24 +209,25 @@ export default function DashboardPage() {
                   {[
                     { type: 'image', label: '이미지', icon: Image },
                     { type: 'video', label: '비디오', icon: Video },
-                    { type: 'link', label: '링크', icon: ExternalLink }
+                    { type: 'links', label: '링크', icon: ExternalLink }
                   ].map(({ type, label, icon: Icon }) => (
                     <div
                       key={type}
-                      className={`p-3 rounded-lg border-2 transition-all ${
-                        (userSettings?.contentType || 'link') === type
+                      onClick={() => setPreviewType(type)}
+                      className={`p-3 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 ${
+                        currentContentType === type
                           ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 bg-gray-50'
+                          : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
                       }`}
                     >
                       <div className="flex flex-col items-center space-y-1">
                         <Icon className={`w-5 h-5 ${
-                          (userSettings?.contentType || 'link') === type
+                          currentContentType === type
                             ? 'text-primary'
                             : 'text-gray-400'
                         }`} />
                         <span className={`text-xs korean-text ${
-                          (userSettings?.contentType || 'link') === type
+                          currentContentType === type
                             ? 'text-primary font-medium'
                             : 'text-gray-500'
                         }`}>
@@ -240,7 +244,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
                 {/* Image Content */}
-                {userSettings?.contentType === 'image' && currentUser?.profileImageUrl && (
+                {currentContentType === 'image' && currentUser?.profileImageUrl && (
                   <div className="mb-4">
                     <ImageModal
                       src={currentUser.profileImageUrl}
@@ -259,7 +263,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Video Content */}
-                {userSettings?.contentType === 'video' && currentUser?.introVideoUrl && (
+                {currentContentType === 'video' && currentUser?.introVideoUrl && (
                   <div className="mb-4">
                     <VideoModal src={currentUser.introVideoUrl}>
                       <div className="w-full h-48 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
@@ -282,7 +286,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Link Content */}
-                {(userSettings?.contentType === 'links' || !userSettings?.contentType) && (
+                {currentContentType === 'links' && (
                   <LinkPreview
                     url={userSettings?.linkUrl || 
                       (userSettings?.customUrl ? 
@@ -316,7 +320,7 @@ export default function DashboardPage() {
                 )}
 
                 {/* Upload Prompt for Empty Content */}
-                {userSettings?.contentType === 'image' && !currentUser?.profileImageUrl && (
+                {currentContentType === 'image' && !currentUser?.profileImageUrl && (
                   <div 
                     className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
                     onClick={() => setLocation('/settings')}
@@ -329,7 +333,7 @@ export default function DashboardPage() {
                   </div>
                 )}
                 
-                {userSettings?.contentType === 'video' && !currentUser?.introVideoUrl && (
+                {currentContentType === 'video' && !currentUser?.introVideoUrl && (
                   <div 
                     className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
                     onClick={() => setLocation('/settings')}
