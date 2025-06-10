@@ -35,21 +35,9 @@ export const useRealTimeVisits = (refreshInterval: number = 10000) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      // Simulate real-time visit count updates
+      // Update timestamp without automatically incrementing visit counts
+      // Only manual URL clicks should increase visit statistics
       const currentTime = new Date();
-      const timeElapsed = currentTime.getTime() - lastUpdate.getTime();
-      
-      // Randomly increment visit counts to simulate real-time activity
-      setVisitCounts(prev => {
-        const updated = { ...prev };
-        Object.keys(updated).forEach(url => {
-          if (Math.random() < 0.3) { // 30% chance of new visit
-            updated[url] = (updated[url] || 0) + 1;
-          }
-        });
-        return updated;
-      });
-      
       setLastUpdate(currentTime);
     }, refreshInterval);
 
