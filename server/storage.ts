@@ -1,5 +1,5 @@
 import { 
-  users, links, deals, chats, messages, activities, userSettings, subscriptions,
+  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens,
   type User, type InsertUser,
   type Link, type InsertLink,
   type Deal, type InsertDeal,
@@ -7,7 +7,8 @@ import {
   type Message, type InsertMessage,
   type Activity, type InsertActivity,
   type UserSettings, type InsertUserSettings,
-  type Subscription, type InsertSubscription
+  type Subscription, type InsertSubscription,
+  type PasswordResetToken, type InsertPasswordResetToken
 } from "@shared/schema";
 
 export interface IStorage {
@@ -59,6 +60,12 @@ export interface IStorage {
   getUserSubscription(userId: number): Promise<Subscription | undefined>;
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscription(userId: number, updates: Partial<Subscription>): Promise<Subscription | undefined>;
+
+  // Password Reset Tokens
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  markTokenAsUsed(token: string): Promise<boolean>;
+  deleteExpiredTokens(): Promise<void>;
 }
 
 export class MemStorage implements IStorage {

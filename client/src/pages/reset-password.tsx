@@ -22,18 +22,15 @@ export default function ResetPasswordPage() {
 
   // Verify token validity
   const { data: tokenValid, isLoading: isVerifying, error: tokenError } = useQuery({
-    queryKey: ['/api/auth/verify-reset-token', token],
-    queryFn: () => apiRequest(`/api/auth/verify-reset-token/${token}`),
+    queryKey: [`/api/auth/verify-reset-token/${token}`],
     enabled: !!token,
     retry: false,
   });
 
   const resetPasswordMutation = useMutation({
     mutationFn: async ({ password, token }: { password: string; token: string }) => {
-      return apiRequest("/api/auth/reset-password", {
-        method: "POST",
-        body: { password, token },
-      });
+      const response = await apiRequest("POST", "/api/auth/reset-password", { password, token });
+      return response.json();
     },
     onSuccess: () => {
       setIsResetComplete(true);
