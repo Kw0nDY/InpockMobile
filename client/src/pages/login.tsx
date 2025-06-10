@@ -45,26 +45,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <header className="flex items-center justify-between p-4">
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex items-center justify-between p-4 bg-white">
         <button className="p-2" onClick={() => setLocation("/")}>
-          <ArrowLeft className="w-6 h-6 text-dark" />
+          <ArrowLeft className="w-6 h-6 text-gray-600" />
         </button>
-        <h1 className="text-lg font-medium">AmuseFit</h1>
+        <h1 className="text-lg font-medium text-gray-900">AmuseFit</h1>
         <div className="w-10"></div>
       </header>
 
       <div className="px-6 py-8">
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-2 korean-text">로그인</h2>
+          <h2 className="text-2xl font-bold mb-2 korean-text text-gray-900">로그인</h2>
           <p className="text-gray-600 text-sm korean-text">
-            비즈니스 계정으로 로그인하세요
+            AmuseFit 계정으로 로그인하세요.
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
+        <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <Label htmlFor="email" className="block text-sm font-medium mb-2">
+            <Label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-700">
               이메일
             </Label>
             <Input
@@ -72,7 +72,7 @@ export default function LoginPage() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg input-focus"
+              className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="example@company.com"
               required
             />
@@ -81,7 +81,7 @@ export default function LoginPage() {
           <div>
             <Label
               htmlFor="password"
-              className="block text-sm font-medium mb-2"
+              className="block text-sm font-medium mb-2 text-gray-700"
             >
               비밀번호
             </Label>
@@ -90,7 +90,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg input-focus"
+              className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="••••••••"
               required
             />
@@ -103,7 +103,7 @@ export default function LoginPage() {
                 onCheckedChange={(checked) => setRememberMe(checked as boolean)}
                 className="mr-2"
               />
-              <span>로그인 상태 유지</span>
+              <span className="text-gray-600">로그인 상태 유지</span>
             </label>
             <button 
               type="button" 
@@ -117,23 +117,25 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90"
+            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-4 rounded-lg font-medium text-base"
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </Button>
         </form>
 
         {/* Divider */}
-        <div className="my-6 flex items-center">
-          <div className="flex-1 border-t border-gray-200"></div>
+        <div className="my-8 flex items-center">
+          <div className="flex-1 border-t border-gray-300"></div>
           <span className="px-4 text-sm text-gray-500 korean-text">또는</span>
-          <div className="flex-1 border-t border-gray-200"></div>
+          <div className="flex-1 border-t border-gray-300"></div>
         </div>
 
         {/* Kakao Login */}
-        <KakaoLoginButton variant="login" />
+        <div className="mb-8">
+          <KakaoLoginButton variant="login" />
+        </div>
 
-        <div className="mt-6 text-center">
+        <div className="text-center mb-8">
           <p className="text-sm text-gray-600 korean-text">
             계정이 없으신가요?
           </p>
@@ -146,17 +148,17 @@ export default function LoginPage() {
           </button>
         </div>
 
-        {/* Business Registration Option */}
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-medium mb-2">INPOCK BUSINESS</h3>
-          <p className="text-sm text-gray-600 mb-3 korean-text">
-            비즈니스 계정으로 더 많은 기능을 이용하세요
+        {/* AmuseFit Service Section */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <h3 className="font-semibold mb-2 text-gray-900">AmuseFit Service</h3>
+          <p className="text-sm text-gray-600 mb-4 korean-text">
+            AmuseFit 서비스를 원활하게 이용하세요
           </p>
           <Button
             onClick={handleBusinessRegister}
-            className="w-full bg-dark text-white py-3 rounded-lg font-medium hover:bg-dark/90"
+            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-3 rounded-lg font-medium"
           >
-            비즈니스 계정 등록
+            서비스 체험하기
           </Button>
         </div>
       </div>
