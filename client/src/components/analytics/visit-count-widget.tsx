@@ -171,7 +171,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-[#8B4513]">
-              {trackedUrls.length}
+              {analyticsData?.uniqueVisitors || 0}
             </p>
             <p className="text-xs text-[#A0825C]">순 방문자</p>
           </div>
