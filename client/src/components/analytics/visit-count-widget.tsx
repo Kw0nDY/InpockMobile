@@ -72,6 +72,9 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
       
       // Trigger a page refresh to update dashboard stats
       window.dispatchEvent(new Event('tracked-urls-updated'));
+      
+      // DO NOT automatically track a visit when just adding a URL
+      // Only track when user actually clicks the visit button
     }
   };
 

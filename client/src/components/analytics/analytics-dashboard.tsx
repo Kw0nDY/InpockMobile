@@ -166,8 +166,17 @@ export default function AnalyticsDashboard() {
   const simulateVisit = (url: string) => {
     const trackedUrl = trackedUrls.find(item => item.url === url);
     if (trackedUrl) {
+      // Track the visit first
       trackCustomUrlVisit(url, trackedUrl.parameters, user?.id.toString());
       incrementVisit(url);
+      
+      // Navigate to the URL if it's an internal route
+      if (url.startsWith('/')) {
+        window.location.href = url;
+      } else {
+        // For external URLs, open in new tab
+        window.open(url, '_blank');
+      }
     }
   };
 
