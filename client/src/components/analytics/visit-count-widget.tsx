@@ -261,7 +261,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                 onClick={() => setShowAddForm(true)}
                 variant="outline"
                 size="sm"
-                className="w-full border-dashed border-[#D4CAB8] hover:border-[#8B4513] hover:bg-[#EAE5DE] h-10 text-[#8B4513]"
+                className="w-full border-dashed border-[#D4CAB8] hover:border-[#8B4513] hover:bg-[#EAE5DE] hover:text-[#5D2F0A] h-10 text-[#8B4513]"
               >
                 <Plus className="w-4 h-4 mr-2" />
                 URL 추가하기
@@ -272,7 +272,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
           <Button
             variant="outline"
             size="sm"
-            className="w-full text-xs border-[#D4CAB8] text-[#8B4513] hover:bg-[#EAE5DE]"
+            className="w-full text-xs border-[#D4CAB8] text-[#8B4513] hover:bg-[#EAE5DE] hover:text-[#5D2F0A]"
             onClick={() => window.location.href = '/analytics'}
           >
             <TrendingUp className="w-3 h-3 mr-1" />
