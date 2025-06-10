@@ -57,7 +57,6 @@ const profileImageFilter = (req: any, file: Express.Multer.File, cb: multer.File
 
 export const upload = multer({
   storage: multerStorage,
-  fileFilter,
   limits: {
     fileSize: 50 * 1024 * 1024, // 50MB limit
   }
