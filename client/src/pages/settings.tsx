@@ -34,6 +34,14 @@ export default function SettingsPage() {
 
   const [copied, setCopied] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
+  const [mediaImageUrl, setMediaImageUrl] = useState('');
+  const [mediaVideoUrl, setMediaVideoUrl] = useState('');
+
+  // 기존 미디어 업로드 데이터를 불러오기
+  const { data: mediaUploads } = useQuery({
+    queryKey: [`/api/media/${user?.id}`],
+    enabled: !!user?.id,
+  });
 
   // Fetch user settings
   const { data: userSettings, isLoading: settingsLoading } = useQuery({
@@ -142,6 +150,21 @@ export default function SettingsPage() {
     }
   }, [userSettings]);
 
+  // 미디어 업로드 데이터 동기화
+  useEffect(() => {
+    if (mediaUploads && Array.isArray(mediaUploads)) {
+      const imageUpload = mediaUploads.find((media: any) => media.mediaType === 'image');
+      const videoUpload = mediaUploads.find((media: any) => media.mediaType === 'video');
+      
+      if (imageUpload) {
+        setMediaImageUrl(imageUpload.filePath);
+      }
+      if (videoUpload) {
+        setMediaVideoUrl(videoUpload.filePath);
+      }
+    }
+  }, [mediaUploads]);
+
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -175,7 +198,6 @@ export default function SettingsPage() {
           name: profileData.name,
           email: profileData.email,
           bio: profileData.bio,
-          avatar: profileData.profileImageUrl,
           introVideoUrl: profileData.introVideoUrl,
         };
         console.log('User update data:', userUpdateData);
@@ -232,13 +254,12 @@ export default function SettingsPage() {
   };
 
   const handleMediaUpload = (fileUrl: string, mediaType: 'image' | 'video') => {
-    // 미디어 업로드는 MediaUpload 테이블에만 저장하고 사용자 필드는 업데이트하지 않음
-    const updateData = mediaType === 'image' 
-      ? { profileImageUrl: fileUrl }
-      : { introVideoUrl: fileUrl };
-    
-    setProfileData(prev => ({ ...prev, ...updateData }));
-    // 사용자 테이블 업데이트 제거하여 프로필 이미지와 분리
+    // 미디어 업로드는 별도 상태로 관리하여 프로필 이미지와 완전 분리
+    if (mediaType === 'image') {
+      setMediaImageUrl(fileUrl);
+    } else {
+      setMediaVideoUrl(fileUrl);
+    }
   };
 
   const shortUrl = profileData.shortUrlType === 'custom' && profileData.customUrl
@@ -469,7 +490,7 @@ export default function SettingsPage() {
                 <MediaUpload
                   userId={user.id}
                   onUploadSuccess={handleMediaUpload}
-                  currentImageUrl={profileData.profileImageUrl}
+                  currentImageUrl={mediaImageUrl}
                   currentVideoUrl=""
                   uploadType="image"
                 />
@@ -491,7 +512,7 @@ export default function SettingsPage() {
                   userId={user.id}
                   onUploadSuccess={handleMediaUpload}
                   currentImageUrl=""
-                  currentVideoUrl={profileData.introVideoUrl}
+                  currentVideoUrl={mediaVideoUrl}
                   uploadType="video"
                 />
               )}
