@@ -109,7 +109,7 @@ export default function NotificationDropdown() {
       >
         <Bell className="w-5 h-5 text-primary" />
         {unreadCount > 0 && (
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-amber-800 text-white text-xs rounded-full p-0">
+          <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-stone-700 text-white text-xs rounded-full p-0">
             {unreadCount > 9 ? "9+" : unreadCount}
           </Badge>
         )}
@@ -128,7 +128,7 @@ export default function NotificationDropdown() {
                     variant="ghost"
                     size="sm"
                     onClick={markAllAsRead}
-                    className="text-xs text-amber-800 hover:text-amber-900"
+                    className="text-xs text-stone-700 hover:text-stone-800"
                   >
                     모두 읽음
                   </Button>
@@ -151,7 +151,7 @@ export default function NotificationDropdown() {
                 <div
                   key={notification.id}
                   className={`p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
-                    !notification.isRead ? "bg-amber-100" : ""
+                    !notification.isRead ? "bg-stone-100" : ""
                   }`}
                   onClick={() => markAsRead(notification.id)}
                 >
@@ -163,7 +163,7 @@ export default function NotificationDropdown() {
                           {notification.title}
                         </h4>
                         {!notification.isRead && (
-                          <div className="w-2 h-2 bg-amber-800 rounded-full ml-2"></div>
+                          <div className="w-2 h-2 bg-stone-700 rounded-full ml-2"></div>
                         )}
                       </div>
                       <p className="text-xs text-gray-600 mt-1 line-clamp-2">
