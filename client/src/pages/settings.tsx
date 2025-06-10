@@ -127,8 +127,26 @@ export default function SettingsPage() {
       .toUpperCase();
   };
 
-  const handleSaveProfile = () => {
-    updateSettingsMutation.mutate(profileData);
+  const handleSaveProfile = async () => {
+    try {
+      // Save user profile data (name, email)
+      if (user?.id) {
+        await updateUserMutation.mutateAsync({
+          name: profileData.name,
+          email: profileData.email,
+          bio: profileData.bio,
+        });
+      }
+
+      // Save settings data (URLs, content type)
+      await updateSettingsMutation.mutateAsync({
+        bio: profileData.bio,
+        customUrl: profileData.customUrl,
+        contentType: profileData.contentType,
+      });
+    } catch (error) {
+      console.error('Save error:', error);
+    }
   };
 
   const handleCopyUrl = () => {
@@ -237,11 +255,11 @@ export default function SettingsPage() {
               <Label htmlFor="email" className="text-sm font-medium text-gray-700">이메일</Label>
               <Input
                 id="email"
+                type="email"
                 value={profileData.email}
                 onChange={(e) => updateProfileData('email', e.target.value)}
                 placeholder="이메일을 입력하세요"
                 className="border-gray-200 focus:border-primary"
-                disabled
               />
             </div>
 
@@ -323,93 +341,7 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Content Type Selection */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">리디렉션 콘텐츠 선택</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <RadioGroup
-              value={profileData.contentType}
-              onValueChange={(value) => updateProfileData('contentType', value)}
-              className="grid grid-cols-3 gap-3"
-            >
-              {[
-                { value: 'image', label: '이미지', icon: Image },
-                { value: 'video', label: '비디오', icon: Video },
-                { value: 'link', label: '링크 카드', icon: ExternalLink }
-              ].map(({ value, label, icon: Icon }) => (
-                <div key={value} className="relative">
-                  <RadioGroupItem value={value} id={value} className="sr-only" />
-                  <Label
-                    htmlFor={value}
-                    className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                      profileData.contentType === value
-                        ? 'border-primary bg-primary/5'
-                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
-                    }`}
-                  >
-                    <Icon className={`w-8 h-8 mb-2 ${
-                      profileData.contentType === value ? 'text-primary' : 'text-gray-400'
-                    }`} />
-                    <span className={`text-sm font-medium ${
-                      profileData.contentType === value ? 'text-primary' : 'text-gray-600'
-                    }`}>
-                      {label}
-                    </span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
 
-            {/* Content Preview */}
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <p className="text-sm text-gray-600 mb-3">선택한 콘텐츠 미리보기</p>
-              
-              {profileData.contentType === 'image' && (
-                <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-                  <div className="text-center">
-                    <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
-                  </div>
-                </div>
-              )}
-
-              {profileData.contentType === 'video' && (
-                <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-                  <div className="text-center">
-                    <Video className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                    <p className="text-sm text-gray-500">비디오를 업로드하세요</p>
-                  </div>
-                </div>
-              )}
-
-              {profileData.contentType === 'link' && (
-                <div className="p-4 border border-gray-200 rounded-lg bg-white">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                      <span className="text-white font-medium text-sm">
-                        {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-800">
-                        {profileData.name || user?.name || '사용자'}의 프로필
-                      </h3>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {profileData.bio || '안녕하세요! 반갑습니다.'}
-                      </p>
-                      <div className="flex items-center space-x-2 mt-2">
-                        <ExternalLink className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-primary">{shortUrl}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Media Upload Section */}
         <Card className="bg-white shadow-sm">
