@@ -154,10 +154,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Real-time Visit Count Analytics Widget */}
-        <div className="mt-6">
-          <VisitCountWidget />
-        </div>
+
 
         {/* Profile Content Section */}
         <div className="mt-6">
