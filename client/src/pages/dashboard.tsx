@@ -271,6 +271,7 @@ export default function DashboardPage() {
                     }
                     title={userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
                     description={userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
+                    userId={user?.id}
                   >
                     <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
                       <div className="flex items-center space-x-2 mb-2">

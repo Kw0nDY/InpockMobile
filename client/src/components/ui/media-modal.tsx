@@ -85,10 +85,20 @@ interface LinkPreviewProps {
   title: string;
   description?: string;
   children: React.ReactNode;
+  userId?: number;
 }
 
-export function LinkPreview({ url, title, description, children }: LinkPreviewProps) {
-  const handleLinkClick = () => {
+export function LinkPreview({ url, title, description, children, userId }: LinkPreviewProps) {
+  const handleLinkClick = async () => {
+    // Increment visit count if userId is provided
+    if (userId) {
+      try {
+        await fetch(`/api/visit/${userId}`, { method: 'POST' });
+      } catch (error) {
+        console.error('Failed to increment visit count:', error);
+      }
+    }
+    
     window.open(url, '_blank', 'noopener,noreferrer');
   };
 
