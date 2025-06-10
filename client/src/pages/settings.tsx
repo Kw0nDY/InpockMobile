@@ -54,17 +54,11 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({
         queryKey: [`/api/user/${user?.id}`],
       });
-      toast({
-        title: "프로필 저장됨",
-        description: "프로필 설정이 성공적으로 저장되었습니다.",
-      });
+      // Removed individual success toast - handled centrally
     },
-    onError: () => {
-      toast({
-        title: "저장 실패",
-        description: "프로필 저장 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
+    onError: (error: any) => {
+      console.error('Settings mutation error:', error);
+      // Removed individual error toast - handled centrally
     },
   });
 
@@ -85,18 +79,11 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({
         queryKey: [`/api/dashboard/stats/${user?.id}`],
       });
-      toast({
-        title: "프로필 업데이트됨",
-        description: "프로필이 성공적으로 업데이트되었습니다.",
-      });
+      // Removed individual success toast - handled centrally
     },
     onError: (error: any) => {
       console.error('User update error:', error);
-      toast({
-        title: "업데이트 실패",
-        description: "프로필 업데이트 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
+      // Removed individual error toast - handled centrally
     },
   });
 
@@ -137,7 +124,8 @@ export default function SettingsPage() {
           introVideoUrl: profileData.introVideoUrl,
         };
         console.log('User update data:', userUpdateData);
-        await updateUserMutation.mutateAsync(userUpdateData);
+        const userResult = await updateUserMutation.mutateAsync(userUpdateData);
+        console.log('User update result:', userResult);
       }
 
       // Save settings data (URLs, content type)
@@ -147,11 +135,24 @@ export default function SettingsPage() {
         contentType: profileData.contentType,
       };
       console.log('Settings update data:', settingsUpdateData);
-      await updateSettingsMutation.mutateAsync(settingsUpdateData);
+      const settingsResult = await updateSettingsMutation.mutateAsync(settingsUpdateData);
+      console.log('Settings update result:', settingsResult);
       
       console.log('Profile saved successfully');
+      
+      // Show success message only after both operations complete
+      toast({
+        title: "프로필 저장 완료",
+        description: "모든 설정이 성공적으로 저장되었습니다.",
+      });
+      
     } catch (error) {
       console.error('Save error:', error);
+      toast({
+        title: "저장 실패",
+        description: "프로필 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
     }
   };
 
