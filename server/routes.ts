@@ -233,6 +233,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User profile update route
+  app.put("/api/user/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updates = req.body;
+
+      const updatedUser = await storage.updateUser(userId, updates);
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        message: "User updated successfully",
+        user: updatedUser,
+      });
+    } catch (error) {
+      console.error("User update error:", error);
+      res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+
   // Dashboard routes
   app.get("/api/dashboard/stats/:userId", async (req, res) => {
     try {

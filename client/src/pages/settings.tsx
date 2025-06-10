@@ -22,12 +22,11 @@ export default function SettingsPage() {
     name: user?.name || '',
     email: user?.email || '',
     bio: (user as any)?.bio || '',
-    avatar: user?.avatar || '',
     profileImageUrl: (user as any)?.profileImageUrl || '',
     introVideoUrl: (user as any)?.introVideoUrl || '',
     shortUrlType: 'default',
     customUrl: (user as any)?.customUrl || '',
-    contentType: (user as any)?.contentType || 'links'
+    contentType: 'links'
   });
 
   const [copied, setCopied] = useState(false);
@@ -129,12 +128,14 @@ export default function SettingsPage() {
 
   const handleSaveProfile = async () => {
     try {
-      // Save user profile data (name, email)
+      // Save user profile data (name, email, bio, media URLs)
       if (user?.id) {
         await updateUserMutation.mutateAsync({
           name: profileData.name,
           email: profileData.email,
           bio: profileData.bio,
+          profileImageUrl: profileData.profileImageUrl,
+          introVideoUrl: profileData.introVideoUrl,
         });
       }
 
