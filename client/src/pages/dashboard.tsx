@@ -202,9 +202,9 @@ export default function DashboardPage() {
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                {typedData?.stats?.deals || 0}
+                {trackedUrls.length}
               </p>
-              <p className="text-xs text-gray-600 korean-text">딜</p>
+              <p className="text-xs text-gray-600 korean-text">커스텀 URL</p>
             </CardContent>
           </Card>
 
