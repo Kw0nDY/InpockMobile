@@ -158,7 +158,7 @@ export default function DashboardPage() {
             <CardContent className="p-4 text-center">
               <BarChart3 className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                {analyticsData?.totalVisits || 0}
+                {currentUser?.visitCount || 0}
               </p>
               <p className="text-xs text-gray-600 korean-text">방문 횟수</p>
             </CardContent>
