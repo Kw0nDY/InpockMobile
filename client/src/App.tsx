@@ -20,6 +20,8 @@ import ChatPage from "./pages/chat";
 import AnalyticsPage from "./pages/analytics";
 import ContactsPage from "./pages/contacts";
 import KakaoCallback from "./pages/kakao-callback";
+import ForgotPasswordPage from "./pages/forgot-password";
+import ResetPasswordPage from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 
 // Layout
@@ -29,8 +31,8 @@ function Router() {
   const [location] = useLocation();
   
   // Pages that should not show bottom navigation
-  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/"];
-  const shouldShowBottomNav = !hideNavPages.includes(location);
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/reset-password"];
+  const shouldShowBottomNav = !hideNavPages.includes(location) && !location.startsWith("/reset-password/");
 
   return (
     <div className="mobile-container">
@@ -48,6 +50,8 @@ function Router() {
         <Route path="/chat" component={ChatPage} />
         <Route path="/analytics" component={AnalyticsPage} />
         <Route path="/contacts" component={ContactsPage} />
+        <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/reset-password/:token" component={ResetPasswordPage} />
         <Route path="/oauth/kakao/callback" component={KakaoCallback} />
         <Route component={NotFound} />
       </Switch>
