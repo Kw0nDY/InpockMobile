@@ -160,7 +160,7 @@ export default function DashboardPage() {
               <p className="text-2xl font-bold text-primary">
                 {analyticsData?.totalVisits || 0}
               </p>
-              <p className="text-xs text-gray-600 korean-text">총 접속</p>
+              <p className="text-xs text-gray-600 korean-text">방문 횟수</p>
             </CardContent>
           </Card>
         </div>
@@ -282,11 +282,6 @@ export default function DashboardPage() {
                       <p className="text-xs text-gray-600 mb-3">
                         {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
                       </p>
-                      {currentUser?.visitCount !== undefined && (
-                        <p className="text-xs text-primary mb-2">
-                          방문 횟수: {currentUser.visitCount || 0}회
-                        </p>
-                      )}
                       <div className="flex items-center space-x-1 text-xs text-blue-600">
                         <span>클릭하여 새 탭에서 열기</span>
                         <ExternalLink className="w-3 h-3" />
