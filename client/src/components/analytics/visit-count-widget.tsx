@@ -114,19 +114,25 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
       </CardHeader>
       
       <CardContent className="space-y-4">
-        {/* Quick Stats */}
+        {/* Quick Stats - Real Data */}
         <div className="grid grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">1</p>
-            <p className="text-xs text-muted-foreground">오늘</p>
+            <p className="text-2xl font-bold text-foreground">
+              {trackedUrls.reduce((total, url) => total + getUrlVisitData(url).visits, 0)}
+            </p>
+            <p className="text-xs text-muted-foreground">총 방문</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground">어제</p>
+            <p className="text-2xl font-bold text-foreground">
+              {trackedUrls.length}
+            </p>
+            <p className="text-xs text-muted-foreground">추적 URL</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">0</p>
-            <p className="text-xs text-muted-foreground">전체</p>
+            <p className="text-2xl font-bold text-foreground">
+              {trackedUrls.filter(url => getUrlVisitData(url).visits > 0).length}
+            </p>
+            <p className="text-xs text-muted-foreground">활성 URL</p>
           </div>
         </div>
 
@@ -152,38 +158,44 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                 const label = getUrlLabel(url);
                 
                 return (
-                  <div key={index} className="flex items-center justify-between p-2 bg-background rounded border">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-foreground">{label}</span>
-                        <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
-                          {visitData.visits}회 방문
-                        </span>
+                  <div key={index} className="bg-background rounded border">
+                    <div className="p-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1 min-w-0 pr-2">
+                          <div className="flex items-center space-x-2 mb-1">
+                            <span className="text-sm font-medium text-foreground">{label}</span>
+                            <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded whitespace-nowrap">
+                              {visitData.visits}회 방문
+                            </span>
+                          </div>
+                          <p className="text-xs text-muted-foreground font-mono break-all">{url}</p>
+                          {visitData.lastVisit && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center space-x-1 flex-shrink-0">
+                          <Button
+                            onClick={() => simulateVisit(url)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
+                            title="방문 시뮬레이션"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            onClick={() => removeUrl(url)}
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                            title="URL 삭제"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
                       </div>
-                      <p className="text-xs text-muted-foreground font-mono">{url}</p>
-                      {visitData.lastVisit && (
-                        <p className="text-xs text-muted-foreground mt-1">
-                          마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <Button
-                        onClick={() => simulateVisit(url)}
-                        size="sm"
-                        variant="ghost"
-                        className="text-muted-foreground hover:text-foreground"
-                      >
-                        <ExternalLink className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        onClick={() => removeUrl(url)}
-                        size="sm"
-                        variant="ghost"
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
                     </div>
                   </div>
                 );
@@ -192,21 +204,22 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
             
             {/* Add URL Form */}
             {showAddForm ? (
-              <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
-                <div className="space-y-2">
+              <div className="border border-dashed border-gray-300 rounded-lg p-3 bg-gray-50/50">
+                <div className="space-y-3">
                   <Input
                     placeholder="URL 입력 (예: /dashboard?utm_source=email)"
                     value={newUrl}
-                    onChange={(e) => setNewUrl(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && addUrl()}
-                    className="text-sm"
+                    onChange={(e: any) => setNewUrl(e.target.value)}
+                    onKeyPress={(e: any) => e.key === 'Enter' && addUrl()}
+                    className="text-sm border-gray-300 focus:border-primary"
+                    autoFocus
                   />
                   <div className="flex space-x-2">
                     <Button
                       onClick={addUrl}
                       size="sm"
-                      variant="default"
-                      className="flex-1"
+                      className="flex-1 h-8"
+                      disabled={!newUrl.trim()}
                     >
                       추가
                     </Button>
@@ -217,7 +230,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                       }}
                       size="sm"
                       variant="outline"
-                      className="flex-1"
+                      className="flex-1 h-8"
                     >
                       취소
                     </Button>
@@ -229,10 +242,10 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                 onClick={() => setShowAddForm(true)}
                 variant="outline"
                 size="sm"
-                className="w-full border-dashed"
+                className="w-full border-dashed border-gray-300 hover:border-primary hover:bg-primary/5 h-10"
               >
-                <Plus className="w-3 h-3 mr-1" />
-                URL 추가
+                <Plus className="w-4 h-4 mr-2" />
+                URL 추가하기
               </Button>
             )}
           </div>
