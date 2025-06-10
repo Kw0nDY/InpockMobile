@@ -139,8 +139,7 @@ export const handleProfileImageUpload = async (req: Request, res: Response) => {
     console.log('Files:', req.files);
     console.log('File:', req.file);
     
-    // Handle both single file and files array
-    const file = req.file || (Array.isArray(req.files) ? req.files[0] : null);
+    const file = req.file;
     
     if (!file) {
       console.log('No file found in request');
