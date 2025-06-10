@@ -117,7 +117,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-4 rounded-lg font-medium text-base"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-lg font-medium text-base"
           >
             {isLoading ? "로그인 중..." : "로그인"}
           </Button>
@@ -156,7 +156,7 @@ export default function LoginPage() {
           </p>
           <Button
             onClick={handleBusinessRegister}
-            className="w-full bg-amber-800 hover:bg-amber-900 text-white py-3 rounded-lg font-medium"
+            className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-medium"
           >
             서비스 체험하기
           </Button>
