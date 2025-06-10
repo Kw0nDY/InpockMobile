@@ -4,6 +4,9 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./hooks/use-auth";
+import { useAnalytics } from "./hooks/use-analytics";
+import { useEffect } from "react";
+import { initGA } from "./lib/analytics";
 
 // Pages
 import LandingPage from "./pages/landing";
@@ -29,6 +32,9 @@ import BottomNav from "./components/layout/bottom-nav";
 
 function Router() {
   const [location] = useLocation();
+  
+  // Initialize analytics tracking for all page navigation
+  useAnalytics();
   
   // Pages that should not show bottom navigation
   const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/reset-password"];
@@ -61,6 +67,11 @@ function Router() {
 }
 
 function App() {
+  useEffect(() => {
+    // Initialize Google Analytics on app startup
+    initGA();
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>

@@ -13,6 +13,9 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotificationDropdown from "@/components/ui/notification-dropdown";
+import VisitCountWidget from "@/components/analytics/visit-count-widget";
+import { useEffect } from "react";
+import { trackPageView, trackCustomUrlVisit } from "@/lib/analytics";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -24,6 +27,14 @@ export default function DashboardPage() {
   });
 
   const typedData = dashboardData as any;
+
+  useEffect(() => {
+    if (user) {
+      // Track dashboard visit with user context
+      trackPageView('/dashboard', `/dashboard?user_id=${user.id}`);
+      trackCustomUrlVisit('/dashboard', { user_id: user.id.toString(), role: user.role }, user.id.toString());
+    }
+  }, [user]);
 
   const getInitials = (name: string) => {
     return name
@@ -121,7 +132,10 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* 설정에서 URL 설정된 값으로 홈 화면에 불러옴 */}
+        {/* Real-time Visit Count Analytics Widget */}
+        <div className="mt-6">
+          <VisitCountWidget />
+        </div>
       </div>
     </div>
   );
