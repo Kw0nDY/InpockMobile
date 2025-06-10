@@ -24,15 +24,15 @@ export const initGA = () => {
   console.log('Local analytics system ready for localhost development');
 };
 
-// Track page views with localhost URLs
+// Track page views with localhost URLs (does NOT count as URL visit)
 export const trackPageView = (url: string, userDefinedUrl?: string) => {
   if (typeof window === 'undefined' || !window.gtag) return;
   
   const trackingUrl = userDefinedUrl || url;
   const localhostUrl = `http://localhost:5000${trackingUrl}`;
   
-  // Record the visit in local storage
-  recordVisit(trackingUrl);
+  // DO NOT record visit automatically - only track page view for analytics
+  // recordVisit should only be called when user explicitly clicks a tracked URL
   
   const eventData = {
     page_path: url,

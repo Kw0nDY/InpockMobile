@@ -114,9 +114,9 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (user) {
-      // Track dashboard visit with user context
+      // Only track page view for analytics, not URL visits
       trackPageView('/dashboard', `/dashboard?user_id=${user.id}`);
-      trackCustomUrlVisit('/dashboard', { user_id: user.id.toString(), role: user.role }, user.id.toString());
+      // Remove automatic URL visit tracking - only track when user explicitly clicks links
     }
   }, [user]);
 
