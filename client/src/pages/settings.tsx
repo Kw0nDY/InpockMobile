@@ -105,10 +105,8 @@ export default function SettingsPage() {
       return response.json();
     },
     onSuccess: (data) => {
-      setProfileData(prev => ({ ...prev, profileImageUrl: data.url }));
-      
       updateUserMutation.mutate({
-        profileImageUrl: data.url
+        avatar: data.path
       });
       
       toast({
@@ -177,7 +175,7 @@ export default function SettingsPage() {
           name: profileData.name,
           email: profileData.email,
           bio: profileData.bio,
-          profileImageUrl: profileData.profileImageUrl,
+          avatar: profileData.profileImageUrl,
           introVideoUrl: profileData.introVideoUrl,
         };
         console.log('User update data:', userUpdateData);
@@ -282,9 +280,9 @@ export default function SettingsPage() {
             {/* Avatar */}
             <div className="flex items-center space-x-4">
               <div className="relative">
-                {profileData.profileImageUrl ? (
+                {(user as any)?.avatar ? (
                   <img
-                    src={profileData.profileImageUrl}
+                    src={(user as any).avatar}
                     alt="프로필 이미지"
                     className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                   />

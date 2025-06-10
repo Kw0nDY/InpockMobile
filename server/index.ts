@@ -5,35 +5,43 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 
 // Profile upload route - MUST be registered before other middleware
-app.post("/api/upload/profile", (req, res) => {
+app.post("/api/upload/profile", async (req, res) => {
   console.log('Profile upload route hit directly');
-  const formidable = require('formidable');
-  const form = formidable({
-    uploadDir: './uploads',
-    keepExtensions: true,
-    maxFileSize: 10 * 1024 * 1024, // 10MB
-  });
-
-  form.parse(req, (err: any, fields: any, files: any) => {
-    if (err) {
-      console.error('Formidable parse error:', err);
-      return res.status(500).json({ message: 'Upload failed' });
-    }
-
-    const file = files.file;
-    if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
-    }
-
-    // Return the uploaded file info
-    res.json({
-      success: true,
-      filename: file[0]?.newFilename || file.newFilename,
-      originalName: file[0]?.originalFilename || file.originalFilename,
-      size: file[0]?.size || file.size,
-      path: `/uploads/${file[0]?.newFilename || file.newFilename}`
+  
+  try {
+    const formidable = await import('formidable');
+    const form = formidable.default({
+      uploadDir: './uploads',
+      keepExtensions: true,
+      maxFileSize: 10 * 1024 * 1024, // 10MB
     });
-  });
+
+    form.parse(req, (err: any, fields: any, files: any) => {
+      if (err) {
+        console.error('Formidable parse error:', err);
+        return res.status(500).json({ message: 'Upload failed' });
+      }
+
+      const file = files.file;
+      if (!file) {
+        return res.status(400).json({ message: 'No file uploaded' });
+      }
+
+      const uploadedFile = Array.isArray(file) ? file[0] : file;
+      
+      // Return the uploaded file info
+      res.json({
+        success: true,
+        filename: uploadedFile.newFilename,
+        originalName: uploadedFile.originalFilename,
+        size: uploadedFile.size,
+        path: `/uploads/${uploadedFile.newFilename}`
+      });
+    });
+  } catch (error) {
+    console.error('Import error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
 });
 
 app.use(express.json());
