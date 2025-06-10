@@ -176,31 +176,7 @@ export default function DashboardPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Short URL Display */}
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div className="flex-1">
-                  <p className="text-sm text-gray-600 korean-text">단축 URL</p>
-                  <p className="font-mono text-sm text-primary">
-                    {userSettings?.customUrl ? 
-                      `amusefit.co.kr/users/${userSettings.customUrl}` : 
-                      `amusefit.co.kr/users/${user?.username || 'default'}`
-                    }
-                  </p>
-                </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    const url = userSettings?.customUrl ? 
-                      `amusefit.co.kr/users/${userSettings.customUrl}` : 
-                      `amusefit.co.kr/users/${user?.username || 'default'}`;
-                    navigator.clipboard.writeText(url);
-                  }}
-                  className="text-gray-600 hover:text-primary"
-                >
-                  <Copy className="w-4 h-4" />
-                </Button>
-              </div>
+
 
               {/* Content Type Selection Display */}
               <div className="space-y-3">
@@ -250,7 +226,7 @@ export default function DashboardPage() {
                       src={currentUser.profileImageUrl}
                       alt="프로필 이미지"
                     >
-                      <div className="w-full h-48 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
+                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
                         <img
                           src={currentUser.profileImageUrl}
                           alt="Profile Content"
@@ -266,7 +242,7 @@ export default function DashboardPage() {
                 {currentContentType === 'video' && currentUser?.introVideoUrl && (
                   <div className="mb-4">
                     <VideoModal src={currentUser.introVideoUrl}>
-                      <div className="w-full h-48 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
+                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
                         <video
                           src={currentUser.introVideoUrl}
                           className="w-full h-full object-cover"
@@ -322,26 +298,26 @@ export default function DashboardPage() {
                 {/* Upload Prompt for Empty Content */}
                 {currentContentType === 'image' && !currentUser?.profileImageUrl && (
                   <div 
-                    className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
+                    className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
                     onClick={() => setLocation('/settings')}
                   >
                     <div className="text-center">
-                      <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-xs text-gray-500">이미지를 업로드하세요</p>
-                      <p className="text-xs text-blue-600 mt-1">설정에서 업로드하기</p>
+                      <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
+                      <p className="text-sm text-blue-600 mt-2">설정에서 업로드하기</p>
                     </div>
                   </div>
                 )}
                 
                 {currentContentType === 'video' && !currentUser?.introVideoUrl && (
                   <div 
-                    className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
+                    className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
                     onClick={() => setLocation('/settings')}
                   >
                     <div className="text-center">
-                      <Video className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                      <p className="text-xs text-gray-500">동영상을 업로드하세요</p>
-                      <p className="text-xs text-blue-600 mt-1">설정에서 업로드하기</p>
+                      <Video className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                      <p className="text-sm text-blue-600 mt-2">설정에서 업로드하기</p>
                     </div>
                   </div>
                 )}
