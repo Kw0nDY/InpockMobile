@@ -19,13 +19,14 @@ import { Skeleton } from "@/components/ui/skeleton";
 import NotificationDropdown from "@/components/ui/notification-dropdown";
 import VisitCountWidget from "@/components/analytics/visit-count-widget";
 import { ImageModal, VideoModal, LinkPreview } from "@/components/ui/media-modal";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { trackPageView, trackCustomUrlVisit } from "@/lib/analytics";
 import { useAnalyticsData } from "@/hooks/use-analytics-data";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
+  const [previewType, setPreviewType] = useState<string | null>(null);
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: [`/api/dashboard/stats/${user?.id}`],

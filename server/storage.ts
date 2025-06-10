@@ -140,7 +140,10 @@ export class MemStorage implements IStorage {
       twoFactorEnabled: false,
       bio: null,
       customUrl: null,
-      contentType: "link",
+      contentType: "links",
+      linkTitle: null,
+      linkDescription: null,
+      linkUrl: null,
       updatedAt: new Date(),
     };
     this.userSettings.set(1, demoSettings);
@@ -470,7 +473,10 @@ export class MemStorage implements IStorage {
       currency: insertSettings.currency ?? "KRW (₩)",
       bio: insertSettings.bio ?? null,
       customUrl: insertSettings.customUrl ?? null,
-      contentType: insertSettings.contentType ?? "link",
+      contentType: insertSettings.contentType ?? "links",
+      linkTitle: insertSettings.linkTitle ?? null,
+      linkDescription: insertSettings.linkDescription ?? null,
+      linkUrl: insertSettings.linkUrl ?? null,
       twoFactorEnabled: insertSettings.twoFactorEnabled ?? false,
       updatedAt: new Date(),
     };
