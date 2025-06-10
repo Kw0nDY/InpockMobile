@@ -1,5 +1,5 @@
 import { 
-  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens,
+  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads,
   type User, type InsertUser,
   type Link, type InsertLink,
   type Deal, type InsertDeal,
@@ -8,7 +8,8 @@ import {
   type Activity, type InsertActivity,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
-  type PasswordResetToken, type InsertPasswordResetToken
+  type PasswordResetToken, type InsertPasswordResetToken,
+  type MediaUpload, type InsertMediaUpload
 } from "@shared/schema";
 
 export interface IStorage {
@@ -66,6 +67,13 @@ export interface IStorage {
   getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
   markTokenAsUsed(token: string): Promise<boolean>;
   deleteExpiredTokens(): Promise<void>;
+
+  // Media Uploads
+  getUserMediaUploads(userId: number): Promise<MediaUpload[]>;
+  getMediaUpload(id: number): Promise<MediaUpload | undefined>;
+  createMediaUpload(upload: InsertMediaUpload): Promise<MediaUpload>;
+  deleteMediaUpload(id: number): Promise<boolean>;
+  incrementUserVisitCount(userId: number): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
@@ -78,6 +86,7 @@ export class MemStorage implements IStorage {
   private userSettings: Map<number, UserSettings> = new Map();
   private subscriptions: Map<number, Subscription> = new Map();
   private passwordResetTokens: Map<string, PasswordResetToken> = new Map();
+  private mediaUploads: Map<number, MediaUpload> = new Map();
   
   private currentUserId = 1;
   private currentLinkId = 1;
@@ -87,6 +96,7 @@ export class MemStorage implements IStorage {
   private currentActivityId = 1;
   private currentUserSettingsId = 1;
   private currentSubscriptionId = 1;
+  private currentMediaUploadId = 1;
 
   constructor() {
     // Initialize with some demo data
@@ -257,6 +267,11 @@ export class MemStorage implements IStorage {
       role: insertUser.role || null,
       avatar: insertUser.avatar || null,
       profileImageUrl: insertUser.profileImageUrl || null,
+      introVideoUrl: insertUser.introVideoUrl || null,
+      bio: insertUser.bio || null,
+      customUrl: insertUser.customUrl || null,
+      contentType: insertUser.contentType || "links",
+      visitCount: insertUser.visitCount || 0,
       provider: insertUser.provider || null,
       providerId: insertUser.providerId || null,
       createdAt: new Date(),
@@ -550,6 +565,45 @@ export class MemStorage implements IStorage {
       this.passwordResetTokens.delete(tokenValue);
     });
   }
+
+  // Media Upload methods
+  async getUserMediaUploads(userId: number): Promise<MediaUpload[]> {
+    return Array.from(this.mediaUploads.values()).filter(upload => upload.userId === userId);
+  }
+
+  async getMediaUpload(id: number): Promise<MediaUpload | undefined> {
+    return this.mediaUploads.get(id);
+  }
+
+  async createMediaUpload(insertUpload: InsertMediaUpload): Promise<MediaUpload> {
+    const id = this.currentMediaUploadId++;
+    const upload: MediaUpload = {
+      id,
+      userId: insertUpload.userId,
+      fileName: insertUpload.fileName,
+      originalName: insertUpload.originalName,
+      mimeType: insertUpload.mimeType,
+      fileSize: insertUpload.fileSize,
+      filePath: insertUpload.filePath,
+      mediaType: insertUpload.mediaType,
+      isActive: insertUpload.isActive ?? true,
+      createdAt: new Date(),
+    };
+    this.mediaUploads.set(id, upload);
+    return upload;
+  }
+
+  async deleteMediaUpload(id: number): Promise<boolean> {
+    return this.mediaUploads.delete(id);
+  }
+
+  async incrementUserVisitCount(userId: number): Promise<void> {
+    const user = this.users.get(userId);
+    if (user) {
+      const updatedUser = { ...user, visitCount: (user.visitCount || 0) + 1 };
+      this.users.set(userId, updatedUser);
+    }
+  }
 }
 
 import { db } from "./db";
@@ -816,6 +870,39 @@ export class DatabaseStorage implements IStorage {
           eq(passwordResetTokens.used, true)
         )
       );
+  }
+
+  // Media Upload methods
+  async getUserMediaUploads(userId: number): Promise<MediaUpload[]> {
+    return await db.select().from(mediaUploads).where(eq(mediaUploads.userId, userId));
+  }
+
+  async getMediaUpload(id: number): Promise<MediaUpload | undefined> {
+    const [upload] = await db.select().from(mediaUploads).where(eq(mediaUploads.id, id));
+    return upload || undefined;
+  }
+
+  async createMediaUpload(insertUpload: InsertMediaUpload): Promise<MediaUpload> {
+    const [upload] = await db
+      .insert(mediaUploads)
+      .values(insertUpload)
+      .returning();
+    return upload;
+  }
+
+  async deleteMediaUpload(id: number): Promise<boolean> {
+    const [deletedUpload] = await db
+      .delete(mediaUploads)
+      .where(eq(mediaUploads.id, id))
+      .returning();
+    return !!deletedUpload;
+  }
+
+  async incrementUserVisitCount(userId: number): Promise<void> {
+    await db
+      .update(users)
+      .set({ visitCount: users.visitCount + 1 })
+      .where(eq(users.id, userId));
   }
 }
 
