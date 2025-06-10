@@ -1,0 +1,87 @@
+🎯 UI & Logic Update Specification for amuseFit
+📱 1. Home Screen (Screenshot 1 – Localhost)
+🧩 A. Top Stats Cards
+Connection: Number of URLs created by the user
+
+Deal (팀): Number of successful actions or conversions through those URLs
+
+Visit: Should show "Total Visit" count from Realtime View below → currently incorrect logic (fix data binding)
+
+👁️ B. Realtime Visit View (Below the cards)
+Displays:
+
+Total Visit, Unique Visitor, Custom URL count
+
+Frequently used tracked URLs with visit badges and copy button
+
+“View Full Analytics” button
+
+⚠️ Fix: "Total Visit" should be shown both here and at the top in Visit card
+
+⚙️ 2. Settings Page → Profile Settings Screen (Screenshot 2 → Redesign via Screenshot 4)
+🔄 Redesign Based On:
+Use Screenshot 4 as visual wireframe
+
+Make it functionally reflect the actual state and user profile
+
+📌 Sections to include:
+Profile
+
+Avatar (editable)
+
+Name, email
+
+Introduction Section
+
+Input for self-description or bio
+
+Short URL Setting
+
+Option 1: Default (e.g., amusefit.co.kr/users)
+
+Option 2: Custom (e.g., amusefit.co.kr/users/yourname)
+
+Redirect Content Selection
+
+Choose one:
+
+Image
+
+Video
+
+Link Card
+
+Use card-style radio buttons (as shown in Screenshot 3)
+
+🔁 3. Show Selected Content on Home
+✅ Show Profile + Content Choice from Settings on Home Screen:
+Underneath the Stats Cards (Connection, Deal, Visit)
+
+Include a "Profile View Block" that shows:
+
+The selected short URL (default or custom)
+
+The content type chosen in settings (Image, Video, or Link)
+
+A live preview of that content block (thumbnail style)
+
+Example layout:
+pgsql
+복사
+편집
+[ Connection | Deal | Visit ]
+-----------------------------
+[ Real-Time Visit View ]
+
+--- NEW SECTION ---
+[ Short URL: amusefit.co.kr/users/kim ]
+[ Selected View: Image | Video | Link ]
+[ Thumbnail-style preview of selected content ]
+🎨 Design Direction
+Follow soft brown theme currently applied
+
+Card-style, clean modern UI
+
+Mobile-first layout
+
+Follow Screenshot 3’s visual language for styling switches, cards, and buttons

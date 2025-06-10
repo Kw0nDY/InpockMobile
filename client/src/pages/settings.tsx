@@ -1,55 +1,45 @@
 import { useState, useEffect } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import Header from "@/components/layout/header";
-import type { UserSettings, Subscription } from "@shared/schema";
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
-  const [localSettings, setLocalSettings] = useState({
-    notifications: true,
-    marketing: false,
-    darkMode: false,
-    language: "한국어",
-    timezone: "Seoul (UTC+9)",
-    currency: "KRW (₩)",
+  const [profileData, setProfileData] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    bio: '',
+    avatar: '',
+    shortUrlType: 'default',
+    customUrl: '',
+    contentType: 'link'
   });
 
-  // Fetch user settings
-  const { data: userSettings, isLoading: settingsLoading } =
-    useQuery<UserSettings>({
-      queryKey: [`/api/settings/${user?.id}`],
-      enabled: !!user?.id,
-    });
+  const [copied, setCopied] = useState(false);
 
-  // Fetch user subscription
-  const { data: subscription, isLoading: subscriptionLoading } =
-    useQuery<Subscription>({
-      queryKey: [`/api/subscription/${user?.id}`],
-      enabled: !!user?.id,
-    });
+  // Fetch user settings
+  const { data: userSettings, isLoading: settingsLoading } = useQuery({
+    queryKey: [`/api/settings/${user?.id}`],
+    enabled: !!user?.id,
+  });
 
   // Update settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (updates: any) => {
       const response = await apiRequest(
-        "PUT",
+        "POST",
         `/api/settings/${user?.id}`,
         updates,
       );
@@ -60,44 +50,29 @@ export default function SettingsPage() {
         queryKey: [`/api/settings/${user?.id}`],
       });
       toast({
-        title: "설정 저장됨",
-        description: "변경사항이 성공적으로 저장되었습니다.",
+        title: "프로필 저장됨",
+        description: "프로필 설정이 성공적으로 저장되었습니다.",
       });
     },
     onError: () => {
       toast({
-        title: "설정 저장 실패",
-        description: "설정 저장 중 오류가 발생했습니다.",
+        title: "저장 실패",
+        description: "프로필 저장 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     },
   });
 
-  // Sync local state with fetched settings
+  // Sync with fetched settings
   useEffect(() => {
-    if (
-      userSettings &&
-      typeof userSettings === "object" &&
-      "notifications" in userSettings
-    ) {
-      setLocalSettings({
-        notifications: userSettings.notifications ?? true,
-        marketing: userSettings.marketing ?? false,
-        darkMode: userSettings.darkMode ?? false,
-        language: userSettings.language ?? "한국어",
-        timezone: userSettings.timezone ?? "Seoul (UTC+9)",
-        currency: userSettings.currency ?? "KRW (₩)",
-      });
-    } else {
-      // Set default values when no settings are loaded
-      setLocalSettings({
-        notifications: true,
-        marketing: false,
-        darkMode: false,
-        language: "한국어",
-        timezone: "Seoul (UTC+9)",
-        currency: "KRW (₩)",
-      });
+    if (userSettings) {
+      setProfileData(prev => ({
+        ...prev,
+        bio: userSettings.bio || '',
+        customUrl: userSettings.customUrl || '',
+        shortUrlType: userSettings.customUrl ? 'custom' : 'default',
+        contentType: userSettings.contentType || 'link'
+      }));
     }
   }, [userSettings]);
 
@@ -106,247 +81,281 @@ export default function SettingsPage() {
       .split(" ")
       .map((n) => n[0])
       .join("")
-      .slice(0, 2);
+      .slice(0, 2)
+      .toUpperCase();
   };
 
-  const handleSaveSettings = () => {
-    updateSettingsMutation.mutate(localSettings);
+  const handleSaveProfile = () => {
+    updateSettingsMutation.mutate(profileData);
   };
 
-  const handleSettingsAction = (action: string) => {
+  const handleCopyUrl = () => {
+    const url = profileData.shortUrlType === 'custom' && profileData.customUrl
+      ? `amusefit.co.kr/users/${profileData.customUrl}`
+      : `amusefit.co.kr/users/${user?.username || 'default'}`;
+    
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    
     toast({
-      title: `${action} 선택됨`,
-      description: `${action} 페이지로 이동합니다.`,
+      title: "URL 복사됨",
+      description: "단축 URL이 클립보드에 복사되었습니다.",
     });
   };
 
-  const handleLogout = () => {
-    logout();
-    setLocation("/");
-    toast({
-      title: "로그아웃",
-      description: "성공적으로 로그아웃되었습니다.",
-    });
+  const updateProfileData = (key: string, value: any) => {
+    setProfileData(prev => ({ ...prev, [key]: value }));
   };
 
-  const updateSetting = (key: string, value: any) => {
-    setLocalSettings((prev) => ({ ...prev, [key]: value }));
-  };
+  const shortUrl = profileData.shortUrlType === 'custom' && profileData.customUrl
+    ? `amusefit.co.kr/users/${profileData.customUrl}`
+    : `amusefit.co.kr/users/${user?.username || 'default'}`;
 
   return (
-    <div
-      className={`min-h-screen pb-20 bg-gray-50${localSettings.darkMode ? "" : ""}`}
-    >
-      <Header
-        title="설정"
-        rightAction={{ text: "저장", onClick: handleSaveSettings }}
-      />
-
-      <div className="divide-y divide-gray-100">
-        {/* Profile Section */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">프로필</h3>
-          <div className="flex items-center mb-4">
-            <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center mr-4">
-              <span className="text-white font-medium text-lg">
-                {user?.name ? getInitials(user.name) : "사용자"}
-              </span>
-            </div>
-            <div className="flex-1">
-              <p className="font-medium korean-text">
-                {user?.name || "사용자"}
-              </p>
-              <p className="text-gray-500 text-sm">{user?.email}</p>
-            </div>
-            <button
-              onClick={() => handleSettingsAction("프로필 편집")}
-              className="text-primary text-sm korean-text"
-            >
-              편집
-            </button>
-          </div>
-        </div>
-
-        {/* Account Settings */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">계정 설정</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">알림 설정</span>
-              <Switch
-                checked={localSettings.notifications}
-                onCheckedChange={(checked) =>
-                  updateSetting("notifications", checked)
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">마케팅 이메일</span>
-              <Switch
-                checked={localSettings.marketing}
-                onCheckedChange={(checked) =>
-                  updateSetting("marketing", checked)
-                }
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">다크 모드</span>
-              <Switch
-                checked={localSettings.darkMode}
-                onCheckedChange={(checked) =>
-                  updateSetting("darkMode", checked)
-                }
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Language & Region */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">언어 및 지역</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">언어</span>
-              <Select
-                value={localSettings.language}
-                onValueChange={(value) => updateSetting("language", value)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="한국어">한국어</SelectItem>
-                  <SelectItem value="English">English</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">시간대</span>
-              <Select
-                value={localSettings.timezone}
-                onValueChange={(value) => updateSetting("timezone", value)}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Seoul (UTC+9)">Seoul (UTC+9)</SelectItem>
-                  <SelectItem value="Tokyo (UTC+9)">Tokyo (UTC+9)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-sm korean-text">통화</span>
-              <Select
-                value={localSettings.currency}
-                onValueChange={(value) => updateSetting("currency", value)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="KRW (₩)">KRW (₩)</SelectItem>
-                  <SelectItem value="USD ($)">USD ($)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        {/* Security */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">보안</h3>
-          <div className="space-y-3">
-            <button
-              onClick={() => handleSettingsAction("비밀번호 변경")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">비밀번호 변경</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleSettingsAction("2단계 인증")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">2단계 인증</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleSettingsAction("연결된 기기")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">연결된 기기</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* Subscription */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">구독 관리</h3>
-          <div className="feature-card-bg rounded-lg p-4 mb-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium korean-text">INPOCK PRO</span>
-              <span className="text-primary font-bold">₩19,000/월</span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3 korean-text">
-              다음 결제일: 2024년 2월 15일
-            </p>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-100 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
             <Button
-              onClick={() => handleSettingsAction("구독 관리")}
-              className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/90"
+              variant="ghost"
+              size="sm"
+              onClick={() => setLocation('/dashboard')}
+              className="text-gray-600 hover:text-gray-800"
             >
-              구독 관리
+              <ChevronLeft className="w-5 h-5" />
             </Button>
+            <h1 className="text-lg font-semibold text-gray-800">프로필 설정</h1>
           </div>
-        </div>
-
-        {/* Support */}
-        <div className="p-4 bg-white">
-          <h3 className="font-medium mb-4 korean-text">지원</h3>
-          <div className="space-y-3">
-            <button
-              onClick={() => handleSettingsAction("고객 지원")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">고객 지원</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleSettingsAction("도움말 센터")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">도움말 센터</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-
-            <button
-              onClick={() => handleSettingsAction("피드백 보내기")}
-              className="w-full flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <span className="text-sm korean-text">피드백 보내기</span>
-              <ChevronRight className="w-4 h-4 text-gray-400" />
-            </button>
-          </div>
-        </div>
-
-        {/* Logout */}
-        <div className="p-4 bg-white">
           <Button
-            onClick={handleLogout}
-            variant="destructive"
-            className="w-full bg-red-500 text-white py-3 rounded-lg font-medium hover:bg-red-600"
+            onClick={handleSaveProfile}
+            disabled={updateSettingsMutation.isPending}
+            className="bg-primary text-white hover:bg-primary/90"
           >
-            로그아웃
+            {updateSettingsMutation.isPending ? '저장 중...' : '저장'}
           </Button>
         </div>
+      </header>
+
+      <div className="p-4 space-y-6">
+        {/* Profile Section */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">프로필</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Avatar */}
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+                  <span className="text-white font-medium text-xl">
+                    {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
+                  </span>
+                </div>
+                <Button
+                  size="sm"
+                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border-2 border-gray-200 text-gray-600 hover:text-gray-800"
+                >
+                  <Camera className="w-4 h-4" />
+                </Button>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-600 mb-1">프로필 사진</p>
+                <p className="text-xs text-gray-500">클릭하여 이미지를 변경하세요</p>
+              </div>
+            </div>
+
+            {/* Name */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-sm font-medium text-gray-700">이름</Label>
+              <Input
+                id="name"
+                value={profileData.name}
+                onChange={(e) => updateProfileData('name', e.target.value)}
+                placeholder="이름을 입력하세요"
+                className="border-gray-200 focus:border-primary"
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-gray-700">이메일</Label>
+              <Input
+                id="email"
+                value={profileData.email}
+                onChange={(e) => updateProfileData('email', e.target.value)}
+                placeholder="이메일을 입력하세요"
+                className="border-gray-200 focus:border-primary"
+                disabled
+              />
+            </div>
+
+            {/* Bio */}
+            <div className="space-y-2">
+              <Label htmlFor="bio" className="text-sm font-medium text-gray-700">소개</Label>
+              <Textarea
+                id="bio"
+                value={profileData.bio}
+                onChange={(e) => updateProfileData('bio', e.target.value)}
+                placeholder="자신을 소개해보세요"
+                className="border-gray-200 focus:border-primary resize-none"
+                rows={3}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Short URL Setting */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">단축 URL 설정</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <RadioGroup
+              value={profileData.shortUrlType}
+              onValueChange={(value) => updateProfileData('shortUrlType', value)}
+              className="space-y-3"
+            >
+              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                <RadioGroupItem value="default" id="default" />
+                <Label htmlFor="default" className="flex-1 cursor-pointer">
+                  <div>
+                    <p className="font-medium text-gray-800">기본값</p>
+                    <p className="text-sm text-gray-600">amusefit.co.kr/users/{user?.username || 'default'}</p>
+                  </div>
+                </Label>
+              </div>
+
+              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                <RadioGroupItem value="custom" id="custom" />
+                <Label htmlFor="custom" className="flex-1 cursor-pointer">
+                  <div>
+                    <p className="font-medium text-gray-800">커스텀</p>
+                    <div className="mt-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">amusefit.co.kr/users/</span>
+                        <Input
+                          value={profileData.customUrl}
+                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
+                          placeholder="yourname"
+                          className="flex-1 h-8 text-sm border-gray-200 focus:border-primary"
+                          disabled={profileData.shortUrlType !== 'custom'}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </Label>
+              </div>
+            </RadioGroup>
+
+            {/* URL Preview & Copy */}
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">미리보기</p>
+                  <p className="font-mono text-sm text-primary">{shortUrl}</p>
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleCopyUrl}
+                  className="text-gray-600 hover:text-primary"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Content Type Selection */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">리디렉션 콘텐츠 선택</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup
+              value={profileData.contentType}
+              onValueChange={(value) => updateProfileData('contentType', value)}
+              className="grid grid-cols-3 gap-3"
+            >
+              {[
+                { value: 'image', label: '이미지', icon: Image },
+                { value: 'video', label: '비디오', icon: Video },
+                { value: 'link', label: '링크 카드', icon: ExternalLink }
+              ].map(({ value, label, icon: Icon }) => (
+                <div key={value} className="relative">
+                  <RadioGroupItem value={value} id={value} className="sr-only" />
+                  <Label
+                    htmlFor={value}
+                    className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                      profileData.contentType === value
+                        ? 'border-primary bg-primary/5'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    }`}
+                  >
+                    <Icon className={`w-8 h-8 mb-2 ${
+                      profileData.contentType === value ? 'text-primary' : 'text-gray-400'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      profileData.contentType === value ? 'text-primary' : 'text-gray-600'
+                    }`}>
+                      {label}
+                    </span>
+                  </Label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            {/* Content Preview */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600 mb-3">선택한 콘텐츠 미리보기</p>
+              
+              {profileData.contentType === 'image' && (
+                <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
+                  </div>
+                </div>
+              )}
+
+              {profileData.contentType === 'video' && (
+                <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <Video className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">비디오를 업로드하세요</p>
+                  </div>
+                </div>
+              )}
+
+              {profileData.contentType === 'link' && (
+                <div className="p-4 border border-gray-200 rounded-lg bg-white">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                      <span className="text-white font-medium text-sm">
+                        {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-medium text-gray-800">
+                        {profileData.name || user?.name || '사용자'}의 프로필
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {profileData.bio || '안녕하세요! 반갑습니다.'}
+                      </p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <ExternalLink className="w-4 h-4 text-primary" />
+                        <span className="text-sm text-primary">{shortUrl}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
