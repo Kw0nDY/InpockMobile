@@ -22,12 +22,6 @@ const loginSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Profile image upload route - register FIRST to avoid multer interference
-  app.post("/api/upload/profile", (req, res) => {
-    console.log('Profile upload route hit, content-type:', req.headers['content-type']);
-    handleFormidableUpload(req, res);
-  });
-
   // Setup Kakao OAuth authentication
   setupKakaoAuth(app);
 

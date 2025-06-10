@@ -3,6 +3,39 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Profile upload route - MUST be registered before other middleware
+app.post("/api/upload/profile", (req, res) => {
+  console.log('Profile upload route hit directly');
+  const formidable = require('formidable');
+  const form = formidable({
+    uploadDir: './uploads',
+    keepExtensions: true,
+    maxFileSize: 10 * 1024 * 1024, // 10MB
+  });
+
+  form.parse(req, (err: any, fields: any, files: any) => {
+    if (err) {
+      console.error('Formidable parse error:', err);
+      return res.status(500).json({ message: 'Upload failed' });
+    }
+
+    const file = files.file;
+    if (!file) {
+      return res.status(400).json({ message: 'No file uploaded' });
+    }
+
+    // Return the uploaded file info
+    res.json({
+      success: true,
+      filename: file[0]?.newFilename || file.newFilename,
+      originalName: file[0]?.originalFilename || file.originalFilename,
+      size: file[0]?.size || file.size,
+      path: `/uploads/${file[0]?.newFilename || file.newFilename}`
+    });
+  });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
