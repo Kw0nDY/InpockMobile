@@ -33,6 +33,7 @@ export default function SettingsPage() {
   });
 
   const [copied, setCopied] = useState(false);
+  const [isUploadingProfile, setIsUploadingProfile] = useState(false);
 
   // Fetch user settings
   const { data: userSettings, isLoading: settingsLoading } = useQuery({
@@ -90,6 +91,48 @@ export default function SettingsPage() {
     },
   });
 
+  // Profile image upload mutation
+  const uploadProfileImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'image');
+      
+      const response = await fetch('/api/upload/media', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setProfileData(prev => ({ ...prev, profileImageUrl: data.url }));
+      
+      // Update user profile with new image URL
+      updateUserMutation.mutate({
+        profileImageUrl: data.url
+      });
+      
+      toast({
+        title: "프로필 이미지 업데이트",
+        description: "프로필 이미지가 성공적으로 변경되었습니다.",
+      });
+      setIsUploadingProfile(false);
+    },
+    onError: () => {
+      toast({
+        title: "업로드 실패",
+        description: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
+        variant: "destructive",
+      });
+      setIsUploadingProfile(false);
+    },
+  });
+
   // Sync with fetched settings
   useEffect(() => {
     if (userSettings && typeof userSettings === 'object') {
@@ -113,6 +156,20 @@ export default function SettingsPage() {
       .join("")
       .slice(0, 2)
       .toUpperCase();
+  };
+
+  const handleProfileImageUpload = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        setIsUploadingProfile(true);
+        uploadProfileImageMutation.mutate(file);
+      }
+    };
+    input.click();
   };
 
   const handleSaveProfile = async () => {
@@ -236,16 +293,30 @@ export default function SettingsPage() {
             {/* Avatar */}
             <div className="flex items-center space-x-4">
               <div className="relative">
-                <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-                  <span className="text-white font-medium text-xl">
-                    {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
-                  </span>
-                </div>
+                {profileData.profileImageUrl ? (
+                  <img
+                    src={profileData.profileImageUrl}
+                    alt="프로필 이미지"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                  />
+                ) : (
+                  <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+                    <span className="text-white font-medium text-xl">
+                      {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
+                    </span>
+                  </div>
+                )}
                 <Button
                   size="sm"
-                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border-2 border-gray-200 text-gray-600 hover:text-gray-800"
+                  onClick={handleProfileImageUpload}
+                  disabled={isUploadingProfile}
+                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border-2 border-gray-200 text-gray-600 hover:text-gray-800 disabled:opacity-50"
                 >
-                  <Camera className="w-4 h-4" />
+                  {isUploadingProfile ? (
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Camera className="w-4 h-4" />
+                  )}
                 </Button>
               </div>
               <div className="flex-1">
