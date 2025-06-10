@@ -33,7 +33,7 @@ interface VisitCountWidgetProps {
   className?: string;
 }
 
-export default function VisitCountWidget({ compact = false, showAddButton = true }: VisitCountWidgetProps) {
+export default function VisitCountWidget({ compact = false, showAddButton = true, userDefinedUrl, className }: VisitCountWidgetProps) {
   const { user } = useAuth();
   const [trackedUrls] = useState([
     '/dashboard?utm_source=email',
@@ -77,7 +77,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
   }
 
   return (
-    <Card className="bg-card border-border">
+    <Card className={`bg-card border-border ${className || ''}`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-foreground flex items-center space-x-2">
           <Eye className="w-5 h-5" />
