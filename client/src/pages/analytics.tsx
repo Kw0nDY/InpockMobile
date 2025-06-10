@@ -16,8 +16,8 @@ export default function AnalyticsPage() {
   }, [user]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="flex items-center justify-between p-4 border-b border-border">
+    <div className="min-h-screen bg-background pb-20">
+      <header className="sticky top-0 z-10 flex items-center justify-between p-4 border-b border-border bg-background/95 backdrop-blur-sm">
         <button 
           className="p-2" 
           onClick={() => setLocation('/dashboard')}
@@ -28,7 +28,7 @@ export default function AnalyticsPage() {
         <div className="w-10"></div>
       </header>
 
-      <div className="px-6 py-8">
+      <div className="px-6 py-8 pb-24">
         <div className="mb-8">
           <h2 className="text-2xl font-bold mb-2 text-foreground korean-text">
             실시간 URL 추적 분석

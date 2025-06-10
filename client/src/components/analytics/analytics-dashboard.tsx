@@ -27,26 +27,7 @@ interface TrackedUrl {
 
 export default function AnalyticsDashboard() {
   const { user } = useAuth();
-  const [trackedUrls, setTrackedUrls] = useState<TrackedUrl[]>([
-    {
-      id: '1',
-      url: '/dashboard?utm_source=email&utm_campaign=newsletter',
-      label: 'Email Campaign Dashboard',
-      parameters: { utm_source: 'email', utm_campaign: 'newsletter' }
-    },
-    {
-      id: '2', 
-      url: '/marketplace?category=deals&featured=true',
-      label: 'Featured Deals Page',
-      parameters: { category: 'deals', featured: 'true' }
-    },
-    {
-      id: '3',
-      url: '/links?ref=social&platform=kakao',
-      label: 'Kakao Social Links',
-      parameters: { ref: 'social', platform: 'kakao' }
-    }
-  ]);
+  const [trackedUrls, setTrackedUrls] = useState<TrackedUrl[]>([]);
   
   const [newUrl, setNewUrl] = useState('');
   const [newLabel, setNewLabel] = useState('');
@@ -233,22 +214,22 @@ export default function AnalyticsDashboard() {
               return (
                 <div 
                   key={trackedUrl.id}
-                  className="flex items-center justify-between p-4 bg-muted rounded-lg border border-border"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-muted rounded-lg border border-border gap-4"
                 >
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <h4 className="font-medium text-foreground">{trackedUrl.label}</h4>
-                      <Badge variant="secondary" className="bg-accent/20 text-accent">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      <h4 className="font-medium text-foreground truncate">{trackedUrl.label}</h4>
+                      <Badge variant="secondary" className="bg-accent/20 text-accent flex-shrink-0">
                         {totalVisits.toLocaleString()} 방문
                       </Badge>
                       {realtimeCount > 0 && (
-                        <Badge variant="outline" className="border-green-500 text-green-600">
+                        <Badge variant="outline" className="border-green-500 text-green-600 flex-shrink-0">
                           +{realtimeCount} 실시간
                         </Badge>
                       )}
                     </div>
                     
-                    <p className="text-sm text-muted-foreground font-mono mb-2">{trackedUrl.url}</p>
+                    <p className="text-sm text-muted-foreground font-mono mb-2 break-all">{trackedUrl.url}</p>
                     
                     {trackedUrl.parameters && (
                       <div className="flex flex-wrap gap-2 mb-2">
@@ -272,12 +253,13 @@ export default function AnalyticsDashboard() {
                     )}
                   </div>
                   
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     <Button
                       onClick={() => simulateVisit(trackedUrl.url)}
                       size="sm"
                       variant="outline"
-                      className="border-border text-foreground hover:bg-muted"
+                      className="border-border text-foreground hover:bg-muted h-8 w-8 p-0"
+                      title="방문 시뮬레이션"
                     >
                       <ExternalLink className="w-4 h-4" />
                     </Button>
@@ -285,7 +267,8 @@ export default function AnalyticsDashboard() {
                       onClick={() => removeTrackedUrl(trackedUrl.id)}
                       size="sm"
                       variant="outline"
-                      className="border-destructive text-destructive hover:bg-destructive/10"
+                      className="border-destructive text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                      title="URL 삭제"
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
