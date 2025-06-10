@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BarChart3, TrendingUp, Eye, ExternalLink, RefreshCw } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { BarChart3, TrendingUp, Eye, ExternalLink, RefreshCw, Plus, Trash2 } from 'lucide-react';
 import { useAnalyticsData } from '@/hooks/use-analytics-data';
 import { trackCustomUrlVisit } from '@/lib/analytics';
 import { useAuth } from '@/hooks/use-auth';
@@ -35,17 +36,36 @@ interface VisitCountWidgetProps {
 
 export default function VisitCountWidget({ compact = false, showAddButton = true, userDefinedUrl, className }: VisitCountWidgetProps) {
   const { user } = useAuth();
-  const [trackedUrls] = useState([
-    '/dashboard?utm_source=email',
-    '/marketplace?category=deals',
-    '/links?ref=social'
-  ]);
+  const [trackedUrls, setTrackedUrls] = useState<string[]>([]);
+  const [newUrl, setNewUrl] = useState('');
+  const [showAddForm, setShowAddForm] = useState(false);
   
   const { data: analyticsData, isLoading, refetch } = useAnalyticsData();
   
   const simulateVisit = (url: string) => {
     trackCustomUrlVisit(url, {}, user?.id.toString());
     refetch();
+  };
+
+  const addUrl = () => {
+    if (newUrl.trim() && !trackedUrls.includes(newUrl.trim())) {
+      setTrackedUrls([...trackedUrls, newUrl.trim()]);
+      setNewUrl('');
+      setShowAddForm(false);
+    }
+  };
+
+  const removeUrl = (urlToRemove: string) => {
+    setTrackedUrls(trackedUrls.filter(url => url !== urlToRemove));
+  };
+
+  const getUrlLabel = (url: string) => {
+    if (url.includes('dashboard')) return '대시보드';
+    if (url.includes('marketplace')) return '마켓플레이스';
+    if (url.includes('links')) return '링크';
+    if (url.includes('analytics')) return '분석';
+    if (url.includes('settings')) return '설정';
+    return 'URL';
   };
 
   if (compact) {
@@ -121,59 +141,100 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
           </div>
           
           <div className="space-y-2">
-            <div className="flex items-center justify-between p-2 bg-background rounded border">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-foreground">대시보드</span>
-                  <span className="text-xs text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded">새 방문</span>
-                </div>
-                <p className="text-xs text-muted-foreground font-mono">/dashboard?user_id={user?.id}</p>
+            {trackedUrls.length === 0 ? (
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground">추적 가능한 URL 없음</p>
+                <p className="text-xs text-muted-foreground mt-1">URL을 추가하여 방문 추적을 시작하세요</p>
               </div>
-              <Button
-                onClick={() => simulateVisit(`/dashboard?user_id=${user?.id}`)}
-                size="sm"
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ExternalLink className="w-3 h-3" />
-              </Button>
-            </div>
+            ) : (
+              trackedUrls.map((url, index) => {
+                const visitData = getUrlVisitData(url);
+                const label = getUrlLabel(url);
+                
+                return (
+                  <div key={index} className="flex items-center justify-between p-2 bg-background rounded border">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm font-medium text-foreground">{label}</span>
+                        <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">
+                          {visitData.visits}회 방문
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground font-mono">{url}</p>
+                      {visitData.lastVisit && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Button
+                        onClick={() => simulateVisit(url)}
+                        size="sm"
+                        variant="ghost"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
+                        <ExternalLink className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        onClick={() => removeUrl(url)}
+                        size="sm"
+                        variant="ghost"
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })
+            )}
             
-            <div className="flex items-center justify-between p-2 bg-background rounded border">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-foreground">마켓플레이스</span>
-                  <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">최근 방문</span>
+            {/* Add URL Form */}
+            {showAddForm ? (
+              <div className="border border-gray-200 rounded-lg p-3 bg-gray-50">
+                <div className="space-y-2">
+                  <Input
+                    placeholder="URL 입력 (예: /dashboard?utm_source=email)"
+                    value={newUrl}
+                    onChange={(e) => setNewUrl(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addUrl()}
+                    className="text-sm"
+                  />
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={addUrl}
+                      size="sm"
+                      variant="default"
+                      className="flex-1"
+                    >
+                      추가
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowAddForm(false);
+                        setNewUrl('');
+                      }}
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                    >
+                      취소
+                    </Button>
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground font-mono">/marketplace?category=deals</p>
               </div>
+            ) : (
               <Button
-                onClick={() => simulateVisit('/marketplace?category=deals')}
+                onClick={() => setShowAddForm(true)}
+                variant="outline"
                 size="sm"
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
+                className="w-full border-dashed"
               >
-                <ExternalLink className="w-3 h-3" />
+                <Plus className="w-3 h-3 mr-1" />
+                URL 추가
               </Button>
-            </div>
-            
-            <div className="flex items-center justify-between p-2 bg-background rounded border">
-              <div className="flex-1">
-                <div className="flex items-center space-x-2">
-                  <span className="text-sm font-medium text-foreground">링크</span>
-                  <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded">활성 링크</span>
-                </div>
-                <p className="text-xs text-muted-foreground font-mono">/links?ref=social</p>
-              </div>
-              <Button
-                onClick={() => simulateVisit('/links?ref=social')}
-                size="sm"
-                variant="ghost"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <ExternalLink className="w-3 h-3" />
-              </Button>
-            </div>
+            )}
           </div>
           
           <Button
