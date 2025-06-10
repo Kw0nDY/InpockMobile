@@ -14,7 +14,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { MediaUpload } from "@/components/profile/media-upload";
 
 export default function SettingsPage() {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -71,19 +71,14 @@ export default function SettingsPage() {
   // Update user profile mutation
   const updateUserMutation = useMutation({
     mutationFn: async (updates: any) => {
-      const response = await fetch(`/api/user/${user?.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to update user');
-      }
+      const response = await apiRequest("PUT", `/api/user/${user?.id}`, updates);
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Update the user context with new data
+      if (data.user && user) {
+        setUser({ ...user, ...data.user });
+      }
       queryClient.invalidateQueries({
         queryKey: [`/api/user/${user?.id}`],
       });
@@ -95,7 +90,8 @@ export default function SettingsPage() {
         description: "프로필이 성공적으로 업데이트되었습니다.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('User update error:', error);
       toast({
         title: "업데이트 실패",
         description: "프로필 업데이트 중 오류가 발생했습니다.",
@@ -128,23 +124,32 @@ export default function SettingsPage() {
 
   const handleSaveProfile = async () => {
     try {
+      console.log('Saving profile data:', profileData);
+      console.log('User ID:', user?.id);
+      
       // Save user profile data (name, email, bio, media URLs)
       if (user?.id) {
-        await updateUserMutation.mutateAsync({
+        const userUpdateData = {
           name: profileData.name,
           email: profileData.email,
           bio: profileData.bio,
           profileImageUrl: profileData.profileImageUrl,
           introVideoUrl: profileData.introVideoUrl,
-        });
+        };
+        console.log('User update data:', userUpdateData);
+        await updateUserMutation.mutateAsync(userUpdateData);
       }
 
       // Save settings data (URLs, content type)
-      await updateSettingsMutation.mutateAsync({
+      const settingsUpdateData = {
         bio: profileData.bio,
         customUrl: profileData.customUrl,
         contentType: profileData.contentType,
-      });
+      };
+      console.log('Settings update data:', settingsUpdateData);
+      await updateSettingsMutation.mutateAsync(settingsUpdateData);
+      
+      console.log('Profile saved successfully');
     } catch (error) {
       console.error('Save error:', error);
     }
