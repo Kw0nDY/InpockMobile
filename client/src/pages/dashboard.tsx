@@ -169,54 +169,17 @@ export default function DashboardPage() {
 
         {/* Profile Content Section */}
         <div className="mt-6">
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800 korean-text">
-                프로필 미리보기
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+          <Card className="bg-brown-50 shadow-sm border border-brown-200 rounded-2xl overflow-hidden">
+            {/* Profile Header */}
+            <div className="p-6 bg-brown-50 border-b border-brown-200">
+              <h3 className="text-xl font-semibold text-brown-900 korean-text mb-1">{user?.name || '프로필 이름'}</h3>
+              <p className="text-sm text-brown-600 korean-text">{currentUser?.bio || userSettings?.bio || '간단한 자기소개 및 설명'}</p>
+            </div>
 
-
-              {/* Content Type Selection Display */}
-              <div className="space-y-3">
-                <p className="text-sm font-medium text-gray-700 korean-text">선택된 콘텐츠</p>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { type: 'image', label: '이미지', icon: Image },
-                    { type: 'video', label: '비디오', icon: Video },
-                    { type: 'links', label: '링크', icon: ExternalLink }
-                  ].map(({ type, label, icon: Icon }) => (
-                    <div
-                      key={type}
-                      onClick={() => setPreviewType(type)}
-                      className={`p-3 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 ${
-                        currentContentType === type
-                          ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
-                      }`}
-                    >
-                      <div className="flex flex-col items-center space-y-1">
-                        <Icon className={`w-5 h-5 ${
-                          currentContentType === type
-                            ? 'text-primary'
-                            : 'text-gray-400'
-                        }`} />
-                        <span className={`text-xs korean-text ${
-                          currentContentType === type
-                            ? 'text-primary font-medium'
-                            : 'text-gray-500'
-                        }`}>
-                          {label}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
+            {/* Main Content Area */}
+            <div className="p-6 min-h-[300px] bg-brown-50">
               {/* Content Preview Based on Type */}
-              <div className="p-4 bg-gray-50 rounded-lg">
+              <div className="mb-6">
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
                 {/* Image Content */}
@@ -319,16 +282,41 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {/* Settings Button */}
-              <Button
-                onClick={() => setLocation('/settings')}
-                variant="outline"
-                className="w-full border-primary text-primary hover:bg-primary hover:text-white"
-              >
-                프로필 설정 수정
-              </Button>
-            </CardContent>
+              {/* Bottom Tab Navigation */}
+              <div className="mt-6 flex justify-center">
+                <div className="flex bg-brown-100 rounded-full p-1 border border-brown-200">
+                  {[
+                    { type: 'image', label: '이미지', icon: Image },
+                    { type: 'video', label: '비디오', icon: Video },
+                    { type: 'links', label: '링크', icon: ExternalLink }
+                  ].map(({ type, label, icon: Icon }) => (
+                    <button
+                      key={type}
+                      onClick={() => setPreviewType(type)}
+                      className={`flex flex-col items-center justify-center p-4 rounded-full transition-all ${
+                        currentContentType === type
+                          ? 'bg-brown-600 text-white shadow-lg'
+                          : 'text-brown-400 hover:text-brown-600 hover:bg-brown-200'
+                      }`}
+                    >
+                      <Icon className="w-6 h-6" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
           </Card>
+        </div>
+
+        {/* Settings Button */}
+        <div className="mt-4">
+          <Button
+            onClick={() => setLocation('/settings')}
+            variant="outline"
+            className="w-full border-brown-600 text-brown-600 hover:bg-brown-600 hover:text-white"
+          >
+            프로필 설정 수정
+          </Button>
         </div>
       </div>
     </div>
