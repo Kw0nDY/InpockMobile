@@ -726,6 +726,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Link redirect with click tracking
+  app.get("/l/:shortCode", async (req, res) => {
+    try {
+      const shortCode = req.params.shortCode;
+      const link = await storage.getLinkByShortCode(shortCode);
+      
+      if (!link) {
+        return res.status(404).json({ message: "Link not found" });
+      }
+
+      if (!link.isActive) {
+        return res.status(410).json({ message: "Link is inactive" });
+      }
+
+      // Increment link clicks
+      await storage.incrementLinkClicks(link.id);
+      
+      // Increment user visit count for link clicks
+      await storage.incrementUserVisitCount(link.userId);
+
+      // Redirect to the target URL
+      res.redirect(302, link.originalUrl);
+    } catch (error) {
+      console.error("Link redirect error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Visit count increment
   app.post("/api/visit/:userId", async (req, res) => {
     try {

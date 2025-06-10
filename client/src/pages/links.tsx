@@ -56,7 +56,7 @@ export default function LinksPage() {
   };
 
   const handleCopyLink = (shortCode: string) => {
-    const linkUrl = `inpock.co/${shortCode}`;
+    const linkUrl = `localhost:5000/l/${shortCode}`;
     navigator.clipboard.writeText(linkUrl);
     toast({
       title: "링크 복사됨",
@@ -65,7 +65,7 @@ export default function LinksPage() {
   };
 
   const handleShareLink = (shortCode: string) => {
-    const linkUrl = `inpock.co/${shortCode}`;
+    const linkUrl = `localhost:5000/l/${shortCode}`;
     if (navigator.share) {
       navigator.share({
         title: "INPOCK 링크 공유",
@@ -282,7 +282,7 @@ export default function LinksPage() {
                   <div key={link.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <div className="flex-1">
                       <p className="font-medium text-sm korean-text">{link.title}</p>
-                      <p className="text-xs text-gray-500">inpock.co/{link.shortCode}</p>
+                      <p className="text-xs text-gray-500">localhost:5000/l/{link.shortCode}</p>
                       <p className="text-xs text-primary">클릭 수: {link.clicks}</p>
                     </div>
                     <div className="flex space-x-2">
