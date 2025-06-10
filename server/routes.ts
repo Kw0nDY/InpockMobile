@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
+import { upload, handleMediaUpload, serveUploadedFile } from "./upload";
 import {
   insertUserSchema,
   insertLinkSchema,
@@ -569,6 +570,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Password reset error:", error);
       res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
+  // Media Upload routes
+  app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
+  
+  app.get("/uploads/:filename", serveUploadedFile);
+  
+  app.get("/api/media/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const mediaUploads = await storage.getUserMediaUploads(userId);
+      res.json(mediaUploads);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch media uploads" });
+    }
+  });
+
+  app.delete("/api/media/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const success = await storage.deleteMediaUpload(id);
+      if (success) {
+        res.json({ message: "Media deleted successfully" });
+      } else {
+        res.status(404).json({ message: "Media not found" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete media" });
+    }
+  });
+
+  // Visit count increment
+  app.post("/api/visit/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      await storage.incrementUserVisitCount(userId);
+      const user = await storage.getUser(userId);
+      res.json({ visitCount: user?.visitCount || 0 });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to increment visit count" });
     }
   });
 

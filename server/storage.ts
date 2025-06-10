@@ -607,7 +607,7 @@ export class MemStorage implements IStorage {
 }
 
 import { db } from "./db";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
@@ -901,7 +901,7 @@ export class DatabaseStorage implements IStorage {
   async incrementUserVisitCount(userId: number): Promise<void> {
     await db
       .update(users)
-      .set({ visitCount: users.visitCount + 1 })
+      .set({ visitCount: sql`${users.visitCount} + 1` })
       .where(eq(users.id, userId));
   }
 }
