@@ -441,22 +441,7 @@ export default function SettingsPage() {
                 />
               )}
               
-              {/* Video Preview */}
-              {profileData.introVideoUrl && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-3">동영상 미리보기</p>
-                  <div className="w-full max-w-md mx-auto">
-                    <video
-                      src={profileData.introVideoUrl}
-                      controls
-                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                    >
-                      Your browser does not support the video tag.
-                    </video>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 동영상이 표시됩니다</p>
-                </div>
-              )}
+
             </CardContent>
           </Card>
         )}
