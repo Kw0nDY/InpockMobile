@@ -11,6 +11,20 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       colors: {
+        // Brown theme colors
+        'brown': {
+          50: '#F5F5DC',   // Beige
+          100: '#EFE5DC',  // Warm gray
+          200: '#D7CCC8',  // Light brown
+          300: '#BCAAA4',  // Medium light brown
+          400: '#A1887F',  // Muted brown
+          500: '#8D6E63',  // Clay (accent)
+          600: '#795548',  // Medium brown
+          700: '#6D4C41',  // Dark medium brown
+          800: '#5D4037',  // Darker brown
+          900: '#4E342E',  // Dark brown (primary)
+          950: '#3E2723',  // Darkest brown
+        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

@@ -5,57 +5,57 @@
 @tailwind utilities;
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 13%; /* #212121 */
-  --muted: 0 0% 97%; /* #F5F5F5 */
-  --muted-foreground: 0 0% 42%; /* #6B6B6B */
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 13%;
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 13%;
-  --border: 0 0% 88%; /* #E0E0E0 */
-  --input: 0 0% 88%;
-  --primary: 14 100% 57%; /* #FF5722 */
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 97%;
-  --secondary-foreground: 0 0% 13%;
-  --accent: 0 0% 97%;
-  --accent-foreground: 0 0% 13%;
+  --background: 35 16% 96%; /* #F5F5DC - Beige background */
+  --foreground: 15 35% 18%; /* #4E342E - Dark brown for text */
+  --muted: 30 20% 92%; /* #EFE5DC - Warm gray for cards */
+  --muted-foreground: 20 15% 55%; /* #A1887F - Muted brown for secondary text */
+  --popover: 35 16% 96%;
+  --popover-foreground: 15 35% 18%;
+  --card: 30 20% 92%; /* #EFE5DC - Light brown/warm gray for cards */
+  --card-foreground: 15 35% 18%;
+  --border: 20 15% 80%; /* #D7CCC8 - Light brown borders */
+  --input: 20 15% 80%;
+  --primary: 15 35% 18%; /* #4E342E - Dark brown primary */
+  --primary-foreground: 35 16% 96%;
+  --secondary: 30 20% 92%;
+  --secondary-foreground: 15 35% 18%;
+  --accent: 15 25% 45%; /* #8D6E63 - Clay accent color */
+  --accent-foreground: 35 16% 96%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 14 100% 57%;
+  --ring: 15 35% 18%;
   --radius: 0.75rem;
   
-  /* Custom INPOCK colors */
-  --primary-light: 14 100% 65%; /* #FF7043 */
-  --primary-dark: 14 76% 47%; /* #D84315 */
-  --dark: 0 0% 13%; /* #212121 */
-  --dark-light: 0 0% 26%; /* #424242 */
-  --gray-50: 0 0% 98%; /* #FAFAFA */
-  --gray-100: 0 0% 96%; /* #F5F5F5 */
-  --gray-200: 0 0% 88%; /* #E0E0E0 */
+  /* Custom brown theme colors */
+  --primary-light: 15 25% 60%; /* #B39C8A - Lighter brown */
+  --primary-dark: 15 35% 15%; /* #3E2723 - Darker brown */
+  --dark: 15 35% 18%; /* #4E342E - Dark brown */
+  --dark-light: 15 25% 45%; /* #8D6E63 - Clay */
+  --gray-50: 35 16% 96%; /* #F5F5DC - Beige */
+  --gray-100: 30 20% 92%; /* #EFE5DC - Warm gray */
+  --gray-200: 20 15% 80%; /* #D7CCC8 - Light brown */
 }
 
 .dark {
-  --background: 0 0% 13%;
-  --foreground: 0 0% 98%;
-  --muted: 0 0% 17%;
-  --muted-foreground: 0 0% 65%;
-  --popover: 0 0% 13%;
-  --popover-foreground: 0 0% 98%;
-  --card: 0 0% 13%;
-  --card-foreground: 0 0% 98%;
-  --border: 0 0% 17%;
-  --input: 0 0% 17%;
-  --primary: 14 100% 57%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 0 0% 17%;
-  --secondary-foreground: 0 0% 98%;
-  --accent: 0 0% 17%;
-  --accent-foreground: 0 0% 98%;
+  --background: 15 35% 15%; /* #3E2723 - Dark brown background */
+  --foreground: 35 16% 96%; /* #F5F5DC - Beige text */
+  --muted: 15 25% 25%; /* #5D4037 - Darker brown for muted areas */
+  --muted-foreground: 20 15% 70%; /* #B39C8A - Light brown for secondary text */
+  --popover: 15 35% 15%;
+  --popover-foreground: 35 16% 96%;
+  --card: 15 25% 25%; /* #5D4037 - Dark brown cards */
+  --card-foreground: 35 16% 96%;
+  --border: 15 25% 35%; /* #6D4C41 - Brown borders */
+  --input: 15 25% 35%;
+  --primary: 15 25% 60%; /* #B39C8A - Lighter brown for dark mode primary */
+  --primary-foreground: 15 35% 15%;
+  --secondary: 15 25% 25%;
+  --secondary-foreground: 35 16% 96%;
+  --accent: 15 25% 45%; /* #8D6E63 - Clay accent */
+  --accent-foreground: 35 16% 96%;
   --destructive: 0 63% 31%;
   --destructive-foreground: 0 0% 98%;
-  --ring: 0 0% 84%;
+  --ring: 15 25% 60%;
 }
 
 @layer base {
@@ -70,7 +70,7 @@
 
   /* Mobile-first container */
   .mobile-container {
-    @apply max-w-md mx-auto bg-white min-h-screen relative;
+    @apply max-w-md mx-auto bg-background min-h-screen relative;
   }
 
   /* Custom utility classes for INPOCK design */
@@ -128,12 +128,12 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--primary));
+    background: hsl(var(--accent));
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--primary-dark));
+    background: hsl(var(--primary));
   }
 
   /* Custom button styles */
@@ -147,7 +147,7 @@
 
   /* Feature card gradient background */
   .feature-card-bg {
-    background: linear-gradient(135deg, hsl(var(--primary-light) / 0.1) 0%, hsl(var(--primary) / 0.05) 100%);
+    background: linear-gradient(135deg, hsl(var(--accent) / 0.1) 0%, hsl(var(--primary) / 0.05) 100%);
   }
 
   /* Bottom navigation shadow */
