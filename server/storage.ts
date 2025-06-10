@@ -77,6 +77,7 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity> = new Map();
   private userSettings: Map<number, UserSettings> = new Map();
   private subscriptions: Map<number, Subscription> = new Map();
+  private passwordResetTokens: Map<string, PasswordResetToken> = new Map();
   
   private currentUserId = 1;
   private currentLinkId = 1;
@@ -490,6 +491,54 @@ export class MemStorage implements IStorage {
     this.subscriptions.set(subscription.id, updatedSubscription);
     return updatedSubscription;
   }
+
+  async createPasswordResetToken(insertToken: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const id = this.currentUserSettingsId++;
+    const token: PasswordResetToken = {
+      id,
+      ...insertToken,
+      used: insertToken.used || false,
+      createdAt: new Date(),
+    };
+    this.passwordResetTokens.set(insertToken.token, token);
+    return token;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const resetToken = this.passwordResetTokens.get(token);
+    if (!resetToken) return undefined;
+    
+    // Check if token is expired
+    if (resetToken.expiresAt < new Date() || resetToken.used) {
+      return undefined;
+    }
+    
+    return resetToken;
+  }
+
+  async markTokenAsUsed(token: string): Promise<boolean> {
+    const resetToken = this.passwordResetTokens.get(token);
+    if (!resetToken) return false;
+    
+    const updatedToken = { ...resetToken, used: true };
+    this.passwordResetTokens.set(token, updatedToken);
+    return true;
+  }
+
+  async deleteExpiredTokens(): Promise<void> {
+    const now = new Date();
+    const tokensToDelete: string[] = [];
+    
+    this.passwordResetTokens.forEach((token, tokenValue) => {
+      if (token.expiresAt < now || token.used) {
+        tokensToDelete.push(tokenValue);
+      }
+    });
+    
+    tokensToDelete.forEach(tokenValue => {
+      this.passwordResetTokens.delete(tokenValue);
+    });
+  }
 }
 
 import { db } from "./db";
@@ -705,6 +754,57 @@ export class DatabaseStorage implements IStorage {
       .where(eq(subscriptions.userId, userId))
       .returning();
     return subscription || undefined;
+  }
+
+  async createPasswordResetToken(insertToken: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [token] = await db
+      .insert(passwordResetTokens)
+      .values(insertToken)
+      .returning();
+    return token;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(
+        and(
+          eq(passwordResetTokens.token, token),
+          eq(passwordResetTokens.used, false)
+        )
+      );
+    
+    if (!resetToken) return undefined;
+    
+    // Check if token is expired
+    if (resetToken.expiresAt < new Date()) {
+      return undefined;
+    }
+    
+    return resetToken;
+  }
+
+  async markTokenAsUsed(token: string): Promise<boolean> {
+    const [updatedToken] = await db
+      .update(passwordResetTokens)
+      .set({ used: true })
+      .where(eq(passwordResetTokens.token, token))
+      .returning();
+    
+    return !!updatedToken;
+  }
+
+  async deleteExpiredTokens(): Promise<void> {
+    const now = new Date();
+    await db
+      .delete(passwordResetTokens)
+      .where(
+        and(
+          eq(passwordResetTokens.expiresAt, now),
+          eq(passwordResetTokens.used, true)
+        )
+      );
   }
 }
 

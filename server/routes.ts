@@ -8,8 +8,10 @@ import {
   insertDealSchema,
   insertUserSettingsSchema,
   insertSubscriptionSchema,
+  insertPasswordResetTokenSchema,
 } from "@shared/schema";
 import { z } from "zod";
+import { randomBytes } from "crypto";
 
 const loginSchema = z.object({
   email: z.string().email(),
@@ -490,6 +492,83 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(subscription);
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
+    }
+  });
+
+  // Forgot Password routes
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = z.object({ email: z.string().email() }).parse(req.body);
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Return success even if user doesn't exist for security
+        return res.json({ message: "If an account with that email exists, a reset link has been sent." });
+      }
+
+      // Generate secure random token
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+      // Store reset token
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+        used: false,
+      });
+
+      // In a real application, you would send an email here
+      // For demo purposes, we'll log the reset link
+      console.log(`Password reset link: ${process.env.REPLIT_DEV_DOMAIN ? 
+        `https://${process.env.REPLIT_DEV_DOMAIN}` : 
+        'http://localhost:5000'}/reset-password/${token}`);
+
+      res.json({ message: "If an account with that email exists, a reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
+  app.get("/api/auth/verify-reset-token/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const resetToken = await storage.getPasswordResetToken(token);
+      
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      res.json({ valid: true });
+    } catch (error) {
+      console.error("Token verification error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { password, token } = z.object({
+        password: z.string().min(8),
+        token: z.string()
+      }).parse(req.body);
+
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      // Update user password
+      await storage.updateUser(resetToken.userId, { password });
+      
+      // Mark token as used
+      await storage.markTokenAsUsed(token);
+
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(400).json({ message: "Invalid request" });
     }
   });
 

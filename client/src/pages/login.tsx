@@ -105,7 +105,11 @@ export default function LoginPage() {
               />
               <span>로그인 상태 유지</span>
             </label>
-            <button type="button" className="text-primary">
+            <button 
+              type="button" 
+              onClick={() => setLocation("/forgot-password")}
+              className="text-primary hover:underline"
+            >
               비밀번호 찾기
             </button>
           </div>
