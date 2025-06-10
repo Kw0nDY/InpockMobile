@@ -414,23 +414,11 @@ export default function SettingsPage() {
                   onUploadSuccess={handleMediaUpload}
                   currentImageUrl={profileData.profileImageUrl}
                   currentVideoUrl=""
+                  uploadType="image"
                 />
               )}
               
-              {/* Image Preview */}
-              {profileData.profileImageUrl && (
-                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600 mb-3">이미지 미리보기</p>
-                  <div className="w-full max-w-md mx-auto">
-                    <img
-                      src={profileData.profileImageUrl}
-                      alt="Uploaded content"
-                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
-                    />
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 이미지가 표시됩니다</p>
-                </div>
-              )}
+
             </CardContent>
           </Card>
         )}
@@ -449,6 +437,7 @@ export default function SettingsPage() {
                   onUploadSuccess={handleMediaUpload}
                   currentImageUrl=""
                   currentVideoUrl={profileData.introVideoUrl}
+                  uploadType="video"
                 />
               )}
               

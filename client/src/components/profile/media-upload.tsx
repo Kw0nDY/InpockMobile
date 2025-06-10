@@ -10,9 +10,10 @@ interface MediaUploadProps {
   onUploadSuccess: (fileUrl: string, mediaType: 'image' | 'video') => void;
   currentImageUrl?: string;
   currentVideoUrl?: string;
+  uploadType?: 'image' | 'video' | 'both';
 }
 
-export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentVideoUrl }: MediaUploadProps) {
+export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentVideoUrl, uploadType = 'both' }: MediaUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,11 +22,29 @@ export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentV
   const handleFileSelect = async (file: File) => {
     if (!file) return;
 
-    // Validate file type
+    // Validate file type based on upload type
     const isImage = file.type.startsWith('image/');
     const isVideo = file.type.startsWith('video/');
     
-    if (!isImage && !isVideo) {
+    if (uploadType === 'image' && !isImage) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (uploadType === 'video' && !isVideo) {
+      toast({
+        title: "Invalid file type",
+        description: "Please select a video file",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (uploadType === 'both' && !isImage && !isVideo) {
       toast({
         title: "Invalid file type",
         description: "Please select an image or video file",
@@ -163,13 +182,17 @@ export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentV
           >
             <Upload className="w-12 h-12 mx-auto text-gray-400 mb-4" />
             <p className="text-lg font-medium text-gray-700 mb-2">
-              Upload Profile Image or Intro Video
+              {uploadType === 'image' ? 'Upload Image' : uploadType === 'video' ? 'Upload Video' : 'Upload Profile Image or Intro Video'}
             </p>
             <p className="text-sm text-gray-500 mb-4">
               Drag and drop files here, or click to select
             </p>
             <p className="text-xs text-gray-400 mb-4">
-              Supports: Images (JPEG, PNG, GIF, WebP) and Videos (MP4, WebM, MOV, AVI)<br />
+              {uploadType === 'image' 
+                ? 'Supports: Images (JPEG, PNG, GIF, WebP)' 
+                : uploadType === 'video'
+                ? 'Supports: Videos (MP4, WebM, MOV, AVI)'
+                : 'Supports: Images (JPEG, PNG, GIF, WebP) and Videos (MP4, WebM, MOV, AVI)'}<br />
               Maximum file size: 50MB
             </p>
             
@@ -184,7 +207,7 @@ export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentV
             <input
               ref={fileInputRef}
               type="file"
-              accept="image/*,video/*"
+              accept={uploadType === 'image' ? 'image/*' : uploadType === 'video' ? 'video/*' : 'image/*,video/*'}
               onChange={handleFileInputChange}
               className="hidden"
             />
@@ -192,90 +215,181 @@ export function MediaUpload({ userId, onUploadSuccess, currentImageUrl, currentV
         </CardContent>
       </Card>
 
-      {/* Current Media Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Profile Image */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Image className="w-5 h-5" />
-                <span>Profile Image</span>
-              </div>
-              {currentImageUrl && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeMedia('image')}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {currentImageUrl ? (
-              <div className="relative">
-                <img
-                  src={currentImageUrl}
-                  alt="Profile"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-              </div>
-            ) : (
-              <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Image className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-500">No profile image</p>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Current Media Display - Show only relevant type */}
+      {uploadType !== 'both' && (
+        <div className="max-w-md mx-auto">
+          {uploadType === 'image' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Image className="w-5 h-5" />
+                    <span>Current Image</span>
+                  </div>
+                  {currentImageUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeMedia('image')}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {currentImageUrl ? (
+                  <div className="relative">
+                    <img
+                      src={currentImageUrl}
+                      alt="Profile"
+                      className="w-full h-48 object-cover rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Image className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-500">No image uploaded</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Intro Video */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Video className="w-5 h-5" />
-                <span>Intro Video</span>
-              </div>
-              {currentVideoUrl && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => removeMedia('video')}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {currentVideoUrl ? (
-              <div className="relative">
-                <video
-                  src={currentVideoUrl}
-                  controls
-                  className="w-full h-48 object-cover rounded-lg"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              </div>
-            ) : (
-              <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                <div className="text-center">
-                  <Video className="w-12 h-12 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-500">No intro video</p>
+          {uploadType === 'video' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Video className="w-5 h-5" />
+                    <span>Current Video</span>
+                  </div>
+                  {currentVideoUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeMedia('video')}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {currentVideoUrl ? (
+                  <div className="relative">
+                    <video
+                      src={currentVideoUrl}
+                      controls
+                      className="w-full h-48 object-cover rounded-lg"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                ) : (
+                  <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <div className="text-center">
+                      <Video className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                      <p className="text-sm text-gray-500">No video uploaded</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      )}
+
+      {/* Show both cards only when uploadType is 'both' */}
+      {uploadType === 'both' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Profile Image */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Image className="w-5 h-5" />
+                  <span>Profile Image</span>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                {currentImageUrl && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeMedia('image')}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {currentImageUrl ? (
+                <div className="relative">
+                  <img
+                    src={currentImageUrl}
+                    alt="Profile"
+                    className="w-full h-48 object-cover rounded-lg"
+                  />
+                </div>
+              ) : (
+                <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Image className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500">No profile image</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Intro Video */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Video className="w-5 h-5" />
+                  <span>Intro Video</span>
+                </div>
+                {currentVideoUrl && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeMedia('video')}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {currentVideoUrl ? (
+                <div className="relative">
+                  <video
+                    src={currentVideoUrl}
+                    controls
+                    className="w-full h-48 object-cover rounded-lg"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                </div>
+              ) : (
+                <div className="w-full h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <div className="text-center">
+                    <Video className="w-12 h-12 mx-auto text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-500">No intro video</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
