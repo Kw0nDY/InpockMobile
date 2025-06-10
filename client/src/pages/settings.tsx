@@ -232,12 +232,13 @@ export default function SettingsPage() {
   };
 
   const handleMediaUpload = (fileUrl: string, mediaType: 'image' | 'video') => {
+    // 미디어 업로드는 MediaUpload 테이블에만 저장하고 사용자 필드는 업데이트하지 않음
     const updateData = mediaType === 'image' 
       ? { profileImageUrl: fileUrl }
       : { introVideoUrl: fileUrl };
     
     setProfileData(prev => ({ ...prev, ...updateData }));
-    updateUserMutation.mutate(updateData);
+    // 사용자 테이블 업데이트 제거하여 프로필 이미지와 분리
   };
 
   const shortUrl = profileData.shortUrlType === 'custom' && profileData.customUrl
