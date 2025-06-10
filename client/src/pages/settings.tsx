@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check } from "lucide-react";
+import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,7 @@ import { MediaUpload } from "@/components/profile/media-upload";
 import { ImageCropModal } from '@/components/ui/image-crop-modal';
 
 export default function SettingsPage() {
-  const { user, setUser } = useAuth();
+  const { user, setUser, logout } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 
@@ -202,6 +202,15 @@ export default function SettingsPage() {
       URL.revokeObjectURL(tempImageUrl);
       setTempImageUrl('');
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    toast({
+      title: "로그아웃 완료",
+      description: "성공적으로 로그아웃되었습니다.",
+    });
+    setLocation('/login');
   };
 
   const handleCropCancel = () => {
@@ -611,6 +620,33 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* 계정 관리 섹션 */}
+        <Card className="border border-gray-200">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">계정 관리</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+              <div className="flex items-start space-x-3">
+                <LogOut className="w-5 h-5 text-red-600 mt-0.5" />
+                <div className="flex-1">
+                  <h3 className="font-medium text-red-800 mb-1">로그아웃</h3>
+                  <p className="text-sm text-red-600 mb-3">
+                    현재 계정에서 로그아웃합니다. 다시 로그인하려면 로그인 페이지에서 인증이 필요합니다.
+                  </p>
+                  <Button
+                    onClick={handleLogout}
+                    variant="destructive"
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    로그아웃
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* 이미지 자르기 모달 */}
