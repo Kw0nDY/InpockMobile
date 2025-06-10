@@ -111,8 +111,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
+    <div className="min-h-screen bg-gray-50">
+      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="flex items-center">
           <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
             <span className="text-white font-medium text-sm">
@@ -131,7 +131,7 @@ export default function DashboardPage() {
         <NotificationDropdown />
       </header>
 
-      <div className="p-4">
+      <div className="p-4 pb-24 max-w-md mx-auto">
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
           <Card className="bg-white shadow-sm">

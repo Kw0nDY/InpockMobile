@@ -97,56 +97,56 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
   }
 
   return (
-    <Card className={`bg-card border-border ${className || ''}`}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-foreground flex items-center space-x-2">
-          <Eye className="w-5 h-5" />
-          <span>실시간 방문 추적</span>
+    <Card className={`bg-white border border-gray-200 shadow-sm ${className || ''}`}>
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3 px-4 pt-4">
+        <CardTitle className="text-gray-800 flex items-center space-x-2">
+          <Eye className="w-5 h-5 text-blue-600" />
+          <span className="text-base font-semibold">실시간 방문 추적</span>
         </CardTitle>
         <Button
           onClick={() => refetch()}
           size="sm"
           variant="ghost"
-          className="text-muted-foreground hover:text-foreground"
+          className="text-gray-500 hover:text-gray-700 hover:bg-gray-100 h-8 w-8 p-0"
         >
           <RefreshCw className="w-4 h-4" />
         </Button>
       </CardHeader>
       
-      <CardContent className="space-y-4">
+      <CardContent className="px-4 pb-4 space-y-4">
         {/* Quick Stats - Real Data */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3 p-3 bg-gray-50 rounded-lg">
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-xl font-bold text-gray-800">
               {trackedUrls.reduce((total, url) => total + getUrlVisitData(url).visits, 0)}
             </p>
-            <p className="text-xs text-muted-foreground">총 방문</p>
+            <p className="text-xs text-gray-600">총 방문</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-xl font-bold text-gray-800">
               {trackedUrls.length}
             </p>
-            <p className="text-xs text-muted-foreground">추적 URL</p>
+            <p className="text-xs text-gray-600">추적 URL</p>
           </div>
           <div className="text-center">
-            <p className="text-2xl font-bold text-foreground">
+            <p className="text-xl font-bold text-gray-800">
               {trackedUrls.filter(url => getUrlVisitData(url).visits > 0).length}
             </p>
-            <p className="text-xs text-muted-foreground">활성 URL</p>
+            <p className="text-xs text-gray-600">활성 URL</p>
           </div>
         </div>
 
         {/* Real-time URL Tracking */}
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium text-foreground">최근 추적 URL</h4>
-            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+            <h4 className="text-sm font-medium text-gray-800">최근 추적 URL</h4>
+            <div className="flex items-center space-x-1 text-xs text-gray-500">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span>실시간</span>
             </div>
           </div>
           
-          <div className="space-y-2">
+          <div className="space-y-3 max-h-96 overflow-y-auto">
             {trackedUrls.length === 0 ? (
               <div className="text-center py-4">
                 <p className="text-sm text-muted-foreground">추적 가능한 URL 없음</p>
@@ -158,41 +158,60 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                 const label = getUrlLabel(url);
                 
                 return (
-                  <div key={index} className="bg-background rounded border">
+                  <div key={index} className="bg-background rounded-lg border border-gray-200 overflow-hidden">
                     <div className="p-3">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1 min-w-0 pr-2">
-                          <div className="flex items-center space-x-2 mb-1">
-                            <span className="text-sm font-medium text-foreground">{label}</span>
-                            <span className="text-xs text-gray-600 bg-gray-100 px-1.5 py-0.5 rounded whitespace-nowrap">
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-medium text-foreground truncate">{label}</span>
+                            <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full whitespace-nowrap flex-shrink-0">
                               {visitData.visits}회 방문
                             </span>
                           </div>
-                          <p className="text-xs text-muted-foreground font-mono break-all">{url}</p>
-                          {visitData.lastVisit && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
+                          <div className="space-y-1">
+                            <p className="text-xs text-muted-foreground font-mono break-all leading-relaxed bg-gray-50 px-2 py-1 rounded">
+                              {url}
                             </p>
+                            {visitData.lastVisit && (
+                              <p className="text-xs text-muted-foreground">
+                                마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
+                              </p>
+                            )}
+                          </div>
+                          
+                          {/* URL Parameters Tags */}
+                          {url.includes('?') && (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {url.split('?')[1]?.split('&').slice(0, 3).map((param, paramIndex) => {
+                                const [key, value] = param.split('=');
+                                return (
+                                  <span key={paramIndex} className="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded text-nowrap">
+                                    {key}: {value}
+                                  </span>
+                                );
+                              })}
+                            </div>
                           )}
                         </div>
-                        <div className="flex items-center space-x-1 flex-shrink-0">
+                        
+                        <div className="flex flex-col gap-1 flex-shrink-0">
                           <Button
                             onClick={() => simulateVisit(url)}
                             size="sm"
                             variant="ghost"
-                            className="text-muted-foreground hover:text-foreground h-8 w-8 p-0"
+                            className="text-muted-foreground hover:text-blue-600 hover:bg-blue-50 h-7 w-7 p-0"
                             title="방문 시뮬레이션"
                           >
-                            <ExternalLink className="w-3 h-3" />
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </Button>
                           <Button
                             onClick={() => removeUrl(url)}
                             size="sm"
                             variant="ghost"
-                            className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
+                            className="text-red-400 hover:text-red-600 hover:bg-red-50 h-7 w-7 p-0"
                             title="URL 삭제"
                           >
-                            <Trash2 className="w-3 h-3" />
+                            <Trash2 className="w-3.5 h-3.5" />
                           </Button>
                         </div>
                       </div>
