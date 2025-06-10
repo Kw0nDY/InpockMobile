@@ -13,6 +13,11 @@ export const users = pgTable("users", {
   role: text("role").default("user"),
   avatar: text("avatar"),
   profileImageUrl: text("profile_image_url"),
+  introVideoUrl: text("intro_video_url"),
+  bio: text("bio"),
+  customUrl: text("custom_url"),
+  contentType: text("content_type").default("links"),
+  visitCount: integer("visit_count").default(0),
   provider: text("provider").default("local"),
   providerId: text("provider_id"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -105,6 +110,19 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const mediaUploads = pgTable("media_uploads", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  fileName: text("file_name").notNull(),
+  originalName: text("original_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  fileSize: integer("file_size").notNull(),
+  filePath: text("file_path").notNull(),
+  mediaType: text("media_type").notNull(), // 'image' or 'video'
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -154,6 +172,11 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
+export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
+  id: true,
+  createdAt: true,
+});
+
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
@@ -181,6 +204,9 @@ export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
 
+export type MediaUpload = typeof mediaUploads.$inferSelect;
+export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
+
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   links: many(links),
@@ -189,6 +215,7 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   activities: many(activities),
   settings: one(userSettings),
   subscription: one(subscriptions),
+  mediaUploads: many(mediaUploads),
 }));
 
 export const linksRelations = relations(links, ({ one }) => ({
@@ -237,6 +264,13 @@ export const userSettingsRelations = relations(userSettings, ({ one }) => ({
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   user: one(users, {
     fields: [subscriptions.userId],
+    references: [users.id],
+  }),
+}));
+
+export const mediaUploadsRelations = relations(mediaUploads, ({ one }) => ({
+  user: one(users, {
+    fields: [mediaUploads.userId],
     references: [users.id],
   }),
 }));
