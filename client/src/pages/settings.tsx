@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { MediaUpload } from "@/components/profile/media-upload";
 
 export default function SettingsPage() {
   const { user } = useAuth();
@@ -20,11 +21,13 @@ export default function SettingsPage() {
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    bio: '',
-    avatar: '',
+    bio: user?.bio || '',
+    avatar: user?.avatar || '',
+    profileImageUrl: user?.profileImageUrl || '',
+    introVideoUrl: user?.introVideoUrl || '',
     shortUrlType: 'default',
-    customUrl: '',
-    contentType: 'link'
+    customUrl: user?.customUrl || '',
+    contentType: user?.contentType || 'links'
   });
 
   const [copied, setCopied] = useState(false);
@@ -49,6 +52,9 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({
         queryKey: [`/api/settings/${user?.id}`],
       });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/user/${user?.id}`],
+      });
       toast({
         title: "프로필 저장됨",
         description: "프로필 설정이 성공적으로 저장되었습니다.",
@@ -58,6 +64,42 @@ export default function SettingsPage() {
       toast({
         title: "저장 실패",
         description: "프로필 저장 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Update user profile mutation
+  const updateUserMutation = useMutation({
+    mutationFn: async (updates: any) => {
+      const response = await fetch(`/api/user/${user?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to update user');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/user/${user?.id}`],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [`/api/dashboard/stats/${user?.id}`],
+      });
+      toast({
+        title: "프로필 업데이트됨",
+        description: "프로필이 성공적으로 업데이트되었습니다.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "업데이트 실패",
+        description: "프로필 업데이트 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     },
