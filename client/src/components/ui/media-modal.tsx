@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { X, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ImageModalProps {
   src: string;
@@ -89,11 +90,16 @@ interface LinkPreviewProps {
 }
 
 export function LinkPreview({ url, title, description, children, userId }: LinkPreviewProps) {
+  const queryClient = useQueryClient();
+  
   const handleLinkClick = async () => {
     // Increment visit count if userId is provided
     if (userId) {
       try {
         await fetch(`/api/visit/${userId}`, { method: 'POST' });
+        
+        // Trigger cache invalidation for real-time updates
+        queryClient.invalidateQueries({ queryKey: [`/api/user/${userId}`] });
       } catch (error) {
         console.error('Failed to increment visit count:', error);
       }

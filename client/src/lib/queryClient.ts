@@ -55,3 +55,8 @@ export const queryClient = new QueryClient({
     },
   },
 });
+
+// Make queryClient globally accessible for real-time updates
+if (typeof window !== 'undefined') {
+  (window as any).queryClient = queryClient;
+}
