@@ -1,4 +1,4 @@
-import { Home, Link, ShoppingBag, MessageCircle, Settings } from "lucide-react";
+import { Home, Image, Video, ExternalLink, Settings } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function BottomNav() {
@@ -6,9 +6,9 @@ export default function BottomNav() {
 
   const navItems = [
     { path: "/dashboard", icon: Home, label: "홈" },
-    { path: "/links", icon: Link, label: "이미지" },
-    { path: "/marketplace", icon: ShoppingBag, label: "동영상" },
-    { path: "/chat", icon: MessageCircle, label: "링크" },
+    { path: "/links", icon: Image, label: "이미지" },
+    { path: "/marketplace", icon: Video, label: "동영상" },
+    { path: "/chat", icon: ExternalLink, label: "링크" },
     { path: "/settings", icon: Settings, label: "설정" },
   ];
 
