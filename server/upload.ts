@@ -51,7 +51,7 @@ export const upload = multer({
   }
 });
 
-// Upload handler for profile media
+// Upload handler for content media (dashboard content)
 export const handleMediaUpload = async (req: Request, res: Response) => {
   try {
     const userId = parseInt(req.params.userId);
@@ -80,16 +80,7 @@ export const handleMediaUpload = async (req: Request, res: Response) => {
       isActive: true
     });
 
-    // Update user profile with the new media URL
-    const updateData: any = {};
-    if (mediaType === 'image') {
-      updateData.profileImageUrl = `/uploads/${file.filename}`;
-    } else {
-      updateData.introVideoUrl = `/uploads/${file.filename}`;
-    }
-
-    await storage.updateUser(userId, updateData);
-
+    // This is content media upload - don't automatically update profile
     res.json({
       success: true,
       mediaUpload,
@@ -98,6 +89,31 @@ export const handleMediaUpload = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Upload error:', error);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+};
+
+// Upload handler specifically for profile images
+export const handleProfileImageUpload = async (req: Request, res: Response) => {
+  try {
+    const file = req.file;
+    
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Only allow images for profile upload
+    if (!file.mimetype.startsWith('image/')) {
+      return res.status(400).json({ error: 'Only image files are allowed for profile pictures' });
+    }
+
+    res.json({
+      success: true,
+      url: `/uploads/${file.filename}`,
+      filename: file.filename
+    });
+  } catch (error) {
+    console.error('Profile upload error:', error);
     res.status(500).json({ error: 'Upload failed' });
   }
 };

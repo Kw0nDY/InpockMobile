@@ -96,9 +96,8 @@ export default function SettingsPage() {
     mutationFn: async (file: File) => {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('type', 'image');
       
-      const response = await fetch('/api/upload/media', {
+      const response = await fetch('/api/upload/profile', {
         method: 'POST',
         body: formData,
       });

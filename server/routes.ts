@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
-import { upload, handleMediaUpload, serveUploadedFile } from "./upload";
+import { upload, handleMediaUpload, handleProfileImageUpload, serveUploadedFile } from "./upload";
 import {
   insertUserSchema,
   insertLinkSchema,
@@ -697,6 +697,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Media Upload routes
   app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
+  
+  // Profile image upload route
+  app.post("/api/upload/profile", upload.single('file'), handleProfileImageUpload);
   
   app.get("/uploads/:filename", serveUploadedFile);
   
