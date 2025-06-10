@@ -78,6 +78,9 @@ export const userSettings = pgTable("user_settings", {
   timezone: text("timezone").default("Seoul (UTC+9)"),
   currency: text("currency").default("KRW (₩)"),
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
+  bio: text("bio"),
+  customUrl: text("custom_url"),
+  contentType: text("content_type").default("link"), // link, image, video
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

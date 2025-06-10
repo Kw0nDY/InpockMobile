@@ -123,6 +123,9 @@ export class MemStorage implements IStorage {
       timezone: "Seoul (UTC+9)",
       currency: "KRW (₩)",
       twoFactorEnabled: false,
+      bio: null,
+      customUrl: null,
+      contentType: "link",
       updatedAt: new Date(),
     };
     this.userSettings.set(1, demoSettings);
@@ -437,15 +440,18 @@ export class MemStorage implements IStorage {
   async createUserSettings(insertSettings: InsertUserSettings): Promise<UserSettings> {
     const id = this.currentUserSettingsId++;
     const settings: UserSettings = {
-      ...insertSettings,
       id,
-      notifications: insertSettings.notifications !== undefined ? insertSettings.notifications : true,
-      marketing: insertSettings.marketing !== undefined ? insertSettings.marketing : false,
-      darkMode: insertSettings.darkMode !== undefined ? insertSettings.darkMode : false,
-      language: insertSettings.language || "한국어",
-      timezone: insertSettings.timezone || "Seoul (UTC+9)",
-      currency: insertSettings.currency || "KRW (₩)",
-      twoFactorEnabled: insertSettings.twoFactorEnabled !== undefined ? insertSettings.twoFactorEnabled : false,
+      userId: insertSettings.userId,
+      notifications: insertSettings.notifications ?? true,
+      marketing: insertSettings.marketing ?? false,
+      darkMode: insertSettings.darkMode ?? false,
+      language: insertSettings.language ?? "한국어",
+      timezone: insertSettings.timezone ?? "Seoul (UTC+9)",
+      currency: insertSettings.currency ?? "KRW (₩)",
+      bio: insertSettings.bio ?? null,
+      customUrl: insertSettings.customUrl ?? null,
+      contentType: insertSettings.contentType ?? "link",
+      twoFactorEnabled: insertSettings.twoFactorEnabled ?? false,
       updatedAt: new Date(),
     };
     this.userSettings.set(id, settings);

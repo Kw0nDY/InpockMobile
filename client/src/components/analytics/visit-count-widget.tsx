@@ -7,6 +7,25 @@ import { useAnalyticsData } from '@/hooks/use-analytics-data';
 import { trackCustomUrlVisit } from '@/lib/analytics';
 import { useAuth } from '@/hooks/use-auth';
 
+// Helper function to get visit data from localStorage
+const getUrlVisitData = (url: string) => {
+  try {
+    const stored = localStorage.getItem('localhost_analytics_data');
+    if (stored) {
+      const analytics = JSON.parse(stored);
+      const visits = analytics.visits[url] || 0;
+      const sessions = analytics.sessions?.filter((s: any) => s.url === url) || [];
+      const lastVisit = sessions.length > 0 ? sessions[sessions.length - 1].timestamp : null;
+      
+      return { visits, lastVisit };
+    }
+  } catch (error) {
+    console.warn('Failed to get visit data:', error);
+  }
+  
+  return { visits: 0, lastVisit: null };
+};
+
 interface VisitCountWidgetProps {
   compact?: boolean;
   showAddButton?: boolean;
@@ -99,7 +118,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
         <div className="space-y-2">
           <h4 className="text-sm font-medium text-foreground mb-2">빠른 추적 URL</h4>
           {trackedUrls.map((url, index) => {
-            const visits = Math.floor(Math.random() * 500) + 50;
+            const visitData = getUrlVisitData(url);
             const label = url.includes('dashboard') ? '대시보드' : 
                          url.includes('marketplace') ? '마켓플레이스' : '링크';
             
@@ -112,10 +131,15 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
                   <div className="flex items-center space-x-2">
                     <span className="text-sm font-medium text-foreground">{label}</span>
                     <Badge variant="secondary" className="bg-accent/20 text-accent text-xs">
-                      {visits.toLocaleString()}
+                      {visitData.visits}회 방문
                     </Badge>
                   </div>
                   <p className="text-xs text-muted-foreground font-mono mt-1">{url}</p>
+                  {visitData.lastVisit && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString()}
+                    </p>
+                  )}
                 </div>
                 <Button
                   onClick={() => simulateVisit(url)}
