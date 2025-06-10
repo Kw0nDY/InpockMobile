@@ -699,7 +699,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
   
   // Profile image upload route
-  app.post("/api/upload/profile", profileUpload.single('file'), handleProfileImageUpload);
+  app.post("/api/upload/profile", profileUpload.any(), handleProfileImageUpload);
   
   app.get("/uploads/:filename", serveUploadedFile);
   

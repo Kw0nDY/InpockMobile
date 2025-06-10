@@ -51,10 +51,13 @@ export const upload = multer({
   }
 });
 
-// Separate multer instance for profile uploads
+// Separate multer instance for profile uploads - allow any field name
 export const profileUpload = multer({
   storage: multerStorage,
   fileFilter: (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    console.log('Profile upload - Field name:', file.fieldname);
+    console.log('Profile upload - File type:', file.mimetype);
+    
     // Only allow images for profile uploads
     const allowedMimes = [
       'image/jpeg',
@@ -120,11 +123,19 @@ export const handleMediaUpload = async (req: Request, res: Response) => {
 // Upload handler specifically for profile images
 export const handleProfileImageUpload = async (req: Request, res: Response) => {
   try {
-    const file = req.file;
+    console.log('Profile upload request received');
+    console.log('Files:', req.files);
+    console.log('File:', req.file);
+    
+    // Handle both single file and files array
+    const file = req.file || (Array.isArray(req.files) ? req.files[0] : null);
     
     if (!file) {
+      console.log('No file found in request');
       return res.status(400).json({ error: 'No file uploaded' });
     }
+
+    console.log('Processing file:', file.filename, file.mimetype);
 
     // Only allow images for profile upload
     if (!file.mimetype.startsWith('image/')) {
