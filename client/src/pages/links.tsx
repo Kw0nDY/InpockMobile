@@ -276,7 +276,7 @@ export default function LinksPage() {
                   </div>
                 ))}
               </div>
-            ) : links && Array.isArray(links) && links.length > 0 ? (
+            ) : links && links.length > 0 ? (
               <div className="space-y-3">
                 {links.map((link: any) => (
                   <div key={link.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
