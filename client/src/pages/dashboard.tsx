@@ -1,4 +1,11 @@
-import { Bell, Link, TrendingUp, MessageCircle, BarChart3, Users } from "lucide-react";
+import {
+  Bell,
+  Link,
+  TrendingUp,
+  MessageCircle,
+  BarChart3,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
@@ -30,7 +37,7 @@ export default function DashboardPage() {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-    
+
     if (diffHours < 1) return "방금 전";
     if (diffHours < 24) return `${diffHours}시간 전`;
     return `${Math.floor(diffHours / 24)}일 전`;
@@ -94,7 +101,7 @@ export default function DashboardPage() {
               <p className="text-xs text-gray-600 korean-text">연결</p>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-white shadow-sm">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-primary">
@@ -103,117 +110,18 @@ export default function DashboardPage() {
               <p className="text-xs text-gray-600 korean-text">딜</p>
             </CardContent>
           </Card>
-          
+
           <Card className="bg-white shadow-sm">
             <CardContent className="p-4 text-center">
               <p className="text-2xl font-bold text-primary">
                 {typedData?.stats?.revenue || 892}
               </p>
-              <p className="text-xs text-gray-600 korean-text">수익</p>
+              <p className="text-xs text-gray-600 korean-text">접속 수</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="bg-white shadow-sm mb-6">
-          <CardContent className="p-4">
-            <h3 className="font-medium mb-3 korean-text">빠른 작업</h3>
-            <Button
-              onClick={() => setLocation("/links")}
-              className="w-full bg-primary text-white py-3 rounded-lg font-medium mb-3 hover:bg-primary/90"
-            >
-              새 링크 만들기
-            </Button>
-            <div className="grid grid-cols-2 gap-3">
-              <Button
-                variant="secondary"
-                onClick={() => setLocation("/analytics")}
-                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100 flex items-center justify-center gap-2"
-              >
-                <BarChart3 className="w-4 h-4" />
-                분석 보기
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={() => setLocation("/contacts")}
-                className="bg-gray-50 text-dark py-3 rounded-lg text-sm font-medium hover:bg-gray-100 flex items-center justify-center gap-2"
-              >
-                <Users className="w-4 h-4" />
-                연락처 관리
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Activity */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <h3 className="font-medium mb-3 korean-text">최근 활동</h3>
-            <div className="space-y-3">
-              {typedData?.activities?.length > 0 ? (
-                typedData.activities.map((activity: any) => (
-                  <div key={activity.id} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center mr-3">
-                        {activity.type === "connection" && <Link className="w-4 h-4 text-white" />}
-                        {activity.type === "deal" && <TrendingUp className="w-4 h-4 text-white" />}
-                        {activity.type === "message" && <MessageCircle className="w-4 h-4 text-white" />}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium korean-text">{activity.title}</p>
-                        <p className="text-xs text-gray-500">
-                          {formatTime(new Date(activity.timestamp))}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="w-4 h-4 text-gray-400">›</div>
-                  </div>
-                ))
-              ) : (
-                <>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-primary-light rounded-full flex items-center justify-center mr-3">
-                        <Link className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium korean-text">새로운 비즈니스 연결</p>
-                        <p className="text-xs text-gray-500">2시간 전</p>
-                      </div>
-                    </div>
-                    <div className="w-4 h-4 text-gray-400">›</div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                        <TrendingUp className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium korean-text">딜 성사</p>
-                        <p className="text-xs text-gray-500">5시간 전</p>
-                      </div>
-                    </div>
-                    <div className="w-4 h-4 text-gray-400">›</div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
-                        <MessageCircle className="w-4 h-4 text-white" />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium korean-text">새 메시지</p>
-                        <p className="text-xs text-gray-500">1일 전</p>
-                      </div>
-                    </div>
-                    <div className="w-4 h-4 text-gray-400">›</div>
-                  </div>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        {/* 설정에서 URL 설정된 값으로 홈 화면에 불러옴 */}
       </div>
     </div>
   );

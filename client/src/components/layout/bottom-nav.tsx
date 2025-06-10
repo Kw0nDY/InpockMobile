@@ -6,9 +6,9 @@ export default function BottomNav() {
 
   const navItems = [
     { path: "/dashboard", icon: Home, label: "홈" },
-    { path: "/links", icon: Link, label: "링크" },
-    { path: "/marketplace", icon: ShoppingBag, label: "마켓" },
-    { path: "/chat", icon: MessageCircle, label: "채팅" },
+    { path: "/links", icon: Link, label: "이미지" },
+    { path: "/marketplace", icon: ShoppingBag, label: "동영상" },
+    { path: "/chat", icon: MessageCircle, label: "링크" },
     { path: "/settings", icon: Settings, label: "설정" },
   ];
 
@@ -22,7 +22,7 @@ export default function BottomNav() {
       <div className="flex items-center justify-around py-2">
         {navItems.map(({ path, icon: Icon, label }) => {
           const isActive = location === path;
-          
+
           return (
             <button
               key={path}
