@@ -24,6 +24,7 @@ import AnalyticsPage from "./pages/analytics";
 import ContactsPage from "./pages/contacts";
 import KakaoCallback from "./pages/kakao-callback";
 import ForgotPasswordPage from "./pages/forgot-password";
+import FindIdPage from "./pages/find-id";
 import ResetPasswordPage from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 
@@ -37,7 +38,7 @@ function Router() {
   useAnalytics();
   
   // Pages that should not show bottom navigation
-  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/reset-password"];
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password"];
   const shouldShowBottomNav = !hideNavPages.includes(location) && !location.startsWith("/reset-password/");
 
   return (
@@ -57,6 +58,7 @@ function Router() {
         <Route path="/analytics" component={AnalyticsPage} />
         <Route path="/contacts" component={ContactsPage} />
         <Route path="/forgot-password" component={ForgotPasswordPage} />
+        <Route path="/find-id" component={FindIdPage} />
         <Route path="/reset-password/:token" component={ResetPasswordPage} />
         <Route path="/oauth/kakao/callback" component={KakaoCallback} />
         <Route component={NotFound} />

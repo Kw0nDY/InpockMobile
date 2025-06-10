@@ -96,7 +96,7 @@ export default function LoginPage() {
             />
           </div>
 
-          <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center justify-between text-sm mb-2">
             <label className="flex items-center">
               <Checkbox
                 checked={rememberMe}
@@ -105,6 +105,17 @@ export default function LoginPage() {
               />
               <span className="text-gray-600">로그인 상태 유지</span>
             </label>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 text-sm mb-4">
+            <button 
+              type="button" 
+              onClick={() => setLocation("/find-id")}
+              className="text-primary hover:underline"
+            >
+              아이디 찾기
+            </button>
+            <span className="text-gray-300">|</span>
             <button 
               type="button" 
               onClick={() => setLocation("/forgot-password")}

@@ -588,6 +588,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Find ID route
+  app.post("/api/auth/find-id", async (req, res) => {
+    try {
+      const { email } = z.object({ email: z.string().email() }).parse(req.body);
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Return success even if user doesn't exist for security
+        return res.json({ message: "If an account with that email exists, ID information has been sent." });
+      }
+
+      // In a real application, you would send an email here
+      // For demo purposes, we'll log the ID information and return it
+      console.log(`ID found for ${email}: ${user.username}`);
+
+      res.json({ 
+        message: "ID information has been sent to your email.",
+        userId: user.username
+      });
+    } catch (error) {
+      console.error("Find ID error:", error);
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
   // Forgot Password routes
   app.post("/api/auth/forgot-password", async (req, res) => {
     try {
