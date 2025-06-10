@@ -51,6 +51,18 @@ export const upload = multer({
   }
 });
 
+// Create a very permissive multer instance for profile uploads
+export const flexibleUpload = multer({
+  storage: multerStorage,
+  fileFilter: (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    console.log('Flexible upload - accepting file:', file.fieldname, file.originalname, file.mimetype);
+    cb(null, true); // Accept all files
+  },
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB limit
+  }
+});
+
 // Separate multer instance for profile uploads - allow any field name
 export const profileUpload = multer({
   storage: multerStorage,
