@@ -21,7 +21,7 @@ import VisitCountWidget from "@/components/analytics/visit-count-widget";
 import { ImageModal, VideoModal, LinkPreview } from "@/components/ui/media-modal";
 import { useEffect, useState } from "react";
 import { trackPageView, trackCustomUrlVisit } from "@/lib/analytics";
-import { useAnalyticsData } from "@/hooks/use-analytics-data";
+import { useAnalyticsData, useUrlVisitCounts, useRealTimeVisits } from "@/hooks/use-analytics-data";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -49,6 +49,40 @@ export default function DashboardPage() {
   });
 
   const { data: analyticsData } = useAnalyticsData();
+
+  // Get tracked URLs from localStorage
+  const [trackedUrls, setTrackedUrls] = useState<string[]>([]);
+  
+  useEffect(() => {
+    const stored = localStorage.getItem(`tracked_urls_${user?.id}`);
+    if (stored) {
+      try {
+        const urls = JSON.parse(stored);
+        setTrackedUrls(urls);
+      } catch (e) {
+        console.error('Error parsing tracked URLs:', e);
+      }
+    }
+  }, [user?.id]);
+
+  const { data: urlVisitData, isLoading: urlVisitsLoading } = useUrlVisitCounts(trackedUrls);
+  const { visitCounts } = useRealTimeVisits(15000);
+
+  // Calculate total visits from tracked URLs
+  const getTotalTrackedVisits = () => {
+    let totalFromData = 0;
+    let totalRealtime = 0;
+    
+    if (urlVisitData) {
+      totalFromData = urlVisitData.reduce((sum, item) => sum + item.visits, 0);
+    }
+    
+    trackedUrls.forEach(url => {
+      totalRealtime += visitCounts[url] || 0;
+    });
+    
+    return totalFromData + totalRealtime;
+  };
 
   const typedData = dashboardData as any;
   const userSettings = settingsData as any;
@@ -138,7 +172,7 @@ export default function DashboardPage() {
             <CardContent className="p-4 text-center">
               <Link className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                {userLinks?.length || 0}
+                {trackedUrls.length}
               </p>
               <p className="text-xs text-gray-600 korean-text">연결</p>
             </CardContent>
@@ -158,7 +192,7 @@ export default function DashboardPage() {
             <CardContent className="p-4 text-center">
               <BarChart3 className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
-                {currentUser?.visitCount || 0}
+                {getTotalTrackedVisits()}
               </p>
               <p className="text-xs text-gray-600 korean-text">방문 횟수</p>
             </CardContent>

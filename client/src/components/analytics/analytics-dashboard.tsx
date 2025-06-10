@@ -39,6 +39,28 @@ export default function AnalyticsDashboard() {
   
   const { visitCounts, incrementVisit, lastUpdate } = useRealTimeVisits(15000);
 
+  // Calculate total visits across all tracked URLs
+  const getTotalCustomVisits = () => {
+    let totalFromData = 0;
+    let totalRealtime = 0;
+    
+    if (urlVisitData) {
+      totalFromData = urlVisitData.reduce((sum, item) => sum + item.visits, 0);
+    }
+    
+    trackedUrls.forEach(url => {
+      totalRealtime += visitCounts[url.url] || 0;
+    });
+    
+    return totalFromData + totalRealtime;
+  };
+
+  // Calculate total unique visitors
+  const getTotalUniqueVisitors = () => {
+    if (!urlVisitData) return 0;
+    return urlVisitData.reduce((sum, item) => sum + item.uniqueVisitors, 0);
+  };
+
   const addTrackedUrl = () => {
     if (!newUrl.trim() || !newLabel.trim()) return;
     
