@@ -58,11 +58,9 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({
         queryKey: [`/api/user/${user?.id}`],
       });
-      // Removed individual success toast - handled centrally
     },
     onError: (error: any) => {
       console.error('Settings mutation error:', error);
-      // Removed individual error toast - handled centrally
     },
   });
 
@@ -73,7 +71,6 @@ export default function SettingsPage() {
       return response.json();
     },
     onSuccess: (data) => {
-      // Update the user context with new data
       if (data.user && user) {
         setUser({ ...user, ...data.user });
       }
@@ -83,11 +80,9 @@ export default function SettingsPage() {
       queryClient.invalidateQueries({
         queryKey: [`/api/dashboard/stats/${user?.id}`],
       });
-      // Removed individual success toast - handled centrally
     },
     onError: (error: any) => {
       console.error('User update error:', error);
-      // Removed individual error toast - handled centrally
     },
   });
 
@@ -103,7 +98,8 @@ export default function SettingsPage() {
       });
       
       if (!response.ok) {
-        throw new Error('Upload failed');
+        const errorText = await response.text();
+        throw new Error(`Upload failed: ${errorText}`);
       }
       
       return response.json();
@@ -111,7 +107,6 @@ export default function SettingsPage() {
     onSuccess: (data) => {
       setProfileData(prev => ({ ...prev, profileImageUrl: data.url }));
       
-      // Update user profile with new image URL
       updateUserMutation.mutate({
         profileImageUrl: data.url
       });
@@ -122,7 +117,8 @@ export default function SettingsPage() {
       });
       setIsUploadingProfile(false);
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Profile image upload error:', error);
       toast({
         title: "업로드 실패",
         description: "이미지 업로드에 실패했습니다. 다시 시도해주세요.",
@@ -176,7 +172,6 @@ export default function SettingsPage() {
       console.log('Saving profile data:', profileData);
       console.log('User ID:', user?.id);
       
-      // Save user profile data (name, email, bio, media URLs)
       if (user?.id) {
         const userUpdateData = {
           name: profileData.name,
@@ -190,7 +185,6 @@ export default function SettingsPage() {
         console.log('User update result:', userResult);
       }
 
-      // Save settings data (URLs, content type, link settings)
       const settingsUpdateData = {
         bio: profileData.bio,
         customUrl: profileData.customUrl,
@@ -205,7 +199,6 @@ export default function SettingsPage() {
       
       console.log('Profile saved successfully');
       
-      // Show success message only after both operations complete
       toast({
         title: "프로필 저장 완료",
         description: "모든 설정이 성공적으로 저장되었습니다.",
@@ -245,10 +238,7 @@ export default function SettingsPage() {
       ? { profileImageUrl: fileUrl }
       : { introVideoUrl: fileUrl };
     
-    // Update local state
     setProfileData(prev => ({ ...prev, ...updateData }));
-    
-    // Update user profile in database
     updateUserMutation.mutate(updateData);
   };
 
@@ -427,8 +417,6 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-
-
         {/* Content Type Selection */}
         <Card className="bg-white shadow-sm">
           <CardHeader>
@@ -487,8 +475,6 @@ export default function SettingsPage() {
                   uploadType="image"
                 />
               )}
-              
-
             </CardContent>
           </Card>
         )}
@@ -510,8 +496,6 @@ export default function SettingsPage() {
                   uploadType="video"
                 />
               )}
-              
-
             </CardContent>
           </Card>
         )}
