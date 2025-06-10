@@ -165,7 +165,11 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-
+        {/* Real-time Visit Tracking */}
+        <VisitCountWidget 
+          userDefinedUrl={`/dashboard?user_id=${user?.id}`}
+          className="mb-6"
+        />
 
         {/* Profile Content Section */}
         <div className="mt-6">
