@@ -65,13 +65,13 @@ export default function SettingsPage() {
 
   // Sync with fetched settings
   useEffect(() => {
-    if (userSettings) {
+    if (userSettings && typeof userSettings === 'object') {
       setProfileData(prev => ({
         ...prev,
-        bio: userSettings.bio || '',
-        customUrl: userSettings.customUrl || '',
-        shortUrlType: userSettings.customUrl ? 'custom' : 'default',
-        contentType: userSettings.contentType || 'link'
+        bio: (userSettings as any).bio || '',
+        customUrl: (userSettings as any).customUrl || '',
+        shortUrlType: (userSettings as any).customUrl ? 'custom' : 'default',
+        contentType: (userSettings as any).contentType || 'link'
       }));
     }
   }, [userSettings]);
