@@ -177,7 +177,7 @@ export default function VisitCountWidget({ compact = false, showAddButton = true
           </div>
           <div className="text-center">
             <p className="text-xl font-bold text-[#8B4513]">
-              {trackedUrls.filter(url => getUrlVisitData(url).visits > 0).length}
+              {trackedUrls.length}
             </p>
             <p className="text-xs text-[#A0825C]">커스텀 URL</p>
           </div>
