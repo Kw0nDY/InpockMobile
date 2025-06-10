@@ -283,44 +283,66 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
                 {/* Image Content */}
-                {currentContentType === 'image' && currentUser?.profileImageUrl && (
+                {currentContentType === 'image' && (
                   <div className="mb-4">
-                    <ImageModal
-                      src={currentUser.profileImageUrl}
-                      alt="프로필 이미지"
-                    >
-                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
-                        <img
-                          src={currentUser.profileImageUrl}
-                          alt="Profile Content"
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                        />
+                    {currentUser?.profileImageUrl ? (
+                      <ImageModal
+                        src={currentUser.profileImageUrl}
+                        alt="프로필 이미지"
+                      >
+                        <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
+                          <img
+                            src={currentUser.profileImageUrl}
+                            alt="Profile Content"
+                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                          />
+                        </div>
+                      </ImageModal>
+                    ) : (
+                      <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500">이미지를 업로드해주세요</p>
+                        </div>
                       </div>
-                    </ImageModal>
-                    <p className="text-xs text-gray-500 mt-2 text-center">클릭하여 확대 보기</p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      {currentUser?.profileImageUrl ? '클릭하여 확대 보기' : '설정에서 이미지를 업로드할 수 있습니다'}
+                    </p>
                   </div>
                 )}
 
                 {/* Video Content */}
-                {currentContentType === 'video' && currentUser?.introVideoUrl && (
+                {currentContentType === 'video' && (
                   <div className="mb-4">
-                    <VideoModal src={currentUser.introVideoUrl}>
-                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
-                        <video
-                          src={currentUser.introVideoUrl}
-                          className="w-full h-full object-cover"
-                          muted
-                        >
-                          Your browser does not support the video tag.
-                        </video>
-                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-20 transition-all">
-                          <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                            <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+                    {currentUser?.introVideoUrl ? (
+                      <VideoModal src={currentUser.introVideoUrl}>
+                        <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
+                          <video
+                            src={currentUser.introVideoUrl}
+                            className="w-full h-full object-cover"
+                            muted
+                          >
+                            Your browser does not support the video tag.
+                          </video>
+                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-20 transition-all">
+                            <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                              <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+                            </div>
                           </div>
                         </div>
+                      </VideoModal>
+                    ) : (
+                      <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div className="text-center">
+                          <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                          <p className="text-sm text-gray-500">비디오를 업로드해주세요</p>
+                        </div>
                       </div>
-                    </VideoModal>
-                    <p className="text-xs text-gray-500 mt-2 text-center">클릭하여 재생</p>
+                    )}
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      {currentUser?.introVideoUrl ? '클릭하여 재생' : '설정에서 비디오를 업로드할 수 있습니다'}
+                    </p>
                   </div>
                 )}
 
