@@ -634,6 +634,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    // If email is being updated, check if it's different from current email
+    if (updates.email) {
+      const currentUser = await this.getUser(id);
+      if (currentUser && currentUser.email === updates.email) {
+        // Email is the same, remove it from updates to avoid constraint error
+        delete updates.email;
+      } else if (currentUser && currentUser.email !== updates.email) {
+        // Email is different, check if new email already exists
+        const existingUser = await this.getUserByEmail(updates.email);
+        if (existingUser && existingUser.id !== id) {
+          throw new Error('Email already exists');
+        }
+      }
+    }
+
     const [user] = await db
       .update(users)
       .set(updates)

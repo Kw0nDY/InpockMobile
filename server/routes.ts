@@ -438,10 +438,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/settings/:userId", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      const settings = await storage.getUserSettings(userId);
+      let settings = await storage.getUserSettings(userId);
 
+      // If no settings exist, create default settings
       if (!settings) {
-        return res.status(404).json({ message: "Settings not found" });
+        settings = await storage.createUserSettings({
+          userId,
+          notifications: true,
+          marketing: false,
+          darkMode: false,
+          language: "한국어",
+          timezone: "Seoul (UTC+9)",
+          currency: "KRW (₩)",
+          twoFactorEnabled: false,
+        });
       }
 
       res.json(settings);
@@ -455,13 +465,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const userId = parseInt(req.params.userId);
       const updates = req.body;
 
-      const settings = await storage.updateUserSettings(userId, updates);
+      let settings = await storage.updateUserSettings(userId, updates);
+      
+      // If no settings exist, create them with the updates
       if (!settings) {
-        return res.status(404).json({ message: "Settings not found" });
+        settings = await storage.createUserSettings({
+          userId,
+          notifications: true,
+          marketing: false,
+          darkMode: false,
+          language: "한국어",
+          timezone: "Seoul (UTC+9)",
+          currency: "KRW (₩)",
+          twoFactorEnabled: false,
+          ...updates,
+        });
       }
 
       res.json(settings);
     } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/settings/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const updates = req.body;
+
+      let settings = await storage.updateUserSettings(userId, updates);
+      
+      // If no settings exist, create them with the updates
+      if (!settings) {
+        settings = await storage.createUserSettings({
+          userId,
+          notifications: true,
+          marketing: false,
+          darkMode: false,
+          language: "한국어",
+          timezone: "Seoul (UTC+9)",
+          currency: "KRW (₩)",
+          twoFactorEnabled: false,
+          ...updates,
+        });
+      }
+
+      res.json(settings);
+    } catch (error) {
+      console.error('Settings update error:', error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
