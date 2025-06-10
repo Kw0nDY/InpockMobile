@@ -3,7 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
 import { upload, handleMediaUpload, serveUploadedFile } from "./upload";
-import { handleProfileUploadDirect } from "./profile-upload";
+import { handleFormidableUpload } from "./formidable-upload";
+import express from "express";
 import {
   insertUserSchema,
   insertLinkSchema,
@@ -699,8 +700,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Media Upload routes
   app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
   
-  // Profile image upload route - using direct busboy implementation
-  app.post("/api/upload/profile", handleProfileUploadDirect);
+  // Profile image upload route - using formidable instead of multer
+  app.post("/api/upload/profile", handleFormidableUpload);
   
   app.get("/uploads/:filename", serveUploadedFile);
   
