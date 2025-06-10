@@ -6,68 +6,47 @@ declare global {
   }
 }
 
-// Initialize Google Analytics for localhost development
+// Initialize Analytics for localhost development - No external GA4 needed
 export const initGA = () => {
-  // Use demo measurement ID for localhost development
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-DEMO123456';
+  console.log('Initializing localhost analytics tracking system');
 
-  console.log(`Initializing GA4 with ID: ${measurementId} for localhost development`);
+  // Create a local analytics system instead of GA4
+  if (!window.dataLayer) {
+    window.dataLayer = [];
+  }
 
-  // Add Google Analytics script to the head
-  const script1 = document.createElement('script');
-  script1.async = true;
-  script1.src = `https://www.googletagmanager.com/gtag/js?id=${measurementId}`;
-  document.head.appendChild(script1);
+  // Mock gtag function for localhost development
+  window.gtag = function(...args: any[]) {
+    window.dataLayer.push(args);
+    console.log('Analytics Event:', args);
+  };
 
-  // Initialize gtag
-  const script2 = document.createElement('script');
-  script2.innerHTML = `
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '${measurementId}', {
-      send_page_view: false, // We'll manually send page views
-      debug_mode: true, // Enable debug mode for localhost
-      custom_map: {
-        'custom_dimension_1': 'user_defined_url'
-      }
-    });
-  `;
-  document.head.appendChild(script2);
+  console.log('Local analytics system ready for localhost development');
 };
 
-// Track page views with custom URL parameter
+// Track page views with localhost URLs
 export const trackPageView = (url: string, userDefinedUrl?: string) => {
   if (typeof window === 'undefined' || !window.gtag) return;
   
-  const measurementId = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-DEMO123456';
+  const trackingUrl = userDefinedUrl || url;
+  const localhostUrl = `http://localhost:5000${trackingUrl}`;
   
-  const eventData: any = {
+  // Record the visit in local storage
+  recordVisit(trackingUrl);
+  
+  const eventData = {
     page_path: url,
-    page_location: `${window.location.origin}${url}`
+    page_location: localhostUrl,
+    user_defined_url: trackingUrl,
+    localhost_url: localhostUrl
   };
 
-  // Add custom dimension for user-defined URL if provided
-  if (userDefinedUrl) {
-    eventData.user_defined_url = userDefinedUrl;
-    eventData.custom_dimension_1 = userDefinedUrl;
-  }
+  console.log('Localhost Page View:', { url, trackingUrl, eventData });
 
-  console.log('GA4 Page View:', { url, userDefinedUrl, eventData });
-
-  window.gtag('config', measurementId, eventData);
-  
-  // Also send as a custom event for better tracking
-  window.gtag('event', 'page_view', {
-    page_title: document.title,
-    page_location: `${window.location.origin}${url}`,
-    page_path: url,
-    user_defined_url: userDefinedUrl || url,
-    custom_dimension_1: userDefinedUrl || url
-  });
+  window.gtag('event', 'page_view', eventData);
 };
 
-// Track custom URL visits with enhanced parameters
+// Track custom URL visits with localhost parameters
 export const trackCustomUrlVisit = (
   userDefinedUrl: string, 
   urlParameters?: Record<string, string>,
@@ -75,28 +54,28 @@ export const trackCustomUrlVisit = (
 ) => {
   if (typeof window === 'undefined' || !window.gtag) return;
   
+  const localhostUrl = userDefinedUrl.startsWith('http') ? userDefinedUrl : `http://localhost:5000${userDefinedUrl}`;
+  
+  // Record the visit with parameters in local storage
+  recordVisit(userDefinedUrl, userId, urlParameters);
+  
   const eventData: any = {
-    event_category: 'Custom URL Tracking',
+    event_category: 'Localhost URL Tracking',
     event_label: userDefinedUrl,
     user_defined_url: userDefinedUrl,
-    custom_dimension_1: userDefinedUrl,
+    localhost_url: localhostUrl,
     value: 1
   };
 
-  // Add URL parameters as custom dimensions
   if (urlParameters) {
-    Object.entries(urlParameters).forEach(([key, value], index) => {
-      eventData[`url_param_${key}`] = value;
-      eventData[`custom_dimension_${index + 2}`] = `${key}:${value}`;
-    });
+    eventData.url_parameters = urlParameters;
   }
 
-  // Add user ID if available
   if (userId) {
     eventData.user_id = userId;
   }
 
-  console.log('GA4 Custom URL Visit:', eventData);
+  console.log('Localhost URL Visit:', eventData);
 
   window.gtag('event', 'custom_url_visit', eventData);
 };
@@ -127,25 +106,25 @@ export const trackEvent = (
   window.gtag('event', action, eventData);
 };
 
-// Enhanced URL tracking for SPA routing
+// Enhanced URL tracking for localhost SPA routing
 export const trackUrlWithParameters = (
   baseUrl: string,
   parameters: Record<string, string>,
   userId?: string
 ) => {
   const urlWithParams = `${baseUrl}?${new URLSearchParams(parameters).toString()}`;
+  const localhostUrl = `http://localhost:5000${urlWithParams}`;
   
-  // Track as both page view and custom event
   trackPageView(baseUrl, urlWithParams);
   trackCustomUrlVisit(urlWithParams, parameters, userId);
   
-  return urlWithParams;
+  return localhostUrl;
 };
 
-// Utility to extract URL parameters for tracking
+// Extract URL parameters for localhost tracking
 export const extractUrlParameters = (url: string): Record<string, string> => {
   try {
-    const urlObj = new URL(url, window.location.origin);
+    const urlObj = new URL(url, 'http://localhost:5000');
     const params: Record<string, string> = {};
     
     urlObj.searchParams.forEach((value, key) => {
@@ -159,25 +138,84 @@ export const extractUrlParameters = (url: string): Record<string, string> => {
   }
 };
 
-// Analytics data fetching utilities (for localhost development)
-export const getAnalyticsData = async (userDefinedUrl?: string) => {
-  // For localhost development, return mock data structure
-  // In production, this would integrate with GA4 Reporting API
+// Local storage for localhost analytics tracking
+const ANALYTICS_KEY = 'localhost_analytics_data';
+
+interface LocalAnalyticsData {
+  visits: Record<string, number>;
+  users: string[];
+  sessions: Array<{
+    url: string;
+    timestamp: string;
+    userId?: string;
+    parameters?: Record<string, string>;
+  }>;
+  lastUpdated: string;
+}
+
+const getLocalAnalytics = (): LocalAnalyticsData => {
+  try {
+    const stored = localStorage.getItem(ANALYTICS_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.warn('Failed to load analytics data:', error);
+  }
   
-  console.log('Fetching analytics data for localhost development');
-  
-  const mockData = {
-    totalVisits: Math.floor(Math.random() * 1000) + 100,
-    uniqueVisitors: Math.floor(Math.random() * 500) + 50,
-    customUrlVisits: userDefinedUrl ? Math.floor(Math.random() * 100) + 10 : 0,
-    timeRange: '7d',
+  return {
+    visits: {},
+    users: [],
+    sessions: [],
     lastUpdated: new Date().toISOString()
   };
+};
+
+const saveLocalAnalytics = (data: LocalAnalyticsData) => {
+  try {
+    data.lastUpdated = new Date().toISOString();
+    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data));
+  } catch (error) {
+    console.warn('Failed to save analytics data:', error);
+  }
+};
+
+export const recordVisit = (url: string, userId?: string, parameters?: Record<string, string>) => {
+  const analytics = getLocalAnalytics();
   
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Record visit count
+  analytics.visits[url] = (analytics.visits[url] || 0) + 1;
   
-  return mockData;
+  // Record unique user
+  if (userId && !analytics.users.includes(userId)) {
+    analytics.users.push(userId);
+  }
+  
+  // Record session
+  analytics.sessions.push({
+    url,
+    timestamp: new Date().toISOString(),
+    userId,
+    parameters
+  });
+  
+  saveLocalAnalytics(analytics);
+};
+
+export const getAnalyticsData = async (userDefinedUrl?: string) => {
+  const analytics = getLocalAnalytics();
+  
+  const totalVisits = Object.values(analytics.visits).reduce((sum, count) => sum + count, 0);
+  const uniqueVisitors = analytics.users.length;
+  const customUrlVisits = userDefinedUrl ? (analytics.visits[userDefinedUrl] || 0) : 0;
+  
+  return {
+    totalVisits,
+    uniqueVisitors,
+    customUrlVisits,
+    timeRange: 'localhost session',
+    lastUpdated: analytics.lastUpdated
+  };
 };
 
 export interface UrlVisitData {
@@ -188,21 +226,26 @@ export interface UrlVisitData {
   parameters?: Record<string, string>;
 }
 
-// Get visit counts for multiple URLs (localhost development)
+// Get visit counts for multiple URLs from local storage
 export const getUrlVisitCounts = async (urls: string[]): Promise<UrlVisitData[]> => {
-  console.log('Fetching visit counts for URLs:', urls);
+  const analytics = getLocalAnalytics();
   
-  // Mock data for localhost development
-  const mockVisitData: UrlVisitData[] = urls.map(url => ({
-    url,
-    visits: Math.floor(Math.random() * 200) + 20,
-    uniqueVisitors: Math.floor(Math.random() * 100) + 10,
-    lastVisit: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-    parameters: extractUrlParameters(url)
-  }));
+  const visitData: UrlVisitData[] = urls.map(url => {
+    const visits = analytics.visits[url] || 0;
+    const userSessions = analytics.sessions.filter(session => session.url === url);
+    const uniqueUsers = new Set(userSessions.map(session => session.userId).filter(Boolean));
+    const lastVisit = userSessions.length > 0 
+      ? userSessions[userSessions.length - 1].timestamp 
+      : new Date().toISOString();
+    
+    return {
+      url,
+      visits,
+      uniqueVisitors: uniqueUsers.size,
+      lastVisit,
+      parameters: extractUrlParameters(url)
+    };
+  });
   
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 800));
-  
-  return mockVisitData;
+  return visitData;
 };
