@@ -151,7 +151,7 @@ export default function NotificationDropdown() {
                 <div
                   key={notification.id}
                   className={`p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
-                    !notification.isRead ? "bg-amber-50" : ""
+                    !notification.isRead ? "bg-amber-100" : ""
                   }`}
                   onClick={() => markAsRead(notification.id)}
                 >
