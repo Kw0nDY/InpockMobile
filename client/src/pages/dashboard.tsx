@@ -167,145 +167,178 @@ export default function DashboardPage() {
 
 
 
-        {/* Profile Content Section */}
+        {/* Profile Preview Section - Mobile Wireframe Style */}
         <div className="mt-6">
-          <Card className="bg-brown-50 shadow-sm border border-brown-200 rounded-2xl overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden max-w-sm mx-auto">
             {/* Profile Header */}
-            <div className="p-6 bg-brown-50 border-b border-brown-200">
-              <h3 className="text-xl font-semibold text-brown-900 korean-text mb-1">{user?.name || '프로필 이름'}</h3>
-              <p className="text-sm text-brown-600 korean-text">{currentUser?.bio || userSettings?.bio || '간단한 자기소개 및 설명'}</p>
+            <div className="p-6 text-center bg-gray-50">
+              <h3 className="text-lg font-semibold text-gray-900 korean-text mb-2">
+                {user?.name || currentUser?.name || '프로필 이름'}
+              </h3>
+              <p className="text-sm text-gray-600 korean-text">
+                {currentUser?.bio || userSettings?.bio || '간단한 자기소개 및 설명'}
+              </p>
             </div>
 
             {/* Main Content Area */}
-            <div className="p-6 min-h-[300px] bg-brown-50">
-              {/* Content Preview Based on Type */}
-              <div className="mb-6">
-                <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
-                
-                {/* Image Content */}
-                {currentContentType === 'image' && currentUser?.profileImageUrl && (
-                  <div className="mb-4">
-                    <ImageModal
+            <div className="px-6 py-8 min-h-[300px] bg-white flex items-center justify-center">
+              {/* Image Content */}
+              {currentContentType === 'image' && currentUser?.profileImageUrl && (
+                <ImageModal
+                  src={currentUser.profileImageUrl}
+                  alt="프로필 이미지"
+                >
+                  <div className="w-full max-w-[250px] aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity shadow-md">
+                    <img
                       src={currentUser.profileImageUrl}
-                      alt="프로필 이미지"
-                    >
-                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
-                        <img
-                          src={currentUser.profileImageUrl}
-                          alt="Profile Content"
-                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                        />
-                      </div>
-                    </ImageModal>
-                    <p className="text-xs text-gray-500 mt-2 text-center">클릭하여 확대 보기</p>
+                      alt="Profile Content"
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                    />
                   </div>
-                )}
+                </ImageModal>
+              )}
 
-                {/* Video Content */}
-                {currentContentType === 'video' && currentUser?.introVideoUrl && (
-                  <div className="mb-4">
-                    <VideoModal src={currentUser.introVideoUrl}>
-                      <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
-                        <video
-                          src={currentUser.introVideoUrl}
-                          className="w-full h-full object-cover"
-                          muted
-                        >
-                          Your browser does not support the video tag.
-                        </video>
-                        <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-20 transition-all">
-                          <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                            <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+              {/* Video Content */}
+              {currentContentType === 'video' && currentUser?.introVideoUrl && (
+                <VideoModal src={currentUser.introVideoUrl}>
+                  <div className="w-full max-w-[250px] aspect-square rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative shadow-md">
+                    <video
+                      src={currentUser.introVideoUrl}
+                      className="w-full h-full object-cover"
+                      muted
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                    <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-20 transition-all">
+                      <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
+                        <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+                      </div>
+                    </div>
+                  </div>
+                </VideoModal>
+              )}
+
+              {/* Link Content */}
+              {currentContentType === 'links' && (
+                <div className="w-full space-y-3">
+                  {/* Show actual user links or default profile card */}
+                  {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
+                    linksData.slice(0, 3).map((link: any) => (
+                      <LinkPreview
+                        key={link.id}
+                        url={`${window.location.origin}/l/${link.shortCode}`}
+                        title={link.title}
+                        description={link.description || link.url}
+                        userId={user?.id}
+                      >
+                        <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium text-gray-900 korean-text mb-1">{link.title}</h4>
+                              <p className="text-xs text-gray-600 korean-text">{link.description || link.url}</p>
+                            </div>
+                            <div className="ml-4 flex-shrink-0">
+                              <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <ExternalLink className="w-4 h-4 text-gray-400" />
+                              </div>
+                            </div>
+                          </div>
+                          <div className="mt-3">
+                            <span className="inline-block bg-blue-500 text-white text-xs px-3 py-1 rounded-full korean-text">Link</span>
                           </div>
                         </div>
-                      </div>
-                    </VideoModal>
-                    <p className="text-xs text-gray-500 mt-2 text-center">클릭하여 재생</p>
-                  </div>
-                )}
-
-                {/* Link Content */}
-                {currentContentType === 'links' && (
-                  <LinkPreview
-                    url={userSettings?.linkUrl || 
-                      (userSettings?.customUrl ? 
-                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
-                        `https://amusefit.co.kr/users/${user?.username || 'default'}`)
-                    }
-                    title={userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
-                    description={userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
-                    userId={user?.id}
-                  >
-                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <ExternalLink className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-gray-800">
-                          {userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-3">
-                        {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
-                      </p>
-                      <div className="flex items-center space-x-1 text-xs text-blue-600">
-                        <span>클릭하여 새 탭에서 열기</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </div>
-                    </div>
-                  </LinkPreview>
-                )}
-
-                {/* Upload Prompt for Empty Content */}
-                {currentContentType === 'image' && !currentUser?.profileImageUrl && (
-                  <div 
-                    className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
-                    onClick={() => setLocation('/settings')}
-                  >
-                    <div className="text-center">
-                      <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
-                      <p className="text-sm text-blue-600 mt-2">설정에서 업로드하기</p>
-                    </div>
-                  </div>
-                )}
-                
-                {currentContentType === 'video' && !currentUser?.introVideoUrl && (
-                  <div 
-                    className="w-full h-48 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300 cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-colors"
-                    onClick={() => setLocation('/settings')}
-                  >
-                    <div className="text-center">
-                      <Video className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
-                      <p className="text-sm text-blue-600 mt-2">설정에서 업로드하기</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Bottom Tab Navigation */}
-              <div className="mt-6 flex justify-center">
-                <div className="flex bg-brown-100 rounded-full p-1 border border-brown-200">
-                  {[
-                    { type: 'image', label: '이미지', icon: Image },
-                    { type: 'video', label: '비디오', icon: Video },
-                    { type: 'links', label: '링크', icon: ExternalLink }
-                  ].map(({ type, label, icon: Icon }) => (
-                    <button
-                      key={type}
-                      onClick={() => setPreviewType(type)}
-                      className={`flex flex-col items-center justify-center p-4 rounded-full transition-all ${
-                        currentContentType === type
-                          ? 'bg-brown-600 text-white shadow-lg'
-                          : 'text-brown-400 hover:text-brown-600 hover:bg-brown-200'
-                      }`}
+                      </LinkPreview>
+                    ))
+                  ) : (
+                    // Show default profile link when no custom links exist
+                    <LinkPreview
+                      url={userSettings?.linkUrl || 
+                        (userSettings?.customUrl ? 
+                          `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
+                          `https://amusefit.co.kr/users/${user?.username || 'default'}`)
+                      }
+                      title={userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
+                      description={userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
+                      userId={user?.id}
                     >
-                      <Icon className="w-6 h-6" />
-                    </button>
-                  ))}
+                      <div className="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:shadow-md transition-shadow">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900 korean-text mb-1">
+                              {userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
+                            </h4>
+                            <p className="text-xs text-gray-600 korean-text">
+                              {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
+                            </p>
+                          </div>
+                          <div className="ml-4 flex-shrink-0">
+                            <div className="w-10 h-10 bg-gray-200 rounded-lg flex items-center justify-center">
+                              <ExternalLink className="w-4 h-4 text-gray-400" />
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <span className="inline-block bg-blue-500 text-white text-xs px-3 py-1 rounded-full korean-text">Link</span>
+                        </div>
+                      </div>
+                    </LinkPreview>
+                  )}
                 </div>
+              )}
+
+              {/* Empty States */}
+              {currentContentType === 'image' && !currentUser?.profileImageUrl && (
+                <div className="w-full max-w-[250px] aspect-square bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <Image className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500 korean-text">이미지 없음</p>
+                  </div>
+                </div>
+              )}
+              
+              {currentContentType === 'video' && !currentUser?.introVideoUrl && (
+                <div className="w-full max-w-[250px] aspect-square bg-gray-100 rounded-xl flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <Video className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500 korean-text">동영상 없음</p>
+                  </div>
+                </div>
+              )}
+
+              {currentContentType === 'links' && (!linksData || !Array.isArray(linksData) || linksData.length === 0) && (
+                <div className="w-full bg-gray-100 rounded-xl p-8 flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center">
+                    <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-500 korean-text">링크 없음</p>
+                    <p className="text-xs text-gray-400 korean-text mt-1">기본 프로필 링크가 표시됩니다</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Bottom Navigation - Matching Wireframe */}
+            <div className="px-6 pb-6">
+              <div className="flex justify-center space-x-4">
+                {[
+                  { type: 'image', icon: Image },
+                  { type: 'video', icon: Video },
+                  { type: 'links', icon: ExternalLink }
+                ].map(({ type, icon: Icon }) => (
+                  <button
+                    key={type}
+                    onClick={() => setPreviewType(type)}
+                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                      currentContentType === type
+                        ? 'bg-gray-900 text-white shadow-lg'
+                        : 'bg-gray-200 text-gray-400 hover:bg-gray-300 hover:text-gray-600'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </button>
+                ))}
               </div>
             </div>
-          </Card>
+          </div>
         </div>
 
         {/* Settings Button */}
