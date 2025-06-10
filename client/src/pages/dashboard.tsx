@@ -36,6 +36,11 @@ export default function DashboardPage() {
     enabled: !!user?.id,
   });
 
+  const { data: userData } = useQuery({
+    queryKey: [`/api/user/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
   const { data: linksData } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
     enabled: !!user?.id,
@@ -46,6 +51,7 @@ export default function DashboardPage() {
   const typedData = dashboardData as any;
   const userSettings = settingsData as any;
   const userLinks = linksData as any;
+  const currentUser = userData as any;
 
   useEffect(() => {
     if (user) {
@@ -227,30 +233,92 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Content Preview */}
+              {/* Content Preview with Real Media */}
               <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2 korean-text">콘텐츠 미리보기</p>
-                {(userSettings?.contentType || 'link') === 'image' && (
-                  <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <Image className="w-8 h-8 text-gray-400" />
-                  </div>
-                )}
-                {(userSettings?.contentType || 'link') === 'video' && (
-                  <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center">
-                    <Video className="w-8 h-8 text-gray-400" />
-                  </div>
-                )}
-                {(userSettings?.contentType || 'link') === 'link' && (
-                  <div className="p-3 border border-gray-200 rounded-lg bg-white">
-                    <div className="flex items-center space-x-2">
-                      <ExternalLink className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-medium text-gray-800">
-                        {user?.name || '사용자'}의 프로필
-                      </span>
+                <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
+                
+                {/* Profile Image Display */}
+                {currentUser?.profileImageUrl && (
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 mb-2">프로필 이미지</p>
+                    <div className="w-full h-32 rounded-lg overflow-hidden">
+                      <img
+                        src={currentUser.profileImageUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                    <p className="text-xs text-gray-600 mt-1">
-                      {userSettings?.bio || '안녕하세요! 반갑습니다.'}
-                    </p>
+                  </div>
+                )}
+
+                {/* Intro Video Display */}
+                {currentUser?.introVideoUrl && (
+                  <div className="mb-4">
+                    <p className="text-xs text-gray-500 mb-2">소개 비디오</p>
+                    <div className="w-full h-32 rounded-lg overflow-hidden">
+                      <video
+                        src={currentUser.introVideoUrl}
+                        controls
+                        className="w-full h-full object-cover"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  </div>
+                )}
+
+                {/* Content Type Preview */}
+                {(userSettings?.contentType || 'links') === 'image' && !currentUser?.profileImageUrl && (
+                  <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <div className="text-center">
+                      <Image className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-xs text-gray-500">이미지를 업로드하세요</p>
+                    </div>
+                  </div>
+                )}
+                
+                {(userSettings?.contentType || 'links') === 'video' && !currentUser?.introVideoUrl && (
+                  <div className="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                    <div className="text-center">
+                      <Video className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-xs text-gray-500">비디오를 업로드하세요</p>
+                    </div>
+                  </div>
+                )}
+                
+                {(userSettings?.contentType || 'links') === 'links' && (
+                  <div className="p-3 border border-gray-200 rounded-lg bg-white">
+                    <div className="flex items-start space-x-3">
+                      {currentUser?.profileImageUrl ? (
+                        <img
+                          src={currentUser.profileImageUrl}
+                          alt="Profile"
+                          className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
+                          <span className="text-white font-medium text-sm">
+                            {user?.name ? user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : '사용자'}
+                          </span>
+                        </div>
+                      )}
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2">
+                          <ExternalLink className="w-4 h-4 text-primary" />
+                          <span className="text-sm font-medium text-gray-800">
+                            {user?.name || '사용자'}의 프로필
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
+                        </p>
+                        {currentUser?.visitCount !== undefined && (
+                          <p className="text-xs text-primary mt-1">
+                            방문 횟수: {currentUser.visitCount || 0}회
+                          </p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

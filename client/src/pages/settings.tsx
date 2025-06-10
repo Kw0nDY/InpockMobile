@@ -410,6 +410,21 @@ export default function SettingsPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Media Upload Section */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">미디어 업로드</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MediaUpload
+              userId={user?.id || 0}
+              onUploadSuccess={handleMediaUpload}
+              currentImageUrl={profileData.profileImageUrl}
+              currentVideoUrl={profileData.introVideoUrl}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
