@@ -400,13 +400,14 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Conditional Content Upload/Configuration */}
+        {/* Image Upload Section */}
         {profileData.contentType === 'image' && (
           <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800">이미지 업로드</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-800">이미지 콘텐츠 설정</CardTitle>
+              <p className="text-sm text-gray-600">프로필에 표시될 이미지를 업로드하세요</p>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               {user?.id && (
                 <MediaUpload
                   userId={user.id}
@@ -415,16 +416,33 @@ export default function SettingsPage() {
                   currentVideoUrl=""
                 />
               )}
+              
+              {/* Image Preview */}
+              {profileData.profileImageUrl && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-3">이미지 미리보기</p>
+                  <div className="w-full max-w-md mx-auto">
+                    <img
+                      src={profileData.profileImageUrl}
+                      alt="Uploaded content"
+                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 이미지가 표시됩니다</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
+        {/* Video Upload Section */}
         {profileData.contentType === 'video' && (
           <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800">동영상 업로드</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-800">동영상 콘텐츠 설정</CardTitle>
+              <p className="text-sm text-gray-600">프로필에 표시될 동영상을 업로드하세요</p>
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
               {user?.id && (
                 <MediaUpload
                   userId={user.id}
@@ -433,14 +451,33 @@ export default function SettingsPage() {
                   currentVideoUrl={profileData.introVideoUrl}
                 />
               )}
+              
+              {/* Video Preview */}
+              {profileData.introVideoUrl && (
+                <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-3">동영상 미리보기</p>
+                  <div className="w-full max-w-md mx-auto">
+                    <video
+                      src={profileData.introVideoUrl}
+                      controls
+                      className="w-full h-48 object-cover rounded-lg border border-gray-200"
+                    >
+                      Your browser does not support the video tag.
+                    </video>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 동영상이 표시됩니다</p>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
 
+        {/* Link Card Configuration Section */}
         {profileData.contentType === 'links' && (
           <Card className="bg-white shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800">링크 카드 설정</CardTitle>
+              <CardTitle className="text-lg font-semibold text-gray-800">링크 카드 콘텐츠 설정</CardTitle>
+              <p className="text-sm text-gray-600">홈 화면에 표시될 링크 카드를 구성하세요</p>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
@@ -478,10 +515,10 @@ export default function SettingsPage() {
                 />
               </div>
 
-              {/* Link Preview */}
+              {/* Link Card Preview */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-3">링크 카드 미리보기</p>
-                <div className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
+                <div className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow max-w-md mx-auto">
                   <div className="flex items-start space-x-3">
                     {profileData.profileImageUrl ? (
                       <img
@@ -513,6 +550,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 </div>
+                <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 링크 카드가 표시됩니다</p>
               </div>
             </CardContent>
           </Card>
