@@ -85,7 +85,10 @@ export const userSettings = pgTable("user_settings", {
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
   bio: text("bio"),
   customUrl: text("custom_url"),
-  contentType: text("content_type").default("link"), // link, image, video
+  contentType: text("content_type").default("links"), // links, image, video
+  linkTitle: text("link_title"),
+  linkDescription: text("link_description"),
+  linkUrl: text("link_url"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

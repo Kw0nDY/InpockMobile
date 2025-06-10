@@ -280,10 +280,8 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* Link Content or Default */}
-                {(userSettings?.contentType === 'links' || !userSettings?.contentType || 
-                  (userSettings?.contentType === 'image' && !currentUser?.profileImageUrl) ||
-                  (userSettings?.contentType === 'video' && !currentUser?.introVideoUrl)) && (
+                {/* Link Content */}
+                {(userSettings?.contentType === 'links' || !userSettings?.contentType) && (
                   <LinkPreview
                     url={userSettings?.linkUrl || 
                       (userSettings?.customUrl ? 
@@ -293,41 +291,24 @@ export default function DashboardPage() {
                     title={userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
                     description={userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
                   >
-                    <div className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
-                      <div className="flex items-start space-x-3">
-                        {currentUser?.profileImageUrl ? (
-                          <img
-                            src={currentUser.profileImageUrl}
-                            alt="Profile"
-                            className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                            <span className="text-white font-medium text-sm">
-                              {user?.name ? user.name.split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase() : '사용자'}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2">
-                            <ExternalLink className="w-4 h-4 text-primary" />
-                            <span className="text-sm font-medium text-gray-800">
-                              {userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-600 mt-1">
-                            {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
-                          </p>
-                          {currentUser?.visitCount !== undefined && (
-                            <p className="text-xs text-primary mt-1">
-                              방문 횟수: {currentUser.visitCount || 0}회
-                            </p>
-                          )}
-                          <div className="flex items-center space-x-1 mt-2 text-xs text-blue-600">
-                            <span>클릭하여 새 탭에서 열기</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </div>
-                        </div>
+                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <ExternalLink className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-gray-800">
+                          {userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 mb-3">
+                        {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
+                      </p>
+                      {currentUser?.visitCount !== undefined && (
+                        <p className="text-xs text-primary mb-2">
+                          방문 횟수: {currentUser.visitCount || 0}회
+                        </p>
+                      )}
+                      <div className="flex items-center space-x-1 text-xs text-blue-600">
+                        <span>클릭하여 새 탭에서 열기</span>
+                        <ExternalLink className="w-3 h-3" />
                       </div>
                     </div>
                   </LinkPreview>
