@@ -51,6 +51,30 @@ export const upload = multer({
   }
 });
 
+// Separate multer instance for profile uploads
+export const profileUpload = multer({
+  storage: multerStorage,
+  fileFilter: (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    // Only allow images for profile uploads
+    const allowedMimes = [
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'image/gif',
+      'image/webp'
+    ];
+    
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Invalid file type. Only images (JPEG, PNG, GIF, WebP) are allowed for profile pictures.'));
+    }
+  },
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB limit for profile images
+  }
+});
+
 // Upload handler for content media (dashboard content)
 export const handleMediaUpload = async (req: Request, res: Response) => {
   try {
