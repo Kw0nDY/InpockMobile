@@ -88,55 +88,59 @@ export default function AnalyticsDashboard() {
     <div className="space-y-6">
       {/* Overview Stats */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="bg-card border-border">
+        <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Eye className="w-5 h-5 text-accent" />
+              <Eye className="w-5 h-5 text-[#8B4513]" />
               <div>
-                <p className="text-sm text-muted-foreground">총 방문</p>
-                <p className="text-xl font-bold text-foreground">
-                  {analyticsLoading ? '...' : analyticsData?.totalVisits.toLocaleString()}
+                <p className="text-sm text-[#A0825C]">총 방문</p>
+                <p className="text-xl font-bold text-[#8B4513]">
+                  {urlVisitsLoading ? '...' : (
+                    urlVisitData?.reduce((total, item) => total + item.visits, 0) || 0
+                  )}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Users className="w-5 h-5 text-accent" />
+              <Users className="w-5 h-5 text-[#8B4513]" />
               <div>
-                <p className="text-sm text-muted-foreground">순 방문자</p>
-                <p className="text-xl font-bold text-foreground">
-                  {analyticsLoading ? '...' : analyticsData?.uniqueVisitors.toLocaleString()}
+                <p className="text-sm text-[#A0825C]">순 방문자</p>
+                <p className="text-xl font-bold text-[#8B4513]">
+                  {urlVisitsLoading ? '...' : (
+                    urlVisitData?.reduce((total, item) => total + item.uniqueVisitors, 0) || 0
+                  )}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-accent" />
+              <TrendingUp className="w-5 h-5 text-[#8B4513]" />
               <div>
-                <p className="text-sm text-muted-foreground">커스텀 URL</p>
-                <p className="text-xl font-bold text-foreground">
-                  {analyticsLoading ? '...' : analyticsData?.customUrlVisits.toLocaleString()}
+                <p className="text-sm text-[#A0825C]">커스텀 URL</p>
+                <p className="text-xl font-bold text-[#8B4513]">
+                  {trackedUrls.length}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-card border-border">
+        <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-accent" />
+              <Clock className="w-5 h-5 text-[#8B4513]" />
               <div>
-                <p className="text-sm text-muted-foreground">업데이트</p>
-                <p className="text-sm font-medium text-foreground">
+                <p className="text-sm text-[#A0825C]">업데이트</p>
+                <p className="text-sm font-medium text-[#8B4513]">
                   {formatLastUpdate(lastUpdate)}
                 </p>
               </div>
@@ -146,9 +150,9 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* Add New URL Tracking */}
-      <Card className="bg-card border-border">
+      <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
         <CardHeader>
-          <CardTitle className="text-foreground flex items-center space-x-2">
+          <CardTitle className="text-[#8B4513] flex items-center space-x-2">
             <Plus className="w-5 h-5" />
             <span>새 URL 추적 추가</span>
           </CardTitle>
@@ -156,28 +160,28 @@ export default function AnalyticsDashboard() {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">URL</label>
+              <label className="text-sm font-medium text-[#8B4513] mb-2 block">URL</label>
               <Input
                 value={newUrl}
                 onChange={(e) => setNewUrl(e.target.value)}
                 placeholder="/page?param1=value1&param2=value2"
-                className="bg-background border-border text-foreground"
+                className="bg-[#EAE5DE] border-[#D4CAB8] text-[#8B4513] focus:border-[#8B4513]"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">라벨</label>
+              <label className="text-sm font-medium text-[#8B4513] mb-2 block">라벨</label>
               <Input
                 value={newLabel}
                 onChange={(e) => setNewLabel(e.target.value)}
                 placeholder="설명적인 라벨"
-                className="bg-background border-border text-foreground"
+                className="bg-[#EAE5DE] border-[#D4CAB8] text-[#8B4513] focus:border-[#8B4513]"
               />
             </div>
           </div>
           <Button 
             onClick={addTrackedUrl}
             disabled={!newUrl.trim() || !newLabel.trim()}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
+            className="bg-[#8B4513] text-white hover:bg-[#7A3F0F]"
           >
             <Plus className="w-4 h-4 mr-2" />
             URL 추가
@@ -186,9 +190,9 @@ export default function AnalyticsDashboard() {
       </Card>
 
       {/* Tracked URLs */}
-      <Card className="bg-card border-border">
+      <Card className="bg-[#F5F3F0] border-[#E8E3DD]">
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="text-foreground flex items-center space-x-2">
+          <CardTitle className="text-[#8B4513] flex items-center space-x-2">
             <BarChart3 className="w-5 h-5" />
             <span>추적 중인 URL 방문 횟수</span>
           </CardTitle>
@@ -199,7 +203,7 @@ export default function AnalyticsDashboard() {
             }}
             size="sm"
             variant="outline"
-            className="border-border text-foreground hover:bg-muted"
+            className="border-[#D4CAB8] text-[#8B4513] hover:bg-[#EAE5DE] hover:text-[#5D2F0A]"
           >
             <RefreshCw className="w-4 h-4" />
           </Button>
@@ -214,12 +218,12 @@ export default function AnalyticsDashboard() {
               return (
                 <div 
                   key={trackedUrl.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-muted rounded-lg border border-border gap-4"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-[#EAE5DE] rounded-lg border border-[#D4CAB8] gap-4"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <h4 className="font-medium text-foreground truncate">{trackedUrl.label}</h4>
-                      <Badge variant="secondary" className="bg-accent/20 text-accent flex-shrink-0">
+                      <h4 className="font-medium text-[#8B4513] truncate">{trackedUrl.label}</h4>
+                      <Badge variant="secondary" className="bg-[#D4CAB8] text-[#8B4513] flex-shrink-0">
                         {totalVisits.toLocaleString()} 방문
                       </Badge>
                       {realtimeCount > 0 && (
@@ -229,7 +233,7 @@ export default function AnalyticsDashboard() {
                       )}
                     </div>
                     
-                    <p className="text-sm text-muted-foreground font-mono mb-2 break-all">{trackedUrl.url}</p>
+                    <p className="text-sm text-[#A0825C] font-mono mb-2 break-all">{trackedUrl.url}</p>
                     
                     {trackedUrl.parameters && (
                       <div className="flex flex-wrap gap-2 mb-2">
@@ -237,7 +241,7 @@ export default function AnalyticsDashboard() {
                           <Badge 
                             key={key} 
                             variant="outline"
-                            className="text-xs border-border text-muted-foreground"
+                            className="text-xs border-[#D4CAB8] text-[#8B4513]"
                           >
                             {key}: {value}
                           </Badge>
@@ -246,7 +250,7 @@ export default function AnalyticsDashboard() {
                     )}
                     
                     {visitData && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-[#B8967A]">
                         순 방문자: {visitData.uniqueVisitors} | 
                         마지막 방문: {new Date(visitData.lastVisit).toLocaleDateString('ko-KR')}
                       </div>
@@ -258,7 +262,7 @@ export default function AnalyticsDashboard() {
                       onClick={() => simulateVisit(trackedUrl.url)}
                       size="sm"
                       variant="outline"
-                      className="border-border text-foreground hover:bg-muted h-8 w-8 p-0"
+                      className="border-[#D4CAB8] text-[#A0825C] hover:bg-[#D4CAB8] hover:text-[#5D2F0A] h-8 w-8 p-0"
                       title="방문 시뮬레이션"
                     >
                       <ExternalLink className="w-4 h-4" />
@@ -267,7 +271,7 @@ export default function AnalyticsDashboard() {
                       onClick={() => removeTrackedUrl(trackedUrl.id)}
                       size="sm"
                       variant="outline"
-                      className="border-destructive text-destructive hover:bg-destructive/10 h-8 w-8 p-0"
+                      className="border-[#CD5C5C] text-[#CD5C5C] hover:bg-[#F0D0D0] hover:text-[#B22222] h-8 w-8 p-0"
                       title="URL 삭제"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -278,7 +282,7 @@ export default function AnalyticsDashboard() {
             })}
             
             {trackedUrls.length === 0 && (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-[#A0825C]">
                 <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50" />
                 <p>아직 추적 중인 URL이 없습니다.</p>
                 <p className="text-sm">위에서 새 URL을 추가해보세요.</p>
