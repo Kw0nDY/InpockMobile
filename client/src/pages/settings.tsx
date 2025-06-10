@@ -492,36 +492,19 @@ export default function SettingsPage() {
               {/* Link Card Preview */}
               <div className="mt-4 p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-3">링크 카드 미리보기</p>
-                <div className="p-3 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow max-w-md mx-auto">
-                  <div className="flex items-start space-x-3">
-                    {profileData.profileImageUrl ? (
-                      <img
-                        src={profileData.profileImageUrl}
-                        alt="Profile"
-                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center flex-shrink-0">
-                        <span className="text-white font-medium text-sm">
-                          {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <ExternalLink className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-gray-800">
-                          {profileData.linkTitle || `${profileData.name || user?.name || '사용자'}의 프로필`}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600 mt-1">
-                        {profileData.linkDescription || profileData.bio || '안녕하세요! 반갑습니다.'}
-                      </p>
-                      <div className="flex items-center space-x-1 mt-2 text-xs text-blue-600">
-                        <span>{profileData.linkUrl || shortUrl}</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </div>
-                    </div>
+                <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow max-w-md mx-auto">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <ExternalLink className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-gray-800">
+                      {profileData.linkTitle || `${profileData.name || user?.name || '사용자'}의 프로필`}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-600 mb-3">
+                    {profileData.linkDescription || profileData.bio || '안녕하세요! 반갑습니다.'}
+                  </p>
+                  <div className="flex items-center space-x-1 text-xs text-blue-600">
+                    <span>{profileData.linkUrl || shortUrl}</span>
+                    <ExternalLink className="w-3 h-3" />
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">홈 화면에서 이 링크 카드가 표시됩니다</p>
