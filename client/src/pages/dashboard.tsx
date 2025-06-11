@@ -225,84 +225,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Real-time Visit Tracking */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-sm font-medium text-gray-700">실시간 방문 추적</span>
-            </div>
-            <Button variant="ghost" size="sm" className="p-1">
-              <BarChart3 className="w-4 h-4 text-gray-500" />
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
-              <div className="text-xl font-bold text-gray-800">1</div>
-              <div className="text-xs text-gray-500">오늘</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl font-bold text-gray-800">0</div>
-              <div className="text-xs text-gray-500">어제</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xl font-bold text-gray-800">0</div>
-              <div className="text-xs text-gray-500">총 방문횟수</div>
-            </div>
-          </div>
-
-          <div className="space-y-2 mb-4">
-            <p className="text-xs text-gray-600 mb-2">등록 중인 URL</p>
-            
-            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">다시보드</div>
-                <div className="text-xs text-gray-500 font-mono">/dashboard_user_email</div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">미등록</span>
-                <Button variant="ghost" size="sm" className="p-1">
-                  <Copy className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">마케팅랩아이</div>
-                <div className="text-xs text-gray-500 font-mono">/market&user_email</div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">미등록</span>
-                <Button variant="ghost" size="sm" className="p-1">
-                  <Copy className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-2 bg-gray-50 rounded">
-              <div className="flex-1">
-                <div className="text-sm font-medium text-gray-800">홈코</div>
-                <div className="text-xs text-gray-500 font-mono">/link24&market</div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs px-2 py-1 bg-red-100 text-red-600 rounded">미등록</span>
-                <Button variant="ghost" size="sm" className="p-1">
-                  <Copy className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          <Button 
-            variant="outline" 
-            className="w-full text-sm border-dashed border-gray-300 text-gray-600"
-            onClick={() => setLocation('/analytics')}
-          >
-            <BarChart3 className="w-4 h-4 mr-2" />
-            전체 분석 보기
-          </Button>
-        </div>
+        <VisitCountWidget 
+          userDefinedUrl={`/dashboard?user_id=${user?.id}`}
+          className="mb-6"
+        />
 
         {/* Profile Content Section */}
         <div className="mt-6">
