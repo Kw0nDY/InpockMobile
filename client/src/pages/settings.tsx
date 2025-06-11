@@ -565,29 +565,34 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            {/* Quick URL Add */}
-            <div className="mt-4 p-3 border border-gray-200 rounded-lg">
-              <div className="flex items-center space-x-2 mb-3">
-                <Plus className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">URL 추가</span>
+            {/* URL 추가 */}
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <div className="flex items-center space-x-2 mb-4">
+                <Plus className="w-5 h-5 text-primary" />
+                <span className="text-base font-medium text-gray-800">URL 추가</span>
               </div>
-              <div className="space-y-2">
-                <Input
-                  value={newUrl.title}
-                  onChange={(e) => setNewUrl(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="링크 제목"
-                  className="text-sm border-gray-200 focus:border-primary"
-                />
-                <Input
-                  value={newUrl.url}
-                  onChange={(e) => setNewUrl(prev => ({ ...prev, url: e.target.value }))}
-                  placeholder="https://example.com"
-                  className="text-sm border-gray-200 focus:border-primary"
-                />
+              <div className="space-y-3">
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-1 block">링크 제목</Label>
+                  <Input
+                    value={newUrl.title}
+                    onChange={(e) => setNewUrl(prev => ({ ...prev, title: e.target.value }))}
+                    placeholder="예: 유튜브, 깃헙, 포트폴리오"
+                    className="border-gray-200 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-1 block">URL</Label>
+                  <Input
+                    value={newUrl.url}
+                    onChange={(e) => setNewUrl(prev => ({ ...prev, url: e.target.value }))}
+                    placeholder="https://example.com"
+                    className="border-gray-200 focus:border-primary"
+                  />
+                </div>
                 <Button
                   onClick={handleAddUrl}
                   disabled={createLinkMutation.isPending || !newUrl.title || !newUrl.url}
-                  size="sm"
                   className="w-full bg-primary hover:bg-primary/90 text-white"
                 >
                   {createLinkMutation.isPending ? "추가 중..." : "URL 추가"}
