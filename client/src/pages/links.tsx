@@ -18,6 +18,8 @@ export default function LinksPage() {
   const [selectedStyle, setSelectedStyle] = useState<LinkStyle>('compact');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const { data: linksData, isLoading } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
@@ -41,6 +43,8 @@ export default function LinksPage() {
       setTitle("");
       setUrl("");
       setSelectedStyle('compact');
+      setSelectedImage(null);
+      setImageFile(null);
       setShowAddForm(false);
       toast({
         title: "링크 생성 완료",
@@ -91,6 +95,31 @@ export default function LinksPage() {
       .substring(0, 20) + '-' + Math.random().toString(36).substring(2, 6);
   };
 
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type.startsWith('image/')) {
+        setImageFile(file);
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setSelectedImage(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        toast({
+          title: "잘못된 파일 형식",
+          description: "이미지 파일만 업로드할 수 있습니다.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  const removeImage = () => {
+    setSelectedImage(null);
+    setImageFile(null);
+  };
+
   const handleCreateLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !url || !user?.id) return;
@@ -128,32 +157,49 @@ export default function LinksPage() {
           <div className="p-4 space-y-6">
             {/* Thumbnail Section - Preview */}
             <div className="space-y-2">
-              <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-                {title || url ? (
-                  <div className="text-center p-2 w-full">
+              <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden">
+                {title || url || selectedImage ? (
+                  <div className="text-center p-2 w-full h-full">
                     {selectedStyle === 'compact' && (
-                      <div className="text-xs">
-                        <div className="font-medium text-gray-700 truncate">{title || "제목"}</div>
-                        <div className="text-gray-500 truncate">{url || "URL"}</div>
+                      <div className="flex items-center gap-2 h-full">
+                        {selectedImage && (
+                          <img src={selectedImage} alt="Preview" className="w-8 h-8 rounded object-cover" />
+                        )}
+                        <div className="text-xs flex-1">
+                          <div className="font-medium text-gray-700 truncate">{title || "제목"}</div>
+                          <div className="text-gray-500 truncate">{url || "URL"}</div>
+                        </div>
                       </div>
                     )}
                     {selectedStyle === 'card' && (
-                      <div className="bg-white rounded p-2 shadow-sm">
-                        <div className="w-8 h-8 bg-gray-300 rounded mx-auto mb-1"></div>
+                      <div className="bg-white rounded p-2 shadow-sm h-full flex flex-col justify-center">
+                        {selectedImage ? (
+                          <img src={selectedImage} alt="Preview" className="w-12 h-12 rounded mx-auto mb-1 object-cover" />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-300 rounded mx-auto mb-1"></div>
+                        )}
                         <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
                       </div>
                     )}
                     {selectedStyle === 'list' && (
-                      <div className="text-left w-full">
+                      <div className="text-left w-full h-full flex items-center">
                         <div className="flex items-center gap-2">
                           <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          {selectedImage && (
+                            <img src={selectedImage} alt="Preview" className="w-6 h-6 rounded object-cover" />
+                          )}
                           <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
                         </div>
                       </div>
                     )}
                     {selectedStyle === 'minimal' && (
-                      <div className="text-xs font-medium text-gray-700 underline truncate">
-                        {title || "제목"}
+                      <div className="h-full flex flex-col items-center justify-center">
+                        {selectedImage && (
+                          <img src={selectedImage} alt="Preview" className="w-8 h-8 rounded mb-1 object-cover" />
+                        )}
+                        <div className="text-xs font-medium text-gray-700 underline truncate">
+                          {title || "제목"}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -261,17 +307,40 @@ export default function LinksPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#8B4513]">이미지 *</label>
-                <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
-                  <div className="text-center">
-                    <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                    <p className="text-xs text-gray-500">
-                      이미지를 직접 첨부하거나
-                      <br />
-                      자동을 검색해서 첨부하세요
-                    </p>
+                <label className="text-sm font-medium text-[#8B4513]">이미지</label>
+                {selectedImage ? (
+                  <div className="relative w-full h-24 border-2 border-gray-300 rounded-lg overflow-hidden">
+                    <img 
+                      src={selectedImage} 
+                      alt="Selected" 
+                      className="w-full h-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={removeImage}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                    >
+                      ×
+                    </button>
                   </div>
-                </div>
+                ) : (
+                  <label className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                    <div className="text-center">
+                      <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                      <p className="text-xs text-gray-500">
+                        이미지를 직접 첨부하거나
+                        <br />
+                        자동을 검색해서 첨부하세요
+                      </p>
+                    </div>
+                  </label>
+                )}
               </div>
 
               <Button
