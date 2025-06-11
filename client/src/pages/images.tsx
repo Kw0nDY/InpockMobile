@@ -111,9 +111,9 @@ export default function ImagesPage() {
     <>
       <div className="min-h-screen bg-gray-50 pb-20">
         {/* Images Section */}
-        <div className="p-4 relative">
+        <div className="p-4 relative min-h-[calc(100vh-5rem)]">
           {/* Add Button inside section */}
-          <div className="absolute bottom-6 right-6 z-10">
+          <div className="absolute bottom-4 right-4 z-10">
             <Button
               onClick={() => setIsModalOpen(true)}
               className="w-12 h-12 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
