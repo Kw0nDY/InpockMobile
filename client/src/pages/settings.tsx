@@ -43,6 +43,115 @@ export default function SettingsPage() {
   const [mediaVideoUrl, setMediaVideoUrl] = useState('');
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [tempImageUrl, setTempImageUrl] = useState('');
+  const [urlValidation, setUrlValidation] = useState({
+    linkUrl: { isValid: true, message: '' },
+    mediaImageUrl: { isValid: true, message: '' },
+    mediaVideoUrl: { isValid: true, message: '' }
+  });
+
+  // URL 유효성 검사 함수
+  const validateUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const validateImageUrl = async (url: string): Promise<{ isValid: boolean; message: string }> => {
+    if (!url.trim()) return { isValid: true, message: '' };
+    
+    if (!validateUrl(url)) {
+      return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
+    }
+
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('content-type');
+      
+      if (!contentType?.startsWith('image/')) {
+        return { isValid: false, message: '이미지 파일이 아닙니다' };
+      }
+      
+      if (!response.ok) {
+        return { isValid: false, message: '이미지에 접근할 수 없습니다' };
+      }
+      
+      return { isValid: true, message: '' };
+    } catch {
+      return { isValid: false, message: '이미지 URL을 확인할 수 없습니다' };
+    }
+  };
+
+  const validateVideoUrl = async (url: string): Promise<{ isValid: boolean; message: string }> => {
+    if (!url.trim()) return { isValid: true, message: '' };
+    
+    if (!validateUrl(url)) {
+      return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
+    }
+
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      const contentType = response.headers.get('content-type');
+      
+      if (!contentType?.startsWith('video/')) {
+        return { isValid: false, message: '동영상 파일이 아닙니다' };
+      }
+      
+      if (!response.ok) {
+        return { isValid: false, message: '동영상에 접근할 수 없습니다' };
+      }
+      
+      return { isValid: true, message: '' };
+    } catch {
+      return { isValid: false, message: '동영상 URL을 확인할 수 없습니다' };
+    }
+  };
+
+  const validateLinkUrl = async (url: string): Promise<{ isValid: boolean; message: string }> => {
+    if (!url.trim()) return { isValid: true, message: '' };
+    
+    if (!validateUrl(url)) {
+      return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
+    }
+
+    try {
+      const response = await fetch(url, { method: 'HEAD' });
+      
+      if (!response.ok) {
+        return { isValid: false, message: '링크에 접근할 수 없습니다' };
+      }
+      
+      return { isValid: true, message: '' };
+    } catch {
+      return { isValid: false, message: '링크 URL을 확인할 수 없습니다' };
+    }
+  };
+
+  // URL 유효성 검사 실행
+  const handleUrlValidation = async (field: string, url: string) => {
+    let validation;
+    
+    switch (field) {
+      case 'mediaImageUrl':
+        validation = await validateImageUrl(url);
+        break;
+      case 'mediaVideoUrl':
+        validation = await validateVideoUrl(url);
+        break;
+      case 'linkUrl':
+        validation = await validateLinkUrl(url);
+        break;
+      default:
+        return;
+    }
+    
+    setUrlValidation(prev => ({
+      ...prev,
+      [field]: validation
+    }));
+  };
 
   // 기존 미디어 업로드 데이터를 불러오기
   const { data: mediaUploads } = useQuery({
@@ -480,9 +589,15 @@ export default function SettingsPage() {
                       id="linkUrl"
                       value={profileData.linkUrl || ''}
                       onChange={(e) => updateProfileData('linkUrl', e.target.value)}
+                      onBlur={(e) => handleUrlValidation('linkUrl', e.target.value)}
                       placeholder="https://github.com/"
-                      className="border-gray-200 focus:border-primary bg-gray-50"
+                      className={`border-gray-200 focus:border-primary bg-gray-50 ${
+                        !urlValidation.linkUrl.isValid ? 'border-red-300 focus:border-red-500' : ''
+                      }`}
                     />
+                    {!urlValidation.linkUrl.isValid && (
+                      <p className="text-sm text-red-600">{urlValidation.linkUrl.message}</p>
+                    )}
                   </div>
                 </div>
               </>
@@ -527,11 +642,25 @@ export default function SettingsPage() {
                     id="contentUrl"
                     value={profileData.linkUrl || ''}
                     onChange={(e) => updateProfileData('linkUrl', e.target.value)}
+                    onBlur={(e) => handleUrlValidation(
+                      profileData.contentType === 'image' ? 'mediaImageUrl' : 'mediaVideoUrl', 
+                      e.target.value
+                    )}
                     placeholder={
-                      profileData.contentType === 'image' ? 'https://example.com (이미지 관련 링크)' : 'https://example.com (동영상 관련 링크)'
+                      profileData.contentType === 'image' ? 'https://example.com/image.jpg' : 'https://example.com/video.mp4'
                     }
-                    className="border-gray-200 focus:border-primary"
+                    className={`border-gray-200 focus:border-primary ${
+                      profileData.contentType === 'image' 
+                        ? (!urlValidation.mediaImageUrl.isValid ? 'border-red-300 focus:border-red-500' : '')
+                        : (!urlValidation.mediaVideoUrl.isValid ? 'border-red-300 focus:border-red-500' : '')
+                    }`}
                   />
+                  {profileData.contentType === 'image' && !urlValidation.mediaImageUrl.isValid && (
+                    <p className="text-sm text-red-600">{urlValidation.mediaImageUrl.message}</p>
+                  )}
+                  {profileData.contentType === 'video' && !urlValidation.mediaVideoUrl.isValid && (
+                    <p className="text-sm text-red-600">{urlValidation.mediaVideoUrl.message}</p>
+                  )}
                 </div>
               </div>
             )}
