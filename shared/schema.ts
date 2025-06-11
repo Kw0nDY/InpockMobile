@@ -117,11 +117,12 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
 export const mediaUploads = pgTable("media_uploads", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").references(() => users.id).notNull(),
-  fileName: text("file_name").notNull(),
-  originalName: text("original_name").notNull(),
-  mimeType: text("mime_type").notNull(),
-  fileSize: integer("file_size").notNull(),
-  filePath: text("file_path").notNull(),
+  fileName: text("file_name"),
+  originalName: text("original_name"),
+  mimeType: text("mime_type"),
+  fileSize: integer("file_size"),
+  filePath: text("file_path"),
+  mediaUrl: text("media_url"), // For URL-based media
   mediaType: text("media_type").notNull(), // 'image' or 'video'
   title: text("title"),
   description: text("description"),
@@ -137,6 +138,11 @@ export const insertUserSchema = createInsertSchema(users).omit({
 export const insertLinkSchema = createInsertSchema(links).omit({
   id: true,
   clicks: true,
+  createdAt: true,
+});
+
+export const insertMediaSchema = createInsertSchema(mediaUploads).omit({
+  id: true,
   createdAt: true,
 });
 

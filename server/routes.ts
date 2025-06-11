@@ -589,6 +589,49 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Media routes
+  app.post("/api/media", async (req, res) => {
+    try {
+      const { userId, mediaUrl, mediaType, title, description } = req.body;
+      
+      if (!userId || !mediaUrl || !mediaType) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      // Check if media entry already exists for this user and type
+      const existingMedia = await storage.getMediaByUserAndType(userId, mediaType);
+      
+      if (existingMedia && existingMedia.length > 0) {
+        // Update existing media
+        const updatedMedia = await storage.updateMedia(existingMedia[0].id, {
+          mediaUrl,
+          title: title || null,
+          description: description || null,
+        });
+        res.json(updatedMedia);
+      } else {
+        // Create new media entry
+        const newMedia = await storage.createMedia({
+          userId,
+          mediaUrl,
+          mediaType,
+          title: title || null,
+          description: description || null,
+          fileName: null,
+          originalName: null,
+          mimeType: null,
+          fileSize: null,
+          filePath: null,
+          isActive: true,
+        });
+        res.status(201).json(newMedia);
+      }
+    } catch (error) {
+      console.error("Media creation error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Subscription routes
   app.get("/api/subscription/:userId", async (req, res) => {
     try {

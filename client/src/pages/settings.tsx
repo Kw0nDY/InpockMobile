@@ -637,7 +637,7 @@ export default function SettingsPage() {
                       e.target.value
                     )}
                     placeholder={
-                      profileData.contentType === 'image' ? 'https://example.com/image.jpg' : 'https://example.com/video.mp4'
+                      profileData.contentType === 'image' ? 'https://' : 'https://'
                     }
                     className={`border-gray-200 focus:border-primary ${
                       profileData.contentType === 'image' 

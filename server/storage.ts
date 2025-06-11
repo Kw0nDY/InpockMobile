@@ -74,6 +74,9 @@ export interface IStorage {
   getMediaUpload(id: number): Promise<MediaUpload | undefined>;
   createMediaUpload(upload: InsertMediaUpload): Promise<MediaUpload>;
   deleteMediaUpload(id: number): Promise<boolean>;
+  getMediaByUserAndType(userId: number, mediaType: string): Promise<MediaUpload[]>;
+  createMedia(upload: InsertMediaUpload): Promise<MediaUpload>;
+  updateMedia(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined>;
   incrementUserVisitCount(userId: number): Promise<void>;
 }
 
