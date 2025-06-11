@@ -131,46 +131,64 @@ export default function ImagesPage() {
             </div>
           ) : images && Array.isArray(images) && images.length > 0 ? (
             <div className="grid grid-cols-2 gap-4">
-              {images.map((image: any) => (
-                <Card key={image.id} className="bg-white shadow-sm overflow-hidden">
-                  <div className="aspect-square relative">
-                    <img
-                      src={image.filePath}
-                      alt={image.fileName}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-2 right-2 space-x-1">
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => handleCopyUrl(image.filePath)}
-                        className="p-1 bg-black/50 hover:bg-black/70 text-white rounded"
-                      >
-                        <Share2 className="w-3 h-3" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => deleteImageMutation.mutate(image.id)}
-                        disabled={deleteImageMutation.isPending}
-                        className="p-1 bg-black/50 hover:bg-red-600 text-white rounded"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                  {(image.title || image.description) && (
-                    <CardContent className="p-3">
-                      {image.title && (
-                        <h3 className="font-medium text-sm text-gray-900 mb-1">{image.title}</h3>
+              {images
+                .filter((media: any) => media.mediaType === 'image')
+                .map((image: any) => {
+                  const imageUrl = image.mediaUrl || image.filePath;
+                  const imageTitle = image.title || image.fileName || '이미지';
+                  
+                  return (
+                    <Card key={image.id} className="bg-white shadow-sm overflow-hidden">
+                      <div className="aspect-square relative">
+                        <img
+                          src={imageUrl}
+                          alt={imageTitle}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            target.nextElementSibling?.classList.remove('hidden');
+                          }}
+                        />
+                        <div className="hidden w-full h-full flex items-center justify-center bg-gray-100 absolute inset-0">
+                          <div className="text-center">
+                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                            <p className="text-xs text-gray-500">이미지를 불러올 수 없습니다</p>
+                          </div>
+                        </div>
+                        <div className="absolute top-2 right-2 flex space-x-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => handleCopyUrl(imageUrl)}
+                            className="p-1 bg-black/50 hover:bg-black/70 text-white rounded"
+                          >
+                            <Share2 className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteImageMutation.mutate(image.id)}
+                            disabled={deleteImageMutation.isPending}
+                            className="p-1 bg-black/50 hover:bg-red-600 text-white rounded"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                      {(image.title || image.description) && (
+                        <CardContent className="p-3">
+                          {image.title && (
+                            <h3 className="font-medium text-sm text-gray-900 mb-1">{image.title}</h3>
+                          )}
+                          {image.description && (
+                            <p className="text-xs text-gray-600">{image.description}</p>
+                          )}
+                        </CardContent>
                       )}
-                      {image.description && (
-                        <p className="text-xs text-gray-600">{image.description}</p>
-                      )}
-                    </CardContent>
-                  )}
-                </Card>
-              ))}
+                    </Card>
+                  );
+                })}
             </div>
           ) : (
             <div className="text-center py-20">
