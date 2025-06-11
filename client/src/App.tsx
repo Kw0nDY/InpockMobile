@@ -16,6 +16,8 @@ import SignupStep1 from "./pages/signup-step1";
 import SignupStep2 from "./pages/signup-step2";
 import DashboardPage from "./pages/dashboard";
 import LinksPage from "./pages/links";
+import ImagesPage from "./pages/images";
+import VideosPage from "./pages/videos";
 import MarketplacePage from "./pages/marketplace";
 import ManagerPage from "./pages/manager";
 import ServiceIntroPage from "./pages/service-intro";
@@ -52,6 +54,8 @@ function Router() {
         <Route path="/signup-step2" component={SignupStep2} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/links" component={LinksPage} />
+        <Route path="/images" component={ImagesPage} />
+        <Route path="/videos" component={VideosPage} />
         <Route path="/service-intro" component={ServiceIntroPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route path="/chat" component={ChatPage} />
