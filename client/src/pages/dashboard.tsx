@@ -445,6 +445,54 @@ export default function DashboardPage() {
                       </div>
                     )}
 
+                    {/* Settings Link Card */}
+                    {(settingsData as any)?.linkTitle && (settingsData as any)?.linkUrl && (
+                      <div className="bg-white border rounded-lg p-3 mb-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900">{(settingsData as any).linkTitle}</h4>
+                            <div className="text-xs text-blue-600 mt-1">{(settingsData as any).linkUrl}</div>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2"
+                              onClick={() => window.open((settingsData as any).linkUrl, '_blank')}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                // Clear settings link
+                                const updateData = {
+                                  linkTitle: '',
+                                  linkUrl: '',
+                                  linkDescription: ''
+                                };
+                                fetch(`/api/settings/${user?.id}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(updateData)
+                                }).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                  toast({
+                                    title: "링크 삭제됨",
+                                    description: "설정 링크가 성공적으로 삭제되었습니다.",
+                                  });
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Additional Links */}
                     <div className="space-y-3">
                       {linksData && Array.isArray(linksData) && linksData.length > 0 && (
