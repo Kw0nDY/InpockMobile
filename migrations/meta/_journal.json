@@ -15,6 +15,13 @@
       "when": 1749619816281,
       "tag": "0001_blushing_purifiers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749623928143,
+      "tag": "0002_solid_lizard",
+      "breakpoints": true
     }
   ]
 }

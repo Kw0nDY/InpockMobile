@@ -16,6 +16,7 @@ const signupSchema = z.object({
   password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다"),
   confirmPassword: z.string(),
   name: z.string().min(2, "이름은 2자 이상이어야 합니다"),
+  phone: z.string().optional(),
   company: z.string().optional(),
   role: z.string().min(1, "역할을 선택해주세요")
 }).refine((data) => data.password === data.confirmPassword, {
@@ -34,6 +35,7 @@ export default function SignupStep2() {
     password: "",
     confirmPassword: "",
     name: "",
+    phone: "",
     company: "",
     role: ""
   });
@@ -46,6 +48,7 @@ export default function SignupStep2() {
         email: data.email,
         password: data.password,
         name: data.name,
+        phone: data.phone,
         company: data.company,
         role: data.role
       });
@@ -284,6 +287,21 @@ export default function SignupStep2() {
                 {errors.name && (
                   <p className="text-red-500 text-xs mt-1 korean-text">{errors.name}</p>
                 )}
+              </div>
+
+              {/* Phone (Optional) */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                  전화번호
+                </label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                  placeholder="010-0000-0000 (선택사항)"
+                  className="w-full"
+                />
               </div>
 
               {/* Company (Optional) */}
