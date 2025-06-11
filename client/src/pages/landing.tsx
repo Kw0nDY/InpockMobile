@@ -114,64 +114,32 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="px-6 py-8 text-center">
-        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">비즈니스를 즐겁게</h2>
+        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">운동이 더 즐거워지는</h2>
         <h2 className="text-2xl font-bold text-primary mb-4 korean-text">AmuseFit과 함께</h2>
-        <p className="text-gray-600 text-sm mb-2 korean-text">스마트한 비즈니스 관리</p>
-        <p className="text-gray-600 text-sm mb-2 korean-text">네트워킹의 새로운 패러다임</p>
-        <p className="text-gray-600 text-sm mb-8 korean-text">전문적이고 신뢰할 수 있는 비즈니스 연결</p>
+        <p className="text-gray-600 text-sm mb-2 korean-text">건강한 만남, 즐거운 운동</p>
+        <p className="text-gray-600 text-sm mb-2 korean-text">같은 관심사를 가진 사람들과 함께</p>
+        <p className="text-gray-600 text-sm mb-8 korean-text">스와이프로 만나는 운동 파트너</p>
 
-        {/* Feature Card 1 */}
-        <div className="feature-card-bg rounded-2xl p-6 mb-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm mb-4 max-w-xs mx-auto">
-            <div className="flex items-center justify-between mb-3">
-              <span className="text-sm text-gray-600">플랫폼 선택</span>
-              <button className="w-4 h-4 text-gray-400">✕</button>
-            </div>
-            <div className="text-left">
-              <p className="text-sm font-medium mb-1 korean-text">브랜드 네트워킹</p>
-              <p className="text-sm text-gray-600 mb-3 korean-text">전문 비즈니스 연결</p>
-              <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
-                시작하기
-              </Button>
-            </div>
-          </div>
-          <h3 className="font-bold text-dark mb-1 korean-text">퀄리티 높은 비즈니스 매칭</h3>
-          <p className="text-sm text-gray-600 korean-text">검증된 비즈니스 파트너와의 안전한 거래</p>
-          <p className="text-sm text-gray-600 korean-text">전문성과 신뢰성을 바탕으로 한 네트워킹</p>
-        </div>
-
-        {/* Feature Card 2 */}
-        <div className="feature-card-bg rounded-2xl p-6 mb-6">
-          <div className="bg-white rounded-xl p-4 shadow-sm mb-4 max-w-xs mx-auto">
-            <div className="w-12 h-12 bg-gray-200 rounded-full mb-3"></div>
-            <p className="text-sm font-medium text-left korean-text">전문 컨설턴트</p>
-            <p className="text-sm text-gray-600 text-left korean-text">맞춤형 비즈니스 솔루션 제공</p>
-            <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full mt-3">
-              상담하기
-            </Button>
-          </div>
-          <h3 className="font-bold text-dark mb-1 korean-text">전문가와 함께하는 비즈니스 성장</h3>
-          <p className="text-sm text-gray-600 korean-text">다양한 분야의 전문가 네트워크</p>
-          <p className="text-sm text-gray-600 korean-text">맞춤형 컨설팅 서비스</p>
-        </div>
-
-        {/* Feature Card 3 */}
+        {/* Service Preview Card */}
         <div className="feature-card-bg rounded-2xl p-6 mb-8">
           <div className="bg-white rounded-xl p-4 shadow-sm mb-4 max-w-xs mx-auto">
-            <div className="text-left">
-              <p className="text-sm font-medium mb-1 korean-text">스마트 매칭 시스템</p>
-              <p className="text-xs text-gray-600 mb-2">AI 기반 추천</p>
-              <p className="text-xs text-gray-600 mb-2">빅데이터 분석</p>
-              <p className="text-xs text-gray-600 mb-3">맞춤형 솔루션</p>
-              <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg">
-                지금 체험해보기
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <span className="text-white text-2xl">💪</span>
+              </div>
+              <p className="text-sm font-medium mb-1 korean-text">AmuseFit</p>
+              <p className="text-xs text-gray-600 mb-3">건강한 만남, 즐거운 운동</p>
+              <Button 
+                className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full"
+                onClick={() => setLocation("/service-intro")}
+              >
+                서비스 체험하기
               </Button>
             </div>
           </div>
-          <h3 className="font-bold text-dark mb-1 korean-text">AI 기반 스마트 매칭</h3>
-          <h3 className="font-bold text-dark mb-1 korean-text">최적의 비즈니스 파트너 추천</h3>
-          <p className="text-sm text-gray-600 korean-text">데이터 기반 정확한 매칭</p>
-          <p className="text-sm text-gray-600 korean-text">효율적인 비즈니스 연결</p>
+          <h3 className="font-bold text-dark mb-1 korean-text">운동이 더 즐거워지는 새로운 방법</h3>
+          <p className="text-sm text-gray-600 korean-text">같은 관심사를 가진 사람들과 만나 함께 운동하고</p>
+          <p className="text-sm text-gray-600 korean-text">건강한 라이프스타일을 공유하세요</p>
         </div>
 
         {/* CTA Button */}

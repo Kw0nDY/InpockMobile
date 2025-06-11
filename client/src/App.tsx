@@ -18,6 +18,7 @@ import DashboardPage from "./pages/dashboard";
 import LinksPage from "./pages/links";
 import MarketplacePage from "./pages/marketplace";
 import ManagerPage from "./pages/manager";
+import ServiceIntroPage from "./pages/service-intro";
 import SettingsPage from "./pages/settings";
 import ChatPage from "./pages/chat";
 import AnalyticsPage from "./pages/analytics";
@@ -38,7 +39,7 @@ function Router() {
   useAnalytics();
   
   // Pages that should not show bottom navigation
-  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password"];
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
   const shouldShowBottomNav = !hideNavPages.includes(location) && !location.startsWith("/reset-password/");
 
   return (
@@ -51,8 +52,7 @@ function Router() {
         <Route path="/signup-step2" component={SignupStep2} />
         <Route path="/dashboard" component={DashboardPage} />
         <Route path="/links" component={LinksPage} />
-        <Route path="/marketplace" component={MarketplacePage} />
-        <Route path="/manager" component={ManagerPage} />
+        <Route path="/service-intro" component={ServiceIntroPage} />
         <Route path="/settings" component={SettingsPage} />
         <Route path="/chat" component={ChatPage} />
         <Route path="/analytics" component={AnalyticsPage} />
