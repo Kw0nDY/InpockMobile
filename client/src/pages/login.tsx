@@ -166,7 +166,7 @@ export default function LoginPage() {
             AmuseFit 서비스를 원활하게 이용하세요
           </p>
           <Button
-            onClick={handleBusinessRegister}
+            onClick={() => setLocation("/service-intro")}
             className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-medium"
           >
             서비스 체험하기
