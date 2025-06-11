@@ -361,8 +361,7 @@ export default function SettingsPage() {
     const linkData = {
       userId: user?.id,
       title: newUrl.title,
-      description: newUrl.description,
-      url: newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`,
+      originalUrl: newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`,
     };
 
     createLinkMutation.mutate(linkData);
