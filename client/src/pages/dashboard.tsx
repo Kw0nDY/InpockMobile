@@ -320,29 +320,85 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {/* Shortened URL Display */}
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">나의 URL</span>
+              {/* Shortened URLs Section */}
+              <div className="mb-4 p-4 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sm font-medium text-gray-700">단축된 URL</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-1 h-auto text-gray-500 hover:text-gray-700"
-                    onClick={() => {
-                      const url = userSettings?.customUrl ? 
-                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
-                        `https://amusefit.co.kr/users/${user?.username || 'demo_user'}`;
-                      navigator.clipboard.writeText(url);
-                    }}
+                    className="text-xs text-gray-500 hover:text-gray-700"
+                    onClick={() => setLocation('/links')}
                   >
-                    <Copy className="w-4 h-4" />
+                    전체 보기
                   </Button>
                 </div>
-                <div className="text-sm text-blue-600 bg-white p-2 rounded border font-mono">
-                  {userSettings?.customUrl ? 
-                    `amusefit.co.kr/users/${userSettings.customUrl}` : 
-                    `amusefit.co.kr/users/${user?.username || 'demo_user'}`}
+                
+                {/* URL List */}
+                <div className="space-y-2">
+                  {/* Sample URLs - replace with actual data from links */}
+                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">샘플링크</div>
+                      <div className="text-xs text-gray-500">/samplelink_shortened</div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        navigator.clipboard.writeText('https://amusefit.co.kr/samplelink_shortened');
+                      }}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">마케팅웹사이트</div>
+                      <div className="text-xs text-gray-500">/marketingwebsite_short</div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        navigator.clipboard.writeText('https://amusefit.co.kr/marketingwebsite_short');
+                      }}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
+                  
+                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-800">랜딩</div>
+                      <div className="text-xs text-gray-500">/landing_shortened</div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        navigator.clipboard.writeText('https://amusefit.co.kr/landing_shortened');
+                      }}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                  </div>
                 </div>
+                
+                {/* Add New Link Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mt-3 text-xs border-dashed"
+                  onClick={() => setLocation('/links')}
+                >
+                  <Link className="w-3 h-3 mr-1" />
+                  링크 생성하기
+                </Button>
               </div>
 
               {/* Settings Button */}
