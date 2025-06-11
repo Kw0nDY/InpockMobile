@@ -484,7 +484,7 @@ export default function SettingsPage() {
                 <RadioGroupItem value="default" id="default" />
                 <Label htmlFor="default" className="flex-1 cursor-pointer">
                   <div>
-                    <p className="font-medium text-gray-800">기본값</p>
+                    <p className="font-medium text-gray-800">기본 프로필 URL</p>
                     <p className="text-sm text-gray-600">amusefit.co.kr/users/{user?.username || 'default'}</p>
                   </div>
                 </Label>
@@ -494,7 +494,7 @@ export default function SettingsPage() {
                 <RadioGroupItem value="custom" id="custom" />
                 <Label htmlFor="custom" className="flex-1 cursor-pointer">
                   <div>
-                    <p className="font-medium text-gray-800">커스텀</p>
+                    <p className="font-medium text-gray-800">커스텀 프로필 URL</p>
                     <div className="mt-2">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-600">amusefit.co.kr/users/</span>
@@ -510,57 +510,63 @@ export default function SettingsPage() {
                   </div>
                 </Label>
               </div>
-            </RadioGroup>
 
-            {/* URL Preview & Copy */}
-            <div className="space-y-3">
-              {/* Profile URL Preview */}
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">프로필 URL</p>
-                    <p className="font-mono text-sm text-primary">{shortUrl}</p>
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleCopyUrl}
-                    className="text-gray-600 hover:text-primary"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Link URL Preview */}
+              {/* Link URL Option */}
               {profileData.linkTitle && profileData.linkUrl && (
-                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                  <RadioGroupItem value="link" id="link" />
+                  <Label htmlFor="link" className="flex-1 cursor-pointer">
                     <div>
-                      <p className="text-sm font-medium text-blue-700">링크 미리보기</p>
-                      <p className="text-sm text-gray-700 mb-1">{profileData.linkTitle}</p>
-                      <p className="font-mono text-sm text-blue-600">
+                      <p className="font-medium text-gray-800">링크 URL</p>
+                      <p className="text-sm text-gray-600">{profileData.linkTitle}</p>
+                      <p className="text-xs text-blue-600 mt-1">
                         amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
                       </p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => {
-                        const linkUrl = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
-                        navigator.clipboard.writeText(linkUrl);
-                        toast({
-                          title: "링크 URL 복사됨",
-                          description: "링크 URL이 클립보드에 복사되었습니다.",
-                        });
-                      }}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      <Copy className="w-4 h-4" />
-                    </Button>
-                  </div>
+                  </Label>
                 </div>
               )}
+            </RadioGroup>
+
+            {/* URL Preview & Copy */}
+            <div className="p-3 bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-700">선택된 URL 미리보기</p>
+                  {profileData.shortUrlType === 'link' && profileData.linkTitle ? (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">{profileData.linkTitle}</p>
+                      <p className="font-mono text-sm text-primary">
+                        amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
+                      </p>
+                    </div>
+                  ) : (
+                    <p className="font-mono text-sm text-primary">{shortUrl}</p>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => {
+                    let urlToCopy;
+                    if (profileData.shortUrlType === 'link' && profileData.linkTitle) {
+                      urlToCopy = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
+                    } else {
+                      urlToCopy = shortUrl;
+                    }
+                    navigator.clipboard.writeText(urlToCopy);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                    toast({
+                      title: "URL 복사됨",
+                      description: "선택된 URL이 클립보드에 복사되었습니다.",
+                    });
+                  }}
+                  className="text-gray-600 hover:text-primary"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
             </div>
 
 

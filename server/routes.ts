@@ -382,17 +382,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/link/:shortCode", async (req, res) => {
     try {
       const { shortCode } = req.params;
+      
+      // First check if it's a regular link with shortCode
       const link = await storage.getLinkByShortCode(shortCode);
       
-      if (!link) {
-        return res.status(404).json({ message: "Link not found" });
+      if (link) {
+        // Increment click count
+        await storage.incrementLinkClicks(link.id);
+        // Redirect to original URL
+        return res.redirect(302, link.originalUrl);
       }
 
-      // Increment click count
-      await storage.incrementLinkClicks(link.id);
-
-      // Redirect to original URL
-      res.redirect(302, link.originalUrl);
+      // If not found, check if it's a settings-based link (linkTitle slug)
+      const allUsers = await storage.getAllUsers();
+      for (const user of allUsers) {
+        const settings = await storage.getUserSettings(user.id);
+        if (settings?.linkTitle && settings?.linkUrl) {
+          const slug = settings.linkTitle.toLowerCase().replace(/\s+/g, '-');
+          if (slug === shortCode) {
+            // Increment user visit count
+            await storage.incrementUserVisitCount(user.id);
+            return res.redirect(302, settings.linkUrl);
+          }
+        }
+      }
+      
+      return res.status(404).json({ message: "Link not found" });
     } catch (error) {
       console.error("Link redirect error:", error);
       res.status(500).json({ message: "Internal server error" });

@@ -374,81 +374,120 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
-                    {/* Link Cards for all user links */}
-                    <div className="space-y-3">
-                      {/* Settings Link Card */}
-                      {(settingsData as any)?.linkTitle && (settingsData as any)?.linkUrl && (
-                        <div className="bg-white border rounded-lg p-4">
-                          <div className="flex items-center space-x-3">
-                            {/* Link Icon */}
-                            <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                              <Link className="w-6 h-6" />
-                            </div>
-                            
-                            {/* Link Info */}
-                            <div className="flex-1">
-                              <h3 className="text-sm font-semibold text-gray-900">
-                                {(settingsData as any).linkTitle}
-                              </h3>
-                              <div className="text-xs text-blue-600 mt-1">
-                                amusefit.co.kr/link/{(settingsData as any).linkTitle?.toLowerCase().replace(/\s+/g, '-')}
+                    {/* Unified Link Card */}
+                    {((settingsData as any)?.linkTitle || (settingsData as any)?.customUrl || (userData as any)?.name) && (
+                      <div className="bg-white border rounded-lg p-4">
+                        <div className="flex items-center space-x-3">
+                          {/* Profile Avatar or Link Icon */}
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            {(userData as any)?.avatar ? (
+                              <img 
+                                src={(userData as any).avatar} 
+                                alt="프로필" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (userData as any)?.name ? (
+                              <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                {(userData as any).name.charAt(0) || 'U'}
                               </div>
-                            </div>
-                            
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2"
-                                onClick={() => {
-                                  const shortUrl = `${window.location.origin}/link/${(settingsData as any).linkTitle?.toLowerCase().replace(/\s+/g, '-')}`;
-                                  window.open(shortUrl, '_blank');
-                                }}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => {
-                                  const updateData = {
-                                    linkTitle: '',
-                                    linkUrl: '',
-                                    linkDescription: ''
-                                  };
-                                  fetch(`/api/settings/${user?.id}`, {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(updateData)
-                                  }).then(() => {
-                                    queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                    toast({
-                                      title: "링크 삭제됨",
-                                      description: "설정 링크가 성공적으로 삭제되었습니다.",
-                                    });
-                                  });
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                            ) : (
+                              <div className="w-full h-full bg-primary text-white flex items-center justify-center">
+                                <Link className="w-6 h-6" />
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Combined Info */}
+                          <div className="flex-1">
+                            <h3 className="text-sm font-semibold text-gray-900">
+                              {(settingsData as any)?.linkTitle || (userData as any)?.name || '링크'}
+                            </h3>
+                            {(userData as any)?.bio && (
+                              <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                            )}
+                            <div className="text-xs text-blue-600 mt-1">
+                              {(() => {
+                                const settings = settingsData as any;
+                                if (settings?.shortUrlType === 'link' && settings?.linkTitle) {
+                                  return `amusefit.co.kr/link/${settings.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
+                                } else if (settings?.shortUrlType === 'custom' && settings?.customUrl) {
+                                  return `amusefit.co.kr/users/${settings.customUrl}`;
+                                } else {
+                                  return `amusefit.co.kr/users/${user?.username || 'default'}`;
+                                }
+                              })()}
                             </div>
                           </div>
+                          
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2"
+                              onClick={() => {
+                                const settings = settingsData as any;
+                                let targetUrl;
+                                
+                                if (settings?.shortUrlType === 'link' && settings?.linkTitle && settings?.linkUrl) {
+                                  // Link URL selected - redirect to original URL
+                                  targetUrl = settings.linkUrl;
+                                } else if (settings?.shortUrlType === 'custom' && settings?.customUrl) {
+                                  // Custom profile URL
+                                  targetUrl = `${window.location.origin}/users/${settings.customUrl}`;
+                                } else {
+                                  // Default profile URL
+                                  targetUrl = `${window.location.origin}/users/${user?.username || 'default'}`;
+                                }
+                                
+                                window.open(targetUrl, '_blank');
+                              }}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                const updateData = {
+                                  linkTitle: '',
+                                  linkUrl: '',
+                                  linkDescription: '',
+                                  customUrl: '',
+                                  shortUrlType: 'default'
+                                };
+                                fetch(`/api/settings/${user?.id}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(updateData)
+                                }).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                  queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                  toast({
+                                    title: "링크 삭제됨",
+                                    description: "링크 설정이 초기화되었습니다.",
+                                  });
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
-                      )}
+                      </div>
+                    )}
 
-                      {/* Additional Links */}
-                      {linksData && Array.isArray(linksData) && linksData.length > 0 && (
-                        linksData.map((link: any) => (
+                    {/* Additional Links from separate link creation */}
+                    {linksData && Array.isArray(linksData) && linksData.length > 0 && (
+                      <div className="space-y-3 mt-3">
+                        {linksData.map((link: any) => (
                           <div key={link.id} className="bg-white border rounded-lg p-4">
                             <div className="flex items-center space-x-3">
-                              {/* Link Icon */}
                               <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
                                 <Link className="w-6 h-6" />
                               </div>
                               
-                              {/* Link Info */}
                               <div className="flex-1">
                                 <h3 className="text-sm font-semibold text-gray-900">
                                   {link.title}
@@ -461,7 +500,6 @@ export default function DashboardPage() {
                                 )}
                               </div>
                               
-                              {/* Action Buttons */}
                               <div className="flex items-center gap-1">
                                 <Button 
                                   variant="ghost" 
@@ -486,100 +524,25 @@ export default function DashboardPage() {
                               </div>
                             </div>
                           </div>
-                        ))
-                      )}
+                        ))}
+                      </div>
+                    )}
 
-                      {/* Profile Link Card (if customUrl exists) */}
-                      {(settingsData as any)?.customUrl && (userData as any)?.name && (
-                        <div className="bg-white border rounded-lg p-4">
-                          <div className="flex items-center space-x-3">
-                            {/* Profile Avatar */}
-                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                              {(userData as any)?.avatar ? (
-                                <img 
-                                  src={(userData as any).avatar} 
-                                  alt="프로필" 
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                  {(userData as any)?.name?.charAt(0) || 'U'}
-                                </div>
-                              )}
-                            </div>
-                            
-                            {/* Profile Info */}
-                            <div className="flex-1">
-                              <h3 className="text-sm font-semibold text-gray-900">
-                                {(userData as any)?.name || '사용자'}
-                              </h3>
-                              {(userData as any)?.bio && (
-                                <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
-                              )}
-                              <div className="text-xs text-blue-600 mt-1">
-                                amusefit.co.kr/users/{(settingsData as any).customUrl}
-                              </div>
-                            </div>
-                            
-                            {/* Action Buttons */}
-                            <div className="flex items-center gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2"
-                                onClick={() => {
-                                  const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
-                                  window.open(url, '_blank');
-                                }}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={() => {
-                                  const updateData = {
-                                    customUrl: '',
-                                    bio: ''
-                                  };
-                                  fetch(`/api/settings/${user?.id}`, {
-                                    method: 'PUT',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify(updateData)
-                                  }).then(() => {
-                                    queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                    queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
-                                    toast({
-                                      title: "프로필 삭제됨",
-                                      description: "프로필 설정이 초기화되었습니다.",
-                                    });
-                                  });
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* No links message */}
-                      {(!settingsData?.linkTitle && (!linksData || linksData.length === 0) && !settingsData?.customUrl) && (
-                        <div className="bg-gray-50 border rounded-lg p-6 text-center">
-                          <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                          <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
-                          <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => setLocation('/settings')}
-                          >
-                            설정으로 이동
-                          </Button>
-                        </div>
-                      )}
-                    </div>
+                    {/* No links message */}
+                    {!(settingsData as any)?.linkTitle && !(settingsData as any)?.customUrl && !(userData as any)?.name && (!linksData || linksData.length === 0) && (
+                      <div className="bg-gray-50 border rounded-lg p-6 text-center">
+                        <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
+                        <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setLocation('/settings')}
+                        >
+                          설정으로 이동
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
