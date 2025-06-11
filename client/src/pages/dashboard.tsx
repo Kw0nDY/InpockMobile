@@ -336,57 +336,30 @@ export default function DashboardPage() {
                 
                 {/* URL List */}
                 <div className="space-y-2">
-                  {/* Sample URLs - replace with actual data from links */}
-                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">샘플링크</div>
-                      <div className="text-xs text-gray-500">/samplelink_shortened</div>
+                  {linksData && linksData.length > 0 ? (
+                    linksData.slice(0, 3).map((link) => (
+                      <div key={link.id} className="flex items-center justify-between p-2 bg-white rounded border text-sm">
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-800">{link.title || link.originalUrl}</div>
+                          <div className="text-xs text-gray-500">/{link.shortCode}</div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                          onClick={() => {
+                            navigator.clipboard.writeText(`https://amusefit.co.kr/${link.shortCode}`);
+                          }}
+                        >
+                          <Copy className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-gray-500 text-sm">
+                      아직 생성된 링크가 없습니다
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
-                      onClick={() => {
-                        navigator.clipboard.writeText('https://amusefit.co.kr/samplelink_shortened');
-                      }}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">마케팅웹사이트</div>
-                      <div className="text-xs text-gray-500">/marketingwebsite_short</div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
-                      onClick={() => {
-                        navigator.clipboard.writeText('https://amusefit.co.kr/marketingwebsite_short');
-                      }}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
-                  
-                  <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-800">랜딩</div>
-                      <div className="text-xs text-gray-500">/landing_shortened</div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="p-1 h-auto text-gray-500 hover:text-gray-700"
-                      onClick={() => {
-                        navigator.clipboard.writeText('https://amusefit.co.kr/landing_shortened');
-                      }}
-                    >
-                      <Copy className="w-3 h-3" />
-                    </Button>
-                  </div>
+                  )}
                 </div>
                 
                 {/* Add New Link Button */}
