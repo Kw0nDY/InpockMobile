@@ -282,35 +282,7 @@ export default function DashboardPage() {
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
-                {/* Image Content */}
-                {currentContentType === 'image' && (
-                  <div className="mb-4">
-                    {currentUser?.profileImageUrl ? (
-                      <ImageModal
-                        src={currentUser.profileImageUrl}
-                        alt="프로필 이미지"
-                      >
-                        <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity">
-                          <img
-                            src={currentUser.profileImageUrl}
-                            alt="Profile Content"
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
-                          />
-                        </div>
-                      </ImageModal>
-                    ) : (
-                      <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                        <div className="text-center">
-                          <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">이미지를 업로드해주세요</p>
-                        </div>
-                      </div>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      {currentUser?.profileImageUrl ? '클릭하여 확대 보기' : '설정에서 이미지를 업로드할 수 있습니다'}
-                    </p>
-                  </div>
-                )}
+                {/* Image Content - Removed per user request */}
 
                 {/* Video Content */}
                 {currentContentType === 'video' && (
