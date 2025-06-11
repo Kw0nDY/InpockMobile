@@ -32,6 +32,12 @@ export default function LinksPage() {
     refetchInterval: 5000, // Auto-refresh every 5 seconds to show updated click counts
   });
 
+  const { data: visitStats } = useQuery({
+    queryKey: [`/api/user/${user?.id}/link-stats`],
+    enabled: !!user?.id,
+    refetchInterval: 5000, // Auto-refresh visitor stats
+  });
+
   const links = Array.isArray(linksData) ? linksData : [];
 
   const createLinkMutation = useMutation({
@@ -401,19 +407,19 @@ export default function LinksPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {links?.reduce((total: number, link: any) => total + (link.clicks || 0), 0) || 0}
+                    {visitStats?.totalVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">총방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    0
+                    {visitStats?.dailyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">일방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    0
+                    {visitStats?.monthlyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">월방문자</div>
                 </div>
@@ -426,6 +432,7 @@ export default function LinksPage() {
                   size="sm"
                   onClick={() => {
                     queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}/link-stats`] });
                     toast({ title: "통계가 새로고침되었습니다!" });
                   }}
                   className="text-xs"
@@ -479,10 +486,7 @@ export default function LinksPage() {
                                   <Copy className="w-3 h-3" />
                                 </Button>
                               </div>
-                              <div className="text-xs text-gray-500 mt-1 flex gap-3">
-                                <span>내 방문: 0</span>
-                                <span>외부 방문: {link.clicks || 0}</span>
-                              </div>
+                              <LinkVisitStats linkId={link.id} />
                             </div>
                             <Button
                               variant="ghost"

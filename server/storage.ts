@@ -42,6 +42,13 @@ export interface IStorage {
     ownerVisits: number;
     externalVisits: number;
   }>;
+  getUserLinkStats(userId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }>;
 
   // Deals
   getDeals(): Promise<Deal[]>;
@@ -704,6 +711,22 @@ export class MemStorage implements IStorage {
       externalVisits: 0
     };
   }
+
+  async getUserLinkStats(userId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    return {
+      totalVisits: 0,
+      dailyVisits: 0,
+      monthlyVisits: 0,
+      ownerVisits: 0,
+      externalVisits: 0
+    };
+  }
 }
 
 import { db } from "./db";
@@ -1089,6 +1112,60 @@ export class DatabaseStorage implements IStorage {
       .select()
       .from(linkVisits)
       .where(eq(linkVisits.linkId, linkId));
+
+    const totalVisits = allVisits.length;
+    const dailyVisits = allVisits.filter(visit => 
+      visit.visitedAt && visit.visitedAt >= todayStart
+    ).length;
+    const monthlyVisits = allVisits.filter(visit => 
+      visit.visitedAt && visit.visitedAt >= monthStart
+    ).length;
+    const ownerVisits = allVisits.filter(visit => visit.isOwner).length;
+    const externalVisits = allVisits.filter(visit => !visit.isOwner).length;
+
+    return {
+      totalVisits,
+      dailyVisits,
+      monthlyVisits,
+      ownerVisits,
+      externalVisits
+    };
+  }
+
+  async getUserLinkStats(userId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Get user's links
+    const userLinks = await db
+      .select()
+      .from(links)
+      .where(eq(links.userId, userId));
+
+    if (userLinks.length === 0) {
+      return {
+        totalVisits: 0,
+        dailyVisits: 0,
+        monthlyVisits: 0,
+        ownerVisits: 0,
+        externalVisits: 0
+      };
+    }
+
+    const linkIds = userLinks.map(link => link.id);
+
+    // Get all visits for user's links
+    const allVisits = await db
+      .select()
+      .from(linkVisits)
+      .where(sql`${linkVisits.linkId} = ANY(ARRAY[${linkIds.join(',')}])`);
 
     const totalVisits = allVisits.length;
     const dailyVisits = allVisits.filter(visit => 
