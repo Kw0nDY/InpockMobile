@@ -768,6 +768,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Media Upload routes
   app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
   
+  // New media upload endpoint for images page
+  app.post("/api/media/upload", upload.single('file'), async (req, res) => {
+    try {
+      const file = req.file;
+      const { userId, type, title, description } = req.body;
+      
+      if (!file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+
+      if (!userId || isNaN(parseInt(userId))) {
+        return res.status(400).json({ error: 'Invalid user ID' });
+      }
+
+      const userIdInt = parseInt(userId);
+      
+      // Determine media type
+      const mediaType = file.mimetype.startsWith('image/') ? 'image' : 'video';
+      
+      // Create media upload record
+      const mediaUpload = await storage.createMediaUpload({
+        userId: userIdInt,
+        fileName: file.filename,
+        originalName: file.originalname,
+        mimeType: file.mimetype,
+        fileSize: file.size,
+        filePath: `/uploads/${file.filename}`,
+        mediaType,
+        title: title || null,
+        description: description || null,
+        isActive: true
+      });
+
+      res.json({
+        success: true,
+        mediaUpload,
+        fileUrl: `/uploads/${file.filename}`,
+        mediaType
+      });
+    } catch (error) {
+      console.error('Media upload error:', error);
+      res.status(500).json({ error: 'Upload failed' });
+    }
+  });
+  
   app.get("/uploads/:filename", serveUploadedFile);
   
   app.get("/api/media/:userId", async (req, res) => {

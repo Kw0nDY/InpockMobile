@@ -123,6 +123,8 @@ export const mediaUploads = pgTable("media_uploads", {
   fileSize: integer("file_size").notNull(),
   filePath: text("file_path").notNull(),
   mediaType: text("media_type").notNull(), // 'image' or 'video'
+  title: text("title"),
+  description: text("description"),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
