@@ -145,6 +145,7 @@ export class MemStorage implements IStorage {
       linkTitle: null,
       linkDescription: null,
       linkUrl: null,
+      shortUrlType: "default",
       updatedAt: new Date(),
     };
     this.userSettings.set(1, demoSettings);
@@ -482,6 +483,7 @@ export class MemStorage implements IStorage {
       linkTitle: insertSettings.linkTitle ?? null,
       linkDescription: insertSettings.linkDescription ?? null,
       linkUrl: insertSettings.linkUrl ?? null,
+      shortUrlType: insertSettings.shortUrlType ?? "default",
       twoFactorEnabled: insertSettings.twoFactorEnabled ?? false,
       updatedAt: new Date(),
     };

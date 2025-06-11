@@ -267,6 +267,7 @@ export default function SettingsPage() {
         linkTitle: profileData.linkTitle,
         linkDescription: profileData.linkDescription,
         linkUrl: profileData.linkUrl,
+        shortUrlType: profileData.shortUrlType,
       };
       console.log('Settings update data:', settingsUpdateData);
       const settingsResult = await updateSettingsMutation.mutateAsync(settingsUpdateData);
