@@ -440,15 +440,7 @@ export default function DashboardPage() {
                         ))
                       )}
 
-                      {/* Add Link Button */}
-                      <Button 
-                        variant="outline" 
-                        className="w-full justify-center py-3 border-dashed"
-                        onClick={() => setLocation('/links')}
-                      >
-                        <Plus className="w-4 h-4 mr-2" />
-                        새 링크 추가
-                      </Button>
+
                     </div>
                   </div>
                 )}
