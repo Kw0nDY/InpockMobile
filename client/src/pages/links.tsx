@@ -291,20 +291,20 @@ export default function LinksPage() {
                 </div>
                 <div className="text-center py-6">
                   <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
-                  <div className="text-xs text-gray-400">URL을 추가하여 방문 추적을 시작하세요</div>
+                  <div className="text-xs text-gray-400 mb-4">URL을 추가하여 방문 추적을 시작하세요</div>
                 </div>
+                
+                {/* URL 추가하기 Button */}
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  className="w-full bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#A0825C]"
+                >
+                  <Plus className="w-5 h-5" />
+                  URL 추가하기
+                </Button>
               </div>
             </CardContent>
           </Card>
-
-          {/* URL 추가하기 Button */}
-          <Button
-            onClick={() => setShowAddForm(true)}
-            className="w-full bg-white hover:bg-gray-50 text-[#A0825C] py-4 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#A0825C]"
-          >
-            <Plus className="w-5 h-5" />
-            URL 추가하기
-          </Button>
         </div>
       </div>
     </div>
