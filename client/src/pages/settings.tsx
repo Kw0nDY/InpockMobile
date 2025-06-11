@@ -33,6 +33,30 @@ export default function SettingsPage() {
     linkUrl: ''
   });
 
+  // Custom links state
+  const [customLinks, setCustomLinks] = useState<Array<{
+    id?: number;
+    title: string;
+    url: string;
+    shortCode: string;
+    isEditing?: boolean;
+  }>>([]);
+
+  const [newLink, setNewLink] = useState({
+    title: '',
+    url: ''
+  });
+
+  // Generate short code from title
+  const generateShortCode = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 20) + '-' + Math.random().toString(36).substring(2, 6);
+  };
+
 
 
   const [copied, setCopied] = useState(false);
@@ -47,6 +71,90 @@ export default function SettingsPage() {
     queryKey: [`/api/media/${user?.id}`],
     enabled: !!user?.id,
   });
+
+  // Load existing links
+  const { data: linksData } = useQuery({
+    queryKey: [`/api/links/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
+  // Add link functions
+  const handleAddLink = () => {
+    if (!newLink.title.trim() || !newLink.url.trim()) {
+      toast({
+        title: "입력 오류",
+        description: "제목과 URL을 모두 입력해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const shortCode = generateShortCode(newLink.title);
+    createLinkMutation.mutate({
+      title: newLink.title,
+      originalUrl: newLink.url,
+      shortCode,
+      userId: user?.id || 0
+    });
+  };
+
+  // Create link mutation
+  const createLinkMutation = useMutation({
+    mutationFn: async (linkData: { title: string; originalUrl: string; shortCode: string; userId: number }) => {
+      const response = await fetch('/api/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(linkData)
+      });
+      if (!response.ok) throw new Error('Failed to create link');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/links/${user?.id}`],
+      });
+      setNewLink({ title: '', url: '' });
+      toast({
+        title: "링크 추가 완료",
+        description: "새 링크가 성공적으로 추가되었습니다.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "링크 추가 실패",
+        description: "링크 추가 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Delete link mutation
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: number) => {
+      const response = await fetch(`/api/links/${linkId}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete link');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/links/${user?.id}`],
+      });
+      toast({
+        title: "링크 삭제 완료",
+        description: "링크가 성공적으로 삭제되었습니다.",
+      });
+    }
+  });
+
+  // Copy URL function
+  const handleCopyShortUrl = (shortCode: string) => {
+    const url = `amusefit.co.kr/link/${shortCode}`;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "URL 복사 완료",
+      description: "단축 URL이 클립보드에 복사되었습니다.",
+    });
+  };
 
   // Fetch user settings
   const { data: userSettings, isLoading: settingsLoading } = useQuery({
@@ -575,6 +683,128 @@ export default function SettingsPage() {
         </Card>
 
 
+
+        {/* Custom Link URLs Management */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">커스텀 링크 URL 관리</CardTitle>
+            <p className="text-sm text-gray-600">여러 개의 단축 URL을 생성하고 관리하세요</p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Add New Link Form */}
+            <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+              <h3 className="font-medium text-gray-800 mb-3">새 링크 추가</h3>
+              <div className="space-y-3">
+                <div>
+                  <Label htmlFor="newLinkTitle" className="text-sm font-medium text-gray-700">
+                    링크 제목
+                  </Label>
+                  <Input
+                    id="newLinkTitle"
+                    value={newLink.title}
+                    onChange={(e) => setNewLink({ ...newLink, title: e.target.value })}
+                    placeholder="예: 내 포트폴리오"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="newLinkUrl" className="text-sm font-medium text-gray-700">
+                    원본 URL
+                  </Label>
+                  <Input
+                    id="newLinkUrl"
+                    value={newLink.url}
+                    onChange={(e) => setNewLink({ ...newLink, url: e.target.value })}
+                    placeholder="https://example.com"
+                    className="mt-1"
+                  />
+                </div>
+                {newLink.title && (
+                  <div className="p-2 bg-blue-50 rounded border border-blue-200">
+                    <p className="text-xs text-blue-600 font-medium">생성될 단축 URL:</p>
+                    <p className="font-mono text-sm text-blue-800 break-all">
+                      amusefit.co.kr/link/{generateShortCode(newLink.title)}
+                    </p>
+                  </div>
+                )}
+                <Button
+                  onClick={handleAddLink}
+                  disabled={!newLink.title.trim() || !newLink.url.trim() || createLinkMutation.isPending}
+                  className="w-full"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  {createLinkMutation.isPending ? '추가 중...' : '링크 추가'}
+                </Button>
+              </div>
+            </div>
+
+            {/* Existing Links List */}
+            <div className="space-y-3">
+              <h3 className="font-medium text-gray-800">기존 링크 목록</h3>
+              {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
+                linksData.map((link: any) => (
+                  <div key={link.id} className="p-4 border border-gray-200 rounded-lg bg-white">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-800">{link.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1 break-all">{link.originalUrl}</p>
+                        <div className="mt-2 p-3 bg-gray-50 rounded border">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <p className="text-xs text-gray-600 mb-1">단축 URL:</p>
+                              <p className="font-mono text-sm text-primary break-all">
+                                amusefit.co.kr/link/{link.shortCode}
+                              </p>
+                            </div>
+                            <div className="flex items-center space-x-1 ml-2">
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => handleCopyShortUrl(link.shortCode)}
+                                className="text-gray-600 hover:text-primary p-2"
+                                title="URL 복사"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => window.open(link.originalUrl, '_blank')}
+                                className="text-gray-600 hover:text-primary p-2"
+                                title="링크 열기"
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                        {link.clicks > 0 && (
+                          <p className="text-xs text-gray-500 mt-2">클릭 수: {link.clicks}</p>
+                        )}
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteLinkMutation.mutate(link.id)}
+                        disabled={deleteLinkMutation.isPending}
+                        className="text-red-500 hover:text-red-700 hover:bg-red-50 ml-2 p-2"
+                        title="링크 삭제"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-gray-500">
+                  <ExternalLink className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                  <p className="text-sm">아직 생성된 링크가 없습니다</p>
+                  <p className="text-xs text-gray-400">위 양식을 사용하여 첫 번째 링크를 추가해보세요</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Content Type Selection */}
         <Card className="bg-white shadow-sm">
