@@ -179,7 +179,7 @@ export class MemStorage implements IStorage {
         title: "비즈니스 프로필",
         originalUrl: "https://inpock.com/profile/demo",
         shortCode: "abc123",
-        style: "compact",
+        style: "thumbnail",
         clicks: 127,
         isActive: true,
         createdAt: new Date(),

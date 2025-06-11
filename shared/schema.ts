@@ -30,7 +30,7 @@ export const links = pgTable("links", {
   title: text("title").notNull(),
   originalUrl: text("original_url").notNull(),
   shortCode: text("short_code").notNull().unique(),
-  style: text("style").default("thumbnail"),
+  style: text("style", { enum: ['thumbnail', 'simple', 'card', 'background'] }).default("thumbnail"),
   clicks: integer("clicks").default(0),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -222,6 +222,7 @@ export type MediaUpload = typeof mediaUploads.$inferSelect;
 export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
 
 export type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
+export const LINK_STYLES = ['thumbnail', 'simple', 'card', 'background'] as const;
 
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({

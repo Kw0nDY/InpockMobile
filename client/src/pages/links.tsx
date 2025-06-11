@@ -425,7 +425,7 @@ export default function LinksPage() {
                     {links.map((link: any) => (
                       <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
                         {/* Thumbnail Style */}
-                        {(link.style === 'thumbnail' || link.style === 'compact') && (
+                        {link.style === 'thumbnail' && (
                           <div className="flex items-center gap-3 p-2 bg-white rounded-lg border relative">
                             <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
@@ -445,9 +445,28 @@ export default function LinksPage() {
                           </div>
                         )}
                         
+                        {/* Simple Style */}
+                        {link.style === 'simple' && (
+                          <div className="bg-white rounded-lg border p-3 relative cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteLinkMutation.mutate(link.id);
+                              }}
+                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                            <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                            <div className="w-full h-2 bg-gray-300 rounded"></div>
+                          </div>
+                        )}
+                        
                         {/* Card Style */}
                         {link.style === 'card' && (
-                          <div className="text-center relative">
+                          <div className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -455,55 +474,26 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-0 right-0 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
-                            <div 
-                              className="cursor-pointer"
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
-                              <div className="w-12 h-12 bg-[#F5F3F0] rounded-lg flex items-center justify-center mx-auto mb-2 hover:bg-[#EAE5DE]">
-                                <ExternalLink className="w-6 h-6 text-[#A0825C]" />
-                              </div>
-                              <div className="text-sm font-medium text-gray-900 mb-1 hover:text-[#A0825C]">{link.title}</div>
-                              <div className="text-xs text-gray-500 mb-2 truncate">{link.originalUrl}</div>
-                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                            <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                              <div className="text-sm font-medium truncate">{link.title}</div>
+                            </div>
+                            <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                              <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                             </div>
                           </div>
                         )}
                         
-                        {/* List Style */}
-                        {link.style === 'list' && (
-                          <div className="flex items-center gap-3">
-                            <div className="w-2 h-2 bg-[#A0825C] rounded-full"></div>
-                            <div 
-                              className="flex-1 min-w-0 cursor-pointer"
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
-                              <div className="text-sm font-medium text-gray-900 truncate hover:text-[#A0825C]">{link.title}</div>
-                              <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteLinkMutation.mutate(link.id);
-                                }}
-                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-600"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
-                          </div>
-                        )}
-                        
-                        {/* Minimal Style */}
-                        {link.style === 'minimal' && (
-                          <div className="text-center relative">
+                        {/* Background Style */}
+                        {link.style === 'background' && (
+                          <div 
+                            className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer" 
+                            style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
+                            onClick={() => window.open(link.originalUrl, '_blank')}
+                          >
                             <Button
                               variant="ghost"
                               size="sm"
@@ -511,17 +501,13 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-0 right-0 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
-                            <div 
-                              className="text-sm font-medium text-[#A0825C] underline cursor-pointer hover:text-[#8B4513]"
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
-                              {link.title}
-                            </div>
-                            <div className="text-xs text-gray-400 mt-1">방문: 0</div>
+                            <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                            <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
+                            <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
                           </div>
                         )}
                       </div>
