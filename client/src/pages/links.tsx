@@ -231,7 +231,7 @@ export default function LinksPage() {
     );
   }
 
-  // 메인 링크 페이지 - 사진과 동일한 레이아웃
+  // 메인 링크 페이지 - 첨부 사진과 동일한 레이아웃
   return (
     <div className="min-h-screen bg-[#F5F3F0] pb-20">
       <div className="max-w-md mx-auto bg-white min-h-screen">
@@ -245,127 +245,74 @@ export default function LinksPage() {
         {/* Content */}
         <div className="p-4 space-y-4">
           {/* Real-time Visit Tracking */}
-          <Card className="border-none shadow-sm bg-gradient-to-r from-[#F5F3F0] to-white">
+          <Card className="border border-gray-200 bg-white">
             <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-medium text-[#8B4513] flex items-center gap-2">
-                  <TrendingUp className="w-4 h-4" />
+                  <Eye className="w-4 h-4" />
                   실시간 방문 추적
                 </h2>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                  <span className="text-xs text-green-600 font-medium">LIVE</span>
+                  <span className="text-xs text-green-600 font-medium">Live</span>
                 </div>
               </div>
 
-              {/* Visit Stats */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="text-center bg-white rounded-lg p-3 border border-gray-100">
-                  <div className="text-lg font-bold text-[#8B4513]">
-                    {links.reduce((total: number, link: any) => total + (link.clicks || 0), 0)}
+              {/* Visit Stats - 두 번째 사진 스타일 */}
+              <div className="grid grid-cols-3 gap-6 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                    1
                   </div>
-                  <div className="text-xs text-gray-600">총 방문</div>
+                  <div className="text-xs text-gray-500">총 링크수</div>
                 </div>
-                <div className="text-center bg-white rounded-lg p-3 border border-gray-100">
-                  <div className="text-lg font-bold text-[#A0825C]">
-                    {links.length}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                    0
                   </div>
-                  <div className="text-xs text-gray-600">활성 링크</div>
+                  <div className="text-xs text-gray-500">일 방문자</div>
                 </div>
-                <div className="text-center bg-white rounded-lg p-3 border border-gray-100">
-                  <div className="text-lg font-bold text-green-600">24</div>
-                  <div className="text-xs text-gray-600">오늘 방문</div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                    0
+                  </div>
+                  <div className="text-xs text-gray-500">월 방문자</div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
 
-          {/* Recent Activity */}
-          <Card className="border-none shadow-sm">
-            <CardContent className="p-4">
-              <h3 className="text-sm font-medium text-[#8B4513] mb-3 flex items-center gap-2">
-                <Eye className="w-4 h-4" />
-                최근 활동
-              </h3>
-              {links.length > 0 ? (
-                <div className="space-y-2">
-                  {links.slice(0, 3).map((link: any) => (
-                    <div key={link.id} className="flex items-center justify-between p-3 bg-[#F5F3F0] rounded-lg">
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-[#8B4513] truncate">
-                          {link.title}
-                        </div>
-                        <div className="text-xs text-gray-500 truncate">
-                          amusefit.co.kr/link/{link.shortCode}
-                        </div>
-                      </div>
-                      <div className="text-right ml-2">
-                        <div className="text-sm font-bold text-[#A0825C]">
-                          {link.clicks || 0}
-                        </div>
-                        <div className="text-xs text-gray-500">방문</div>
-                      </div>
-                    </div>
-                  ))}
+              {/* 빠른 추적 URL 섹션 */}
+              <div className="bg-[#F5F3F0] rounded-lg p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-medium text-[#8B4513]">빠른 추적 URL</h3>
+                  <div className="flex items-center gap-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-xs text-green-600 font-medium">실시간</span>
+                  </div>
                 </div>
-              ) : (
                 <div className="text-center py-6">
-                  <div className="text-gray-400 mb-2">아직 생성된 링크가 없습니다</div>
-                  <div className="text-xs text-gray-500">첫 번째 링크를 만들어보세요!</div>
+                  <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
+                  <div className="text-xs text-gray-400">URL을 추가하여 방문 추적을 시작하세요</div>
                 </div>
-              )}
+              </div>
             </CardContent>
           </Card>
 
-          {/* Add URL Button */}
+          {/* URL 추가하기 Button */}
           <Button
             onClick={() => setShowAddForm(true)}
-            className="w-full bg-[#A0825C] hover:bg-[#8B4513] text-white py-4 rounded-lg font-medium flex items-center justify-center gap-2"
+            className="w-full bg-white hover:bg-gray-50 text-[#A0825C] py-4 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#A0825C]"
           >
             <Plus className="w-5 h-5" />
             URL 추가하기
           </Button>
 
-          {/* Link List */}
-          {links.length > 0 && (
-            <div className="space-y-3">
-              <h3 className="text-sm font-medium text-[#8B4513]">내 링크 목록</h3>
-              <div className="space-y-2">
-                {links.map((link: any) => (
-                  <Card key={link.id} className="border border-gray-200 shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-8 h-8 bg-[#F5F3F0] rounded-lg flex items-center justify-center">
-                              <ExternalLink className="w-4 h-4 text-[#A0825C]" />
-                            </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-medium text-[#8B4513] truncate">
-                                {link.title}
-                              </div>
-                              <div className="text-xs text-gray-500 truncate">
-                                {link.originalUrl}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-xs text-[#A0825C] bg-[#F5F3F0] rounded px-2 py-1 inline-block">
-                            amusefit.co.kr/link/{link.shortCode}
-                          </div>
-                        </div>
-                        <div className="text-right ml-3">
-                          <div className="text-lg font-bold text-[#8B4513]">
-                            {link.clicks || 0}
-                          </div>
-                          <div className="text-xs text-gray-500">클릭</div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          )}
+          {/* 전체 분석 보기 Button */}
+          <Button
+            className="w-full bg-[#A0825C] hover:bg-[#8B4513] text-white py-4 rounded-lg font-medium flex items-center justify-center gap-2"
+          >
+            <TrendingUp className="w-5 h-5" />
+            전체 분석 보기
+          </Button>
         </div>
       </div>
     </div>
