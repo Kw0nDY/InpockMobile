@@ -707,54 +707,7 @@ export default function SettingsPage() {
               </RadioGroup>
             )}
 
-            {profileData.contentType === 'links' && (
-            <div className="space-y-3">
-              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-gray-700 mb-2">선택된 URL 미리보기</p>
-                    {profileData.shortUrlType === 'link' && profileData.linkTitle ? (
-                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
-                        amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
-                      </p>
-                    ) : profileData.shortUrlType === 'custom' && profileData.customUrl ? (
-                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
-                        amusefit.co.kr/users/{profileData.customUrl}
-                      </p>
-                    ) : (
-                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
-                        amusefit.co.kr/users/{user?.username || 'demo_user'}
-                      </p>
-                    )}
-                  </div>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => {
-                      let urlToCopy;
-                      if (profileData.shortUrlType === 'link' && profileData.linkTitle) {
-                        urlToCopy = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
-                      } else if (profileData.shortUrlType === 'custom' && profileData.customUrl) {
-                        urlToCopy = `amusefit.co.kr/users/${profileData.customUrl}`;
-                      } else {
-                        urlToCopy = `amusefit.co.kr/users/${user?.username || 'demo_user'}`;
-                      }
-                      navigator.clipboard.writeText(urlToCopy);
-                      setCopied(true);
-                      setTimeout(() => setCopied(false), 2000);
-                      toast({
-                        title: "URL 복사됨",
-                        description: "선택된 URL이 클립보드에 복사되었습니다.",
-                      });
-                    }}
-                    className="text-gray-600 hover:text-primary ml-3"
-                  >
-                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                  </Button>
-                </div>
-              </div>
-            </div>
-            )}
+
 
           </CardContent>
         </Card>
