@@ -315,16 +315,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/links", async (req, res) => {
     try {
       console.log("Link creation request body:", req.body);
-      const linkData = insertLinkSchema.parse(req.body);
+      
+      // Generate short code first
+      const shortCode = Math.random().toString(36).substring(2, 8);
+      
+      // Add shortCode to request body before parsing
+      const linkDataWithShortCode = {
+        ...req.body,
+        shortCode,
+      };
+      
+      const linkData = insertLinkSchema.parse(linkDataWithShortCode);
       console.log("Parsed link data:", linkData);
 
-      // Generate short code
-      const shortCode = Math.random().toString(36).substring(2, 8);
-
-      const link = await storage.createLink({
-        ...linkData,
-        shortCode,
-      });
+      const link = await storage.createLink(linkData);
 
       res.status(201).json(link);
     } catch (error) {
