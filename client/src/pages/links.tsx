@@ -301,28 +301,22 @@ export default function LinksPage() {
                     URL 추가하기
                   </Button>
                 ) : (
-                  <div className="space-y-3">
-                    <div className="text-center py-2">
-                      <div className="text-sm font-medium text-[#8B4513] mb-1">URL을 추가하시겠습니까?</div>
-                      <div className="text-xs text-gray-500">새로운 링크를 만들어 방문 추적을 시작할 수 있습니다</div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <Button
-                        onClick={() => setShowConfirmDialog(false)}
-                        className="bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-medium"
-                      >
-                        취소
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setShowConfirmDialog(false);
-                          setShowAddForm(true);
-                        }}
-                        className="bg-[#A0825C] hover:bg-[#8B4513] text-white py-2 rounded-lg font-medium"
-                      >
-                        추가
-                      </Button>
-                    </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => setShowConfirmDialog(false)}
+                      className="bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium border border-[#A0825C]"
+                    >
+                      취소
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        setShowConfirmDialog(false);
+                        setShowAddForm(true);
+                      }}
+                      className="bg-[#A0825C] hover:bg-[#8B4513] text-white py-3 rounded-lg font-medium"
+                    >
+                      추가
+                    </Button>
                   </div>
                 )}
               </div>
