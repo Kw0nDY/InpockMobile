@@ -353,47 +353,52 @@ export default function DashboardPage() {
                 
                 {/* Image Content */}
                 {currentContentType === 'image' && (() => {
-                  const imageMedia = mediaData?.find((media: any) => media.mediaType === 'image');
+                  const imageMedia = Array.isArray(mediaData) ? mediaData.find((media: any) => media.mediaType === 'image') : null;
                   const imageSettings = settingsData as any;
                   const imageUrl = imageMedia?.mediaUrl || (imageSettings?.contentType === 'image' ? imageSettings?.linkUrl : null);
                   
                   if (imageUrl) {
                     return (
                       <div className="mb-4">
-                        <div className="bg-white border rounded-lg p-4">
-                          <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 mb-3">
-                            <img 
-                              src={imageUrl} 
-                              alt={imageMedia?.title || imageSettings?.linkTitle || '이미지'} 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            />
-                            <div className="hidden w-full h-full flex items-center justify-center">
-                              <div className="text-center">
-                                <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                                <p className="text-sm text-gray-500">이미지를 불러올 수 없습니다</p>
-                              </div>
+                        <div className="relative w-full h-96 rounded-lg overflow-hidden bg-gray-100">
+                          <img 
+                            src={imageUrl} 
+                            alt={imageMedia?.title || imageSettings?.linkTitle || '이미지'} 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          />
+                          <div className="hidden w-full h-full flex items-center justify-center absolute inset-0">
+                            <div className="text-center">
+                              <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500">이미지를 불러올 수 없습니다</p>
                             </div>
                           </div>
-                          <h3 className="text-base font-semibold text-gray-900 mb-1">
-                            {imageMedia?.title || imageSettings?.linkTitle || '프로필 이미지'}
-                          </h3>
-                          {(imageMedia?.description || imageSettings?.linkDescription) && (
-                            <p className="text-sm text-gray-600">
-                              {imageMedia?.description || imageSettings?.linkDescription}
-                            </p>
-                          )}
+                          
+                          {/* Gradient overlay for text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                          
+                          {/* Text overlay at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                            <h3 className="text-xl font-bold mb-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                              {imageMedia?.title || imageSettings?.linkTitle || '프로필 이미지'}
+                            </h3>
+                            {(imageMedia?.description || imageSettings?.linkDescription) && (
+                              <p className="text-sm text-white/90" style={{textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>
+                                {imageMedia?.description || imageSettings?.linkDescription}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
                   } else {
                     return (
                       <div className="mb-4">
-                        <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div className="w-full h-96 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                           <div className="text-center">
                             <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
                             <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
@@ -407,49 +412,54 @@ export default function DashboardPage() {
 
                 {/* Video Content */}
                 {currentContentType === 'video' && (() => {
-                  const videoMedia = mediaData?.find((media: any) => media.mediaType === 'video');
+                  const videoMedia = Array.isArray(mediaData) ? mediaData.find((media: any) => media.mediaType === 'video') : null;
                   const videoSettings = settingsData as any;
                   const videoUrl = videoMedia?.mediaUrl || (videoSettings?.contentType === 'video' ? videoSettings?.linkUrl : null);
                   
                   if (videoUrl) {
                     return (
                       <div className="mb-4">
-                        <div className="bg-white border rounded-lg p-4">
-                          <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 mb-3">
-                            <video 
-                              src={videoUrl} 
-                              controls 
-                              className="w-full h-full object-cover"
-                              onError={(e) => {
-                                const target = e.target as HTMLVideoElement;
-                                target.style.display = 'none';
-                                target.nextElementSibling?.classList.remove('hidden');
-                              }}
-                            >
-                              동영상을 재생할 수 없습니다.
-                            </video>
-                            <div className="hidden w-full h-full flex items-center justify-center">
-                              <div className="text-center">
-                                <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                                <p className="text-sm text-gray-500">동영상을 불러올 수 없습니다</p>
-                              </div>
+                        <div className="relative w-full h-96 rounded-lg overflow-hidden bg-gray-100">
+                          <video 
+                            src={videoUrl} 
+                            controls 
+                            className="w-full h-full object-cover"
+                            onError={(e) => {
+                              const target = e.target as HTMLVideoElement;
+                              target.style.display = 'none';
+                              target.nextElementSibling?.classList.remove('hidden');
+                            }}
+                          >
+                            동영상을 재생할 수 없습니다.
+                          </video>
+                          <div className="hidden w-full h-full flex items-center justify-center absolute inset-0">
+                            <div className="text-center">
+                              <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                              <p className="text-sm text-gray-500">동영상을 불러올 수 없습니다</p>
                             </div>
                           </div>
-                          <h3 className="text-base font-semibold text-gray-900 mb-1">
-                            {videoMedia?.title || videoSettings?.linkTitle || '프로필 동영상'}
-                          </h3>
-                          {(videoMedia?.description || videoSettings?.linkDescription) && (
-                            <p className="text-sm text-gray-600">
-                              {videoMedia?.description || videoSettings?.linkDescription}
-                            </p>
-                          )}
+                          
+                          {/* Gradient overlay for text readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                          
+                          {/* Text overlay at bottom */}
+                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white pointer-events-none">
+                            <h3 className="text-xl font-bold mb-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
+                              {videoMedia?.title || videoSettings?.linkTitle || '프로필 동영상'}
+                            </h3>
+                            {(videoMedia?.description || videoSettings?.linkDescription) && (
+                              <p className="text-sm text-white/90" style={{textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>
+                                {videoMedia?.description || videoSettings?.linkDescription}
+                              </p>
+                            )}
+                          </div>
                         </div>
                       </div>
                     );
                   } else {
                     return (
                       <div className="mb-4">
-                        <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                        <div className="w-full h-96 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                           <div className="text-center">
                             <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
                             <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
