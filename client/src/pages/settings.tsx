@@ -33,11 +33,7 @@ export default function SettingsPage() {
     linkUrl: ''
   });
 
-  const [newUrl, setNewUrl] = useState({
-    title: '',
-    url: '',
-    description: ''
-  });
+
 
   const [copied, setCopied] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
@@ -149,31 +145,7 @@ export default function SettingsPage() {
     enabled: !!user?.id,
   });
 
-  // Create link mutation
-  const createLinkMutation = useMutation({
-    mutationFn: async (linkData: any) => {
-      const response = await apiRequest("POST", "/api/links", linkData);
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: [`/api/links/${user?.id}`],
-      });
-      setNewUrl({ title: '', url: '', description: '' });
-      toast({
-        title: "링크 추가 완료",
-        description: "새로운 링크가 성공적으로 추가되었습니다.",
-      });
-    },
-    onError: (error: any) => {
-      console.error('Link creation error:', error);
-      toast({
-        title: "링크 추가 실패",
-        description: "링크 추가 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   // Sync with fetched settings
   useEffect(() => {
@@ -336,40 +308,9 @@ export default function SettingsPage() {
     setProfileData(prev => ({ ...prev, [key]: value }));
   };
 
-  const handleAddUrl = () => {
-    if (!newUrl.title || !newUrl.url) {
-      toast({
-        title: "입력 오류",
-        description: "제목과 URL을 모두 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    // URL 형식 검증
-    try {
-      new URL(newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`);
-    } catch {
-      toast({
-        title: "URL 형식 오류",
-        description: "올바른 URL 형식을 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
 
-    const linkData = {
-      userId: user?.id,
-      title: newUrl.title,
-      originalUrl: newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`,
-    };
 
-    createLinkMutation.mutate(linkData);
-  };
-
-  const handleCancelAddUrl = () => {
-    setNewUrl({ title: '', url: '', description: '' });
-  };
 
   const handleMediaUpload = (fileUrl: string, mediaType: 'image' | 'video') => {
     // 미디어 업로드는 별도 상태로 관리하여 프로필 이미지와 완전 분리
@@ -510,33 +451,27 @@ export default function SettingsPage() {
             <CardTitle className="text-lg font-semibold text-gray-800">단축 URL 설정</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Quick URL Add - moved to top */}
-            <div className="p-3 border border-gray-200 rounded-lg">
-              <div className="flex items-center space-x-2 mb-3">
-                <Plus className="w-4 h-4 text-gray-600" />
-                <span className="text-sm font-medium text-gray-700">URL 추가</span>
+            {/* Link Settings */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">링크 제목</Label>
+                <Input
+                  id="linkTitle"
+                  value={profileData.linkTitle || ''}
+                  onChange={(e) => updateProfileData('linkTitle', e.target.value)}
+                  placeholder="링크 제목을 입력하세요"
+                  className="border-gray-200 focus:border-primary"
+                />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="linkUrl" className="text-sm font-medium text-gray-700">링크 URL</Label>
                 <Input
-                  value={newUrl.title}
-                  onChange={(e) => setNewUrl(prev => ({ ...prev, title: e.target.value }))}
-                  placeholder="링크 제목"
-                  className="text-sm border-gray-200 focus:border-primary"
-                />
-                <Input
-                  value={newUrl.url}
-                  onChange={(e) => setNewUrl(prev => ({ ...prev, url: e.target.value }))}
+                  id="linkUrl"
+                  value={profileData.linkUrl || ''}
+                  onChange={(e) => updateProfileData('linkUrl', e.target.value)}
                   placeholder="https://example.com"
-                  className="text-sm border-gray-200 focus:border-primary"
+                  className="border-gray-200 focus:border-primary"
                 />
-                <Button
-                  onClick={handleAddUrl}
-                  disabled={createLinkMutation.isPending || !newUrl.title || !newUrl.url}
-                  size="sm"
-                  className="w-full bg-primary hover:bg-primary/90 text-white"
-                >
-                  {createLinkMutation.isPending ? "추가 중..." : "URL 추가"}
-                </Button>
               </div>
             </div>
 
@@ -578,21 +513,54 @@ export default function SettingsPage() {
             </RadioGroup>
 
             {/* URL Preview & Copy */}
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">미리보기</p>
-                  <p className="font-mono text-sm text-primary">{shortUrl}</p>
+            <div className="space-y-3">
+              {/* Profile URL Preview */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700">프로필 URL</p>
+                    <p className="font-mono text-sm text-primary">{shortUrl}</p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleCopyUrl}
+                    className="text-gray-600 hover:text-primary"
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={handleCopyUrl}
-                  className="text-gray-600 hover:text-primary"
-                >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
               </div>
+
+              {/* Link URL Preview */}
+              {profileData.linkTitle && profileData.linkUrl && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-blue-700">링크 미리보기</p>
+                      <p className="text-sm text-gray-700 mb-1">{profileData.linkTitle}</p>
+                      <p className="font-mono text-sm text-blue-600">
+                        amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
+                      </p>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        const linkUrl = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
+                        navigator.clipboard.writeText(linkUrl);
+                        toast({
+                          title: "링크 URL 복사됨",
+                          description: "링크 URL이 클립보드에 복사되었습니다.",
+                        });
+                      }}
+                      className="text-blue-600 hover:text-blue-800"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
 
 
