@@ -674,8 +674,12 @@ export class MemStorage implements IStorage {
   async recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit> {
     const id = 1; // Simple stub
     const linkVisit: LinkVisit = {
-      ...visit,
       id,
+      linkId: visit.linkId,
+      visitorIp: visit.visitorIp,
+      userAgent: visit.userAgent || null,
+      referrer: visit.referrer || null,
+      isOwner: visit.isOwner || false,
       visitedAt: new Date(),
     };
     return linkVisit;
@@ -703,7 +707,7 @@ export class MemStorage implements IStorage {
 }
 
 import { db } from "./db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {

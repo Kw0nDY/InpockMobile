@@ -400,7 +400,7 @@ export default function LinksPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    0
+                    {links?.reduce((total: number, link: any) => total + (link.clicks || 0), 0) || 0}
                   </div>
                   <div className="text-xs text-gray-500">총방문자</div>
                 </div>
@@ -433,8 +433,20 @@ export default function LinksPage() {
                         {link.style === 'thumbnail' && (
                           <div className="flex items-center gap-3 p-2 bg-white rounded-lg border relative">
                             <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
-                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
-                              <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">{link.title}</div>
+                            <div className="flex-1 min-w-0">
+                              <div 
+                                className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C] cursor-pointer" 
+                                onClick={() => window.open(link.originalUrl, '_blank')}
+                              >
+                                {link.title}
+                              </div>
+                              <div className="text-xs text-blue-600 mt-1">
+                                클릭수: {link.clicks || 0} | 단축링크: amusefit.co.kr/l/{link.shortCode}
+                              </div>
+                              <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                                <span>내 방문: 0</span>
+                                <span>외부 방문: {link.clicks || 0}</span>
+                              </div>
                             </div>
                             <Button
                               variant="ghost"

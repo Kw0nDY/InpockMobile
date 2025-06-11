@@ -451,6 +451,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Link visit statistics
+  app.get("/api/links/:id/stats", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const stats = await storage.getLinkVisitStats(id);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/links/:id/visits", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const visits = await storage.getLinkVisits(id);
+      res.json(visits);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Short link redirect routes
   app.get("/link/:shortCode", async (req, res) => {
     try {
