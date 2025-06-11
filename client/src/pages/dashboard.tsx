@@ -9,6 +9,7 @@ import {
   Image,
   Video,
   ExternalLink,
+  Plus,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -336,11 +337,54 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
-                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                      <div className="text-center">
-                        <ExternalLink className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">링크를 설정하세요</p>
+                    <div className="space-y-3">
+                      {/* Link Card 1 */}
+                      <div className="bg-white border rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900">대시보드</h4>
+                            <p className="text-xs text-gray-500 mt-1">사용자 대시보드 메인 페이지</p>
+                            <div className="text-xs text-blue-600 mt-1">/dashboard_usermetail</div>
+                          </div>
+                          <Button variant="ghost" size="sm" className="p-2">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </div>
+
+                      {/* Link Card 2 */}
+                      <div className="bg-white border rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900">마켓플레이스</h4>
+                            <p className="text-xs text-gray-500 mt-1">상품 카테고리별 상세 페이지</p>
+                            <div className="text-xs text-blue-600 mt-1">/marketplace_category-detail</div>
+                          </div>
+                          <Button variant="ghost" size="sm" className="p-2">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Link Card 3 */}
+                      <div className="bg-white border rounded-lg p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-gray-900">링크 관리</h4>
+                            <p className="text-xs text-gray-500 mt-1">링크 상세 관리 페이지</p>
+                            <div className="text-xs text-blue-600 mt-1">/linksteel-detail</div>
+                          </div>
+                          <Button variant="ghost" size="sm" className="p-2">
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Add Link Button */}
+                      <Button variant="outline" className="w-full justify-center py-3 border-dashed">
+                        <Plus className="w-4 h-4 mr-2" />
+                        새 링크 추가
+                      </Button>
                     </div>
                   </div>
                 )}
