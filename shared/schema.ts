@@ -89,6 +89,7 @@ export const userSettings = pgTable("user_settings", {
   linkTitle: text("link_title"),
   linkDescription: text("link_description"),
   linkUrl: text("link_url"),
+  shortUrlType: text("short_url_type").default("default"), // default, custom, link
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

@@ -514,12 +514,25 @@ export default function DashboardPage() {
                         );
                       } else {
                         // No valid selection or default selected - show empty state
-                        return null;
+                        return (
+                          <div className="bg-gray-50 border rounded-lg p-6 text-center">
+                            <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                            <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
+                            <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => setLocation('/settings')}
+                            >
+                              설정으로 이동
+                            </Button>
+                          </div>
+                        );
                       }
                     })()}
 
-                    {/* Empty state when no link content */}
-                    {!(settingsData as any)?.linkTitle && !(settingsData as any)?.customUrl && (
+                    {/* Additional empty state fallback */}
+                    {false && (
                       <div className="bg-gray-50 border rounded-lg p-6 text-center">
                         <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                         <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
