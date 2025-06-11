@@ -442,17 +442,19 @@ export default function DashboardPage() {
                                   const settings = settingsData as any;
                                   let targetUrl;
                                   
-                                  if (settings?.shortUrlType === 'link' && settings?.linkTitle && settings?.linkUrl) {
-                                    // Link URL selected - redirect to original URL
+                                  // Check what type of URL is selected in settings
+                                  if (settings?.shortUrlType === 'link' && settings?.linkUrl) {
+                                    // Link URL selected - redirect to the actual link URL
                                     targetUrl = settings.linkUrl;
                                   } else if (settings?.shortUrlType === 'custom' && settings?.customUrl) {
-                                    // Custom profile URL
+                                    // Custom profile URL selected - redirect to custom profile page
                                     targetUrl = `${window.location.origin}/users/${settings.customUrl}`;
                                   } else {
-                                    // Default profile URL
-                                    targetUrl = `${window.location.origin}/users/${user?.username || 'default'}`;
+                                    // Default profile URL selected - redirect to default profile page
+                                    targetUrl = `${window.location.origin}/users/${user?.username || 'demo_user'}`;
                                   }
                                   
+                                  console.log('Redirecting to:', targetUrl);
                                   window.open(targetUrl, '_blank');
                                 }}
                               >
