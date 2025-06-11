@@ -50,6 +50,11 @@ export default function DashboardPage() {
     enabled: !!user?.id,
   });
 
+  const { data: mediaData } = useQuery({
+    queryKey: [`/api/media/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
   const { data: linksData } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
     enabled: !!user?.id,
