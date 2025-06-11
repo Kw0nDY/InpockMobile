@@ -30,7 +30,7 @@ export const links = pgTable("links", {
   title: text("title").notNull(),
   originalUrl: text("original_url").notNull(),
   shortCode: text("short_code").notNull().unique(),
-  style: text("style").default("compact"),
+  style: text("style").default("thumbnail"),
   clicks: integer("clicks").default(0),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
@@ -220,6 +220,8 @@ export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSc
 
 export type MediaUpload = typeof mediaUploads.$inferSelect;
 export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
+
+export type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
 
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({

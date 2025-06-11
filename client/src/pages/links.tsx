@@ -15,7 +15,7 @@ export default function LinksPage() {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState<LinkStyle>('compact');
+  const [selectedStyle, setSelectedStyle] = useState<LinkStyle>('thumbnail');
   const [showAddForm, setShowAddForm] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -42,7 +42,7 @@ export default function LinksPage() {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
       setTitle("");
       setUrl("");
-      setSelectedStyle('compact');
+      setSelectedStyle('thumbnail');
       setSelectedImage(null);
       setImageFile(null);
       setShowAddForm(false);
@@ -160,46 +160,42 @@ export default function LinksPage() {
               <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden">
                 {title || url || selectedImage ? (
                   <div className="text-center p-2 w-full h-full">
-                    {selectedStyle === 'compact' && (
-                      <div className="flex items-center gap-2 h-full">
-                        {selectedImage && (
-                          <img src={selectedImage} alt="Preview" className="w-8 h-8 rounded object-cover" />
+                    {selectedStyle === 'thumbnail' && (
+                      <div className="flex items-center gap-3 h-full p-2 bg-white rounded-lg border">
+                        {selectedImage ? (
+                          <img src={selectedImage} alt="Preview" className="w-12 h-12 rounded object-cover" />
+                        ) : (
+                          <div className="w-12 h-12 bg-gray-300 rounded"></div>
                         )}
-                        <div className="text-xs flex-1">
-                          <div className="font-medium text-gray-700 truncate">{title || "제목"}</div>
-                          <div className="text-gray-500 truncate">{url || "URL"}</div>
+                        <div className="text-left flex-1">
+                          <div className="text-sm font-medium text-gray-800 truncate">{title || "타이틀을 입력해주세요"}</div>
                         </div>
+                      </div>
+                    )}
+                    {selectedStyle === 'simple' && (
+                      <div className="bg-white rounded-lg border p-3 h-full flex flex-col justify-center">
+                        <div className="text-sm font-medium text-gray-800 truncate mb-1">{title || "타이틀을 입력해주세요"}</div>
+                        <div className="w-full h-2 bg-gray-300 rounded"></div>
                       </div>
                     )}
                     {selectedStyle === 'card' && (
-                      <div className="bg-white rounded p-2 shadow-sm h-full flex flex-col justify-center">
-                        {selectedImage ? (
-                          <img src={selectedImage} alt="Preview" className="w-12 h-12 rounded mx-auto mb-1 object-cover" />
-                        ) : (
-                          <div className="w-12 h-12 bg-gray-300 rounded mx-auto mb-1"></div>
-                        )}
-                        <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
-                      </div>
-                    )}
-                    {selectedStyle === 'list' && (
-                      <div className="text-left w-full h-full flex items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                          {selectedImage && (
-                            <img src={selectedImage} alt="Preview" className="w-6 h-6 rounded object-cover" />
-                          )}
-                          <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
-                        </div>
-                      </div>
-                    )}
-                    {selectedStyle === 'minimal' && (
-                      <div className="h-full flex flex-col items-center justify-center">
+                      <div className="bg-gray-400 rounded-lg h-full flex flex-col justify-center p-3 relative">
                         {selectedImage && (
-                          <img src={selectedImage} alt="Preview" className="w-8 h-8 rounded mb-1 object-cover" />
+                          <img src={selectedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                         )}
-                        <div className="text-xs font-medium text-gray-700 underline truncate">
-                          {title || "제목"}
+                        <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                          <div className="text-sm font-medium truncate">{title || "타이틀을 입력해주세요"}</div>
                         </div>
+                        <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                          <div className="w-3 h-3 border-2 border-white rounded-full"></div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedStyle === 'background' && (
+                      <div className="h-full flex flex-col justify-center p-3 relative rounded-lg" style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}>
+                        <div className="text-sm font-medium text-gray-800 truncate mb-2">{title || "타이틀을 입력해주세요"}</div>
+                        <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
+                        <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
                       </div>
                     )}
                   </div>
@@ -220,30 +216,34 @@ export default function LinksPage() {
               <div className="grid grid-cols-4 gap-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('compact')}
+                  onClick={() => setSelectedStyle('thumbnail')}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'compact'
+                    selectedStyle === 'thumbnail'
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1"></div>
-                  <div className="text-xs text-gray-600">컴팩트</div>
+                  <div className="w-full h-6 bg-gray-200 rounded mx-auto mb-1 flex items-center px-1">
+                    <div className="w-4 h-4 bg-gray-400 rounded mr-1"></div>
+                    <div className="flex-1 h-1.5 bg-gray-400 rounded"></div>
+                  </div>
+                  <div className="text-xs text-gray-600">썸네일</div>
                 </button>
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('card')}
+                  onClick={() => setSelectedStyle('simple')}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'card'
+                    selectedStyle === 'simple'
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1 left-1"></div>
+                  <div className="w-full h-6 bg-gray-200 rounded mx-auto mb-1 flex flex-col justify-center px-1">
+                    <div className="w-full h-1.5 bg-gray-400 rounded mb-0.5"></div>
+                    <div className="w-2/3 h-1 bg-gray-300 rounded"></div>
                   </div>
-                  <div className="text-xs text-gray-600">카드</div>
+                  <div className="text-xs text-gray-600">심플</div>
                 </button>
                 
                 <button
