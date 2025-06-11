@@ -552,23 +552,23 @@ export default function SettingsPage() {
                   </Label>
                 </div>
 
-                <div className="p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <div className="flex items-center space-x-3">
-                    <RadioGroupItem value="custom" id="custom" />
-                    <Label htmlFor="custom" className="flex-1 cursor-pointer">
-                      <p className="font-medium text-gray-800">커스텀</p>
-                    </Label>
-                  </div>
-                  <div className="mt-3 ml-7 flex items-center text-sm text-gray-600">
-                    <span>amusefit.co.kr/users/</span>
-                    <Input
-                      value={profileData.customUrl}
-                      onChange={(e) => updateProfileData('customUrl', e.target.value)}
-                      placeholder="kimyelee"
-                      className="ml-2 border border-gray-200 bg-gray-100 text-sm focus:ring-0 px-3 py-2 rounded text-gray-600 placeholder-gray-400 w-32"
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value="custom" id="custom" />
+                  <Label htmlFor="custom" className="flex-1 cursor-pointer">
+                    <div>
+                      <p className="font-medium text-gray-800">커스텀 프로필 URL</p>
+                      <div className="mt-1 flex items-center text-sm text-gray-600">
+                        <span>amusefit.co.kr/users/</span>
+                        <Input
+                          value={profileData.customUrl}
+                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
+                          placeholder="kimyelee"
+                          className="ml-2 border border-gray-200 bg-gray-100 text-sm focus:ring-0 px-3 py-2 rounded text-gray-600 placeholder-gray-400 w-32"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    </div>
+                  </Label>
                 </div>
 
                 <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
