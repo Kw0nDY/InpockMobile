@@ -343,9 +343,9 @@ export default function DashboardPage() {
                         <div className="flex items-center space-x-3">
                           {/* Profile Avatar */}
                           <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                            {(userData as any)?.profileImage ? (
+                            {(userData as any)?.avatar ? (
                               <img 
-                                src={`/uploads/${(userData as any).profileImage}`} 
+                                src={(userData as any).avatar} 
                                 alt="프로필" 
                                 className="w-full h-full object-cover"
                               />

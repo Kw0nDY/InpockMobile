@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut } from "lucide-react";
+import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -204,6 +204,17 @@ export default function SettingsPage() {
     }
   };
 
+  const handleDeleteProfileImage = () => {
+    updateUserMutation.mutate({
+      avatar: null
+    });
+    
+    toast({
+      title: "프로필 이미지 삭제",
+      description: "프로필 이미지가 성공적으로 삭제되었습니다.",
+    });
+  };
+
   const handleLogout = () => {
     logout();
     toast({
@@ -361,10 +372,22 @@ export default function SettingsPage() {
                     <Camera className="w-4 h-4" />
                   )}
                 </Button>
+                {(user as any)?.avatar && (
+                  <Button
+                    size="sm"
+                    onClick={handleDeleteProfileImage}
+                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </Button>
+                )}
               </div>
               <div className="flex-1">
                 <p className="text-sm text-gray-600 mb-1">프로필 사진</p>
                 <p className="text-xs text-gray-500">클릭하여 이미지를 변경하세요</p>
+                {(user as any)?.avatar && (
+                  <p className="text-xs text-red-500 mt-1">빨간 버튼을 클릭하여 삭제할 수 있습니다</p>
+                )}
               </div>
             </div>
 
