@@ -470,19 +470,35 @@ export default function DashboardPage() {
                                   shortUrlType: 'default'
                                 };
                                 
+                                console.log('Deleting link with data:', updateData);
+                                
                                 const response = await fetch(`/api/settings/${user?.id}`, {
                                   method: 'PUT',
                                   headers: { 'Content-Type': 'application/json' },
                                   body: JSON.stringify(updateData)
                                 });
                                 
+                                const result = await response.json();
+                                console.log('Delete response:', result);
+                                
                                 if (response.ok) {
-                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                  queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                  // Force refresh all queries
+                                  await queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                  await queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                  await queryClient.refetchQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                  await queryClient.refetchQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                  
                                   toast({
                                     title: "링크 삭제됨",
                                     description: "링크 설정이 초기화되었습니다.",
                                   });
+                                  
+                                  // Force page refresh as fallback
+                                  setTimeout(() => {
+                                    window.location.reload();
+                                  }, 1000);
+                                } else {
+                                  throw new Error('Failed to delete');
                                 }
                               } catch (error) {
                                 console.error('삭제 오류:', error);
