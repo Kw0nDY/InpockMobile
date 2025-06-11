@@ -110,18 +110,17 @@ export default function ImagesPage() {
   return (
     <>
       <div className="min-h-screen bg-gray-50 pb-20">
-        {/* Floating Add Button */}
-        <div className="fixed bottom-24 right-4 z-50">
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            className="w-14 h-14 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
-          >
-            <Plus className="w-6 h-6" />
-          </Button>
-        </div>
-
-        {/* Images Grid */}
-        <div className="p-4">
+        {/* Images Section */}
+        <div className="p-4 relative">
+          {/* Add Button inside section */}
+          <div className="absolute top-6 right-6 z-10">
+            <Button
+              onClick={() => setIsModalOpen(true)}
+              className="w-12 h-12 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
+            >
+              <Plus className="w-5 h-5" />
+            </Button>
+          </div>
           {isLoading ? (
             <div className="grid grid-cols-2 gap-4">
               {[1, 2, 3, 4].map((i) => (
