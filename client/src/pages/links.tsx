@@ -29,6 +29,7 @@ export default function LinksPage() {
   const { data: linksData, isLoading } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
     enabled: !!user?.id,
+    refetchInterval: 5000, // Auto-refresh every 5 seconds to show updated click counts
   });
 
   const links = Array.isArray(linksData) ? linksData : [];
@@ -416,6 +417,21 @@ export default function LinksPage() {
                   </div>
                   <div className="text-xs text-gray-500">월방문자</div>
                 </div>
+              </div>
+
+              {/* Refresh Stats Button */}
+              <div className="mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+                    toast({ title: "통계가 새로고침되었습니다!" });
+                  }}
+                  className="text-xs"
+                >
+                  통계 새로고침
+                </Button>
               </div>
 
               {/* 빠른 추적 URL 섹션 */}
