@@ -379,8 +379,8 @@ export default function DashboardPage() {
                       const settings = settingsData as any;
                       const urlType = settings?.shortUrlType;
                       
-                      if (urlType === 'link' && settings?.linkTitle && settings?.linkUrl) {
-                        // Link URL type selected - redirect to actual link URL
+                      if (settings?.linkUrl) {
+                        // Link URL exists - redirect to actual link URL regardless of urlType
                         return (
                           <div className="bg-white border rounded-lg p-4">
                             <div className="flex items-center space-x-3">
@@ -389,10 +389,10 @@ export default function DashboardPage() {
                               </div>
                               <div className="flex-1">
                                 <h3 className="text-sm font-semibold text-gray-900">
-                                  📎 {settings.linkTitle}
+                                  📎 {settings.linkTitle || '링크'}
                                 </h3>
                                 <div className="text-xs text-blue-600 mt-1">
-                                  amusefit.co.kr/link/{settings.linkTitle.toLowerCase().replace(/\s+/g, '-')}
+                                  {settings.linkUrl}
                                 </div>
                               </div>
                               <div className="flex items-center gap-1">
