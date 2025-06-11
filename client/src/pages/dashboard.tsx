@@ -336,8 +336,37 @@ export default function DashboardPage() {
                 
                 {/* URL List */}
                 <div className="space-y-2">
-                  {linksData && linksData.length > 0 ? (
-                    linksData.slice(0, 3).map((link) => (
+                  {/* User Profile URL - from settings */}
+                  {userSettings && (
+                    <div className="flex items-center justify-between p-2 bg-white rounded border text-sm">
+                      <div className="flex-1">
+                        <div className="font-medium text-gray-800">프로필</div>
+                        <div className="text-xs text-gray-500">
+                          {userSettings.customUrl ? 
+                            `/users/${userSettings.customUrl}` : 
+                            `/users/${currentUser?.username || 'demo_user'}`
+                          }
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                        onClick={() => {
+                          const url = userSettings.customUrl ? 
+                            `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
+                            `https://amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`;
+                          navigator.clipboard.writeText(url);
+                        }}
+                      >
+                        <Copy className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  )}
+                  
+                  {/* Created Links */}
+                  {linksData && Array.isArray(linksData) && linksData.length > 0 && (
+                    linksData.slice(0, 2).map((link: any) => (
                       <div key={link.id} className="flex items-center justify-between p-2 bg-white rounded border text-sm">
                         <div className="flex-1">
                           <div className="font-medium text-gray-800">{link.title || link.originalUrl}</div>
@@ -355,7 +384,10 @@ export default function DashboardPage() {
                         </Button>
                       </div>
                     ))
-                  ) : (
+                  )}
+                  
+                  {/* Show message when no URLs are available */}
+                  {(!userSettings?.customUrl && !currentUser?.username && (!linksData || !Array.isArray(linksData) || linksData.length === 0)) && (
                     <div className="text-center py-4 text-gray-500 text-sm">
                       아직 생성된 링크가 없습니다
                     </div>
