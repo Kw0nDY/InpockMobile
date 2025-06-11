@@ -431,17 +431,37 @@ export default function LinksPage() {
                       <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
                         {/* Thumbnail Style */}
                         {link.style === 'thumbnail' && (
-                          <div className="flex items-center gap-3 p-2 bg-white rounded-lg border relative">
+                          <div 
+                            className="flex items-center gap-3 p-2 bg-white rounded-lg border relative cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => window.open(link.originalUrl, '_blank')}
+                          >
                             <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
                             <div className="flex-1 min-w-0">
-                              <div 
-                                className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C] cursor-pointer" 
-                                onClick={() => window.open(link.originalUrl, '_blank')}
-                              >
+                              <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
                                 {link.title}
                               </div>
-                              <div className="text-xs text-blue-600 mt-1">
-                                클릭수: {link.clicks || 0} | 단축링크: amusefit.co.kr/l/{link.shortCode}
+                              <div className="flex items-center gap-2 mt-1">
+                                <div 
+                                  className="text-xs text-blue-600 cursor-pointer hover:underline flex-1"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.open(`/l/${link.shortCode}`, '_blank');
+                                  }}
+                                >
+                                  클릭수: {link.clicks || 0} | 단축링크: amusefit.co.kr/l/{link.shortCode}
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                                    toast({ title: "단축링크가 복사되었습니다!" });
+                                  }}
+                                  className="h-5 w-5 p-0 text-gray-400 hover:text-blue-600"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </Button>
                               </div>
                               <div className="text-xs text-gray-500 mt-1 flex gap-3">
                                 <span>내 방문: 0</span>
@@ -464,7 +484,10 @@ export default function LinksPage() {
                         
                         {/* Simple Style */}
                         {link.style === 'simple' && (
-                          <div className="bg-white rounded-lg border p-3 relative cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
+                          <div 
+                            className="bg-white rounded-lg border p-3 relative cursor-pointer hover:bg-gray-50 transition-colors" 
+                            onClick={() => window.open(link.originalUrl, '_blank')}
+                          >
                             <Button
                               variant="ghost"
                               size="sm"
@@ -477,13 +500,25 @@ export default function LinksPage() {
                               <Trash2 className="w-3 h-3" />
                             </Button>
                             <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                            <div 
+                              className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/l/${link.shortCode}`, '_blank');
+                              }}
+                            >
+                              단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                            </div>
                             <div className="w-full h-2 bg-gray-300 rounded"></div>
                           </div>
                         )}
                         
                         {/* Card Style */}
                         {link.style === 'card' && (
-                          <div className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
+                          <div 
+                            className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
+                            onClick={() => window.open(link.originalUrl, '_blank')}
+                          >
                             <Button
                               variant="ghost"
                               size="sm"
@@ -497,6 +532,15 @@ export default function LinksPage() {
                             </Button>
                             <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
                               <div className="text-sm font-medium truncate">{link.title}</div>
+                              <div 
+                                className="text-xs text-blue-200 mt-1 cursor-pointer hover:underline"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(`/l/${link.shortCode}`, '_blank');
+                                }}
+                              >
+                                amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
+                              </div>
                             </div>
                             <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
                               <div className="w-3 h-3 border-2 border-white rounded-full"></div>
@@ -507,7 +551,7 @@ export default function LinksPage() {
                         {/* Background Style */}
                         {link.style === 'background' && (
                           <div 
-                            className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer" 
+                            className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
                             style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
                             onClick={() => window.open(link.originalUrl, '_blank')}
                           >
@@ -523,6 +567,15 @@ export default function LinksPage() {
                               <Trash2 className="w-3 h-3" />
                             </Button>
                             <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                            <div 
+                              className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(`/l/${link.shortCode}`, '_blank');
+                              }}
+                            >
+                              단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                            </div>
                             <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
                             <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
                           </div>
