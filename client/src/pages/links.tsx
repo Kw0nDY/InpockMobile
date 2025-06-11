@@ -305,14 +305,6 @@ export default function LinksPage() {
             <Plus className="w-5 h-5" />
             URL 추가하기
           </Button>
-
-          {/* 전체 분석 보기 Button */}
-          <Button
-            className="w-full bg-[#A0825C] hover:bg-[#8B4513] text-white py-4 rounded-lg font-medium flex items-center justify-center gap-2"
-          >
-            <TrendingUp className="w-5 h-5" />
-            전체 분석 보기
-          </Button>
         </div>
       </div>
     </div>
