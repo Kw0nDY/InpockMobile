@@ -520,11 +520,12 @@ export default function SettingsPage() {
               </div>
             </div>
 
-            <RadioGroup
-              value={profileData.shortUrlType}
-              onValueChange={(value) => updateProfileData('shortUrlType', value)}
-              className="space-y-3"
-            >
+            {profileData.contentType === 'links' && (
+              <RadioGroup
+                value={profileData.shortUrlType}
+                onValueChange={(value) => updateProfileData('shortUrlType', value)}
+                className="space-y-3"
+              >
               <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                 <RadioGroupItem value="default" id="default" />
                 <Label htmlFor="default" className="flex-1 cursor-pointer">
@@ -572,8 +573,9 @@ export default function SettingsPage() {
                 </Label>
               </div>
             </RadioGroup>
+            )}
 
-            {/* URL Preview & Copy */}
+            {profileData.contentType === 'links' && (
             <div className="p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
@@ -613,7 +615,7 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
-
+            )}
 
           </CardContent>
         </Card>
