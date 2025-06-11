@@ -68,16 +68,20 @@ export default function LinksPage() {
       if (!response.ok) {
         throw new Error("Failed to delete link");
       }
-      return response.json();
+      // DELETE requests often return 204 No Content, so we don't need to parse JSON
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+      // Also refetch the data immediately to ensure UI updates
+      queryClient.refetchQueries({ queryKey: [`/api/links/${user?.id}`] });
       toast({
         title: "링크 삭제됨",
         description: "링크가 성공적으로 삭제되었습니다.",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Delete link error:", error);
       toast({
         title: "삭제 실패", 
         description: "링크 삭제 중 오류가 발생했습니다.",
@@ -420,27 +424,24 @@ export default function LinksPage() {
                   <div className="space-y-3">
                     {links.map((link: any) => (
                       <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
-                        {/* Compact Style */}
-                        {link.style === 'compact' && (
-                          <div className="flex items-center justify-between">
+                        {/* Thumbnail Style */}
+                        {(link.style === 'thumbnail' || link.style === 'compact') && (
+                          <div className="flex items-center gap-3 p-2 bg-white rounded-lg border relative">
+                            <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
                             <div className="flex-1 min-w-0 cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
-                              <div className="text-sm font-medium text-gray-900 truncate hover:text-[#A0825C]">{link.title}</div>
-                              <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
+                              <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">{link.title}</div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteLinkMutation.mutate(link.id);
-                                }}
-                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-600"
-                              >
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteLinkMutation.mutate(link.id);
+                              }}
+                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
                           </div>
                         )}
                         
