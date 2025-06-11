@@ -406,18 +406,46 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           
-                          {/* External Link Button */}
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            className="p-2"
-                            onClick={() => {
-                              const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
-                              window.open(url, '_blank');
-                            }}
-                          >
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
+                          {/* Action Buttons */}
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2"
+                              onClick={() => {
+                                const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
+                                window.open(url, '_blank');
+                              }}
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                              onClick={() => {
+                                // Clear profile settings
+                                const updateData = {
+                                  customUrl: '',
+                                  bio: ''
+                                };
+                                fetch(`/api/settings/${user?.id}`, {
+                                  method: 'PUT',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify(updateData)
+                                }).then(() => {
+                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                  queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                  toast({
+                                    title: "프로필 삭제됨",
+                                    description: "프로필 설정이 초기화되었습니다.",
+                                  });
+                                });
+                              }}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
                         </div>
 
                         {/* Call to Action */}
