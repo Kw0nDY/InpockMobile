@@ -371,83 +371,37 @@ export default function DashboardPage() {
                   </div>
                 )}
 
-                {/* Link Content */}
+                {/* Unified Link Cards */}
                 {currentContentType === 'links' && (
-                  <div className="mb-4">
-                    {/* Show card based on selected URL type */}
+                  <div className="mb-4 space-y-3">
                     {(() => {
                       const settings = settingsData as any;
-                      const urlType = settings?.shortUrlType;
+                      const hasLinkUrl = settings?.linkUrl && settings.linkUrl.trim() !== '';
+                      const hasCustomUrl = settings?.customUrl && settings.customUrl.trim() !== '';
                       
-                      if (settings?.linkUrl) {
-                        // Link URL exists - redirect to actual link URL regardless of urlType
+                      // If there's any URL configured, show a unified card
+                      if (hasLinkUrl || hasCustomUrl) {
+                        // Determine the target URL and display info
+                        const targetUrl = hasLinkUrl ? settings.linkUrl : `${window.location.origin}/users/${settings.customUrl}`;
+                        const displayTitle = hasLinkUrl 
+                          ? (settings.linkTitle || '링크') 
+                          : (userData as any)?.name || '사용자';
+                        const displayUrl = hasLinkUrl 
+                          ? settings.linkUrl 
+                          : `amusefit.co.kr/users/${settings.customUrl}`;
+                        
                         return (
-                          <div className="bg-white border rounded-lg p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                🔗
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="text-sm font-semibold text-gray-900">
-                                  📎 {settings.linkTitle || '링크'}
-                                </h3>
-                                <div className="text-xs text-blue-600 mt-1">
-                                  {settings.linkUrl}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2"
-                                  onClick={() => {
-                                    console.log('Redirecting to:', settings.linkUrl);
-                                    window.open(settings.linkUrl, '_blank');
-                                  }}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  onClick={async () => {
-                                    try {
-                                      const response = await fetch(`/api/settings/${user?.id}`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                          linkTitle: '',
-                                          linkUrl: '',
-                                          linkDescription: '',
-                                          customUrl: '',
-                                          shortUrlType: 'default'
-                                        })
-                                      });
-                                      
-                                      if (response.ok) {
-                                        queryClient.invalidateQueries({
-                                          queryKey: [`/api/settings/${user?.id}`],
-                                        });
-                                      }
-                                    } catch (error) {
-                                      console.error('삭제 오류:', error);
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      } else if (urlType === 'custom' && settings?.customUrl) {
-                        // Custom URL type selected - redirect to profile page
-                        return (
-                          <div className="bg-white border rounded-lg p-4">
-                            <div className="flex items-center space-x-3">
+                          <div className="bg-white border rounded-lg p-4 shadow-sm">
+                            {/* Profile Section */}
+                            <div className="flex items-start space-x-3 mb-3">
                               <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                {(userData as any)?.name ? (
+                                {(userData as any)?.profileImageUrl ? (
+                                  <img 
+                                    src={(userData as any).profileImageUrl} 
+                                    alt="Profile" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (userData as any)?.name ? (
                                   <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
                                     {(userData as any).name.charAt(0)}
                                   </div>
@@ -464,133 +418,71 @@ export default function DashboardPage() {
                                 {(userData as any)?.bio && (
                                   <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
                                 )}
-                                <div className="text-xs text-blue-600 mt-1">
-                                  amusefit.co.kr/users/{settings.customUrl}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2"
-                                  onClick={() => {
-                                    const targetUrl = `${window.location.origin}/users/${settings.customUrl}`;
-                                    console.log('Redirecting to:', targetUrl);
-                                    window.open(targetUrl, '_blank');
-                                  }}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  onClick={async () => {
-                                    try {
-                                      const response = await fetch(`/api/settings/${user?.id}`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                          linkTitle: '',
-                                          linkUrl: '',
-                                          linkDescription: '',
-                                          customUrl: '',
-                                          shortUrlType: 'default'
-                                        })
-                                      });
-                                      
-                                      if (response.ok) {
-                                        queryClient.invalidateQueries({
-                                          queryKey: [`/api/settings/${user?.id}`],
-                                        });
-                                      }
-                                    } catch (error) {
-                                      console.error('삭제 오류:', error);
-                                    }
-                                  }}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
                               </div>
                             </div>
-                          </div>
-                        );
-                      } else if (urlType === 'default') {
-                        // Default URL type selected - show default profile card
-                        return (
-                          <div className="bg-white border rounded-lg p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                {(userData as any)?.name ? (
-                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                    {(userData as any).name.charAt(0)}
-                                  </div>
-                                ) : (
-                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center">
-                                    <Link className="w-6 h-6" />
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex-1">
-                                <h3 className="text-sm font-semibold text-gray-900">
-                                  {(userData as any)?.name || '사용자'}
-                                </h3>
-                                {(userData as any)?.bio && (
-                                  <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
-                                )}
-                                <div className="text-xs text-blue-600 mt-1">
-                                  amusefit.co.kr/users/{(userData as any)?.username || 'demo_user'}
+                            
+                            {/* Link Section */}
+                            <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <div className="w-6 h-6 rounded bg-primary text-white flex items-center justify-center">
+                                  🔗
                                 </div>
+                                <h4 className="text-sm font-medium text-gray-800">{displayTitle}</h4>
                               </div>
-                              <div className="flex items-center gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2"
-                                  onClick={() => {
-                                    const targetUrl = `${window.location.origin}/users/${(userData as any)?.username || 'demo_user'}`;
-                                    console.log('Redirecting to:', targetUrl);
-                                    window.open(targetUrl, '_blank');
-                                  }}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  onClick={async () => {
-                                    try {
-                                      const response = await fetch(`/api/settings/${user?.id}`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({
-                                          linkTitle: '',
-                                          linkUrl: '',
-                                          linkDescription: '',
-                                          customUrl: '',
-                                          shortUrlType: 'default'
-                                        })
+                              <p className="text-xs text-blue-600 break-all">{displayUrl}</p>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center justify-between">
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                className="flex items-center space-x-2"
+                                onClick={() => {
+                                  console.log('Redirecting to:', targetUrl);
+                                  window.open(targetUrl, '_blank');
+                                }}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                                <span>페이지 이동</span>
+                              </Button>
+                              
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={async () => {
+                                  try {
+                                    const response = await fetch(`/api/settings/${user?.id}`, {
+                                      method: 'POST',
+                                      headers: { 'Content-Type': 'application/json' },
+                                      body: JSON.stringify({
+                                        linkTitle: '',
+                                        linkUrl: '',
+                                        linkDescription: '',
+                                        customUrl: '',
+                                        shortUrlType: 'default'
+                                      })
+                                    });
+                                    
+                                    if (response.ok) {
+                                      queryClient.invalidateQueries({
+                                        queryKey: [`/api/settings/${user?.id}`],
                                       });
-                                      
-                                      if (response.ok) {
-                                        queryClient.invalidateQueries({
-                                          queryKey: [`/api/settings/${user?.id}`],
-                                        });
-                                      }
-                                    } catch (error) {
-                                      console.error('삭제 오류:', error);
                                     }
-                                  }}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
+                                  } catch (error) {
+                                    console.error('삭제 오류:', error);
+                                  }
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4 mr-1" />
+                                삭제
+                              </Button>
                             </div>
                           </div>
                         );
                       } else {
-                        // No valid selection - show empty state
+                        // No URL configured - show empty state
                         return (
                           <div className="bg-gray-50 border rounded-lg p-6 text-center">
                             <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
