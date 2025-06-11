@@ -486,7 +486,10 @@ export default function LinksPage() {
                                   <Copy className="w-3 h-3" />
                                 </Button>
                               </div>
-                              <LinkVisitStats linkId={link.id} />
+                              <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                                <span>내 방문: {visitStats?.ownerVisits || 0}</span>
+                                <span>외부 방문: {visitStats?.externalVisits || 0}</span>
+                              </div>
                             </div>
                             <Button
                               variant="ghost"

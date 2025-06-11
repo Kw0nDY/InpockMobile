@@ -476,9 +476,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/user/:userId/link-stats", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
+      console.log(`[LINK-STATS] Getting stats for user ${userId}`);
       const stats = await storage.getUserLinkStats(userId);
+      console.log(`[LINK-STATS] Stats result:`, stats);
       res.json(stats);
     } catch (error) {
+      console.error("[LINK-STATS] Error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });

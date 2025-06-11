@@ -730,7 +730,7 @@ export class MemStorage implements IStorage {
 }
 
 import { db } from "./db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, inArray } from "drizzle-orm";
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
@@ -1161,11 +1161,15 @@ export class DatabaseStorage implements IStorage {
 
     const linkIds = userLinks.map(link => link.id);
 
-    // Get all visits for user's links
-    const allVisits = await db
-      .select()
-      .from(linkVisits)
-      .where(sql`${linkVisits.linkId} = ANY(ARRAY[${linkIds.join(',')}])`);
+    // Get all visits for user's links using inArray
+    let allVisits: any[] = [];
+    
+    if (linkIds.length > 0) {
+      allVisits = await db
+        .select()
+        .from(linkVisits)
+        .where(inArray(linkVisits.linkId, linkIds));
+    }
 
     const totalVisits = allVisits.length;
     const dailyVisits = allVisits.filter(visit => 
