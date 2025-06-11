@@ -252,6 +252,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Find ID by phone number
+  app.post("/api/auth/find-id", async (req, res) => {
+    try {
+      const { phone } = req.body;
+      
+      if (!phone) {
+        return res.status(400).json({ message: "전화번호를 입력해주세요." });
+      }
+
+      const user = await storage.getUserByPhone(phone);
+      if (!user) {
+        return res.status(404).json({ message: "등록된 전화번호를 찾을 수 없습니다." });
+      }
+
+      // In a real application, you would send SMS here
+      // For demo purposes, we'll return the username directly
+      res.json({ 
+        message: "아이디를 찾았습니다.",
+        userId: user.username
+      });
+    } catch (error) {
+      console.error("Find ID error:", error);
+      res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+  });
+
+  // Forgot password with email or phone
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email, phone } = req.body;
+      
+      if (!email && !phone) {
+        return res.status(400).json({ message: "이메일 또는 전화번호를 입력해주세요." });
+      }
+
+      let user;
+      if (email) {
+        user = await storage.getUserByEmail(email);
+      } else if (phone) {
+        user = await storage.getUserByPhone(phone);
+      }
+
+      if (!user) {
+        return res.status(404).json({ 
+          message: email ? "등록된 이메일을 찾을 수 없습니다." : "등록된 전화번호를 찾을 수 없습니다."
+        });
+      }
+
+      // Generate password reset token
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+        used: false
+      });
+
+      // In a real application, you would send email/SMS here
+      // For demo purposes, we'll just confirm the request
+      res.json({ 
+        message: "비밀번호 재설정 링크를 전송했습니다.",
+        // In development, you might want to return the token for testing
+        ...(process.env.NODE_ENV === 'development' && { resetToken: token })
+      });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+  });
+
   // User profile update route
   app.put("/api/user/:userId", async (req, res) => {
     try {
