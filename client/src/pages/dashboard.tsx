@@ -391,55 +391,36 @@ export default function DashboardPage() {
                           : `amusefit.co.kr/users/${settings.customUrl}`;
                         
                         return (
-                          <div className="bg-white border rounded-lg p-4 shadow-sm">
-                            {/* Profile Section */}
-                            <div className="flex items-start space-x-3 mb-3">
-                              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                                {(userData as any)?.profileImageUrl ? (
-                                  <img 
-                                    src={(userData as any).profileImageUrl} 
-                                    alt="Profile" 
-                                    className="w-full h-full object-cover"
-                                  />
-                                ) : (userData as any)?.name ? (
-                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                    {(userData as any).name.charAt(0)}
-                                  </div>
-                                ) : (
-                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center">
-                                    <Link className="w-6 h-6" />
-                                  </div>
-                                )}
-                              </div>
+                          <div className="bg-gray-50 border rounded-lg p-4">
+                            <div className="flex items-start justify-between">
                               <div className="flex-1">
-                                <h3 className="text-sm font-semibold text-gray-900">
-                                  {(userData as any)?.name || '사용자'}
+                                <h3 className="text-base font-semibold text-gray-900 mb-2">
+                                  {displayTitle}
                                 </h3>
-                                {(userData as any)?.bio && (
-                                  <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                                {(settingsData as any)?.linkDescription && (
+                                  <p className="text-sm text-gray-600 mb-3">{(settingsData as any).linkDescription}</p>
                                 )}
+                                <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
+                                  Link
+                                </span>
                               </div>
-                            </div>
-                            
-                            {/* Link Section */}
-                            <div className="bg-gray-50 rounded-lg p-3 mb-3">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <div className="w-6 h-6 rounded bg-primary text-white flex items-center justify-center">
-                                  🔗
+                              <div className="w-12 h-12 rounded bg-gray-200 flex items-center justify-center ml-4">
+                                <div className="w-6 h-6 text-gray-400">
+                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                                    <polyline points="21,15 16,10 5,21"/>
+                                  </svg>
                                 </div>
-                                <h4 className="text-sm font-medium text-gray-800">{displayTitle}</h4>
                               </div>
-                              <p className="text-xs text-blue-600 break-all">{displayUrl}</p>
                             </div>
                             
-                            {/* Action Buttons */}
-                            <div className="flex items-center justify-between">
+                            <div className="mt-4 flex items-center justify-between">
                               <Button 
                                 variant="outline" 
                                 size="sm"
                                 className="flex items-center space-x-2"
                                 onClick={() => {
-                                  console.log('Redirecting to:', targetUrl);
                                   window.open(targetUrl, '_blank');
                                 }}
                               >

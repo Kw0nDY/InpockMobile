@@ -574,13 +574,24 @@ export default function SettingsPage() {
                 {/* Link Settings */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">링크 제목</Label>
+                    <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">이름</Label>
                     <Input
                       id="linkTitle"
                       value={profileData.linkTitle || ''}
                       onChange={(e) => updateProfileData('linkTitle', e.target.value)}
-                      placeholder="링크 제목을 입력하세요"
+                      placeholder="프로필 이름을 입력하세요"
                       className="border-gray-200 focus:border-primary bg-gray-50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="linkDescription" className="text-sm font-medium text-gray-700">소개</Label>
+                    <Textarea
+                      id="linkDescription"
+                      value={profileData.linkDescription || ''}
+                      onChange={(e) => updateProfileData('linkDescription', e.target.value)}
+                      placeholder="간단한 자기소개 및 설명"
+                      className="border-gray-200 focus:border-primary bg-gray-50 min-h-[60px]"
+                      rows={3}
                     />
                   </div>
                   <div className="space-y-2">
