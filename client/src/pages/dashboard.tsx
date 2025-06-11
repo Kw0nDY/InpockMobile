@@ -241,6 +241,32 @@ export default function DashboardPage() {
             <CardContent className="space-y-4">
 
 
+              {/* Shortened URL Section */}
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">단축 URL</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                    onClick={() => {
+                      const url = userSettings?.customUrl ? 
+                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
+                        `https://amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`;
+                      navigator.clipboard.writeText(url);
+                    }}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="text-sm text-gray-600 font-mono">
+                  {userSettings?.customUrl ? 
+                    `amusefit.co.kr/users/${userSettings.customUrl}` : 
+                    `amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`
+                  }
+                </div>
+              </div>
+
               {/* Content Type Selection Display */}
               <div className="space-y-3">
                 <p className="text-sm font-medium text-gray-700 korean-text">선택된 콘텐츠</p>
@@ -275,32 +301,6 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   ))}
-                </div>
-              </div>
-
-              {/* Shortened URL Section */}
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">단축 URL</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="p-1 h-auto text-gray-500 hover:text-gray-700"
-                    onClick={() => {
-                      const url = userSettings?.customUrl ? 
-                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
-                        `https://amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`;
-                      navigator.clipboard.writeText(url);
-                    }}
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                </div>
-                <div className="text-sm text-gray-600 font-mono">
-                  {userSettings?.customUrl ? 
-                    `amusefit.co.kr/users/${userSettings.customUrl}` : 
-                    `amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`
-                  }
                 </div>
               </div>
 
