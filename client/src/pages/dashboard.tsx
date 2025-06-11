@@ -379,9 +379,8 @@ export default function DashboardPage() {
                       const settings = settingsData as any;
                       const urlType = settings?.shortUrlType;
                       
-                      // Only show if there's a valid selection
                       if (urlType === 'link' && settings?.linkTitle && settings?.linkUrl) {
-                        // Link URL type selected
+                        // Link URL type selected - redirect to actual link URL
                         return (
                           <div className="bg-white border rounded-lg p-4">
                             <div className="flex items-center space-x-3">
@@ -441,7 +440,7 @@ export default function DashboardPage() {
                           </div>
                         );
                       } else if (urlType === 'custom' && settings?.customUrl) {
-                        // Custom URL type selected
+                        // Custom URL type selected - redirect to profile page
                         return (
                           <div className="bg-white border rounded-lg p-4">
                             <div className="flex items-center space-x-3">
@@ -512,8 +511,80 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         );
+                      } else if (urlType === 'default') {
+                        // Default URL type selected - show default profile card
+                        return (
+                          <div className="bg-white border rounded-lg p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                {(userData as any)?.name ? (
+                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                    {(userData as any).name.charAt(0)}
+                                  </div>
+                                ) : (
+                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center">
+                                    <Link className="w-6 h-6" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="text-sm font-semibold text-gray-900">
+                                  {(userData as any)?.name || '사용자'}
+                                </h3>
+                                {(userData as any)?.bio && (
+                                  <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                                )}
+                                <div className="text-xs text-blue-600 mt-1">
+                                  amusefit.co.kr/users/{(userData as any)?.username || 'demo_user'}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2"
+                                  onClick={() => {
+                                    const targetUrl = `${window.location.origin}/users/${(userData as any)?.username || 'demo_user'}`;
+                                    console.log('Redirecting to:', targetUrl);
+                                    window.open(targetUrl, '_blank');
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/settings/${user?.id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          linkTitle: '',
+                                          linkUrl: '',
+                                          linkDescription: '',
+                                          customUrl: '',
+                                          shortUrlType: 'default'
+                                        })
+                                      });
+                                      
+                                      if (response.ok) {
+                                        window.location.reload();
+                                      }
+                                    } catch (error) {
+                                      console.error('삭제 오류:', error);
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        );
                       } else {
-                        // No valid selection or default selected - show empty state
+                        // No valid selection - show empty state
                         return (
                           <div className="bg-gray-50 border rounded-lg p-6 text-center">
                             <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
