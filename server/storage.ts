@@ -331,7 +331,7 @@ export class MemStorage implements IStorage {
       title: insertLink.title,
       originalUrl: insertLink.originalUrl,
       shortCode: insertLink.shortCode,
-      style: insertLink.style || "compact",
+      style: insertLink.style || "thumbnail",
       clicks: 0,
       isActive: insertLink.isActive !== undefined ? insertLink.isActive : true,
       createdAt: new Date(),

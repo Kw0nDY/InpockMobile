@@ -8,14 +8,19 @@ import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 
-type LinkStyle = 'compact' | 'card' | 'list' | 'minimal';
+type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
+
+const THUMBNAIL: LinkStyle = 'thumbnail';
+const SIMPLE: LinkStyle = 'simple';
+const CARD: LinkStyle = 'card';
+const BACKGROUND: LinkStyle = 'background';
 
 export default function LinksPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
-  const [selectedStyle, setSelectedStyle] = useState<LinkStyle>('thumbnail');
+  const [selectedStyle, setSelectedStyle] = useState<LinkStyle>(THUMBNAIL);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -164,7 +169,7 @@ export default function LinksPage() {
               <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300 overflow-hidden">
                 {title || url || selectedImage ? (
                   <div className="text-center p-2 w-full h-full">
-                    {selectedStyle === 'thumbnail' && (
+                    {selectedStyle === THUMBNAIL && (
                       <div className="flex items-center gap-3 h-full p-2 bg-white rounded-lg border">
                         {selectedImage ? (
                           <img src={selectedImage} alt="Preview" className="w-12 h-12 rounded object-cover" />
@@ -176,13 +181,13 @@ export default function LinksPage() {
                         </div>
                       </div>
                     )}
-                    {selectedStyle === 'simple' && (
+                    {selectedStyle === SIMPLE && (
                       <div className="bg-white rounded-lg border p-3 h-full flex flex-col justify-center">
                         <div className="text-sm font-medium text-gray-800 truncate mb-1">{title || "타이틀을 입력해주세요"}</div>
                         <div className="w-full h-2 bg-gray-300 rounded"></div>
                       </div>
                     )}
-                    {selectedStyle === 'card' && (
+                    {selectedStyle === CARD && (
                       <div className="bg-gray-400 rounded-lg h-full flex flex-col justify-center p-3 relative">
                         {selectedImage && (
                           <img src={selectedImage} alt="Preview" className="absolute inset-0 w-full h-full object-cover rounded-lg" />
@@ -195,7 +200,7 @@ export default function LinksPage() {
                         </div>
                       </div>
                     )}
-                    {selectedStyle === 'background' && (
+                    {selectedStyle === BACKGROUND && (
                       <div className="h-full flex flex-col justify-center p-3 relative rounded-lg" style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}>
                         <div className="text-sm font-medium text-gray-800 truncate mb-2">{title || "타이틀을 입력해주세요"}</div>
                         <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
