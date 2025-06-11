@@ -282,39 +282,29 @@ export default function DashboardPage() {
               <div className="p-4 bg-gray-50 rounded-lg">
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
-                {/* Image Content - Removed per user request */}
+                {/* Image Content */}
+                {currentContentType === 'image' && (
+                  <div className="mb-4">
+                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                      <div className="text-center">
+                        <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                        <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Video Content */}
                 {currentContentType === 'video' && (
                   <div className="mb-4">
-                    {currentUser?.introVideoUrl ? (
-                      <VideoModal src={currentUser.introVideoUrl}>
-                        <div className="w-full h-64 rounded-lg overflow-hidden cursor-pointer hover:opacity-90 transition-opacity relative">
-                          <video
-                            src={currentUser.introVideoUrl}
-                            className="w-full h-full object-cover"
-                            muted
-                          >
-                            Your browser does not support the video tag.
-                          </video>
-                          <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center hover:bg-opacity-20 transition-all">
-                            <div className="w-16 h-16 bg-white bg-opacity-90 rounded-full flex items-center justify-center">
-                              <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </VideoModal>
-                    ) : (
-                      <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                        <div className="text-center">
-                          <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                          <p className="text-sm text-gray-500">비디오를 업로드해주세요</p>
-                        </div>
+                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                      <div className="text-center">
+                        <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                        <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
                       </div>
-                    )}
-                    <p className="text-xs text-gray-500 mt-2 text-center">
-                      {currentUser?.introVideoUrl ? '클릭하여 재생' : '설정에서 비디오를 업로드할 수 있습니다'}
-                    </p>
+                    </div>
                   </div>
                 )}
 
