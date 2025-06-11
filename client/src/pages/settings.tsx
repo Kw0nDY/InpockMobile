@@ -89,12 +89,21 @@ export default function SettingsPage() {
       return;
     }
 
+    if (!user?.id) {
+      toast({
+        title: "인증 오류",
+        description: "로그인이 필요합니다.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const shortCode = generateShortCode(newLink.title);
     createLinkMutation.mutate({
       title: newLink.title,
       originalUrl: newLink.url,
       shortCode,
-      userId: user?.id || 0
+      userId: user.id
     });
   };
 
