@@ -309,32 +309,14 @@ export default function DashboardPage() {
 
                 {/* Link Content */}
                 {currentContentType === 'links' && (
-                  <LinkPreview
-                    url={userSettings?.linkUrl || 
-                      (userSettings?.customUrl ? 
-                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
-                        `https://amusefit.co.kr/users/${user?.username || 'default'}`)
-                    }
-                    title={userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
-                    description={userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
-                    userId={user?.id}
-                  >
-                    <div className="p-4 border border-gray-200 rounded-lg bg-white hover:shadow-md transition-shadow">
-                      <div className="flex items-center space-x-2 mb-2">
-                        <ExternalLink className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-gray-800">
-                          {userSettings?.linkTitle || `${user?.name || '사용자'}의 프로필`}
-                        </span>
-                      </div>
-                      <p className="text-xs text-gray-600 mb-3">
-                        {userSettings?.linkDescription || userSettings?.bio || currentUser?.bio || '안녕하세요! 반갑습니다.'}
-                      </p>
-                      <div className="flex items-center space-x-1 text-xs text-blue-600">
-                        <span>클릭하여 새 탭에서 열기</span>
-                        <ExternalLink className="w-3 h-3" />
+                  <div className="mb-4">
+                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                      <div className="text-center">
+                        <ExternalLink className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                        <p className="text-sm text-gray-500">링크를 설정하세요</p>
                       </div>
                     </div>
-                  </LinkPreview>
+                  </div>
                 )}
               </div>
 
