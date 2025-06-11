@@ -980,15 +980,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/l/:shortCode", async (req, res) => {
     try {
       const shortCode = req.params.shortCode;
+      console.log(`[REDIRECT] Attempting to redirect shortCode: ${shortCode}`);
+      
       const link = await storage.getLinkByShortCode(shortCode);
       
       if (!link) {
+        console.log(`[REDIRECT] Link not found for shortCode: ${shortCode}`);
         return res.status(404).json({ message: "Link not found" });
       }
 
       if (!link.isActive) {
+        console.log(`[REDIRECT] Link is inactive for shortCode: ${shortCode}`);
         return res.status(410).json({ message: "Link is inactive" });
       }
+
+      console.log(`[REDIRECT] Found link: ${link.id} - ${link.title}, current clicks: ${link.clicks}`);
 
       // Get visitor information
       const visitorIp = req.ip || req.connection.remoteAddress || 'unknown';
@@ -1000,21 +1006,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const isOwner = req.query.owner === 'true';
 
       // Record visit
-      await storage.recordLinkVisit({
-        linkId: link.id,
-        visitorIp,
-        userAgent,
-        referrer,
-        isOwner
-      });
+      try {
+        await storage.recordLinkVisit({
+          linkId: link.id,
+          visitorIp,
+          userAgent,
+          referrer,
+          isOwner
+        });
+        console.log(`[REDIRECT] Visit recorded for link ${link.id}`);
+      } catch (visitError) {
+        console.error(`[REDIRECT] Failed to record visit:`, visitError);
+      }
 
       // Increment link clicks
-      await storage.incrementLinkClicks(link.id);
+      try {
+        await storage.incrementLinkClicks(link.id);
+        console.log(`[REDIRECT] Click count incremented for link ${link.id}`);
+      } catch (clickError) {
+        console.error(`[REDIRECT] Failed to increment clicks:`, clickError);
+      }
       
       // Increment user visit count for link clicks
-      await storage.incrementUserVisitCount(link.userId);
+      try {
+        await storage.incrementUserVisitCount(link.userId);
+        console.log(`[REDIRECT] User visit count incremented for user ${link.userId}`);
+      } catch (userError) {
+        console.error(`[REDIRECT] Failed to increment user visits:`, userError);
+      }
 
       // Redirect to the target URL
+      console.log(`[REDIRECT] Redirecting to: ${link.originalUrl}`);
       res.redirect(302, link.originalUrl);
     } catch (error) {
       console.error("Link redirect error:", error);
