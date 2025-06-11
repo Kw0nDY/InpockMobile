@@ -364,6 +364,39 @@ export default function SettingsPage() {
       console.log('Settings update data:', settingsUpdateData);
       const settingsResult = await updateSettingsMutation.mutateAsync(settingsUpdateData);
       console.log('Settings update result:', settingsResult);
+
+      // If content type is image or video and URL is provided, save to media API
+      if ((profileData.contentType === 'image' || profileData.contentType === 'video') && profileData.linkUrl) {
+        try {
+          const mediaData = {
+            userId: user?.id,
+            mediaUrl: profileData.linkUrl,
+            mediaType: profileData.contentType,
+            title: profileData.linkTitle || null,
+            description: profileData.linkDescription || null,
+          };
+          console.log('Saving media data:', mediaData);
+          
+          const response = await fetch('/api/media', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(mediaData),
+          });
+          
+          if (response.ok) {
+            const mediaResult = await response.json();
+            console.log('Media save result:', mediaResult);
+            // Invalidate media query to refresh the data
+            queryClient.invalidateQueries({ queryKey: ['/api/media', user?.id] });
+          } else {
+            console.error('Media save failed:', await response.text());
+          }
+        } catch (mediaError) {
+          console.error('Media save error:', mediaError);
+        }
+      }
       
       console.log('Profile saved successfully');
       

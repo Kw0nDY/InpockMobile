@@ -596,17 +596,41 @@ export class MemStorage implements IStorage {
     const upload: MediaUpload = {
       id,
       userId: insertUpload.userId,
-      fileName: insertUpload.fileName,
-      originalName: insertUpload.originalName,
-      mimeType: insertUpload.mimeType,
-      fileSize: insertUpload.fileSize,
-      filePath: insertUpload.filePath,
+      fileName: insertUpload.fileName || null,
+      originalName: insertUpload.originalName || null,
+      mimeType: insertUpload.mimeType || null,
+      fileSize: insertUpload.fileSize || null,
+      filePath: insertUpload.filePath || null,
+      mediaUrl: insertUpload.mediaUrl || null,
       mediaType: insertUpload.mediaType,
+      title: insertUpload.title || null,
+      description: insertUpload.description || null,
       isActive: insertUpload.isActive ?? true,
       createdAt: new Date(),
     };
     this.mediaUploads.set(id, upload);
     return upload;
+  }
+
+  async getMediaByUserAndType(userId: number, mediaType: string): Promise<MediaUpload[]> {
+    return Array.from(this.mediaUploads.values()).filter(upload => 
+      upload.userId === userId && 
+      upload.mediaType === mediaType && 
+      upload.isActive
+    );
+  }
+
+  async createMedia(insertUpload: InsertMediaUpload): Promise<MediaUpload> {
+    return this.createMediaUpload(insertUpload);
+  }
+
+  async updateMedia(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined> {
+    const upload = this.mediaUploads.get(id);
+    if (!upload) return undefined;
+    
+    const updatedUpload = { ...upload, ...updates };
+    this.mediaUploads.set(id, updatedUpload);
+    return updatedUpload;
   }
 
   async deleteMediaUpload(id: number): Promise<boolean> {
@@ -931,6 +955,33 @@ export class DatabaseStorage implements IStorage {
       .where(eq(mediaUploads.id, id))
       .returning();
     return !!deletedUpload;
+  }
+
+  async getMediaByUserAndType(userId: number, mediaType: string): Promise<MediaUpload[]> {
+    return await db.select().from(mediaUploads).where(
+      and(
+        eq(mediaUploads.userId, userId),
+        eq(mediaUploads.mediaType, mediaType),
+        eq(mediaUploads.isActive, true)
+      )
+    );
+  }
+
+  async createMedia(insertUpload: InsertMediaUpload): Promise<MediaUpload> {
+    const [upload] = await db
+      .insert(mediaUploads)
+      .values(insertUpload)
+      .returning();
+    return upload;
+  }
+
+  async updateMedia(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined> {
+    const [upload] = await db
+      .update(mediaUploads)
+      .set(updates)
+      .where(eq(mediaUploads.id, id))
+      .returning();
+    return upload || undefined;
   }
 
   async incrementUserVisitCount(userId: number): Promise<void> {
