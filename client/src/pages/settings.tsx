@@ -66,22 +66,13 @@ export default function SettingsPage() {
       return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
     }
 
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      
-      if (!contentType?.startsWith('image/')) {
-        return { isValid: false, message: '이미지 파일이 아닙니다' };
-      }
-      
-      if (!response.ok) {
-        return { isValid: false, message: '이미지에 접근할 수 없습니다' };
-      }
-      
-      return { isValid: true, message: '' };
-    } catch {
-      return { isValid: false, message: '이미지 URL을 확인할 수 없습니다' };
+    // 이미지 URL 패턴 검사
+    const imageExtensions = /\.(jpg|jpeg|png|gif|webp|svg|bmp)(\?.*)?$/i;
+    if (!imageExtensions.test(url)) {
+      return { isValid: false, message: '이미지 파일 확장자가 필요합니다 (.jpg, .png, .gif 등)' };
     }
+    
+    return { isValid: true, message: '' };
   };
 
   const validateVideoUrl = async (url: string): Promise<{ isValid: boolean; message: string }> => {
@@ -91,22 +82,15 @@ export default function SettingsPage() {
       return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
     }
 
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      const contentType = response.headers.get('content-type');
-      
-      if (!contentType?.startsWith('video/')) {
-        return { isValid: false, message: '동영상 파일이 아닙니다' };
-      }
-      
-      if (!response.ok) {
-        return { isValid: false, message: '동영상에 접근할 수 없습니다' };
-      }
-      
-      return { isValid: true, message: '' };
-    } catch {
-      return { isValid: false, message: '동영상 URL을 확인할 수 없습니다' };
+    // 동영상 URL 패턴 검사
+    const videoExtensions = /\.(mp4|avi|mov|wmv|flv|webm|mkv|m4v)(\?.*)?$/i;
+    const videoServices = /(youtube\.com|youtu\.be|vimeo\.com|dailymotion\.com)/i;
+    
+    if (!videoExtensions.test(url) && !videoServices.test(url)) {
+      return { isValid: false, message: '동영상 파일 또는 동영상 서비스 URL이 필요합니다' };
     }
+    
+    return { isValid: true, message: '' };
   };
 
   const validateLinkUrl = async (url: string): Promise<{ isValid: boolean; message: string }> => {
@@ -116,17 +100,12 @@ export default function SettingsPage() {
       return { isValid: false, message: '유효하지 않은 URL 형식입니다' };
     }
 
-    try {
-      const response = await fetch(url, { method: 'HEAD' });
-      
-      if (!response.ok) {
-        return { isValid: false, message: '링크에 접근할 수 없습니다' };
-      }
-      
-      return { isValid: true, message: '' };
-    } catch {
-      return { isValid: false, message: '링크 URL을 확인할 수 없습니다' };
+    // URL이 http 또는 https로 시작하는지 확인
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      return { isValid: false, message: 'http:// 또는 https://로 시작해야 합니다' };
     }
+    
+    return { isValid: true, message: '' };
   };
 
   // URL 유효성 검사 실행
