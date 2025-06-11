@@ -100,15 +100,45 @@ export default function LinksPage() {
 
           {/* Content */}
           <div className="p-4 space-y-6">
-            {/* Thumbnail Section */}
+            {/* Thumbnail Section - Preview */}
             <div className="space-y-2">
               <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
-                  <p className="text-xs text-gray-500">
-                    자동으로 검색해주세요
-                  </p>
-                </div>
+                {title || url ? (
+                  <div className="text-center p-2 w-full">
+                    {selectedStyle === 'compact' && (
+                      <div className="text-xs">
+                        <div className="font-medium text-gray-700 truncate">{title || "제목"}</div>
+                        <div className="text-gray-500 truncate">{url || "URL"}</div>
+                      </div>
+                    )}
+                    {selectedStyle === 'card' && (
+                      <div className="bg-white rounded p-2 shadow-sm">
+                        <div className="w-8 h-8 bg-gray-300 rounded mx-auto mb-1"></div>
+                        <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
+                      </div>
+                    )}
+                    {selectedStyle === 'list' && (
+                      <div className="text-left w-full">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                          <div className="text-xs font-medium text-gray-700 truncate">{title || "제목"}</div>
+                        </div>
+                      </div>
+                    )}
+                    {selectedStyle === 'minimal' && (
+                      <div className="text-xs font-medium text-gray-700 underline truncate">
+                        {title || "제목"}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
+                    <p className="text-xs text-gray-500">
+                      자동으로 검색해주세요
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -286,10 +316,65 @@ export default function LinksPage() {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-[#8B4513]">빠른 추적 URL</h3>
                 </div>
-                <div className="text-center py-6">
-                  <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
-                  <div className="text-xs text-gray-400 mb-4">URL을 추가하여 방문 추적을 시작하세요</div>
-                </div>
+                
+                {/* Display Links with Their Styles */}
+                {linksData && linksData.length > 0 ? (
+                  <div className="space-y-3">
+                    {linksData.map((link: any) => (
+                      <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
+                        {/* Compact Style */}
+                        {link.style === 'compact' && (
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-gray-900 truncate">{link.title}</div>
+                              <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
+                            </div>
+                            <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                          </div>
+                        )}
+                        
+                        {/* Card Style */}
+                        {link.style === 'card' && (
+                          <div className="text-center">
+                            <div className="w-12 h-12 bg-[#F5F3F0] rounded-lg flex items-center justify-center mx-auto mb-2">
+                              <ExternalLink className="w-6 h-6 text-[#A0825C]" />
+                            </div>
+                            <div className="text-sm font-medium text-gray-900 mb-1">{link.title}</div>
+                            <div className="text-xs text-gray-500 mb-2 truncate">{link.originalUrl}</div>
+                            <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                          </div>
+                        )}
+                        
+                        {/* List Style */}
+                        {link.style === 'list' && (
+                          <div className="flex items-center gap-3">
+                            <div className="w-2 h-2 bg-[#A0825C] rounded-full"></div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-medium text-gray-900 truncate">{link.title}</div>
+                              <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
+                            </div>
+                            <div className="text-xs text-[#A0825C] font-medium">0</div>
+                          </div>
+                        )}
+                        
+                        {/* Minimal Style */}
+                        {link.style === 'minimal' && (
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-[#A0825C] underline cursor-pointer hover:text-[#8B4513]">
+                              {link.title}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">방문: 0</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-6">
+                    <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
+                    <div className="text-xs text-gray-400 mb-4">URL을 추가하여 방문 추적을 시작하세요</div>
+                  </div>
+                )}
                 
                 {/* URL 추가하기 Button or Confirmation */}
                 {!showConfirmDialog ? (

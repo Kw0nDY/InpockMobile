@@ -30,6 +30,7 @@ export const links = pgTable("links", {
   title: text("title").notNull(),
   originalUrl: text("original_url").notNull(),
   shortCode: text("short_code").notNull().unique(),
+  style: text("style").default("compact"),
   clicks: integer("clicks").default(0),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
