@@ -284,10 +284,6 @@ export default function LinksPage() {
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-[#8B4513]">빠른 추적 URL</h3>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-xs text-green-600 font-medium">실시간</span>
-                  </div>
                 </div>
                 <div className="text-center py-6">
                   <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
