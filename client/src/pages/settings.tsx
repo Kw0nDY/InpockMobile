@@ -435,7 +435,6 @@ export default function SettingsPage() {
         <Card className="bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-gray-800">단축 URL 설정</CardTitle>
-            <p className="text-sm text-gray-600 mt-1">자신만의 개성 있는 URL을 만들어보세요</p>
           </CardHeader>
           <CardContent className="space-y-4">
             <RadioGroup
@@ -443,89 +442,55 @@ export default function SettingsPage() {
               onValueChange={(value) => updateProfileData('shortUrlType', value)}
               className="space-y-3"
             >
-              <div className={`flex items-center space-x-3 p-3 border rounded-lg transition-all ${
-                profileData.shortUrlType === 'default' 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}>
+              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                 <RadioGroupItem value="default" id="default" />
                 <Label htmlFor="default" className="flex-1 cursor-pointer">
                   <div>
-                    <p className="font-medium text-gray-800">기본 URL</p>
+                    <p className="font-medium text-gray-800">기본값</p>
                     <p className="text-sm text-gray-600">amusefit.co.kr/users/{user?.username || 'default'}</p>
                   </div>
                 </Label>
               </div>
 
-              <div className={`flex items-center space-x-3 p-3 border rounded-lg transition-all ${
-                profileData.shortUrlType === 'custom' 
-                  ? 'border-primary bg-primary/5' 
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}>
+              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
                 <RadioGroupItem value="custom" id="custom" />
                 <Label htmlFor="custom" className="flex-1 cursor-pointer">
                   <div>
-                    <p className="font-medium text-gray-800">나만의 URL</p>
-                    <p className="text-sm text-gray-500 mb-2">원하는 이름으로 개성 있는 URL을 만들어보세요</p>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">amusefit.co.kr/users/</span>
-                      <Input
-                        value={profileData.customUrl}
-                        onChange={(e) => updateProfileData('customUrl', e.target.value)}
-                        placeholder="예: myname, fitguru, healthylife"
-                        className="flex-1 h-10 text-sm border-gray-200 focus:border-primary"
-                        disabled={profileData.shortUrlType !== 'custom'}
-                      />
-                    </div>
-                    {profileData.shortUrlType === 'custom' && (
-                      <div className="mt-2">
-                        <p className="text-xs text-gray-500">• 영문, 숫자, 하이픈(-), 언더스코어(_)만 사용 가능</p>
-                        <p className="text-xs text-gray-500">• 3-20자 이내로 입력해주세요</p>
+                    <p className="font-medium text-gray-800">커스텀</p>
+                    <div className="mt-2">
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-600">amusefit.co.kr/users/</span>
+                        <Input
+                          value={profileData.customUrl}
+                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
+                          placeholder="yourname"
+                          className="flex-1 h-8 text-sm border-gray-200 focus:border-primary"
+                          disabled={profileData.shortUrlType !== 'custom'}
+                        />
                       </div>
-                    )}
+                    </div>
                   </div>
                 </Label>
               </div>
             </RadioGroup>
 
             {/* URL Preview & Copy */}
-            <div className="p-4 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border">
+            <div className="p-3 bg-gray-50 rounded-lg">
               <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-700 mb-1">최종 URL 미리보기</p>
-                  <div className="flex items-center space-x-2">
-                    <p className="font-mono text-sm text-primary bg-white px-3 py-1 rounded border">{shortUrl}</p>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleCopyUrl}
-                      className="text-gray-600 hover:text-primary border-gray-300"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-1" />
-                          복사됨
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-1" />
-                          복사
-                        </>
-                      )}
-                    </Button>
-                  </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-700">미리보기</p>
+                  <p className="font-mono text-sm text-primary">{shortUrl}</p>
                 </div>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleCopyUrl}
+                  className="text-gray-600 hover:text-primary"
+                >
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
               </div>
             </div>
-
-            {profileData.shortUrlType === 'custom' && profileData.customUrl && (
-              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800">
-                  <span className="font-medium">좋은 선택입니다!</span> 
-                  "{profileData.customUrl}"로 개성 있는 프로필 URL이 생성됩니다.
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
 
