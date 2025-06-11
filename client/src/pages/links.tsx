@@ -407,19 +407,19 @@ export default function LinksPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {visitStats?.totalVisits || 0}
+                    {(visitStats as any)?.totalVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">총방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {visitStats?.dailyVisits || 0}
+                    {(visitStats as any)?.dailyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">일방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {visitStats?.monthlyVisits || 0}
+                    {(visitStats as any)?.monthlyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">월방문자</div>
                 </div>
@@ -487,8 +487,8 @@ export default function LinksPage() {
                                 </Button>
                               </div>
                               <div className="text-xs text-gray-500 mt-1 flex gap-3">
-                                <span>내 방문: {visitStats?.ownerVisits || 0}</span>
-                                <span>외부 방문: {visitStats?.externalVisits || 0}</span>
+                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
+                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
                               </div>
                             </div>
                             <Button
