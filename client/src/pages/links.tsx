@@ -244,8 +244,8 @@ export default function LinksPage() {
 
         {/* Content */}
         <div className="p-4 space-y-4">
-          {/* Real-time Visit Tracking */}
-          <Card className="border border-gray-200 bg-white">
+          {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
+          <Card className="bg-[#F5F3F0] border-none shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-medium text-[#8B4513] flex items-center gap-2">
@@ -258,31 +258,31 @@ export default function LinksPage() {
                 </div>
               </div>
 
-              {/* Visit Stats - 두 번째 사진 스타일 */}
-              <div className="grid grid-cols-3 gap-6 mb-6">
+              {/* Visit Stats - 홈화면과 동일한 스타일 */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    1
+                    0
                   </div>
-                  <div className="text-xs text-gray-500">총 링크수</div>
+                  <div className="text-xs text-gray-500">총방문</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
                     0
                   </div>
-                  <div className="text-xs text-gray-500">일 방문자</div>
+                  <div className="text-xs text-gray-500">순방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
                     0
                   </div>
-                  <div className="text-xs text-gray-500">월 방문자</div>
+                  <div className="text-xs text-gray-500">카운팅 URL</div>
                 </div>
               </div>
 
               {/* 빠른 추적 URL 섹션 */}
-              <div className="bg-[#F5F3F0] rounded-lg p-4">
-                <div className="flex items-center justify-between mb-3">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
                   <h3 className="text-sm font-medium text-[#8B4513]">빠른 추적 URL</h3>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
