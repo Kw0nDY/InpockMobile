@@ -564,7 +564,7 @@ export default function SettingsPage() {
                             value={profileData.customUrl}
                             onChange={(e) => updateProfileData('customUrl', e.target.value)}
                             placeholder="yourname"
-                            className="ml-1 border-0 bg-transparent text-sm focus:ring-0 p-0 text-gray-400 placeholder-gray-400 w-20"
+                            className="ml-1 border border-gray-200 bg-gray-50 text-sm focus:ring-0 px-2 py-1 rounded text-gray-600 placeholder-gray-400 w-24"
                             onClick={(e) => e.stopPropagation()}
                           />
                         ) : (
