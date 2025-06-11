@@ -580,7 +580,7 @@ export default function SettingsPage() {
                       value={profileData.linkUrl || ''}
                       onChange={(e) => updateProfileData('linkUrl', e.target.value)}
                       onBlur={(e) => handleUrlValidation('linkUrl', e.target.value)}
-                      placeholder="https://github.com/"
+                      placeholder="https://"
                       className={`border-gray-200 focus:border-primary bg-gray-50 ${
                         !urlValidation.linkUrl.isValid ? 'border-red-300 focus:border-red-500' : ''
                       }`}
