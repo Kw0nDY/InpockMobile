@@ -414,7 +414,7 @@ export default function DashboardPage() {
                                   onClick={async () => {
                                     try {
                                       const response = await fetch(`/api/settings/${user?.id}`, {
-                                        method: 'PUT',
+                                        method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({
                                           linkTitle: '',
@@ -426,7 +426,9 @@ export default function DashboardPage() {
                                       });
                                       
                                       if (response.ok) {
-                                        window.location.reload();
+                                        queryClient.invalidateQueries({
+                                          queryKey: [`/api/settings/${user?.id}`],
+                                        });
                                       }
                                     } catch (error) {
                                       console.error('삭제 오류:', error);
@@ -498,7 +500,9 @@ export default function DashboardPage() {
                                       });
                                       
                                       if (response.ok) {
-                                        window.location.reload();
+                                        queryClient.invalidateQueries({
+                                          queryKey: [`/api/settings/${user?.id}`],
+                                        });
                                       }
                                     } catch (error) {
                                       console.error('삭제 오류:', error);
@@ -570,7 +574,9 @@ export default function DashboardPage() {
                                       });
                                       
                                       if (response.ok) {
-                                        window.location.reload();
+                                        queryClient.invalidateQueries({
+                                          queryKey: [`/api/settings/${user?.id}`],
+                                        });
                                       }
                                     } catch (error) {
                                       console.error('삭제 오류:', error);
