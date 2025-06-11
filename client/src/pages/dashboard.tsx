@@ -374,8 +374,8 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
-                    {/* Only show card if there's actual content (name, link, or custom URL) */}
-                    {((userData as any)?.name || (settingsData as any)?.linkTitle || (settingsData as any)?.customUrl) && (
+                    {/* Show card only if linkTitle or customUrl exists - not just name */}
+                    {((settingsData as any)?.linkTitle || (settingsData as any)?.customUrl) && (
                       <div className="bg-white border rounded-lg p-4">
                         <div className="flex items-center space-x-3">
                           {/* Profile Avatar */}
@@ -520,8 +520,8 @@ export default function DashboardPage() {
                       </div>
                     )}
 
-                    {/* Empty state when no content */}
-                    {!(userData as any)?.name && !(settingsData as any)?.linkTitle && !(settingsData as any)?.customUrl && (
+                    {/* Empty state when no link content */}
+                    {!(settingsData as any)?.linkTitle && !(settingsData as any)?.customUrl && (
                       <div className="bg-gray-50 border rounded-lg p-6 text-center">
                         <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                         <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
