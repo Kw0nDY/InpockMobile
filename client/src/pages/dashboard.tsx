@@ -251,9 +251,9 @@ export default function DashboardPage() {
                     size="sm"
                     className="p-1 h-auto text-gray-500 hover:text-gray-700"
                     onClick={() => {
-                      const url = userSettings?.customUrl ? 
-                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
-                        `https://amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`;
+                      const url = (settingsData as any)?.customUrl ? 
+                        `https://amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
+                        `https://amusefit.co.kr/users/${(userData as any)?.username || 'user'}`;
                       navigator.clipboard.writeText(url);
                     }}
                   >
@@ -261,9 +261,9 @@ export default function DashboardPage() {
                   </Button>
                 </div>
                 <div className="text-sm text-gray-600 font-mono">
-                  {userSettings?.customUrl ? 
-                    `amusefit.co.kr/users/${userSettings.customUrl}` : 
-                    `amusefit.co.kr/users/${currentUser?.username || 'demo_user'}`
+                  {(settingsData as any)?.customUrl ? 
+                    `amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
+                    `amusefit.co.kr/users/${(userData as any)?.username || 'user'}`
                   }
                 </div>
               </div>
@@ -338,50 +338,44 @@ export default function DashboardPage() {
                 {currentContentType === 'links' && (
                   <div className="mb-4">
                     <div className="space-y-3">
-                      {/* Link Card 1 */}
-                      <div className="bg-white border rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium text-gray-900">대시보드</h4>
-                            <p className="text-xs text-gray-500 mt-1">사용자 대시보드 메인 페이지</p>
-                            <div className="text-xs text-blue-600 mt-1">/dashboard_usermetail</div>
+                      {/* Show actual links from database */}
+                      {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
+                        linksData.map((link: any) => (
+                          <div key={link.id} className="bg-white border rounded-lg p-3">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h4 className="text-sm font-medium text-gray-900">{link.title || '제목 없음'}</h4>
+                                <p className="text-xs text-gray-500 mt-1">{link.description || '설명 없음'}</p>
+                                <div className="text-xs text-blue-600 mt-1">{link.shortCode ? `/${link.shortCode}` : link.url}</div>
+                                {link.clicks > 0 && (
+                                  <div className="text-xs text-gray-400 mt-1">클릭 수: {link.clicks}</div>
+                                )}
+                              </div>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-2"
+                                onClick={() => window.open(link.url, '_blank')}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                            </div>
                           </div>
-                          <Button variant="ghost" size="sm" className="p-2">
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
+                        ))
+                      ) : (
+                        <div className="bg-gray-50 border rounded-lg p-6 text-center">
+                          <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                          <p className="text-sm text-gray-500 mb-2">아직 등록된 링크가 없습니다</p>
+                          <p className="text-xs text-gray-400">새 링크를 추가해보세요</p>
                         </div>
-                      </div>
-
-                      {/* Link Card 2 */}
-                      <div className="bg-white border rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium text-gray-900">마켓플레이스</h4>
-                            <p className="text-xs text-gray-500 mt-1">상품 카테고리별 상세 페이지</p>
-                            <div className="text-xs text-blue-600 mt-1">/marketplace_category-detail</div>
-                          </div>
-                          <Button variant="ghost" size="sm" className="p-2">
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
-
-                      {/* Link Card 3 */}
-                      <div className="bg-white border rounded-lg p-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium text-gray-900">링크 관리</h4>
-                            <p className="text-xs text-gray-500 mt-1">링크 상세 관리 페이지</p>
-                            <div className="text-xs text-blue-600 mt-1">/linksteel-detail</div>
-                          </div>
-                          <Button variant="ghost" size="sm" className="p-2">
-                            <ExternalLink className="w-4 h-4" />
-                          </Button>
-                        </div>
-                      </div>
+                      )}
 
                       {/* Add Link Button */}
-                      <Button variant="outline" className="w-full justify-center py-3 border-dashed">
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-center py-3 border-dashed"
+                        onClick={() => setLocation('/links')}
+                      >
                         <Plus className="w-4 h-4 mr-2" />
                         새 링크 추가
                       </Button>
