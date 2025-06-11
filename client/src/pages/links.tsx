@@ -396,25 +396,25 @@ export default function LinksPage() {
                 </div>
               </div>
 
-              {/* Visit Stats - 홈화면과 동일한 스타일 */}
+              {/* Visit Stats - 총방문자, 일방문자, 월방문자 */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
                     0
                   </div>
-                  <div className="text-xs text-gray-500">총방문</div>
+                  <div className="text-xs text-gray-500">총방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
                     0
                   </div>
-                  <div className="text-xs text-gray-500">순방문자</div>
+                  <div className="text-xs text-gray-500">일방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
                     0
                   </div>
-                  <div className="text-xs text-gray-500">카운팅 URL</div>
+                  <div className="text-xs text-gray-500">월방문자</div>
                 </div>
               </div>
 
