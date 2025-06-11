@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { Plus, Camera, Copy, Share2, Edit2, QrCode, Palette, TrendingUp, Sparkles, Target, Globe, BarChart3, ExternalLink } from "lucide-react";
+import { Plus, Copy, ExternalLink, Trash2, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import Header from "@/components/layout/header";
+import { queryClient } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 
 export default function LinksPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
 
@@ -22,8 +22,13 @@ export default function LinksPage() {
   });
 
   const createLinkMutation = useMutation({
-    mutationFn: async (data: { title: string; originalUrl: string; userId: number }) => {
-      const response = await apiRequest("POST", "/api/links", data);
+    mutationFn: async (data: { title: string; originalUrl: string; userId: number; shortCode: string }) => {
+      const response = await fetch('/api/links', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!response.ok) throw new Error('Failed to create link');
       return response.json();
     },
     onSuccess: () => {
@@ -44,19 +49,45 @@ export default function LinksPage() {
     },
   });
 
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: number) => {
+      const response = await fetch(`/api/links/${linkId}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete link');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+      toast({
+        title: "링크 삭제 완료",
+        description: "링크가 성공적으로 삭제되었습니다.",
+      });
+    }
+  });
+
+  const generateShortCode = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9가-힣]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '')
+      .substring(0, 20) + '-' + Math.random().toString(36).substring(2, 6);
+  };
+
   const handleCreateLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !url || !user?.id) return;
 
+    const shortCode = generateShortCode(title);
     createLinkMutation.mutate({
       title,
       originalUrl: url,
       userId: user.id,
+      shortCode
     });
   };
 
   const handleCopyLink = (shortCode: string) => {
-    const linkUrl = `localhost:5000/l/${shortCode}`;
+    const linkUrl = `amusefit.co.kr/link/${shortCode}`;
     navigator.clipboard.writeText(linkUrl);
     toast({
       title: "링크 복사됨",
@@ -64,255 +95,133 @@ export default function LinksPage() {
     });
   };
 
-  const handleShareLink = (shortCode: string) => {
-    const linkUrl = `localhost:5000/l/${shortCode}`;
-    if (navigator.share) {
-      navigator.share({
-        title: "INPOCK 링크 공유",
-        url: linkUrl,
-      });
-    } else {
-      handleCopyLink(shortCode);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <Header title="링크 관리" rightIcon={Plus} />
+      {/* Header */}
+      <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
+        <div className="flex items-center justify-between p-4">
+          <button
+            onClick={() => setLocation('/dashboard')}
+            className="p-2 hover:bg-gray-100 rounded-lg"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-600" />
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">링크</h1>
+          <div className="w-10" />
+        </div>
+      </div>
 
-      <div className="p-4">
-        {/* Link Creation Section */}
-        <Card className="bg-white shadow-sm mb-6">
-          <CardContent className="p-4">
-            <h3 className="font-medium mb-3 korean-text">새 링크 만들기</h3>
-            <form onSubmit={handleCreateLink} className="space-y-3">
-              <Input
-                type="text"
-                placeholder="링크 제목을 입력하세요"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg input-focus"
-              />
-              <Input
-                type="url"
-                placeholder="https://example.com"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg input-focus"
-              />
-              <div className="flex space-x-2">
-                <Button
-                  type="submit"
-                  disabled={createLinkMutation.isPending || !title || !url}
-                  className="flex-1 bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90"
-                >
-                  {createLinkMutation.isPending ? "생성 중..." : "링크 생성"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="px-4 py-3 border border-gray-200 rounded-lg"
-                >
-                  <Camera className="w-5 h-5 text-gray-600" />
-                </Button>
+      <div className="p-4 space-y-4">
+        {/* Add New Link Card */}
+        <Card className="bg-white shadow-sm">
+          <CardContent className="p-6">
+            <form onSubmit={handleCreateLink} className="space-y-4">
+              <div>
+                <Input
+                  type="text"
+                  placeholder="제목"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
+                />
               </div>
+              <div>
+                <Input
+                  type="url"
+                  placeholder="URL"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
+                />
+              </div>
+              {title && url && (
+                <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-xs text-blue-600 font-medium">생성될 단축 URL:</p>
+                  <p className="font-mono text-sm text-blue-800 break-all">
+                    amusefit.co.kr/link/{generateShortCode(title)}
+                  </p>
+                </div>
+              )}
+              <Button
+                type="submit"
+                disabled={createLinkMutation.isPending || !title || !url}
+                className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 disabled:bg-gray-300"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {createLinkMutation.isPending ? "생성 중..." : "링크 추가"}
+              </Button>
             </form>
           </CardContent>
         </Card>
 
-        {/* Link Blocks Section */}
-        <div className="mb-6">
-          <h3 className="font-medium mb-4 korean-text text-lg">링크 도구</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Brand Kit Block */}
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-xl flex items-center justify-center mr-3">
-                      <Palette className="w-6 h-6 text-purple-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-800 korean-text">브랜드 키트 만들기</h4>
-                      <Badge variant="secondary" className="mt-1 text-xs bg-purple-100 text-purple-700">
-                        NEW
-                      </Badge>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
+        {/* Links List */}
+        <div className="space-y-3">
+          {isLoading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-24 bg-white rounded-lg border"></div>
                 </div>
-                <p className="text-sm text-gray-600 korean-text mb-4">
-                  나만의 브랜드 리소스를 직접 제작하고 활용하세요.
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-lg"
-                  onClick={() => window.open('#', '_blank')}
-                >
-                  시작하기
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* SNS Links Block */}
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center mr-3">
-                      <Share2 className="w-6 h-6 text-blue-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-800 korean-text">SNS 링크 연결하기</h4>
-                      <Badge variant="secondary" className="mt-1 text-xs bg-orange-100 text-orange-700">
-                        인기
-                      </Badge>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                </div>
-                <p className="text-sm text-gray-600 korean-text mb-4">
-                  나를 표현하는 SNS를 연결해보세요.
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg"
-                  onClick={() => window.open('#', '_blank')}
-                >
-                  연결하기
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Analytics Block */}
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-200 rounded-xl flex items-center justify-center mr-3">
-                      <TrendingUp className="w-6 h-6 text-green-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-800 korean-text">링크 통계 보기</h4>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                </div>
-                <p className="text-sm text-gray-600 korean-text mb-4">
-                  누가 얼마나 클릭했는지 통계를 확인할 수 있어요.
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full bg-green-50 text-green-700 hover:bg-green-100 rounded-lg"
-                  onClick={() => window.open('/analytics', '_self')}
-                >
-                  통계 보기
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Premium Features Block */}
-            <Card className="bg-white shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer group border-2 border-gradient-to-r from-yellow-200 to-orange-200">
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 bg-gradient-to-br from-yellow-100 to-orange-200 rounded-xl flex items-center justify-center mr-3">
-                      <Sparkles className="w-6 h-6 text-orange-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-gray-800 korean-text">프리미엄 기능</h4>
-                      <Badge variant="default" className="mt-1 text-xs bg-gradient-to-r from-yellow-400 to-orange-400 text-white">
-                        HOT
-                      </Badge>
-                    </div>
-                  </div>
-                  <ExternalLink className="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" />
-                </div>
-                <p className="text-sm text-gray-600 korean-text mb-4">
-                  고급 분석, 커스텀 도메인, 무제한 링크를 사용하세요.
-                </p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="w-full bg-gradient-to-r from-yellow-50 to-orange-50 text-orange-700 hover:from-yellow-100 hover:to-orange-100 rounded-lg"
-                  onClick={() => window.open('#', '_blank')}
-                >
-                  업그레이드
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* QR Code Display */}
-        <Card className="bg-white shadow-sm mb-6">
-          <CardContent className="p-4 text-center">
-            <h3 className="font-medium mb-3 korean-text">QR 코드</h3>
-            <div className="w-32 h-32 bg-gray-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
-              <QrCode className="w-20 h-20 text-gray-400" />
+              ))}
             </div>
-            <p className="text-sm text-gray-600 mb-3 korean-text">스캔하여 공유하세요</p>
-            <Button
-              variant="secondary"
-              className="bg-gray-50 text-dark px-4 py-2 rounded-lg text-sm hover:bg-gray-100"
-            >
-              다운로드
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* My Links */}
-        <Card className="bg-white shadow-sm">
-          <CardContent className="p-4">
-            <h3 className="font-medium mb-3 korean-text">내 링크</h3>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="h-20 bg-gray-100 rounded-lg"></div>
-                  </div>
-                ))}
-              </div>
-            ) : links && links.length > 0 ? (
-              <div className="space-y-3">
-                {links.map((link: any) => (
-                  <div key={link.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+          ) : links && Array.isArray(links) && links.length > 0 ? (
+            links.map((link: any) => (
+              <Card key={link.id} className="bg-white shadow-sm">
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <p className="font-medium text-sm korean-text">{link.title}</p>
-                      <p className="text-xs text-gray-500">localhost:5000/l/{link.shortCode}</p>
-                      <p className="text-xs text-primary">클릭 수: {link.clicks}</p>
+                      <h3 className="font-medium text-gray-900 mb-1">{link.title}</h3>
+                      <p className="text-sm text-gray-600 mb-2 break-all">{link.originalUrl}</p>
+                      <div className="p-2 bg-gray-50 rounded border">
+                        <p className="font-mono text-sm text-primary break-all">
+                          amusefit.co.kr/link/{link.shortCode}
+                        </p>
+                      </div>
+                      {link.clicks > 0 && (
+                        <p className="text-xs text-gray-500 mt-2">클릭 수: {link.clicks}</p>
+                      )}
                     </div>
-                    <div className="flex space-x-2">
-                      <button
+                    <div className="flex items-center space-x-2 ml-4">
+                      <Button
+                        size="sm"
+                        variant="ghost"
                         onClick={() => handleCopyLink(link.shortCode)}
-                        className="p-2 hover:bg-gray-200 rounded"
+                        className="p-2 hover:bg-gray-100"
                       >
                         <Copy className="w-4 h-4 text-gray-600" />
-                      </button>
-                      <button
-                        onClick={() => handleShareLink(link.shortCode)}
-                        className="p-2 hover:bg-gray-200 rounded"
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => window.open(link.originalUrl, '_blank')}
+                        className="p-2 hover:bg-gray-100"
                       >
-                        <Share2 className="w-4 h-4 text-gray-600" />
-                      </button>
-                      <button className="p-2 hover:bg-gray-200 rounded">
-                        <Edit2 className="w-4 h-4 text-gray-600" />
-                      </button>
+                        <ExternalLink className="w-4 h-4 text-gray-600" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => deleteLinkMutation.mutate(link.id)}
+                        disabled={deleteLinkMutation.isPending}
+                        className="p-2 hover:bg-red-50 text-red-500"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
                   </div>
-                ))}
+                </CardContent>
+              </Card>
+            ))
+          ) : (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Plus className="w-8 h-8 text-gray-400" />
               </div>
-            ) : (
-              <div className="text-center py-8">
-                <p className="text-gray-500 korean-text">아직 생성된 링크가 없습니다</p>
-                <p className="text-sm text-gray-400 korean-text">위에서 새 링크를 만들어보세요</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              <p className="text-gray-500 mb-2">아직 생성된 링크가 없습니다</p>
+              <p className="text-sm text-gray-400">위에서 새 링크를 추가해보세요</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
