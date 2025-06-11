@@ -154,7 +154,7 @@ export default function SettingsPage() {
         ...prev,
         bio: (userSettings as any).bio || '',
         customUrl: (userSettings as any).customUrl || '',
-        shortUrlType: (userSettings as any).customUrl ? 'custom' : 'default',
+        shortUrlType: (userSettings as any).shortUrlType || 'default',
         contentType: (userSettings as any).contentType || 'links',
         linkTitle: (userSettings as any).linkTitle || '',
         linkDescription: (userSettings as any).linkDescription || '',
