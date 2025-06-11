@@ -248,34 +248,37 @@ export default function LinksPage() {
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('list')}
+                  onClick={() => setSelectedStyle('card')}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'list'
+                    selectedStyle === 'card'
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-1 left-2"></div>
-                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-2.5 left-2"></div>
-                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-4 left-2"></div>
+                  <div className="w-full h-6 bg-gray-400 rounded mx-auto mb-1 relative">
+                    <div className="absolute bottom-0.5 right-0.5 w-2 h-2 bg-white rounded-full flex items-center justify-center">
+                      <div className="w-1 h-1 border border-gray-400 rounded-full"></div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">리스트</div>
+                  <div className="text-xs text-gray-600">카드</div>
                 </button>
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('minimal')}
+                  onClick={() => setSelectedStyle('background')}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'minimal'
+                    selectedStyle === 'background'
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                    <div className="w-2 h-1 bg-gray-400 rounded absolute top-2 left-3"></div>
+                  <div className="w-full h-6 rounded mx-auto mb-1" style={{background: 'repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 3px, #d0d0d0 3px, #d0d0d0 6px)'}}>
+                    <div className="p-0.5">
+                      <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
+                      <div className="w-2/3 h-0.5 bg-gray-400 rounded"></div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">미니멀</div>
+                  <div className="text-xs text-gray-600">배경</div>
                 </button>
               </div>
             </div>
