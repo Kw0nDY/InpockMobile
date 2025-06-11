@@ -75,149 +75,152 @@ export default function LinksPage() {
   };
 
   return (
-    <div className="fixed inset-0 bg-white z-50 overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white">
-        <div className="w-6"></div>
-        <h1 className="text-lg font-semibold text-gray-900">링크 블록</h1>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => window.history.back()}
-          className="p-1 hover:bg-gray-100 rounded"
-        >
-          <X className="w-5 h-5 text-gray-500" />
-        </Button>
-      </div>
-
-      {/* Content */}
-      <div className="p-4 space-y-6 pb-20">
-        {/* Thumbnail Section */}
-        <div className="space-y-2">
-          <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-            <div className="text-center">
-              <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
-              <p className="text-xs text-gray-500">
-                자동으로 검색해주세요
-              </p>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Content Section */}
+      <div className="max-w-md mx-auto bg-white min-h-screen">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+          <div className="w-6"></div>
+          <h1 className="text-lg font-semibold text-gray-900">링크 블록</h1>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => window.history.back()}
+            className="p-1 hover:bg-gray-100 rounded"
+          >
+            <X className="w-5 h-5 text-gray-500" />
+          </Button>
         </div>
 
-        {/* Style Selection */}
-        <div className="space-y-3">
-          <label className="text-sm font-medium text-gray-700">스타일 *</label>
-          <div className="grid grid-cols-4 gap-2">
-            <button
-              type="button"
-              onClick={() => setSelectedStyle('compact')}
-              className={`p-3 rounded-lg border-2 text-center transition-all ${
-                selectedStyle === 'compact'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1"></div>
-              <div className="text-xs text-gray-600">컴팩트</div>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setSelectedStyle('card')}
-              className={`p-3 rounded-lg border-2 text-center transition-all ${
-                selectedStyle === 'card'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1 left-1"></div>
-              </div>
-              <div className="text-xs text-gray-600">카드</div>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setSelectedStyle('list')}
-              className={`p-3 rounded-lg border-2 text-center transition-all ${
-                selectedStyle === 'list'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-1 left-2"></div>
-                <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-2.5 left-2"></div>
-                <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-4 left-2"></div>
-              </div>
-              <div className="text-xs text-gray-600">리스트</div>
-            </button>
-            
-            <button
-              type="button"
-              onClick={() => setSelectedStyle('minimal')}
-              className={`p-3 rounded-lg border-2 text-center transition-all ${
-                selectedStyle === 'minimal'
-                  ? 'border-blue-500 bg-blue-50'
-                  : 'border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                <div className="w-2 h-1 bg-gray-400 rounded absolute top-2 left-3"></div>
-              </div>
-              <div className="text-xs text-gray-600">미니멀</div>
-            </button>
-          </div>
-        </div>
-
-        {/* Form */}
-        <form onSubmit={handleCreateLink} className="space-y-4">
+        {/* Content */}
+        <div className="p-4 space-y-6">
+          {/* Thumbnail Section */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">연결될 주소 *</label>
-            <Input
-              type="url"
-              placeholder=""
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">타이틀 *</label>
-            <Input
-              type="text"
-              placeholder=""
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-              required
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">이미지 *</label>
-            <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+            <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
               <div className="text-center">
-                <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                 <p className="text-xs text-gray-500">
-                  이미지를 직접 첨부하거나
-                  <br />
-                  자동을 검색해서 첨부하세요
+                  자동으로 검색해주세요
                 </p>
               </div>
             </div>
           </div>
 
-          <Button
-            type="submit"
-            disabled={createLinkMutation.isPending || !title || !url}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
-          >
-            {createLinkMutation.isPending ? "생성 중..." : "추가 완료"}
-          </Button>
-        </form>
+          {/* Style Selection */}
+          <div className="space-y-3">
+            <label className="text-sm font-medium text-gray-700">스타일 *</label>
+            <div className="grid grid-cols-4 gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedStyle('compact')}
+                className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  selectedStyle === 'compact'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1"></div>
+                <div className="text-xs text-gray-600">컴팩트</div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setSelectedStyle('card')}
+                className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  selectedStyle === 'card'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1 left-1"></div>
+                </div>
+                <div className="text-xs text-gray-600">카드</div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setSelectedStyle('list')}
+                className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  selectedStyle === 'list'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-1 left-2"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-2.5 left-2"></div>
+                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-4 left-2"></div>
+                </div>
+                <div className="text-xs text-gray-600">리스트</div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setSelectedStyle('minimal')}
+                className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  selectedStyle === 'minimal'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                  <div className="w-2 h-1 bg-gray-400 rounded absolute top-2 left-3"></div>
+                </div>
+                <div className="text-xs text-gray-600">미니멀</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleCreateLink} className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">연결될 주소 *</label>
+              <Input
+                type="url"
+                placeholder=""
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">타이틀 *</label>
+              <Input
+                type="text"
+                placeholder=""
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">이미지 *</label>
+              <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                <div className="text-center">
+                  <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                  <p className="text-xs text-gray-500">
+                    이미지를 직접 첨부하거나
+                    <br />
+                    자동을 검색해서 첨부하세요
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={createLinkMutation.isPending || !title || !url}
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
+            >
+              {createLinkMutation.isPending ? "생성 중..." : "추가 완료"}
+            </Button>
+          </form>
+        </div>
       </div>
     </div>
   );
