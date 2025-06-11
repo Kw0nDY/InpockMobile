@@ -236,6 +236,9 @@ export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSc
 export type MediaUpload = typeof mediaUploads.$inferSelect;
 export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
 
+export type LinkVisit = typeof linkVisits.$inferSelect;
+export type InsertLinkVisit = z.infer<typeof insertLinkVisitSchema>;
+
 export type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
 export const LINK_STYLES = ['thumbnail', 'simple', 'card', 'background'] as const;
 

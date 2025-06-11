@@ -31,6 +31,17 @@ export interface IStorage {
   updateLink(id: number, updates: Partial<Link>): Promise<Link | undefined>;
   deleteLink(id: number): Promise<boolean>;
   incrementLinkClicks(id: number): Promise<void>;
+  
+  // Link Visits
+  recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit>;
+  getLinkVisits(linkId: number): Promise<LinkVisit[]>;
+  getLinkVisitStats(linkId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }>;
 
   // Deals
   getDeals(): Promise<Deal[]>;
@@ -658,6 +669,37 @@ export class MemStorage implements IStorage {
       this.users.set(userId, updatedUser);
     }
   }
+
+  // Link Visit Tracking - Stub implementations for MemStorage
+  async recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit> {
+    const id = 1; // Simple stub
+    const linkVisit: LinkVisit = {
+      ...visit,
+      id,
+      visitedAt: new Date(),
+    };
+    return linkVisit;
+  }
+
+  async getLinkVisits(linkId: number): Promise<LinkVisit[]> {
+    return []; // Simple stub - returns empty array
+  }
+
+  async getLinkVisitStats(linkId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    return {
+      totalVisits: 0,
+      dailyVisits: 0,
+      monthlyVisits: 0,
+      ownerVisits: 0,
+      externalVisits: 0
+    };
+  }
 }
 
 import { db } from "./db";
@@ -1008,6 +1050,59 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ visitCount: sql`${users.visitCount} + 1` })
       .where(eq(users.id, userId));
+  }
+
+  // Link Visit Tracking
+  async recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit> {
+    const [linkVisit] = await db
+      .insert(linkVisits)
+      .values(visit)
+      .returning();
+    return linkVisit;
+  }
+
+  async getLinkVisits(linkId: number): Promise<LinkVisit[]> {
+    return await db
+      .select()
+      .from(linkVisits)
+      .where(eq(linkVisits.linkId, linkId))
+      .orderBy(desc(linkVisits.visitedAt));
+  }
+
+  async getLinkVisitStats(linkId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    // Get all visits for this link
+    const allVisits = await db
+      .select()
+      .from(linkVisits)
+      .where(eq(linkVisits.linkId, linkId));
+
+    const totalVisits = allVisits.length;
+    const dailyVisits = allVisits.filter(visit => 
+      visit.visitedAt && visit.visitedAt >= todayStart
+    ).length;
+    const monthlyVisits = allVisits.filter(visit => 
+      visit.visitedAt && visit.visitedAt >= monthStart
+    ).length;
+    const ownerVisits = allVisits.filter(visit => visit.isOwner).length;
+    const externalVisits = allVisits.filter(visit => !visit.isOwner).length;
+
+    return {
+      totalVisits,
+      dailyVisits,
+      monthlyVisits,
+      ownerVisits,
+      externalVisits
+    };
   }
 }
 
