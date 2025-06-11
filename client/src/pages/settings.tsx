@@ -557,16 +557,10 @@ export default function SettingsPage() {
                   <Label htmlFor="custom" className="flex-1 cursor-pointer">
                     <div>
                       <p className="font-medium text-gray-800">커스텀 프로필 URL</p>
-                      <div className="mt-2 flex items-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                        <span className="text-sm text-gray-600">amusefit.co.kr/users/</span>
-                        <Input
-                          value={profileData.customUrl}
-                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
-                          placeholder="yourname"
-                          className="flex-1 border-0 bg-transparent text-sm focus:ring-0 p-0 ml-1"
-                          disabled={profileData.shortUrlType !== 'custom'}
-                        />
-                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        amusefit.co.kr/users/{" "}
+                        <span className="text-gray-400">yourname</span>
+                      </p>
                     </div>
                   </Label>
                 </div>
