@@ -513,20 +513,20 @@ export default function SettingsPage() {
               </div>
 
               {/* Link URL Option */}
-              {profileData.linkTitle && profileData.linkUrl && (
-                <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                  <RadioGroupItem value="link" id="link" />
-                  <Label htmlFor="link" className="flex-1 cursor-pointer">
-                    <div>
-                      <p className="font-medium text-gray-800">링크 URL</p>
-                      <p className="text-sm text-gray-600">{profileData.linkTitle}</p>
-                      <p className="text-xs text-blue-600 mt-1">
-                        amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
-                      </p>
-                    </div>
-                  </Label>
-                </div>
-              )}
+              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
+                <RadioGroupItem value="link" id="link" />
+                <Label htmlFor="link" className="flex-1 cursor-pointer">
+                  <div>
+                    <p className="font-medium text-gray-800">링크 URL</p>
+                    <p className="text-sm text-gray-600">
+                      {profileData.linkTitle || '링크 제목을 입력하세요'}
+                    </p>
+                    <p className="text-xs text-blue-600 mt-1">
+                      amusefit.co.kr/link/{profileData.linkTitle ? profileData.linkTitle.toLowerCase().replace(/\s+/g, '-') : 'your-link'}
+                    </p>
+                  </div>
+                </Label>
+              </div>
             </RadioGroup>
 
             {/* URL Preview & Copy */}
