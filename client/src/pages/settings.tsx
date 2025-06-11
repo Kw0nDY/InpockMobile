@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut, Trash2 } from "lucide-react";
+import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut, Trash2, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,6 +31,13 @@ export default function SettingsPage() {
     linkTitle: '',
     linkDescription: '',
     linkUrl: ''
+  });
+
+  const [showAddUrl, setShowAddUrl] = useState(false);
+  const [newUrl, setNewUrl] = useState({
+    title: '',
+    url: '',
+    description: ''
   });
 
   const [copied, setCopied] = useState(false);
@@ -134,6 +141,39 @@ export default function SettingsPage() {
         variant: "destructive",
       });
       setIsUploadingProfile(false);
+    },
+  });
+
+  // Fetch links
+  const { data: links } = useQuery({
+    queryKey: [`/api/links/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
+  // Create link mutation
+  const createLinkMutation = useMutation({
+    mutationFn: async (linkData: any) => {
+      const response = await apiRequest("POST", "/api/links", linkData);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`/api/links/${user?.id}`],
+      });
+      setNewUrl({ title: '', url: '', description: '' });
+      setShowAddUrl(false);
+      toast({
+        title: "링크 추가 완료",
+        description: "새로운 링크가 성공적으로 추가되었습니다.",
+      });
+    },
+    onError: (error: any) => {
+      console.error('Link creation error:', error);
+      toast({
+        title: "링크 추가 실패",
+        description: "링크 추가 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
     },
   });
 
@@ -296,6 +336,43 @@ export default function SettingsPage() {
 
   const updateProfileData = (key: string, value: any) => {
     setProfileData(prev => ({ ...prev, [key]: value }));
+  };
+
+  const handleAddUrl = () => {
+    if (!newUrl.title || !newUrl.url) {
+      toast({
+        title: "입력 오류",
+        description: "제목과 URL을 모두 입력해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // URL 형식 검증
+    try {
+      new URL(newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`);
+    } catch {
+      toast({
+        title: "URL 형식 오류",
+        description: "올바른 URL 형식을 입력해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const linkData = {
+      userId: user?.id,
+      title: newUrl.title,
+      description: newUrl.description,
+      url: newUrl.url.startsWith('http') ? newUrl.url : `https://${newUrl.url}`,
+    };
+
+    createLinkMutation.mutate(linkData);
+  };
+
+  const handleCancelAddUrl = () => {
+    setNewUrl({ title: '', url: '', description: '' });
+    setShowAddUrl(false);
   };
 
   const handleMediaUpload = (fileUrl: string, mediaType: 'image' | 'video') => {
@@ -491,6 +568,119 @@ export default function SettingsPage() {
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* URL 관리 섹션 */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold text-gray-800">URL 관리</CardTitle>
+              <Button
+                size="sm"
+                onClick={() => setShowAddUrl(true)}
+                className="bg-primary hover:bg-primary/90 text-white"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                URL 추가
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* 기존 링크 목록 */}
+            {links && links.length > 0 ? (
+              <div className="space-y-3 mb-4">
+                {links.map((link: any) => (
+                  <div key={link.id} className="p-3 bg-gray-50 rounded-lg border">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h4 className="font-medium text-gray-800">{link.title}</h4>
+                        <p className="text-sm text-gray-600 mt-1">{link.description}</p>
+                        <p className="text-xs text-primary mt-1 font-mono">{link.url}</p>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            navigator.clipboard.writeText(link.url);
+                            toast({
+                              title: "URL 복사됨",
+                              description: "링크가 클립보드에 복사되었습니다.",
+                            });
+                          }}
+                          className="text-gray-500 hover:text-primary"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <ExternalLink className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-sm">등록된 URL이 없습니다.</p>
+                <p className="text-xs">첫 번째 URL을 추가해보세요.</p>
+              </div>
+            )}
+
+            {/* URL 추가 폼 */}
+            {showAddUrl && (
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-medium text-gray-800 mb-3">새 URL 추가</h4>
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="url-title" className="text-sm font-medium text-gray-700">제목</Label>
+                    <Input
+                      id="url-title"
+                      value={newUrl.title}
+                      onChange={(e) => setNewUrl(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="링크 제목을 입력하세요"
+                      className="border-gray-200 focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="url-link" className="text-sm font-medium text-gray-700">URL</Label>
+                    <Input
+                      id="url-link"
+                      value={newUrl.url}
+                      onChange={(e) => setNewUrl(prev => ({ ...prev, url: e.target.value }))}
+                      placeholder="https://example.com"
+                      className="border-gray-200 focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="url-description" className="text-sm font-medium text-gray-700">설명 (선택사항)</Label>
+                    <Textarea
+                      id="url-description"
+                      value={newUrl.description}
+                      onChange={(e) => setNewUrl(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="링크에 대한 간단한 설명"
+                      className="border-gray-200 focus:border-primary resize-none"
+                      rows={2}
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={handleAddUrl}
+                      disabled={createLinkMutation.isPending}
+                      className="bg-primary hover:bg-primary/90 text-white flex-1"
+                    >
+                      {createLinkMutation.isPending ? "추가 중..." : "URL 추가"}
+                    </Button>
+                    <Button
+                      onClick={handleCancelAddUrl}
+                      variant="outline"
+                      className="px-6"
+                    >
+                      취소
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
