@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, Camera } from "lucide-react";
+import { Plus, X, Eye, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +16,7 @@ export default function LinksPage() {
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<LinkStyle>('compact');
+  const [showAddForm, setShowAddForm] = useState(false);
 
   const { data: links, isLoading } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
@@ -37,6 +38,7 @@ export default function LinksPage() {
       setTitle("");
       setUrl("");
       setSelectedStyle('compact');
+      setShowAddForm(false);
       toast({
         title: "링크 생성 완료",
         description: "새로운 링크가 성공적으로 생성되었습니다.",
@@ -74,152 +76,268 @@ export default function LinksPage() {
     });
   };
 
-  return (
-    <div className="min-h-screen bg-gray-50 pb-20">
-      {/* Content Section */}
-      <div className="max-w-md mx-auto bg-white min-h-screen">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <div className="w-6"></div>
-          <h1 className="text-lg font-semibold text-gray-900">링크 블록</h1>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => window.history.back()}
-            className="p-1 hover:bg-gray-100 rounded"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </Button>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 space-y-6">
-          {/* Thumbnail Section */}
-          <div className="space-y-2">
-            <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
-              <div className="text-center">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
-                <p className="text-xs text-gray-500">
-                  자동으로 검색해주세요
-                </p>
-              </div>
-            </div>
+  // URL 추가 폼 화면
+  if (showAddForm) {
+    return (
+      <div className="min-h-screen bg-[#F5F3F0] pb-20">
+        <div className="max-w-md mx-auto bg-white min-h-screen">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowAddForm(false)}
+              className="p-1 hover:bg-gray-100 rounded"
+            >
+              <X className="w-5 h-5 text-gray-500" />
+            </Button>
+            <h1 className="text-lg font-semibold text-[#8B4513]">URL 추가하기</h1>
+            <div className="w-6"></div>
           </div>
 
-          {/* Style Selection */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-gray-700">스타일 *</label>
-            <div className="grid grid-cols-4 gap-2">
-              <button
-                type="button"
-                onClick={() => setSelectedStyle('compact')}
-                className={`p-3 rounded-lg border-2 text-center transition-all ${
-                  selectedStyle === 'compact'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1"></div>
-                <div className="text-xs text-gray-600">컴팩트</div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setSelectedStyle('card')}
-                className={`p-3 rounded-lg border-2 text-center transition-all ${
-                  selectedStyle === 'card'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                  <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1 left-1"></div>
-                </div>
-                <div className="text-xs text-gray-600">카드</div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setSelectedStyle('list')}
-                className={`p-3 rounded-lg border-2 text-center transition-all ${
-                  selectedStyle === 'list'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-1 left-2"></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-2.5 left-2"></div>
-                  <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-4 left-2"></div>
-                </div>
-                <div className="text-xs text-gray-600">리스트</div>
-              </button>
-              
-              <button
-                type="button"
-                onClick={() => setSelectedStyle('minimal')}
-                className={`p-3 rounded-lg border-2 text-center transition-all ${
-                  selectedStyle === 'minimal'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
-                  <div className="w-2 h-1 bg-gray-400 rounded absolute top-2 left-3"></div>
-                </div>
-                <div className="text-xs text-gray-600">미니멀</div>
-              </button>
-            </div>
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleCreateLink} className="space-y-4">
+          {/* Content */}
+          <div className="p-4 space-y-6">
+            {/* Thumbnail Section */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">연결될 주소 *</label>
-              <Input
-                type="url"
-                placeholder=""
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">타이틀 *</label>
-              <Input
-                type="text"
-                placeholder=""
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">이미지 *</label>
-              <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+              <div className="w-full h-32 bg-gray-100 rounded-lg flex flex-col items-center justify-center border-2 border-dashed border-gray-300">
                 <div className="text-center">
-                  <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                  <div className="w-12 h-12 bg-gray-200 rounded-lg mx-auto mb-2"></div>
                   <p className="text-xs text-gray-500">
-                    이미지를 직접 첨부하거나
-                    <br />
-                    자동을 검색해서 첨부하세요
+                    자동으로 검색해주세요
                   </p>
                 </div>
               </div>
             </div>
 
-            <Button
-              type="submit"
-              disabled={createLinkMutation.isPending || !title || !url}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
-            >
-              {createLinkMutation.isPending ? "생성 중..." : "추가 완료"}
-            </Button>
-          </form>
+            {/* Style Selection */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-[#8B4513]">스타일 *</label>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedStyle('compact')}
+                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    selectedStyle === 'compact'
+                      ? 'border-[#A0825C] bg-[#F5F3F0]'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1"></div>
+                  <div className="text-xs text-gray-600">컴팩트</div>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setSelectedStyle('card')}
+                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    selectedStyle === 'card'
+                      ? 'border-[#A0825C] bg-[#F5F3F0]'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full absolute top-1 left-1"></div>
+                  </div>
+                  <div className="text-xs text-gray-600">카드</div>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setSelectedStyle('list')}
+                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    selectedStyle === 'list'
+                      ? 'border-[#A0825C] bg-[#F5F3F0]'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-1 left-2"></div>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-2.5 left-2"></div>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full absolute top-4 left-2"></div>
+                  </div>
+                  <div className="text-xs text-gray-600">리스트</div>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => setSelectedStyle('minimal')}
+                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                    selectedStyle === 'minimal'
+                      ? 'border-[#A0825C] bg-[#F5F3F0]'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="w-8 h-6 bg-gray-300 rounded mx-auto mb-1 relative">
+                    <div className="w-2 h-1 bg-gray-400 rounded absolute top-2 left-3"></div>
+                  </div>
+                  <div className="text-xs text-gray-600">미니멀</div>
+                </button>
+              </div>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCreateLink} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#8B4513]">연결될 주소 *</label>
+                <Input
+                  type="url"
+                  placeholder=""
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C]"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#8B4513]">타이틀 *</label>
+                <Input
+                  type="text"
+                  placeholder=""
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C]"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-[#8B4513]">이미지 *</label>
+                <div className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                  <div className="text-center">
+                    <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
+                    <p className="text-xs text-gray-500">
+                      이미지를 직접 첨부하거나
+                      <br />
+                      자동을 검색해서 첨부하세요
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={createLinkMutation.isPending || !title || !url}
+                className="w-full bg-[#A0825C] hover:bg-[#8B4513] text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
+              >
+                {createLinkMutation.isPending ? "생성 중..." : "추가 완료"}
+              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // 메인 링크 페이지 - 실시간 방문 추적만 표시
+  return (
+    <div className="min-h-screen bg-[#F5F3F0] pb-20">
+      <div className="max-w-md mx-auto bg-white min-h-screen">
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+          <div className="w-6"></div>
+          <h1 className="text-lg font-semibold text-[#8B4513]">링크</h1>
+          <div className="w-6"></div>
+        </div>
+
+        {/* Content */}
+        <div className="p-4 space-y-4">
+          {/* Real-time Visit Tracking */}
+          <Card className="border-none shadow-sm bg-gradient-to-r from-[#F5F3F0] to-white">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-[#8B4513] flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5" />
+                  실시간 방문 추적
+                </h2>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">LIVE</span>
+                </div>
+              </div>
+
+              {/* Visit Stats */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#8B4513]">
+                    {links?.reduce((total: number, link: any) => total + (link.clicks || 0), 0) || 0}
+                  </div>
+                  <div className="text-xs text-gray-600">총 방문</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-[#A0825C]">
+                    {links?.length || 0}
+                  </div>
+                  <div className="text-xs text-gray-600">활성 링크</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-green-600">24</div>
+                  <div className="text-xs text-gray-600">오늘 방문</div>
+                </div>
+              </div>
+
+              {/* Recent Activity */}
+              <div className="space-y-3">
+                <h3 className="text-sm font-medium text-[#8B4513] flex items-center gap-2">
+                  <Eye className="w-4 h-4" />
+                  최근 활동
+                </h3>
+                {links && links.length > 0 ? (
+                  <div className="space-y-2">
+                    {links.slice(0, 3).map((link: any) => (
+                      <div key={link.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100">
+                        <div className="flex-1">
+                          <div className="text-sm font-medium text-[#8B4513] truncate">
+                            {link.title}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate">
+                            amusefit.co.kr/link/{link.shortCode}
+                          </div>
+                        </div>
+                        <div className="text-right ml-2">
+                          <div className="text-sm font-bold text-[#A0825C]">
+                            {link.clicks || 0}
+                          </div>
+                          <div className="text-xs text-gray-500">방문</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <div className="text-gray-400 mb-2">아직 생성된 링크가 없습니다</div>
+                    <div className="text-xs text-gray-500">첫 번째 링크를 만들어보세요!</div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Add URL Button */}
+          <Button
+            onClick={() => setShowAddForm(true)}
+            className="w-full bg-[#A0825C] hover:bg-[#8B4513] text-white py-4 rounded-lg font-medium flex items-center justify-center gap-2"
+          >
+            <Plus className="w-5 h-5" />
+            URL 추가하기
+          </Button>
+
+          {/* Quick Stats */}
+          {links && links.length > 0 && (
+            <Card className="border-none shadow-sm">
+              <CardContent className="p-4">
+                <h3 className="text-sm font-medium text-[#8B4513] mb-3">링크 요약</h3>
+                <div className="space-y-2">
+                  {links.map((link: any) => (
+                    <div key={link.id} className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 truncate flex-1">{link.title}</span>
+                      <span className="text-[#A0825C] font-medium ml-2">{link.clicks || 0}회</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </div>
     </div>
