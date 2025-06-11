@@ -337,9 +337,85 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
+                    {/* Profile Link Card Preview */}
+                    {(settingsData as any)?.customUrl && (userData as any)?.name ? (
+                      <div className="bg-white border rounded-lg p-4 mb-4">
+                        <div className="flex items-center space-x-3">
+                          {/* Profile Avatar */}
+                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                            {(userData as any)?.profileImage ? (
+                              <img 
+                                src={`/uploads/${(userData as any).profileImage}`} 
+                                alt="프로필" 
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                {(userData as any)?.name?.charAt(0) || 'U'}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Profile Info */}
+                          <div className="flex-1">
+                            <h3 className="text-sm font-semibold text-gray-900">
+                              {(userData as any)?.name || '사용자'}
+                            </h3>
+                            {(userData as any)?.bio && (
+                              <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                            )}
+                            <div className="text-xs text-blue-600 mt-1">
+                              amusefit.co.kr/users/{(settingsData as any).customUrl}
+                            </div>
+                          </div>
+                          
+                          {/* External Link Button */}
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="p-2"
+                            onClick={() => {
+                              const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
+                              window.open(url, '_blank');
+                            }}
+                          >
+                            <ExternalLink className="w-4 h-4" />
+                          </Button>
+                        </div>
+
+                        {/* Call to Action */}
+                        <div className="mt-4 pt-3 border-t border-gray-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-gray-500">내 프로필 보기</span>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-xs h-7 px-3"
+                              onClick={() => setLocation('/settings')}
+                            >
+                              프로필 설정 수정
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gray-50 border rounded-lg p-6 text-center mb-4">
+                        <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-sm text-gray-500 mb-2">프로필을 완성하고 커스텀 URL을 설정하세요</p>
+                        <p className="text-xs text-gray-400 mb-3">설정에서 이름과 자신만의 URL을 추가해보세요</p>
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setLocation('/settings')}
+                        >
+                          설정으로 이동
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Additional Links */}
                     <div className="space-y-3">
-                      {/* Show actual links from database */}
-                      {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
+                      {linksData && Array.isArray(linksData) && linksData.length > 0 && (
                         linksData.map((link: any) => (
                           <div key={link.id} className="bg-white border rounded-lg p-3">
                             <div className="flex items-center justify-between">
@@ -362,12 +438,6 @@ export default function DashboardPage() {
                             </div>
                           </div>
                         ))
-                      ) : (
-                        <div className="bg-gray-50 border rounded-lg p-6 text-center">
-                          <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                          <p className="text-sm text-gray-500 mb-2">아직 등록된 링크가 없습니다</p>
-                          <p className="text-xs text-gray-400">새 링크를 추가해보세요</p>
-                        </div>
                       )}
 
                       {/* Add Link Button */}
