@@ -374,177 +374,103 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
-                    {/* Profile Link Card Preview */}
-                    {(settingsData as any)?.customUrl && (userData as any)?.name ? (
-                      <div className="bg-white border rounded-lg p-4 mb-4">
-                        <div className="flex items-center space-x-3">
-                          {/* Profile Avatar */}
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                            {(userData as any)?.avatar ? (
-                              <img 
-                                src={(userData as any).avatar} 
-                                alt="프로필" 
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                {(userData as any)?.name?.charAt(0) || 'U'}
+                    {/* Link Cards for all user links */}
+                    <div className="space-y-3">
+                      {/* Settings Link Card */}
+                      {(settingsData as any)?.linkTitle && (settingsData as any)?.linkUrl && (
+                        <div className="bg-white border rounded-lg p-4">
+                          <div className="flex items-center space-x-3">
+                            {/* Link Icon */}
+                            <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                              <Link className="w-6 h-6" />
+                            </div>
+                            
+                            {/* Link Info */}
+                            <div className="flex-1">
+                              <h3 className="text-sm font-semibold text-gray-900">
+                                {(settingsData as any).linkTitle}
+                              </h3>
+                              <div className="text-xs text-blue-600 mt-1">
+                                amusefit.co.kr/link/{(settingsData as any).linkTitle?.toLowerCase().replace(/\s+/g, '-')}
                               </div>
-                            )}
-                          </div>
-                          
-                          {/* Profile Info */}
-                          <div className="flex-1">
-                            <h3 className="text-sm font-semibold text-gray-900">
-                              {(userData as any)?.name || '사용자'}
-                            </h3>
-                            {(userData as any)?.bio && (
-                              <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
-                            )}
-                            <div className="text-xs text-blue-600 mt-1">
-                              amusefit.co.kr/users/{(settingsData as any).customUrl}
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-2"
+                                onClick={() => {
+                                  const shortUrl = `${window.location.origin}/link/${(settingsData as any).linkTitle?.toLowerCase().replace(/\s+/g, '-')}`;
+                                  window.open(shortUrl, '_blank');
+                                }}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  const updateData = {
+                                    linkTitle: '',
+                                    linkUrl: '',
+                                    linkDescription: ''
+                                  };
+                                  fetch(`/api/settings/${user?.id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(updateData)
+                                  }).then(() => {
+                                    queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                    toast({
+                                      title: "링크 삭제됨",
+                                      description: "설정 링크가 성공적으로 삭제되었습니다.",
+                                    });
+                                  });
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
                             </div>
                           </div>
-                          
-                          {/* Action Buttons */}
-                          <div className="flex items-center gap-1">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="p-2"
-                              onClick={() => {
-                                const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
-                                window.open(url, '_blank');
-                              }}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => {
-                                // Clear profile settings
-                                const updateData = {
-                                  customUrl: '',
-                                  bio: ''
-                                };
-                                fetch(`/api/settings/${user?.id}`, {
-                                  method: 'PUT',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify(updateData)
-                                }).then(() => {
-                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                  queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
-                                  toast({
-                                    title: "프로필 삭제됨",
-                                    description: "프로필 설정이 초기화되었습니다.",
-                                  });
-                                });
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
                         </div>
+                      )}
 
-                        {/* Call to Action */}
-                        <div className="mt-4 pt-3 border-t border-gray-100">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-500">내 프로필 보기</span>
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="text-xs h-7 px-3"
-                              onClick={() => setLocation('/settings')}
-                            >
-                              프로필 설정 수정
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-gray-50 border rounded-lg p-6 text-center mb-4">
-                        <ExternalLink className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm text-gray-500 mb-2">프로필을 완성하고 커스텀 URL을 설정하세요</p>
-                        <p className="text-xs text-gray-400 mb-3">설정에서 이름과 자신만의 URL을 추가해보세요</p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setLocation('/settings')}
-                        >
-                          설정으로 이동
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Settings Link Card */}
-                    {(settingsData as any)?.linkTitle && (settingsData as any)?.linkUrl && (
-                      <div className="bg-white border rounded-lg p-3 mb-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex-1">
-                            <h4 className="text-sm font-medium text-gray-900">{(settingsData as any).linkTitle}</h4>
-                            <div className="text-xs text-blue-600 mt-1">{(settingsData as any).linkUrl}</div>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="p-2"
-                              onClick={() => window.open((settingsData as any).linkUrl, '_blank')}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                              onClick={() => {
-                                // Clear settings link
-                                const updateData = {
-                                  linkTitle: '',
-                                  linkUrl: '',
-                                  linkDescription: ''
-                                };
-                                fetch(`/api/settings/${user?.id}`, {
-                                  method: 'PUT',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify(updateData)
-                                }).then(() => {
-                                  queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                  toast({
-                                    title: "링크 삭제됨",
-                                    description: "설정 링크가 성공적으로 삭제되었습니다.",
-                                  });
-                                });
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Additional Links */}
-                    <div className="space-y-3">
+                      {/* Additional Links */}
                       {linksData && Array.isArray(linksData) && linksData.length > 0 && (
                         linksData.map((link: any) => (
-                          <div key={link.id} className="bg-white border rounded-lg p-3">
-                            <div className="flex items-center justify-between">
+                          <div key={link.id} className="bg-white border rounded-lg p-4">
+                            <div className="flex items-center space-x-3">
+                              {/* Link Icon */}
+                              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                <Link className="w-6 h-6" />
+                              </div>
+                              
+                              {/* Link Info */}
                               <div className="flex-1">
-                                <h4 className="text-sm font-medium text-gray-900">{link.title || '제목 없음'}</h4>
-                                <div className="text-xs text-blue-600 mt-1">{link.shortCode ? `/${link.shortCode}` : link.originalUrl}</div>
+                                <h3 className="text-sm font-semibold text-gray-900">
+                                  {link.title}
+                                </h3>
+                                <div className="text-xs text-blue-600 mt-1">
+                                  amusefit.co.kr/link/{link.shortCode}
+                                </div>
                                 {link.clicks > 0 && (
                                   <div className="text-xs text-gray-400 mt-1">클릭 수: {link.clicks}</div>
                                 )}
                               </div>
+                              
+                              {/* Action Buttons */}
                               <div className="flex items-center gap-1">
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
                                   className="p-2"
-                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                  onClick={() => {
+                                    const shortUrl = `${window.location.origin}/link/${link.shortCode}`;
+                                    window.open(shortUrl, '_blank');
+                                  }}
                                 >
                                   <ExternalLink className="w-4 h-4" />
                                 </Button>
@@ -563,7 +489,96 @@ export default function DashboardPage() {
                         ))
                       )}
 
+                      {/* Profile Link Card (if customUrl exists) */}
+                      {(settingsData as any)?.customUrl && (userData as any)?.name && (
+                        <div className="bg-white border rounded-lg p-4">
+                          <div className="flex items-center space-x-3">
+                            {/* Profile Avatar */}
+                            <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                              {(userData as any)?.avatar ? (
+                                <img 
+                                  src={(userData as any).avatar} 
+                                  alt="프로필" 
+                                  className="w-full h-full object-cover"
+                                />
+                              ) : (
+                                <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                  {(userData as any)?.name?.charAt(0) || 'U'}
+                                </div>
+                              )}
+                            </div>
+                            
+                            {/* Profile Info */}
+                            <div className="flex-1">
+                              <h3 className="text-sm font-semibold text-gray-900">
+                                {(userData as any)?.name || '사용자'}
+                              </h3>
+                              {(userData as any)?.bio && (
+                                <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                              )}
+                              <div className="text-xs text-blue-600 mt-1">
+                                amusefit.co.kr/users/{(settingsData as any).customUrl}
+                              </div>
+                            </div>
+                            
+                            {/* Action Buttons */}
+                            <div className="flex items-center gap-1">
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-2"
+                                onClick={() => {
+                                  const url = `https://amusefit.co.kr/users/${(settingsData as any).customUrl}`;
+                                  window.open(url, '_blank');
+                                }}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm" 
+                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                onClick={() => {
+                                  const updateData = {
+                                    customUrl: '',
+                                    bio: ''
+                                  };
+                                  fetch(`/api/settings/${user?.id}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify(updateData)
+                                  }).then(() => {
+                                    queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+                                    queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+                                    toast({
+                                      title: "프로필 삭제됨",
+                                      description: "프로필 설정이 초기화되었습니다.",
+                                    });
+                                  });
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
+                      {/* No links message */}
+                      {(!settingsData?.linkTitle && (!linksData || linksData.length === 0) && !settingsData?.customUrl) && (
+                        <div className="bg-gray-50 border rounded-lg p-6 text-center">
+                          <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                          <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
+                          <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => setLocation('/settings')}
+                          >
+                            설정으로 이동
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}

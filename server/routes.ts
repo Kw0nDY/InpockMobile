@@ -378,6 +378,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Short link redirect routes
+  app.get("/link/:shortCode", async (req, res) => {
+    try {
+      const { shortCode } = req.params;
+      const link = await storage.getLinkByShortCode(shortCode);
+      
+      if (!link) {
+        return res.status(404).json({ message: "Link not found" });
+      }
+
+      // Increment click count
+      await storage.incrementLinkClicks(link.id);
+
+      // Redirect to original URL
+      res.redirect(302, link.originalUrl);
+    } catch (error) {
+      console.error("Link redirect error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Deal routes
   app.get("/api/deals", async (req, res) => {
     try {
