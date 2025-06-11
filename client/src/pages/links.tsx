@@ -47,7 +47,7 @@ export default function LinksPage() {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
       setTitle("");
       setUrl("");
-      setSelectedStyle('thumbnail');
+      setSelectedStyle(THUMBNAIL);
       setSelectedImage(null);
       setImageFile(null);
       setShowAddForm(false);
@@ -443,7 +443,7 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
@@ -460,7 +460,7 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
@@ -479,7 +479,7 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
@@ -506,7 +506,7 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-1 right-1 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
