@@ -450,31 +450,71 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Short URL Setting */}
+        {/* Content URL Setting */}
         <Card className="bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">단축 URL 설정</CardTitle>
+            <CardTitle className="text-lg font-semibold text-gray-800">
+              {profileData.contentType === 'image' ? '이미지 콘텐츠 설정' : 
+               profileData.contentType === 'video' ? '동영상 콘텐츠 설정' : 
+               '단축 URL 설정'}
+            </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Link Settings */}
+            {/* Content Settings */}
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">링크 제목</Label>
+                <Label htmlFor="contentTitle" className="text-sm font-medium text-gray-700">
+                  {profileData.contentType === 'image' ? '이미지 제목' : 
+                   profileData.contentType === 'video' ? '동영상 제목' : 
+                   '링크 제목'}
+                </Label>
                 <Input
-                  id="linkTitle"
+                  id="contentTitle"
                   value={profileData.linkTitle || ''}
                   onChange={(e) => updateProfileData('linkTitle', e.target.value)}
-                  placeholder="링크 제목을 입력하세요"
+                  placeholder={
+                    profileData.contentType === 'image' ? '이미지 제목을 입력하세요' : 
+                    profileData.contentType === 'video' ? '동영상 제목을 입력하세요' : 
+                    '링크 제목을 입력하세요'
+                  }
                   className="border-gray-200 focus:border-primary"
                 />
               </div>
+              
               <div className="space-y-2">
-                <Label htmlFor="linkUrl" className="text-sm font-medium text-gray-700">링크 URL</Label>
+                <Label htmlFor="contentDescription" className="text-sm font-medium text-gray-700">
+                  {profileData.contentType === 'image' ? '이미지 소개' : 
+                   profileData.contentType === 'video' ? '동영상 소개' : 
+                   '링크 설명'}
+                </Label>
+                <Textarea
+                  id="contentDescription"
+                  value={profileData.linkDescription || ''}
+                  onChange={(e) => updateProfileData('linkDescription', e.target.value)}
+                  placeholder={
+                    profileData.contentType === 'image' ? '이미지에 대한 간단한 소개를 입력하세요' : 
+                    profileData.contentType === 'video' ? '동영상에 대한 간단한 소개를 입력하세요' : 
+                    '링크에 대한 설명을 입력하세요'
+                  }
+                  className="border-gray-200 focus:border-primary min-h-[80px]"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="contentUrl" className="text-sm font-medium text-gray-700">
+                  {profileData.contentType === 'image' ? '이미지 링크 URL' : 
+                   profileData.contentType === 'video' ? '동영상 링크 URL' : 
+                   '링크 URL'}
+                </Label>
                 <Input
-                  id="linkUrl"
+                  id="contentUrl"
                   value={profileData.linkUrl || ''}
                   onChange={(e) => updateProfileData('linkUrl', e.target.value)}
-                  placeholder="https://example.com"
+                  placeholder={
+                    profileData.contentType === 'image' ? 'https://example.com (이미지 관련 링크)' : 
+                    profileData.contentType === 'video' ? 'https://example.com (동영상 관련 링크)' : 
+                    'https://example.com'
+                  }
                   className="border-gray-200 focus:border-primary"
                 />
               </div>
