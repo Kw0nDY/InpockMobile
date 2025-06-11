@@ -225,9 +225,9 @@ export default function LinksPage() {
               <div className="grid grid-cols-4 gap-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('thumbnail')}
+                  onClick={() => setSelectedStyle(THUMBNAIL)}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'thumbnail'
+                    selectedStyle === THUMBNAIL
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -241,9 +241,9 @@ export default function LinksPage() {
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('simple')}
+                  onClick={() => setSelectedStyle(SIMPLE)}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'simple'
+                    selectedStyle === SIMPLE
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -257,9 +257,9 @@ export default function LinksPage() {
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('card')}
+                  onClick={() => setSelectedStyle(CARD)}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'card'
+                    selectedStyle === CARD
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
@@ -274,9 +274,9 @@ export default function LinksPage() {
                 
                 <button
                   type="button"
-                  onClick={() => setSelectedStyle('background')}
+                  onClick={() => setSelectedStyle(BACKGROUND)}
                   className={`p-3 rounded-lg border-2 text-center transition-all ${
-                    selectedStyle === 'background'
+                    selectedStyle === BACKGROUND
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
