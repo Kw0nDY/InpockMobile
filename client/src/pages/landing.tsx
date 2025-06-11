@@ -104,12 +104,8 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="flex items-center justify-between p-4 bg-white">
-        <button className="p-2">
-          <ArrowLeft className="w-6 h-6 text-dark" />
-        </button>
+      <header className="flex items-center justify-center p-4 bg-white">
         <h1 className="text-lg font-medium text-dark">AmuseFit</h1>
-        <div className="w-10"></div>
       </header>
 
       {/* Hero Section */}
