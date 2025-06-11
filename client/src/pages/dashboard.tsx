@@ -10,10 +10,11 @@ import {
   Video,
   ExternalLink,
   Plus,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,11 +25,15 @@ import { useEffect, useState } from "react";
 import { trackPageView } from "@/lib/analytics";
 import { useAnalyticsData, useUrlVisitCounts, useRealTimeVisits } from "@/hooks/use-analytics-data";
 import { clearAllAnalyticsData, initCleanAnalytics } from "@/lib/clear-analytics";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
   const [previewType, setPreviewType] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: dashboardData, isLoading } = useQuery({
     queryKey: [`/api/dashboard/stats/${user?.id}`],
@@ -48,6 +53,33 @@ export default function DashboardPage() {
   const { data: linksData } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
     enabled: !!user?.id,
+  });
+
+  // Link deletion mutation
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: number) => {
+      const response = await fetch(`/api/links/${linkId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete link');
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+      toast({
+        title: "링크 삭제됨",
+        description: "링크가 성공적으로 삭제되었습니다.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "삭제 실패",
+        description: "링크 삭제 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    },
   });
 
   const { data: analyticsData } = useAnalyticsData();
@@ -421,20 +453,30 @@ export default function DashboardPage() {
                             <div className="flex items-center justify-between">
                               <div className="flex-1">
                                 <h4 className="text-sm font-medium text-gray-900">{link.title || '제목 없음'}</h4>
-                                <p className="text-xs text-gray-500 mt-1">{link.description || '설명 없음'}</p>
-                                <div className="text-xs text-blue-600 mt-1">{link.shortCode ? `/${link.shortCode}` : link.url}</div>
+                                <div className="text-xs text-blue-600 mt-1">{link.shortCode ? `/${link.shortCode}` : link.originalUrl}</div>
                                 {link.clicks > 0 && (
                                   <div className="text-xs text-gray-400 mt-1">클릭 수: {link.clicks}</div>
                                 )}
                               </div>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2"
-                                onClick={() => window.open(link.url, '_blank')}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2"
+                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  onClick={() => deleteLinkMutation.mutate(link.id)}
+                                  disabled={deleteLinkMutation.isPending}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
                           </div>
                         ))
