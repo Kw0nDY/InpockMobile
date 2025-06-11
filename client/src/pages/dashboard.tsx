@@ -19,7 +19,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Skeleton } from "@/components/ui/skeleton";
 import NotificationDropdown from "@/components/ui/notification-dropdown";
-import VisitCountWidget from "@/components/analytics/visit-count-widget";
+
 import { ImageModal, VideoModal, LinkPreview } from "@/components/ui/media-modal";
 import { useEffect, useState } from "react";
 import { trackPageView } from "@/lib/analytics";
@@ -267,11 +267,7 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Real-time Visit Tracking */}
-        <VisitCountWidget 
-          userDefinedUrl={`/dashboard?user_id=${user?.id}`}
-          className="mb-6"
-        />
+
 
         {/* Profile Content Section */}
         <div className="mt-6">
