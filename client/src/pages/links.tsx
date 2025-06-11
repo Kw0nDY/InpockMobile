@@ -303,12 +303,6 @@ export default function LinksPage() {
                 ) : (
                   <div className="grid grid-cols-2 gap-3">
                     <Button
-                      onClick={() => setShowConfirmDialog(false)}
-                      className="bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium border border-[#A0825C]"
-                    >
-                      취소
-                    </Button>
-                    <Button
                       onClick={() => {
                         setShowConfirmDialog(false);
                         setShowAddForm(true);
@@ -316,6 +310,12 @@ export default function LinksPage() {
                       className="bg-[#A0825C] hover:bg-[#8B4513] text-white py-3 rounded-lg font-medium"
                     >
                       추가
+                    </Button>
+                    <Button
+                      onClick={() => setShowConfirmDialog(false)}
+                      className="bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium border border-[#A0825C]"
+                    >
+                      취소
                     </Button>
                   </div>
                 )}
