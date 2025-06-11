@@ -179,6 +179,7 @@ export class MemStorage implements IStorage {
         title: "비즈니스 프로필",
         originalUrl: "https://inpock.com/profile/demo",
         shortCode: "abc123",
+        style: "compact",
         clicks: 127,
         isActive: true,
         createdAt: new Date(),
@@ -189,6 +190,7 @@ export class MemStorage implements IStorage {
         title: "제품 카탈로그",
         originalUrl: "https://inpock.com/catalog/demo",
         shortCode: "def456",
+        style: "card",
         clicks: 89,
         isActive: true,
         createdAt: new Date(),
@@ -324,8 +326,12 @@ export class MemStorage implements IStorage {
   async createLink(insertLink: InsertLink): Promise<Link> {
     const id = this.currentLinkId++;
     const link: Link = {
-      ...insertLink,
       id,
+      userId: insertLink.userId,
+      title: insertLink.title,
+      originalUrl: insertLink.originalUrl,
+      shortCode: insertLink.shortCode,
+      style: insertLink.style || "compact",
       clicks: 0,
       isActive: insertLink.isActive !== undefined ? insertLink.isActive : true,
       createdAt: new Date(),

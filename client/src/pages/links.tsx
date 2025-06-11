@@ -318,9 +318,9 @@ export default function LinksPage() {
                 </div>
                 
                 {/* Display Links with Their Styles */}
-                {linksData && linksData.length > 0 ? (
+                {links && links.length > 0 ? (
                   <div className="space-y-3">
-                    {linksData.map((link: any) => (
+                    {links.map((link: any) => (
                       <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
                         {/* Compact Style */}
                         {link.style === 'compact' && (
