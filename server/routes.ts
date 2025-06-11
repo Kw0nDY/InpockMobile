@@ -187,7 +187,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/signup", async (req, res) => {
     try {
-      const { username, email, password, name, company, role } = req.body;
+      const { username, email, password, name, phone, company, role } = req.body;
 
       // Check if user already exists
       const existingUser = await storage.getUserByEmail(email);
@@ -208,6 +208,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email,
         password,
         name,
+        phone: phone || null,
         company: company || "",
         role: role || "user",
       });
