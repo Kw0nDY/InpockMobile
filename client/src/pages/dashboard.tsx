@@ -320,6 +320,31 @@ export default function DashboardPage() {
                 )}
               </div>
 
+              {/* Shortened URL Display */}
+              <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-gray-700">나의 URL</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                    onClick={() => {
+                      const url = userSettings?.customUrl ? 
+                        `https://amusefit.co.kr/users/${userSettings.customUrl}` : 
+                        `https://amusefit.co.kr/users/${user?.username || 'demo_user'}`;
+                      navigator.clipboard.writeText(url);
+                    }}
+                  >
+                    <Copy className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="text-sm text-blue-600 bg-white p-2 rounded border font-mono">
+                  {userSettings?.customUrl ? 
+                    `amusefit.co.kr/users/${userSettings.customUrl}` : 
+                    `amusefit.co.kr/users/${user?.username || 'demo_user'}`}
+                </div>
+              </div>
+
               {/* Settings Button */}
               <Button
                 onClick={() => setLocation('/settings')}
