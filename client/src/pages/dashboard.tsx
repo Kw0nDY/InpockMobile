@@ -347,29 +347,114 @@ export default function DashboardPage() {
                 <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
                 
                 {/* Image Content */}
-                {currentContentType === 'image' && (
-                  <div className="mb-4">
-                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                      <div className="text-center">
-                        <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
-                        <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
+                {currentContentType === 'image' && (() => {
+                  const imageMedia = mediaData?.find((media: any) => media.mediaType === 'image');
+                  const imageSettings = settingsData as any;
+                  const imageUrl = imageMedia?.mediaUrl || (imageSettings?.contentType === 'image' ? imageSettings?.linkUrl : null);
+                  
+                  if (imageUrl) {
+                    return (
+                      <div className="mb-4">
+                        <div className="bg-white border rounded-lg p-4">
+                          <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 mb-3">
+                            <img 
+                              src={imageUrl} 
+                              alt={imageMedia?.title || imageSettings?.linkTitle || '이미지'} 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            />
+                            <div className="hidden w-full h-full flex items-center justify-center">
+                              <div className="text-center">
+                                <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500">이미지를 불러올 수 없습니다</p>
+                              </div>
+                            </div>
+                          </div>
+                          <h3 className="text-base font-semibold text-gray-900 mb-1">
+                            {imageMedia?.title || imageSettings?.linkTitle || '프로필 이미지'}
+                          </h3>
+                          {(imageMedia?.description || imageSettings?.linkDescription) && (
+                            <p className="text-sm text-gray-600">
+                              {imageMedia?.description || imageSettings?.linkDescription}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    );
+                  } else {
+                    return (
+                      <div className="mb-4">
+                        <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                          <div className="text-center">
+                            <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
+                            <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
 
                 {/* Video Content */}
-                {currentContentType === 'video' && (
-                  <div className="mb-4">
-                    <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                      <div className="text-center">
-                        <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                {currentContentType === 'video' && (() => {
+                  const videoMedia = mediaData?.find((media: any) => media.mediaType === 'video');
+                  const videoSettings = settingsData as any;
+                  const videoUrl = videoMedia?.mediaUrl || (videoSettings?.contentType === 'video' ? videoSettings?.linkUrl : null);
+                  
+                  if (videoUrl) {
+                    return (
+                      <div className="mb-4">
+                        <div className="bg-white border rounded-lg p-4">
+                          <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 mb-3">
+                            <video 
+                              src={videoUrl} 
+                              controls 
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                const target = e.target as HTMLVideoElement;
+                                target.style.display = 'none';
+                                target.nextElementSibling?.classList.remove('hidden');
+                              }}
+                            >
+                              동영상을 재생할 수 없습니다.
+                            </video>
+                            <div className="hidden w-full h-full flex items-center justify-center">
+                              <div className="text-center">
+                                <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                                <p className="text-sm text-gray-500">동영상을 불러올 수 없습니다</p>
+                              </div>
+                            </div>
+                          </div>
+                          <h3 className="text-base font-semibold text-gray-900 mb-1">
+                            {videoMedia?.title || videoSettings?.linkTitle || '프로필 동영상'}
+                          </h3>
+                          {(videoMedia?.description || videoSettings?.linkDescription) && (
+                            <p className="text-sm text-gray-600">
+                              {videoMedia?.description || videoSettings?.linkDescription}
+                            </p>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    );
+                  } else {
+                    return (
+                      <div className="mb-4">
+                        <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
+                          <div className="text-center">
+                            <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
+                            <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                            <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+                })()}
 
                 {/* Unified Link Cards */}
                 {currentContentType === 'links' && (
