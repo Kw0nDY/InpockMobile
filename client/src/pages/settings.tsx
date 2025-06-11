@@ -460,65 +460,81 @@ export default function SettingsPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {/* Content Settings */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="contentTitle" className="text-sm font-medium text-gray-700">
-                  {profileData.contentType === 'image' ? '이미지 제목' : 
-                   profileData.contentType === 'video' ? '동영상 제목' : 
-                   '링크 제목'}
-                </Label>
-                <Input
-                  id="contentTitle"
-                  value={profileData.linkTitle || ''}
-                  onChange={(e) => updateProfileData('linkTitle', e.target.value)}
-                  placeholder={
-                    profileData.contentType === 'image' ? '이미지 제목을 입력하세요' : 
-                    profileData.contentType === 'video' ? '동영상 제목을 입력하세요' : 
-                    '링크 제목을 입력하세요'
-                  }
-                  className="border-gray-200 focus:border-primary"
-                />
+            {profileData.contentType === 'links' ? (
+              <>
+                {/* Link Settings */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="linkTitle" className="text-sm font-medium text-gray-700">링크 제목</Label>
+                    <Input
+                      id="linkTitle"
+                      value={profileData.linkTitle || ''}
+                      onChange={(e) => updateProfileData('linkTitle', e.target.value)}
+                      placeholder="링크 제목을 입력하세요"
+                      className="border-gray-200 focus:border-primary bg-gray-50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="linkUrl" className="text-sm font-medium text-gray-700">링크 URL</Label>
+                    <Input
+                      id="linkUrl"
+                      value={profileData.linkUrl || ''}
+                      onChange={(e) => updateProfileData('linkUrl', e.target.value)}
+                      placeholder="https://github.com/"
+                      className="border-gray-200 focus:border-primary bg-gray-50"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              /* Image/Video Content Settings */
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="contentTitle" className="text-sm font-medium text-gray-700">
+                    {profileData.contentType === 'image' ? '이미지 제목' : '동영상 제목'}
+                  </Label>
+                  <Input
+                    id="contentTitle"
+                    value={profileData.linkTitle || ''}
+                    onChange={(e) => updateProfileData('linkTitle', e.target.value)}
+                    placeholder={
+                      profileData.contentType === 'image' ? '이미지 제목을 입력하세요' : '동영상 제목을 입력하세요'
+                    }
+                    className="border-gray-200 focus:border-primary"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="contentDescription" className="text-sm font-medium text-gray-700">
+                    {profileData.contentType === 'image' ? '이미지 소개' : '동영상 소개'}
+                  </Label>
+                  <Textarea
+                    id="contentDescription"
+                    value={profileData.linkDescription || ''}
+                    onChange={(e) => updateProfileData('linkDescription', e.target.value)}
+                    placeholder={
+                      profileData.contentType === 'image' ? '이미지에 대한 간단한 소개를 입력하세요' : '동영상에 대한 간단한 소개를 입력하세요'
+                    }
+                    className="border-gray-200 focus:border-primary min-h-[80px]"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="contentUrl" className="text-sm font-medium text-gray-700">
+                    {profileData.contentType === 'image' ? '이미지 링크 URL' : '동영상 링크 URL'}
+                  </Label>
+                  <Input
+                    id="contentUrl"
+                    value={profileData.linkUrl || ''}
+                    onChange={(e) => updateProfileData('linkUrl', e.target.value)}
+                    placeholder={
+                      profileData.contentType === 'image' ? 'https://example.com (이미지 관련 링크)' : 'https://example.com (동영상 관련 링크)'
+                    }
+                    className="border-gray-200 focus:border-primary"
+                  />
+                </div>
               </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="contentDescription" className="text-sm font-medium text-gray-700">
-                  {profileData.contentType === 'image' ? '이미지 소개' : 
-                   profileData.contentType === 'video' ? '동영상 소개' : 
-                   '링크 설명'}
-                </Label>
-                <Textarea
-                  id="contentDescription"
-                  value={profileData.linkDescription || ''}
-                  onChange={(e) => updateProfileData('linkDescription', e.target.value)}
-                  placeholder={
-                    profileData.contentType === 'image' ? '이미지에 대한 간단한 소개를 입력하세요' : 
-                    profileData.contentType === 'video' ? '동영상에 대한 간단한 소개를 입력하세요' : 
-                    '링크에 대한 설명을 입력하세요'
-                  }
-                  className="border-gray-200 focus:border-primary min-h-[80px]"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="contentUrl" className="text-sm font-medium text-gray-700">
-                  {profileData.contentType === 'image' ? '이미지 링크 URL' : 
-                   profileData.contentType === 'video' ? '동영상 링크 URL' : 
-                   '링크 URL'}
-                </Label>
-                <Input
-                  id="contentUrl"
-                  value={profileData.linkUrl || ''}
-                  onChange={(e) => updateProfileData('linkUrl', e.target.value)}
-                  placeholder={
-                    profileData.contentType === 'image' ? 'https://example.com (이미지 관련 링크)' : 
-                    profileData.contentType === 'video' ? 'https://example.com (동영상 관련 링크)' : 
-                    'https://example.com'
-                  }
-                  className="border-gray-200 focus:border-primary"
-                />
-              </div>
-            </div>
+            )}
 
             {profileData.contentType === 'links' && (
               <RadioGroup
@@ -526,93 +542,97 @@ export default function SettingsPage() {
                 onValueChange={(value) => updateProfileData('shortUrlType', value)}
                 className="space-y-3"
               >
-              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                <RadioGroupItem value="default" id="default" />
-                <Label htmlFor="default" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium text-gray-800">기본 프로필 URL</p>
-                    <p className="text-sm text-gray-600">amusefit.co.kr/users/{user?.username || 'default'}</p>
-                  </div>
-                </Label>
-              </div>
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value="default" id="default" />
+                  <Label htmlFor="default" className="flex-1 cursor-pointer">
+                    <div>
+                      <p className="font-medium text-gray-800">기본 프로필 URL</p>
+                      <p className="text-sm text-gray-600 mt-1">amusefit.co.kr/users/{user?.username || 'demo_user'}</p>
+                    </div>
+                  </Label>
+                </div>
 
-              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                <RadioGroupItem value="custom" id="custom" />
-                <Label htmlFor="custom" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium text-gray-800">커스텀 프로필 URL</p>
-                    <div className="mt-2">
-                      <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value="custom" id="custom" />
+                  <Label htmlFor="custom" className="flex-1 cursor-pointer">
+                    <div>
+                      <p className="font-medium text-gray-800">커스텀 프로필 URL</p>
+                      <div className="mt-2 flex items-center bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
                         <span className="text-sm text-gray-600">amusefit.co.kr/users/</span>
                         <Input
                           value={profileData.customUrl}
                           onChange={(e) => updateProfileData('customUrl', e.target.value)}
                           placeholder="yourname"
-                          className="flex-1 h-8 text-sm border-gray-200 focus:border-primary"
+                          className="flex-1 border-0 bg-transparent text-sm focus:ring-0 p-0 ml-1"
                           disabled={profileData.shortUrlType !== 'custom'}
                         />
                       </div>
                     </div>
-                  </div>
-                </Label>
-              </div>
+                  </Label>
+                </div>
 
-              {/* Link URL Option */}
-              <div className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg">
-                <RadioGroupItem value="link" id="link" />
-                <Label htmlFor="link" className="flex-1 cursor-pointer">
-                  <div>
-                    <p className="font-medium text-gray-800">링크 URL</p>
-                    <p className="text-sm text-gray-600">
-                      {profileData.linkTitle || '링크 제목을 입력하세요'}
-                    </p>
-                    <p className="text-xs text-blue-600 mt-1">
-                      amusefit.co.kr/link/{profileData.linkTitle ? profileData.linkTitle.toLowerCase().replace(/\s+/g, '-') : 'your-link'}
-                    </p>
-                  </div>
-                </Label>
-              </div>
-            </RadioGroup>
+                <div className="flex items-center space-x-3 p-4 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <RadioGroupItem value="link" id="link" />
+                  <Label htmlFor="link" className="flex-1 cursor-pointer">
+                    <div>
+                      <p className="font-medium text-gray-800">링크 URL</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {profileData.linkTitle || '링크 제목을 입력하세요'}
+                      </p>
+                      <p className="text-xs text-blue-600 mt-1 font-mono">
+                        amusefit.co.kr/link/{profileData.linkTitle ? profileData.linkTitle.toLowerCase().replace(/\s+/g, '-') : 'your-link'}
+                      </p>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
             )}
 
             {profileData.contentType === 'links' && (
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700">선택된 URL 미리보기</p>
-                  {profileData.shortUrlType === 'link' && profileData.linkTitle ? (
-                    <div>
-                      <p className="text-sm text-gray-600 mb-1">{profileData.linkTitle}</p>
-                      <p className="font-mono text-sm text-primary">
+            <div className="space-y-3">
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-gray-700 mb-2">선택된 URL 미리보기</p>
+                    {profileData.shortUrlType === 'link' && profileData.linkTitle ? (
+                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
                         amusefit.co.kr/link/{profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}
                       </p>
-                    </div>
-                  ) : (
-                    <p className="font-mono text-sm text-primary">{shortUrl}</p>
-                  )}
+                    ) : profileData.shortUrlType === 'custom' && profileData.customUrl ? (
+                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
+                        amusefit.co.kr/users/{profileData.customUrl}
+                      </p>
+                    ) : (
+                      <p className="font-mono text-sm text-gray-800 bg-white px-3 py-2 rounded border">
+                        amusefit.co.kr/users/{user?.username || 'demo_user'}
+                      </p>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      let urlToCopy;
+                      if (profileData.shortUrlType === 'link' && profileData.linkTitle) {
+                        urlToCopy = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
+                      } else if (profileData.shortUrlType === 'custom' && profileData.customUrl) {
+                        urlToCopy = `amusefit.co.kr/users/${profileData.customUrl}`;
+                      } else {
+                        urlToCopy = `amusefit.co.kr/users/${user?.username || 'demo_user'}`;
+                      }
+                      navigator.clipboard.writeText(urlToCopy);
+                      setCopied(true);
+                      setTimeout(() => setCopied(false), 2000);
+                      toast({
+                        title: "URL 복사됨",
+                        description: "선택된 URL이 클립보드에 복사되었습니다.",
+                      });
+                    }}
+                    className="text-gray-600 hover:text-primary ml-3"
+                  >
+                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    let urlToCopy;
-                    if (profileData.shortUrlType === 'link' && profileData.linkTitle) {
-                      urlToCopy = `amusefit.co.kr/link/${profileData.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
-                    } else {
-                      urlToCopy = shortUrl;
-                    }
-                    navigator.clipboard.writeText(urlToCopy);
-                    setCopied(true);
-                    setTimeout(() => setCopied(false), 2000);
-                    toast({
-                      title: "URL 복사됨",
-                      description: "선택된 URL이 클립보드에 복사되었습니다.",
-                    });
-                  }}
-                  className="text-gray-600 hover:text-primary"
-                >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </Button>
               </div>
             </div>
             )}
