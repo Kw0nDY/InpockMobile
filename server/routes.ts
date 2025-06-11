@@ -314,7 +314,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/links", async (req, res) => {
     try {
+      console.log("Link creation request body:", req.body);
       const linkData = insertLinkSchema.parse(req.body);
+      console.log("Parsed link data:", linkData);
 
       // Generate short code
       const shortCode = Math.random().toString(36).substring(2, 8);
@@ -326,7 +328,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.status(201).json(link);
     } catch (error) {
-      res.status(400).json({ message: "Invalid request data" });
+      console.error("Link creation error details:", error);
+      res.status(400).json({ message: "Invalid request data", error: error.message });
     }
   });
 
