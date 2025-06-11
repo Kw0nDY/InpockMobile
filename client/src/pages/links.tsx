@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, Eye, TrendingUp, ExternalLink } from "lucide-react";
+import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -51,6 +51,32 @@ export default function LinksPage() {
       toast({
         title: "링크 생성 실패",
         description: "링크 생성 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteLinkMutation = useMutation({
+    mutationFn: async (linkId: number) => {
+      const response = await fetch(`/api/links/${linkId}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete link");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+      toast({
+        title: "링크 삭제됨",
+        description: "링크가 성공적으로 삭제되었습니다.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "삭제 실패", 
+        description: "링크 삭제 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     },
@@ -325,23 +351,52 @@ export default function LinksPage() {
                         {/* Compact Style */}
                         {link.style === 'compact' && (
                           <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-gray-900 truncate">{link.title}</div>
+                            <div className="flex-1 min-w-0 cursor-pointer" onClick={() => window.open(link.originalUrl, '_blank')}>
+                              <div className="text-sm font-medium text-gray-900 truncate hover:text-[#A0825C]">{link.title}</div>
                               <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
                             </div>
-                            <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </div>
                         )}
                         
                         {/* Card Style */}
                         {link.style === 'card' && (
-                          <div className="text-center">
-                            <div className="w-12 h-12 bg-[#F5F3F0] rounded-lg flex items-center justify-center mx-auto mb-2">
-                              <ExternalLink className="w-6 h-6 text-[#A0825C]" />
+                          <div className="text-center relative">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteLinkMutation.mutate(link.id);
+                              }}
+                              className="absolute top-0 right-0 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                            <div 
+                              className="cursor-pointer"
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
+                              <div className="w-12 h-12 bg-[#F5F3F0] rounded-lg flex items-center justify-center mx-auto mb-2 hover:bg-[#EAE5DE]">
+                                <ExternalLink className="w-6 h-6 text-[#A0825C]" />
+                              </div>
+                              <div className="text-sm font-medium text-gray-900 mb-1 hover:text-[#A0825C]">{link.title}</div>
+                              <div className="text-xs text-gray-500 mb-2 truncate">{link.originalUrl}</div>
+                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
                             </div>
-                            <div className="text-sm font-medium text-gray-900 mb-1">{link.title}</div>
-                            <div className="text-xs text-gray-500 mb-2 truncate">{link.originalUrl}</div>
-                            <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
                           </div>
                         )}
                         
@@ -349,18 +404,48 @@ export default function LinksPage() {
                         {link.style === 'list' && (
                           <div className="flex items-center gap-3">
                             <div className="w-2 h-2 bg-[#A0825C] rounded-full"></div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-medium text-gray-900 truncate">{link.title}</div>
+                            <div 
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
+                              <div className="text-sm font-medium text-gray-900 truncate hover:text-[#A0825C]">{link.title}</div>
                               <div className="text-xs text-gray-500 truncate">{link.originalUrl}</div>
                             </div>
-                            <div className="text-xs text-[#A0825C] font-medium">0</div>
+                            <div className="flex items-center gap-2">
+                              <div className="text-xs text-[#A0825C] font-medium">방문: 0</div>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
                           </div>
                         )}
                         
                         {/* Minimal Style */}
                         {link.style === 'minimal' && (
-                          <div className="text-center">
-                            <div className="text-sm font-medium text-[#A0825C] underline cursor-pointer hover:text-[#8B4513]">
+                          <div className="text-center relative">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteLinkMutation.mutate(link.id);
+                              }}
+                              className="absolute top-0 right-0 h-6 w-6 p-0 text-gray-400 hover:text-red-600"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </Button>
+                            <div 
+                              className="text-sm font-medium text-[#A0825C] underline cursor-pointer hover:text-[#8B4513]"
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
                               {link.title}
                             </div>
                             <div className="text-xs text-gray-400 mt-1">방문: 0</div>
