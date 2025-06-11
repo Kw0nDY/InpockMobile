@@ -288,7 +288,7 @@ export default function DashboardPage() {
                     <div className="w-full h-64 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                       <div className="text-center">
                         <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
+                        <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
                         <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
                       </div>
                     </div>
