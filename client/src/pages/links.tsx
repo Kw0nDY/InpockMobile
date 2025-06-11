@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2 } from "lucide-react";
+import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
