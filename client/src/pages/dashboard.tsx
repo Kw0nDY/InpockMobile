@@ -374,153 +374,149 @@ export default function DashboardPage() {
                 {/* Link Content */}
                 {currentContentType === 'links' && (
                   <div className="mb-4">
-                    {/* Show card only if linkTitle or customUrl exists - not just name */}
-                    {((settingsData as any)?.linkTitle || (settingsData as any)?.customUrl) && (
-                      <div className="bg-white border rounded-lg p-4">
-                        <div className="flex items-center space-x-3">
-                          {/* Profile Avatar */}
-                          <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
-                            {(userData as any)?.avatar ? (
-                              <img 
-                                src={(userData as any).avatar} 
-                                alt="프로필" 
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (userData as any)?.name ? (
-                              <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                {(userData as any).name.charAt(0) || 'U'}
+                    {/* Show card based on selected URL type */}
+                    {(() => {
+                      const settings = settingsData as any;
+                      const urlType = settings?.shortUrlType;
+                      
+                      // Only show if there's a valid selection
+                      if (urlType === 'link' && settings?.linkTitle && settings?.linkUrl) {
+                        // Link URL type selected
+                        return (
+                          <div className="bg-white border rounded-lg p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                🔗
                               </div>
-                            ) : (
-                              <div className="w-full h-full bg-primary text-white flex items-center justify-center">
-                                <Link className="w-6 h-6" />
+                              <div className="flex-1">
+                                <h3 className="text-sm font-semibold text-gray-900">
+                                  📎 {settings.linkTitle}
+                                </h3>
+                                <div className="text-xs text-blue-600 mt-1">
+                                  amusefit.co.kr/link/{settings.linkTitle.toLowerCase().replace(/\s+/g, '-')}
+                                </div>
                               </div>
-                            )}
-                          </div>
-                          
-                          {/* Profile + Link Info */}
-                          <div className="flex-1">
-                            {/* Profile Name */}
-                            <h3 className="text-sm font-semibold text-gray-900">
-                              {(userData as any)?.name || '사용자'}
-                            </h3>
-                            
-                            {/* Bio */}
-                            {(userData as any)?.bio && (
-                              <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
-                            )}
-                            
-                            {/* Link Title if exists */}
-                            {(settingsData as any)?.linkTitle && (
-                              <p className="text-xs text-gray-700 mt-1 font-medium">
-                                📎 {(settingsData as any).linkTitle}
-                              </p>
-                            )}
-                            
-                            {/* Active URL */}
-                            <div className="text-xs text-blue-600 mt-1">
-                              {(() => {
-                                const settings = settingsData as any;
-                                if (settings?.shortUrlType === 'link' && settings?.linkTitle) {
-                                  return `amusefit.co.kr/link/${settings.linkTitle.toLowerCase().replace(/\s+/g, '-')}`;
-                                } else if (settings?.shortUrlType === 'custom' && settings?.customUrl) {
-                                  return `amusefit.co.kr/users/${settings.customUrl}`;
-                                } else {
-                                  return `amusefit.co.kr/users/${user?.username || 'default'}`;
-                                }
-                              })()}
-                            </div>
-                          </div>
-                          
-                          {/* Action Buttons - only show if there's content to delete */}
-                          {((settingsData as any)?.linkTitle || (settingsData as any)?.customUrl) && (
-                            <div className="flex items-center gap-1">
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2"
-                                onClick={() => {
-                                  const settings = settingsData as any;
-                                  let targetUrl;
-                                  
-                                  // Check what type of URL is selected in settings
-                                  if (settings?.shortUrlType === 'link' && settings?.linkUrl) {
-                                    // Link URL selected - redirect to the actual link URL
-                                    targetUrl = settings.linkUrl;
-                                  } else if (settings?.shortUrlType === 'custom' && settings?.customUrl) {
-                                    // Custom profile URL selected - redirect to custom profile page
-                                    targetUrl = `${window.location.origin}/users/${settings.customUrl}`;
-                                  } else {
-                                    // Default profile URL selected - redirect to default profile page
-                                    targetUrl = `${window.location.origin}/users/${user?.username || 'demo_user'}`;
-                                  }
-                                  
-                                  console.log('Redirecting to:', targetUrl);
-                                  window.open(targetUrl, '_blank');
-                                }}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                              </Button>
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={async () => {
-                                  try {
-                                    const updateData = {
-                                      linkTitle: '',
-                                      linkUrl: '',
-                                      linkDescription: '',
-                                      customUrl: '',
-                                      shortUrlType: 'default'
-                                    };
-                                    
-                                    console.log('Deleting link with data:', updateData);
-                                    
-                                    const response = await fetch(`/api/settings/${user?.id}`, {
-                                      method: 'PUT',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify(updateData)
-                                    });
-                                    
-                                    const result = await response.json();
-                                    console.log('Delete response:', result);
-                                    
-                                    if (response.ok) {
-                                      // Force refresh all queries
-                                      await queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                      await queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
-                                      await queryClient.refetchQueries({ queryKey: [`/api/settings/${user?.id}`] });
-                                      await queryClient.refetchQueries({ queryKey: [`/api/user/${user?.id}`] });
-                                      
-                                      toast({
-                                        title: "링크 삭제됨",
-                                        description: "링크 설정이 초기화되었습니다.",
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2"
+                                  onClick={() => {
+                                    console.log('Redirecting to:', settings.linkUrl);
+                                    window.open(settings.linkUrl, '_blank');
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/settings/${user?.id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          linkTitle: '',
+                                          linkUrl: '',
+                                          linkDescription: '',
+                                          customUrl: '',
+                                          shortUrlType: 'default'
+                                        })
                                       });
                                       
-                                      // Force page refresh as fallback
-                                      setTimeout(() => {
+                                      if (response.ok) {
                                         window.location.reload();
-                                      }, 1000);
-                                    } else {
-                                      throw new Error('Failed to delete');
+                                      }
+                                    } catch (error) {
+                                      console.error('삭제 오류:', error);
                                     }
-                                  } catch (error) {
-                                    console.error('삭제 오류:', error);
-                                    toast({
-                                      title: "삭제 실패",
-                                      description: "링크 삭제 중 오류가 발생했습니다.",
-                                      variant: "destructive",
-                                    });
-                                  }
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
+                          </div>
+                        );
+                      } else if (urlType === 'custom' && settings?.customUrl) {
+                        // Custom URL type selected
+                        return (
+                          <div className="bg-white border rounded-lg p-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                                {(userData as any)?.name ? (
+                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center text-sm font-medium">
+                                    {(userData as any).name.charAt(0)}
+                                  </div>
+                                ) : (
+                                  <div className="w-full h-full bg-primary text-white flex items-center justify-center">
+                                    <Link className="w-6 h-6" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1">
+                                <h3 className="text-sm font-semibold text-gray-900">
+                                  {(userData as any)?.name || '사용자'}
+                                </h3>
+                                {(userData as any)?.bio && (
+                                  <p className="text-xs text-gray-500 mt-1">{(userData as any).bio}</p>
+                                )}
+                                <div className="text-xs text-blue-600 mt-1">
+                                  amusefit.co.kr/users/{settings.customUrl}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2"
+                                  onClick={() => {
+                                    const targetUrl = `${window.location.origin}/users/${settings.customUrl}`;
+                                    console.log('Redirecting to:', targetUrl);
+                                    window.open(targetUrl, '_blank');
+                                  }}
+                                >
+                                  <ExternalLink className="w-4 h-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                                  onClick={async () => {
+                                    try {
+                                      const response = await fetch(`/api/settings/${user?.id}`, {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                          linkTitle: '',
+                                          linkUrl: '',
+                                          linkDescription: '',
+                                          customUrl: '',
+                                          shortUrlType: 'default'
+                                        })
+                                      });
+                                      
+                                      if (response.ok) {
+                                        window.location.reload();
+                                      }
+                                    } catch (error) {
+                                      console.error('삭제 오류:', error);
+                                    }
+                                  }}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        // No valid selection or default selected - show empty state
+                        return null;
+                      }
+                    })()}
 
                     {/* Empty state when no link content */}
                     {!(settingsData as any)?.linkTitle && !(settingsData as any)?.customUrl && (
