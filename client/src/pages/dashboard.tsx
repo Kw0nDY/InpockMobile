@@ -67,18 +67,23 @@ export default function DashboardPage() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+      // 캐시 무효화를 더 강력하게 수행
+      queryClient.invalidateQueries({ queryKey: [`/api/links`] });
+      queryClient.refetchQueries({ queryKey: [`/api/links/${user?.id}`] });
       toast({
         title: "링크 삭제됨",
         description: "링크가 성공적으로 삭제되었습니다.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Link deletion error:', error);
       toast({
         title: "삭제 실패",
-        description: "링크 삭제 중 오류가 발생했습니다.",
+        description: error?.message?.includes('not found') ? "이미 삭제된 링크입니다." : "링크 삭제 중 오류가 발생했습니다.",
         variant: "destructive",
       });
+      // 에러 발생 시에도 캐시 새로고침
+      queryClient.refetchQueries({ queryKey: [`/api/links/${user?.id}`] });
     },
   });
 
