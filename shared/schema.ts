@@ -132,6 +132,16 @@ export const mediaUploads = pgTable("media_uploads", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const linkVisits = pgTable("link_visits", {
+  id: serial("id").primaryKey(),
+  linkId: integer("link_id").references(() => links.id).notNull(),
+  visitorIp: text("visitor_ip").notNull(),
+  userAgent: text("user_agent"),
+  referrer: text("referrer"),
+  isOwner: boolean("is_owner").default(false),
+  visitedAt: timestamp("visited_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -146,6 +156,11 @@ export const insertLinkSchema = createInsertSchema(links).omit({
 export const insertMediaSchema = createInsertSchema(mediaUploads).omit({
   id: true,
   createdAt: true,
+});
+
+export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
+  id: true,
+  visitedAt: true,
 });
 
 export const insertDealSchema = createInsertSchema(deals).omit({

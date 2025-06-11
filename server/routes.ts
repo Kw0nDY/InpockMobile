@@ -969,6 +969,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(410).json({ message: "Link is inactive" });
       }
 
+      // Get visitor information
+      const visitorIp = req.ip || req.connection.remoteAddress || 'unknown';
+      const userAgent = req.get('User-Agent') || '';
+      const referrer = req.get('Referer') || '';
+      
+      // Check if visitor is the link owner (simple check by user session or IP)
+      // For now, we'll assume it's not the owner unless specified
+      const isOwner = req.query.owner === 'true';
+
+      // Record visit
+      await storage.recordLinkVisit({
+        linkId: link.id,
+        visitorIp,
+        userAgent,
+        referrer,
+        isOwner
+      });
+
       // Increment link clicks
       await storage.incrementLinkClicks(link.id);
       

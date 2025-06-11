@@ -1,5 +1,5 @@
 import { 
-  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads,
+  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads, linkVisits,
   type User, type InsertUser,
   type Link, type InsertLink,
   type Deal, type InsertDeal,
@@ -9,7 +9,8 @@ import {
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
   type PasswordResetToken, type InsertPasswordResetToken,
-  type MediaUpload, type InsertMediaUpload
+  type MediaUpload, type InsertMediaUpload,
+  type LinkVisit, type InsertLinkVisit
 } from "@shared/schema";
 
 export interface IStorage {
