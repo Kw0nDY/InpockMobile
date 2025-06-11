@@ -563,7 +563,7 @@ export default function SettingsPage() {
                           value={profileData.customUrl}
                           onChange={(e) => updateProfileData('customUrl', e.target.value)}
                           placeholder="kimyelee"
-                          className="ml-2 border border-gray-200 bg-gray-100 text-sm focus:ring-0 px-3 py-2 rounded text-gray-600 placeholder-gray-400 w-32"
+                          className="ml-2 border border-gray-200 bg-gray-100 text-sm focus:ring-0 px-2 py-1 rounded text-gray-600 placeholder-gray-400 w-32 h-6"
                           onClick={(e) => e.stopPropagation()}
                         />
                       </div>
