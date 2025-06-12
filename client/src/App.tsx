@@ -47,32 +47,34 @@ function Router() {
   const shouldShowBottomNav = !hideNavPages.includes(location) && !location.startsWith("/reset-password/") && !location.startsWith("/users/");
 
   return (
-    <div className="mobile-container">
-      <Switch>
-        <Route path="/" component={LandingPage} />
-        <Route path="/login" component={LoginPage} />
-        <Route path="/signup" component={SignupPage} />
-        <Route path="/signup-step1" component={SignupStep1} />
-        <Route path="/signup-step2" component={SignupStep2} />
-        <Route path="/dashboard" component={DashboardPage} />
-        <Route path="/links" component={LinksPage} />
-        <Route path="/images" component={ImagesPage} />
-        <Route path="/videos" component={VideosPage} />
-        <Route path="/service-intro" component={ServiceIntroPage} />
-        <Route path="/settings" component={SettingsPage} />
-        <Route path="/chat" component={ChatPage} />
-        <Route path="/analytics" component={AnalyticsPage} />
-        <Route path="/contacts" component={ContactsPage} />
-        <Route path="/forgot-password" component={ForgotPasswordPage} />
-        <Route path="/find-id" component={FindIdPage} />
-        <Route path="/reset-password/:token" component={ResetPasswordPage} />
-        <Route path="/oauth/kakao/callback" component={KakaoCallback} />
-        <Route path="/users/:username" component={PublicViewPage} />
-        <Route path="/:customUrl" component={PublicViewPage} />
-        <Route component={NotFound} />
-      </Switch>
+    <>
+      <div className="mobile-container">
+        <Switch>
+          <Route path="/" component={LandingPage} />
+          <Route path="/login" component={LoginPage} />
+          <Route path="/signup" component={SignupPage} />
+          <Route path="/signup-step1" component={SignupStep1} />
+          <Route path="/signup-step2" component={SignupStep2} />
+          <Route path="/dashboard" component={DashboardPage} />
+          <Route path="/links" component={LinksPage} />
+          <Route path="/images" component={ImagesPage} />
+          <Route path="/videos" component={VideosPage} />
+          <Route path="/service-intro" component={ServiceIntroPage} />
+          <Route path="/settings" component={SettingsPage} />
+          <Route path="/chat" component={ChatPage} />
+          <Route path="/analytics" component={AnalyticsPage} />
+          <Route path="/contacts" component={ContactsPage} />
+          <Route path="/forgot-password" component={ForgotPasswordPage} />
+          <Route path="/find-id" component={FindIdPage} />
+          <Route path="/reset-password/:token" component={ResetPasswordPage} />
+          <Route path="/oauth/kakao/callback" component={KakaoCallback} />
+          <Route path="/users/:username" component={PublicViewPage} />
+          <Route path="/:customUrl" component={PublicViewPage} />
+          <Route component={NotFound} />
+        </Switch>
+      </div>
       {shouldShowBottomNav && <BottomNav />}
-    </div>
+    </>
   );
 }
 

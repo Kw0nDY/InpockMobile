@@ -598,7 +598,7 @@ export default function LinksPage() {
     <div className="min-h-screen bg-[#F5F3F0] pb-20">
       <div className="max-w-md mx-auto bg-white min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-40">
           <div className="w-6"></div>
           <h1 className="text-lg font-semibold text-[#8B4513]">링크</h1>
           <div className="w-6"></div>
