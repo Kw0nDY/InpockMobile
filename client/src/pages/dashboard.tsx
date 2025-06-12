@@ -242,7 +242,7 @@ export default function DashboardPage() {
           )}
           <div>
             <p className="font-medium text-sm korean-text">
-              {user?.name || "사용자"}님
+              {(userData as any)?.name || user?.name || "사용자"}님
             </p>
             <p className="text-muted-foreground text-xs korean-text">
               오늘도 좋은 하루 되세요!

@@ -216,9 +216,18 @@ export default function SettingsPage() {
       return response.json();
     },
     onSuccess: (data) => {
+      const imageUrl = data.path;
       updateUserMutation.mutate({
-        profileImageUrl: data.path
+        profileImageUrl: imageUrl
       });
+      
+      // Update local profile data state
+      updateProfileData('profileImageUrl', imageUrl);
+      
+      // Update auth context with new profile image
+      if (user) {
+        setUser({ ...user, profileImageUrl: imageUrl });
+      }
       
       toast({
         title: "프로필 이미지 업데이트",
