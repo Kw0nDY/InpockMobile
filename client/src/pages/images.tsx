@@ -294,7 +294,7 @@ export default function ImagesPage() {
       </div>
 
       {/* Fixed Add Button at Bottom */}
-      <div className="p-4 bg-background border-t border-border flex-shrink-0">
+      <div className="p-4 pb-20 bg-background border-t border-border flex-shrink-0">
         <Button 
           onClick={() => setIsModalOpen(true)} 
           size="lg" 
