@@ -656,7 +656,7 @@ export default function SettingsPage() {
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'image'
                     ? 'border-primary bg-accent'
-                    : 'border-border hover:border-primary/30 hover:bg-muted/50'
+                    : 'border-border hover:border-[#A0826D] hover:bg-[#F0E6D2]'
                 }`}
               >
                 <Image className="w-8 h-8 text-muted-foreground mb-2" />
@@ -668,7 +668,7 @@ export default function SettingsPage() {
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'video'
                     ? 'border-primary bg-accent'
-                    : 'border-border hover:border-primary/30 hover:bg-muted/50'
+                    : 'border-border hover:border-[#A0826D] hover:bg-[#F0E6D2]'
                 }`}
               >
                 <Video className="w-8 h-8 text-muted-foreground mb-2" />
@@ -680,7 +680,7 @@ export default function SettingsPage() {
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'links'
                     ? 'border-primary bg-accent'
-                    : 'border-border hover:border-primary/30 hover:bg-muted/50'
+                    : 'border-border hover:border-[#A0826D] hover:bg-[#F0E6D2]'
                 }`}
               >
                 <ExternalLink className="w-8 h-8 text-muted-foreground mb-2" />
