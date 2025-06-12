@@ -57,8 +57,8 @@ export default function LinksPage() {
     const { data: stats } = useIndividualLinkStats(linkId);
     return (
       <div className="text-xs text-gray-500 mt-1 flex gap-3">
-        <span>내 방문: {stats?.ownerVisits || 0}</span>
-        <span>외부 방문: {stats?.externalVisits || 0}</span>
+        <span>내 방문: {(stats as any)?.ownerVisits || 0}</span>
+        <span>외부 방문: {(stats as any)?.externalVisits || 0}</span>
       </div>
     );
   };
@@ -645,19 +645,19 @@ export default function LinksPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {userStats?.totalVisits || 0}
+                    {(userStats as any)?.totalVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">총방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {userStats?.dailyVisits || 0}
+                    {(userStats as any)?.dailyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">일방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {userStats?.monthlyVisits || 0}
+                    {(userStats as any)?.monthlyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">월방문자</div>
                 </div>
@@ -828,9 +828,8 @@ export default function LinksPage() {
                               >
                                 amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
                               </div>
-                              <div className="text-xs text-gray-300 mt-1 flex gap-3">
-                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
-                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
+                              <div className="text-xs text-gray-300 mt-1">
+                                <LinkStatsDisplay linkId={link.id} />
                               </div>
                             </div>
                             <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
@@ -879,9 +878,8 @@ export default function LinksPage() {
                               >
                                 단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
                               </div>
-                              <div className="text-xs text-gray-200 mb-2 flex gap-3 drop-shadow-lg">
-                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
-                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
+                              <div className="text-xs text-gray-200 mb-2 drop-shadow-lg">
+                                <LinkStatsDisplay linkId={link.id} />
                               </div>
                             </div>
                           </div>
