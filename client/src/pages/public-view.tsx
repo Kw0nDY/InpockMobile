@@ -406,8 +406,8 @@ export default function PublicViewPage() {
         </div>
 
         {/* Footer with Content Type Icons */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20">
-          <div className="max-w-md mx-auto px-6 py-3">
+        <div className="fixed bottom-0 left-0 right-0">
+          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20 px-6 py-3">
             <div className="flex justify-center items-center gap-4">
               {/* Images Icon */}
               <div className={`flex flex-col items-center gap-0.5 transition-colors ${
