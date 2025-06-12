@@ -136,9 +136,9 @@ export default function PublicViewPage() {
                   <div key={link.id} className="w-full">
                     {/* Thumbnail Style */}
                     {link.style === 'thumbnail' && (
-                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
+                      <div className="bg-card shadow-sm rounded-lg border border-border">
                         <div 
-                          className="flex items-center gap-3 p-2 bg-white/90 rounded-lg border border-[#EFE5DC] relative cursor-pointer hover:bg-[#EFE5DC] transition-colors"
+                          className="flex items-center gap-3 p-4 relative cursor-pointer hover:bg-muted transition-colors"
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -151,18 +151,18 @@ export default function PublicViewPage() {
                               className="w-12 h-12 rounded object-cover flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-[#EFE5DC] rounded flex-shrink-0"></div>
+                            <div className="w-12 h-12 bg-muted rounded flex-shrink-0"></div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-[#4E342E] truncate hover:text-[#8D6E63]">
+                            <div className="text-sm font-medium text-foreground truncate hover:text-primary">
                               {link.title}
                             </div>
                             {link.description && (
-                              <div className="text-xs text-[#8D6E63] mt-1 line-clamp-1">{link.description}</div>
+                              <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{link.description}</div>
                             )}
                             <div className="flex items-center gap-2 mt-1">
                               <div 
-                                className="text-xs text-[#A1887F] cursor-pointer hover:underline flex-1"
+                                className="text-xs text-muted-foreground cursor-pointer hover:underline flex-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(`/l/${link.shortCode}`, '_blank');
@@ -175,12 +175,12 @@ export default function PublicViewPage() {
                                   e.stopPropagation();
                                   copyToClipboard(`${window.location.origin}/l/${link.shortCode}`, link.shortCode);
                                 }}
-                                className="h-5 w-5 p-0 text-[#8D6E63] hover:text-[#4E342E]"
+                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
                               >
                                 <Copy className="w-3 h-3" />
                               </button>
                             </div>
-                            <div className="text-xs text-[#A1887F] mt-1 flex gap-3">
+                            <div className="text-xs text-muted-foreground mt-1 flex gap-3">
                               <span>내 방문: {link.ownerVisits || 0}</span>
                               <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
@@ -191,9 +191,9 @@ export default function PublicViewPage() {
 
                     {/* Card Style */}
                     {link.style === 'card' && (
-                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
+                      <div className="bg-card shadow-sm rounded-lg border border-border">
                         <div 
-                          className="bg-[#EFE5DC] rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-[#D7CCC8] transition-colors" 
+                          className="bg-muted rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-muted/80 transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -206,10 +206,10 @@ export default function PublicViewPage() {
                               className="absolute inset-0 w-full h-full object-cover rounded-lg"
                             />
                           )}
-                          <div className="relative z-10 bg-[#4E342E]/80 text-white p-2 rounded">
+                          <div className="relative z-10 bg-black/80 text-white p-2 rounded">
                             <div className="text-sm font-medium truncate">{link.title}</div>
                             <div 
-                              className="text-xs text-[#EFE5DC] mt-1 cursor-pointer hover:underline"
+                              className="text-xs text-gray-200 mt-1 cursor-pointer hover:underline"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/l/${link.shortCode}`, '_blank');
@@ -217,12 +217,12 @@ export default function PublicViewPage() {
                             >
                               amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
                             </div>
-                            <div className="text-xs text-[#A1887F] mt-1 flex gap-3">
+                            <div className="text-xs text-gray-300 mt-1 flex gap-3">
                               <span>내 방문: {link.ownerVisits || 0}</span>
                               <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
                           </div>
-                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-[#4E342E]/80 rounded-full flex items-center justify-center">
+                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-black/80 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                           </div>
                         </div>
@@ -434,109 +434,79 @@ export default function PublicViewPage() {
       }}
     >
       <div className="max-w-md mx-auto w-full flex flex-col h-full">
-        {/* Fixed Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-[#8D6E63]/20 px-6 py-4 flex-shrink-0">
-          <div className="flex items-center gap-3">
+        {/* Fixed Header - Business Dashboard Style */}
+        <header className="flex items-center justify-between p-4 bg-card border-b border-border sticky top-0 z-10">
+          <div className="flex items-center">
             {settings?.showProfileImage && user.profileImage ? (
               <img 
                 src={user.profileImage} 
                 alt={user.name}
-                className="w-12 h-12 rounded-full object-cover"
+                className="w-10 h-10 rounded-full object-cover mr-3"
               />
             ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-[#8D6E63] to-[#A1887F] rounded-full flex items-center justify-center">
-                <User className="w-6 h-6 text-white" />
+              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+                <span className="text-primary-foreground font-medium text-sm">
+                  {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                </span>
               </div>
             )}
-            <div className="flex-1">
-              <h1 className="text-lg font-bold text-[#4E342E]">{user.name}</h1>
-              <p className="text-sm text-[#8D6E63]">@{user.username}</p>
+            <div>
+              <p className="font-medium text-sm korean-text">{user.name}</p>
+              <p className="text-muted-foreground text-xs korean-text">@{user.username}</p>
             </div>
           </div>
-          {settings?.showBio && user.bio && (
-            <p className="text-sm text-[#8D6E63] mt-3">{user.bio}</p>
-          )}
-        </div>
+        </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="p-4 pb-20">
+        <div className="flex-1 overflow-y-auto bg-background">
+          <div className="p-4 pb-24 max-w-md mx-auto">
             {renderContent()}
           </div>
         </div>
 
         {/* Footer with Content Type Icons */}
-        <div className="fixed bottom-0 left-0 right-0">
-          <div className="max-w-md mx-auto bg-[#F5F5DC]/95 backdrop-blur-sm border-t border-[#8D6E63]/30 px-6 py-3">
-            <div className="flex justify-center items-center gap-6">
-              {/* Images Icon */}
-              <button 
-                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-                  contentType === 'image' 
-                    ? 'text-[#4E342E]' 
-                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
-                }`}
-                onClick={() => setCurrentContentType('image')}
-              >
-                <div className={`p-2 rounded-full transition-all duration-200 ${
-                  contentType === 'image' 
-                    ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
-                }`}>
-                  <Image className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-medium">이미지</span>
-                {images.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
-                )}
-              </button>
+        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+          <div className="flex items-center justify-around py-2">
+            {/* Images Icon */}
+            <button 
+              className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                contentType === 'image' 
+                  ? 'text-primary' 
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+              onClick={() => setCurrentContentType('image')}
+            >
+              <Image className="w-6 h-6 mb-1" />
+              <span className="text-xs korean-text">이미지</span>
+            </button>
 
-              {/* Videos Icon */}
-              <button 
-                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-                  contentType === 'video' 
-                    ? 'text-[#4E342E]' 
-                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
-                }`}
-                onClick={() => setCurrentContentType('video')}
-              >
-                <div className={`p-2 rounded-full transition-all duration-200 ${
-                  contentType === 'video' 
-                    ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
-                }`}>
-                  <Video className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-medium">동영상</span>
-                {allVideos.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
-                )}
-              </button>
+            {/* Videos Icon */}
+            <button 
+              className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                contentType === 'video' 
+                  ? 'text-primary' 
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+              onClick={() => setCurrentContentType('video')}
+            >
+              <Video className="w-6 h-6 mb-1" />
+              <span className="text-xs korean-text">동영상</span>
+            </button>
 
-              {/* Links Icon */}
-              <button 
-                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
-                  contentType === 'links' 
-                    ? 'text-[#4E342E]' 
-                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
-                }`}
-                onClick={() => setCurrentContentType('links')}
-              >
-                <div className={`p-2 rounded-full transition-all duration-200 ${
-                  contentType === 'links' 
-                    ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
-                }`}>
-                  <LinkIcon className="w-5 h-5" />
-                </div>
-                <span className="text-[10px] font-medium">링크</span>
-                {links.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
-                )}
-              </button>
-            </div>
+            {/* Links Icon */}
+            <button 
+              className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                contentType === 'links' 
+                  ? 'text-primary' 
+                  : 'text-gray-400 hover:text-gray-600'
+              }`}
+              onClick={() => setCurrentContentType('links')}
+            >
+              <LinkIcon className="w-6 h-6 mb-1" />
+              <span className="text-xs korean-text">링크</span>
+            </button>
           </div>
-        </div>
+        </nav>
       </div>
     </div>
   );
