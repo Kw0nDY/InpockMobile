@@ -475,135 +475,33 @@ export default function DashboardPage() {
                   }
                 })()}
 
-                {/* Display actual saved links with exact link form styling */}
+                {/* Links Content - Match Public View Page */}
                 {currentContentType === 'links' && (
-                  <div className="mb-4 space-y-3">
+                  <div className="space-y-3">
+                    <p className="text-sm font-medium text-gray-700 korean-text mb-2">방문자가 볼 링크 화면</p>
                     {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
                       linksData.map((link: any) => (
-                        <div key={link.id} className="w-full h-32 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden">
-                          <div className="p-2 w-full h-full relative">
-                            {/* Thumbnail Style - Exact match to link form preview */}
-                            {link.style === 'thumbnail' && (
-                              <div 
-                                className="flex items-center gap-3 h-full p-2 bg-white rounded-lg border cursor-pointer hover:shadow-sm transition-shadow"
-                                onClick={() => window.open(link.originalUrl, '_blank')}
-                              >
-                                {(link.customImageUrl || link.imageUrl) ? (
-                                  <img 
-                                    src={link.customImageUrl || link.imageUrl} 
-                                    alt={link.title}
-                                    className="w-12 h-12 rounded object-cover"
-                                  />
-                                ) : (
-                                  <div className="w-12 h-12 bg-gray-300 rounded"></div>
-                                )}
-                                <div className="text-left flex-1">
-                                  <div className="text-sm font-medium text-gray-800 truncate">{link.title}</div>
-                                  {link.description && (
-                                    <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
-                                  )}
-                                </div>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteLinkMutation.mutate(link.id);
-                                  }}
-                                  className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
+                        <div key={link.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                          <div className="flex items-center space-x-3">
+                            {(link.customImageUrl || link.imageUrl) ? (
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="w-12 h-12 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                <ExternalLink className="w-6 h-6 text-gray-400" />
                               </div>
                             )}
-                            
-                            {/* Simple Style - Exact match to link form preview */}
-                            {link.style === 'simple' && (
-                              <div 
-                                className="bg-white rounded-lg border p-3 h-full flex flex-col justify-center cursor-pointer hover:bg-gray-50 transition-colors relative" 
-                                onClick={() => window.open(link.originalUrl, '_blank')}
-                              >
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteLinkMutation.mutate(link.id);
-                                  }}
-                                  className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                                <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
-                                {link.description && (
-                                  <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
-                                )}
-                                <div className="w-full h-2 bg-gray-300 rounded"></div>
-                              </div>
-                            )}
-                            
-                            {/* Card Style - Exact match to link form preview */}
-                            {link.style === 'card' && (
-                              <div 
-                                className="bg-gray-400 rounded-lg h-full flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
-                                onClick={() => window.open(link.originalUrl, '_blank')}
-                              >
-                                {(link.customImageUrl || link.imageUrl) && (
-                                  <img 
-                                    src={link.customImageUrl || link.imageUrl} 
-                                    alt={link.title}
-                                    className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                  />
-                                )}
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteLinkMutation.mutate(link.id);
-                                  }}
-                                  className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                                <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
-                                  <div className="text-sm font-medium truncate">{link.title}</div>
-                                  {link.description && (
-                                    <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
-                                  )}
-                                </div>
-                                <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                                  <div className="w-3 h-3 border-2 border-white rounded-full"></div>
-                                </div>
-                              </div>
-                            )}
-
-                            {/* Background Style - Exact match to link form preview */}
-                            {link.style === 'background' && (
-                              <div 
-                                className="h-full flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
-                                style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
-                                onClick={() => window.open(link.originalUrl, '_blank')}
-                              >
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    deleteLinkMutation.mutate(link.id);
-                                  }}
-                                  className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
-                                >
-                                  <Trash2 className="w-3 h-3" />
-                                </Button>
-                                <div className="text-sm font-medium text-gray-800 truncate mb-2">{link.title}</div>
-                                {link.description && (
-                                  <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
-                                )}
-                                <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
-                                <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
-                              </div>
-                            )}
+                            <div className="flex-1">
+                              <h3 className="font-medium text-[#8B4513] text-sm">{link.title}</h3>
+                              {link.description && (
+                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">{link.description}</p>
+                              )}
+                              <p className="text-xs text-gray-500 mt-1">{new URL(link.originalUrl).hostname}</p>
+                            </div>
+                            <ExternalLink className="w-4 h-4 text-gray-400" />
                           </div>
                         </div>
                       ))
