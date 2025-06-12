@@ -73,59 +73,46 @@ export default function ProfilePage() {
             {links.length > 0 ? (
               <div className="space-y-3">
                 {links.map((link: any) => (
-                  <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
-                    {/* Thumbnail Style */}
+                  <div key={link.id}>
+                    {/* Thumbnail Style - Match link form exactly */}
                     {link.style === 'thumbnail' && (
                       <div 
-                        className="flex items-center gap-3 p-2 bg-white rounded-lg border cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-3 bg-white rounded-lg border p-3 cursor-pointer hover:shadow-sm transition-shadow"
                         onClick={() => window.open(link.originalUrl, '_blank')}
                       >
                         {(link.customImageUrl || link.imageUrl) ? (
                           <img 
                             src={link.customImageUrl || link.imageUrl} 
                             alt={link.title}
-                            className="w-12 h-12 rounded object-cover flex-shrink-0"
+                            className="w-12 h-12 rounded object-cover"
                           />
                         ) : (
-                          <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
+                          <div className="w-12 h-12 bg-gray-300 rounded"></div>
                         )}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
-                            {link.title}
-                          </div>
+                        <div className="text-left flex-1">
+                          <div className="text-sm font-medium text-gray-800 truncate">{link.title}</div>
                           {link.description && (
                             <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
                           )}
-                          <div className="flex items-center gap-2 mt-1">
-                            <ExternalLink className="w-3 h-3 text-gray-400" />
-                            <span className="text-xs text-gray-500">클릭하여 이동</span>
-                          </div>
                         </div>
                       </div>
                     )}
                     
-                    {/* Simple Style */}
+                    {/* Simple Style - Match link form exactly */}
                     {link.style === 'simple' && (
                       <div 
-                        className="bg-white rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
+                        className="bg-white rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-colors flex flex-col justify-center" 
                         onClick={() => window.open(link.originalUrl, '_blank')}
                       >
-                        {(link.customImageUrl || link.imageUrl) && (
-                          <img 
-                            src={link.customImageUrl || link.imageUrl} 
-                            alt={link.title}
-                            className="w-full h-20 object-cover rounded mb-2"
-                          />
-                        )}
-                        <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                        <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
                         {link.description && (
-                          <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
+                          <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
                         )}
                         <div className="w-full h-2 bg-gray-300 rounded"></div>
                       </div>
                     )}
                     
-                    {/* Card Style */}
+                    {/* Card Style - Match link form exactly */}
                     {link.style === 'card' && (
                       <div 
                         className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
@@ -145,12 +132,12 @@ export default function ProfilePage() {
                           )}
                         </div>
                         <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                          <ExternalLink className="w-3 h-3 text-white" />
+                          <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                         </div>
                       </div>
                     )}
 
-                    {/* Background Style */}
+                    {/* Background Style - Match link form exactly */}
                     {link.style === 'background' && (
                       <div 
                         className="h-24 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
