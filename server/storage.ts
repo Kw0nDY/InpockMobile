@@ -526,9 +526,9 @@ export class MemStorage implements IStorage {
 
   // Media methods
   async getMediaByUserAndType(userId: number, type: string): Promise<MediaUpload[]> {
-    return Array.from(this.mediaUploads.values()).filter(media => 
-      media.userId === userId && media.mediaType === type
-    );
+    return Array.from(this.mediaUploads.values())
+      .filter(media => media.userId === userId && media.mediaType === type)
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }
 
   async createMedia(media: InsertMediaUpload): Promise<MediaUpload> {
@@ -568,6 +568,32 @@ export class MemStorage implements IStorage {
 
   async deleteMediaUpload(id: number): Promise<boolean> {
     return this.mediaUploads.delete(id);
+  }
+
+  async updateMediaOrder(userId: number, mediaId: number, newOrder: number): Promise<MediaUpload | undefined> {
+    const media = this.mediaUploads.get(mediaId);
+    if (!media || media.userId !== userId) return undefined;
+    
+    media.displayOrder = newOrder;
+    this.mediaUploads.set(mediaId, media);
+    return media;
+  }
+
+  async reorderUserMedia(userId: number, mediaType: string, orderedIds: number[]): Promise<MediaUpload[]> {
+    const updates: MediaUpload[] = [];
+    
+    for (let i = 0; i < orderedIds.length; i++) {
+      const mediaId = orderedIds[i];
+      const media = this.mediaUploads.get(mediaId);
+      
+      if (media && media.userId === userId && media.mediaType === mediaType) {
+        media.displayOrder = i;
+        this.mediaUploads.set(mediaId, media);
+        updates.push(media);
+      }
+    }
+    
+    return updates;
   }
 }
 

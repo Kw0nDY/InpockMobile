@@ -141,6 +141,7 @@ export const mediaUploads = pgTable("media_uploads", {
   mediaType: text("media_type").notNull(), // 'image' or 'video'
   title: text("title"),
   description: text("description"),
+  displayOrder: integer("display_order").default(0),
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });

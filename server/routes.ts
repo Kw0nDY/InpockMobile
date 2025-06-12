@@ -1121,6 +1121,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Media ordering routes
+  app.put("/api/media/:mediaId/order", async (req, res) => {
+    try {
+      const mediaId = parseInt(req.params.mediaId);
+      const { userId, newOrder } = req.body;
+
+      const updatedMedia = await storage.updateMediaOrder(userId, mediaId, newOrder);
+      if (!updatedMedia) {
+        return res.status(404).json({ message: "Media not found or unauthorized" });
+      }
+
+      res.json(updatedMedia);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.put("/api/media/reorder", async (req, res) => {
+    try {
+      const { userId, mediaType, orderedIds } = req.body;
+
+      const updatedMedia = await storage.reorderUserMedia(userId, mediaType, orderedIds);
+      res.json(updatedMedia);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get user media by type with proper ordering
+  app.get("/api/media/:userId/:mediaType", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const mediaType = req.params.mediaType;
+      
+      const media = await storage.getMediaByUserAndType(userId, mediaType);
+      res.json(media);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch media" });
+    }
+  });
+
   // Link redirect with click tracking
   app.get("/l/:shortCode", async (req, res) => {
     try {
