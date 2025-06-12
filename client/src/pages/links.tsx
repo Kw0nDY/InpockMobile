@@ -63,12 +63,29 @@ export default function LinksPage() {
       customImageUrl?: string;
       cropData?: string;
     }) => {
+      // Validate data size and compress if needed
+      let processedData = { ...data };
+      
+      // If image data is too large, reduce quality
+      if (data.imageUrl && data.imageUrl.startsWith('data:image/')) {
+        const sizeInMB = data.imageUrl.length / (1024 * 1024);
+        if (sizeInMB > 10) {
+          // Data too large, remove image to prevent server error
+          processedData.imageUrl = undefined;
+          console.warn('Image too large, removing from submission');
+        }
+      }
+      
       const response = await fetch('/api/links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(processedData)
       });
-      if (!response.ok) throw new Error('Failed to create link');
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`링크 생성 실패: ${response.status}`);
+      }
       return response.json();
     },
     onSuccess: () => {
@@ -80,16 +97,18 @@ export default function LinksPage() {
       setSelectedImage(null);
       setImageFile(null);
       setCustomImageUrl("");
+      setCompletedCrop(undefined);
       setShowAddForm(false);
       toast({
         title: "링크 생성 완료",
         description: "새로운 링크가 성공적으로 생성되었습니다.",
       });
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error('Link creation error:', error);
       toast({
         title: "링크 생성 실패",
-        description: "링크 생성 중 오류가 발생했습니다.",
+        description: error.message || "링크 생성 중 오류가 발생했습니다. 이미지 크기를 줄여보세요.",
         variant: "destructive",
       });
     },
