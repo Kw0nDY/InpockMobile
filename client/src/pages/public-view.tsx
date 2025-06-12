@@ -33,22 +33,23 @@ interface UserSettings {
 }
 
 export default function PublicViewPage() {
-  const { username } = useParams<{ username: string }>();
+  const params = useParams<{ username?: string; customUrl?: string }>();
+  const identifier = params.username || params.customUrl || '';
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
-    queryKey: ['/api/public', username],
-    enabled: !!username,
+    queryKey: ['/api/public', identifier],
+    enabled: !!identifier,
   });
 
   const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
-    queryKey: ['/api/public', username, 'settings'],
-    enabled: !!username,
+    queryKey: ['/api/public', identifier, 'settings'],
+    enabled: !!identifier,
   });
 
   const { data: links = [], isLoading: linksLoading } = useQuery<any[]>({
-    queryKey: ['/api/public', username, 'links'],
-    enabled: !!username,
+    queryKey: ['/api/public', identifier, 'links'],
+    enabled: !!identifier,
   });
 
   const copyToClipboard = async (originalUrl: string, shortCode: string) => {

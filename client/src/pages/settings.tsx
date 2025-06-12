@@ -599,7 +599,7 @@ export default function SettingsPage() {
                 <Label htmlFor="default" className="cursor-pointer">
                   <div>
                     <div className="font-medium text-foreground">기본값</div>
-                    <div className="text-sm text-muted-foreground">amusefit.co.kr/users/{user?.username || 'demo_user'}</div>
+                    <div className="text-sm text-muted-foreground">{window.location.host}/{user?.username || 'demo_user'}</div>
                   </div>
                 </Label>
               </div>
@@ -610,7 +610,7 @@ export default function SettingsPage() {
                   <div>
                     <div className="font-medium text-foreground">커스텀</div>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <span>amusefit.co.kr/users/</span>
+                      <span>{window.location.host}/</span>
                       <Input
                         value={profileData.customUrl || ''}
                         onChange={(e) => updateProfileData('customUrl', e.target.value)}
