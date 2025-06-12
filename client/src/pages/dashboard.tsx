@@ -55,6 +55,16 @@ export default function DashboardPage() {
     enabled: !!user?.id,
   });
 
+  const { data: images = [] } = useQuery({
+    queryKey: [`/api/media/${user?.id}/image`],
+    enabled: !!user?.id,
+  });
+
+  const { data: videos = [] } = useQuery({
+    queryKey: [`/api/media/${user?.id}/video`],
+    enabled: !!user?.id,
+  });
+
   const { data: linksData } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
     enabled: !!user?.id,
@@ -357,17 +367,16 @@ export default function DashboardPage() {
                 
                 {/* Image Content */}
                 {currentContentType === 'image' && (() => {
-                  const imageMedia = Array.isArray(mediaData) ? mediaData.find((media: any) => media.mediaType === 'image') : null;
-                  const imageSettings = settingsData as any;
-                  const imageUrl = imageMedia?.mediaUrl || (imageSettings?.contentType === 'image' ? imageSettings?.linkUrl : null);
-                  
-                  if (imageUrl) {
+                  if (Array.isArray(images) && images.length > 0) {
+                    const firstImage = images[0] as any;
+                    const imageUrl = firstImage.filePath || firstImage.mediaUrl;
+                    
                     return (
                       <div className="mb-4">
-                        <div className="relative w-full h-96 rounded-lg overflow-hidden bg-gray-100">
+                        <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100">
                           <img 
                             src={imageUrl} 
-                            alt={imageMedia?.title || imageSettings?.linkTitle || '이미지'} 
+                            alt={firstImage.title || '이미지'} 
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
@@ -382,51 +391,51 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           
-                          {/* Gradient overlay for text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                          {/* Count badge */}
+                          {images.length > 1 && (
+                            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                              +{images.length - 1} 더보기
+                            </div>
+                          )}
                           
                           {/* Text overlay at bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                            <h3 className="text-xl font-bold mb-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
-                              {imageMedia?.title || imageSettings?.linkTitle || '프로필 이미지'}
-                            </h3>
-                            {(imageMedia?.description || imageSettings?.linkDescription) && (
-                              <p className="text-sm text-white/90" style={{textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>
-                                {imageMedia?.description || imageSettings?.linkDescription}
+                          {firstImage.title && (
+                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                              <p className="text-white text-sm font-medium" style={{textShadow: '0 1px 2px rgba(0,0,0,0.7)'}}>
+                                {firstImage.title}
                               </p>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div className="mb-4">
-                        <div className="w-full h-96 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                          <div className="text-center">
-                            <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                            <p className="text-sm text-gray-500">이미지를 업로드하세요</p>
-                            <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
-                          </div>
+                        <div className="mt-2 text-center">
+                          <p className="text-xs text-gray-600">총 {images.length}개의 이미지</p>
                         </div>
                       </div>
                     );
                   }
+                  
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      <Image className="w-16 h-16 mx-auto mb-2 text-gray-400" />
+                      <p className="korean-text">아직 이미지가 없습니다</p>
+                      <p className="text-sm korean-text">이미지 페이지에서 업로드하세요</p>
+                    </div>
+                  );
                 })()}
 
                 {/* Video Content */}
                 {currentContentType === 'video' && (() => {
-                  const videoMedia = Array.isArray(mediaData) ? mediaData.find((media: any) => media.mediaType === 'video') : null;
-                  const videoSettings = settingsData as any;
-                  const videoUrl = videoMedia?.mediaUrl || (videoSettings?.contentType === 'video' ? videoSettings?.linkUrl : null);
-                  
-                  if (videoUrl) {
+                  if (Array.isArray(videos) && videos.length > 0) {
+                    const firstVideo = videos[0] as any;
+                    const videoUrl = firstVideo.filePath || firstVideo.mediaUrl;
+                    
                     return (
                       <div className="mb-4">
-                        <div className="relative w-full h-96 rounded-lg overflow-hidden bg-gray-100">
+                        <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100">
                           <video 
                             src={videoUrl} 
                             controls 
+                            preload="metadata"
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               const target = e.target as HTMLVideoElement;
@@ -443,36 +452,36 @@ export default function DashboardPage() {
                             </div>
                           </div>
                           
-                          {/* Gradient overlay for text readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none"></div>
+                          {/* Count badge */}
+                          {videos.length > 1 && (
+                            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
+                              +{videos.length - 1} 더보기
+                            </div>
+                          )}
                           
                           {/* Text overlay at bottom */}
-                          <div className="absolute bottom-0 left-0 right-0 p-6 text-white pointer-events-none">
-                            <h3 className="text-xl font-bold mb-2" style={{textShadow: '0 2px 4px rgba(0,0,0,0.7)'}}>
-                              {videoMedia?.title || videoSettings?.linkTitle || '프로필 동영상'}
-                            </h3>
-                            {(videoMedia?.description || videoSettings?.linkDescription) && (
-                              <p className="text-sm text-white/90" style={{textShadow: '0 1px 3px rgba(0,0,0,0.5)'}}>
-                                {videoMedia?.description || videoSettings?.linkDescription}
+                          {firstVideo.title && (
+                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
+                              <p className="text-white text-sm font-medium" style={{textShadow: '0 1px 2px rgba(0,0,0,0.7)'}}>
+                                {firstVideo.title}
                               </p>
-                            )}
-                          </div>
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div className="mb-4">
-                        <div className="w-full h-96 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
-                          <div className="text-center">
-                            <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                            <p className="text-sm text-gray-500">동영상을 업로드하세요</p>
-                            <p className="text-xs text-blue-600 mt-1 cursor-pointer hover:underline">설정에서 업로드하기</p>
-                          </div>
+                        <div className="mt-2 text-center">
+                          <p className="text-xs text-gray-600">총 {videos.length}개의 동영상</p>
                         </div>
                       </div>
                     );
                   }
+                  
+                  return (
+                    <div className="text-center py-8 text-gray-500">
+                      <Video className="w-16 h-16 mx-auto mb-2 text-gray-400" />
+                      <p className="korean-text">아직 동영상이 없습니다</p>
+                      <p className="text-sm korean-text">동영상 페이지에서 업로드하세요</p>
+                    </div>
+                  );
                 })()}
 
                 {/* Links Content - Display with actual configured styles */}
