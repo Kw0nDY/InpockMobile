@@ -11,6 +11,7 @@ interface UserProfile {
   name: string;
   bio?: string;
   profileImage?: string;
+  profileImageUrl?: string;
   links: Array<{
     id: number;
     title: string;
@@ -117,7 +118,15 @@ export default function PublicViewPage() {
         queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}/settings`] }),
         queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}/links`] }),
         queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] }),
-        queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/video`] })
+        queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/video`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] })
+      ]);
+      
+      // Force refetch to get latest data
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: [`/api/public/${identifier}`] }),
+        queryClient.refetchQueries({ queryKey: [`/api/public/${identifier}/settings`] }),
+        queryClient.refetchQueries({ queryKey: [`/api/user/${user?.id}`] })
       ]);
     } finally {
       setTimeout(() => setIsRefreshing(false), 500);
@@ -468,9 +477,9 @@ export default function PublicViewPage() {
         {/* Fixed Header - Business Dashboard Style */}
         <header className="flex items-center justify-between p-4 bg-card border-b border-border sticky top-0 z-10">
           <div className="flex items-center">
-            {settings?.showProfileImage && user.profileImage ? (
+            {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
               <img 
-                src={user.profileImage} 
+                src={user.profileImageUrl || user.profileImage} 
                 alt={user.name}
                 className="w-10 h-10 rounded-full object-cover mr-3"
               />
