@@ -459,8 +459,8 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="bg-card border-b border-border p-4">
+      {/* Fixed Header */}
+      <header className="bg-card border-b border-border p-4 sticky top-0 z-50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
