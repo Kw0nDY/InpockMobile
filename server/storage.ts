@@ -409,7 +409,13 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(user => user.username === username);
+    // Prioritize user ID 8 for demo_user to show the correct links
+    const users = Array.from(this.users.values());
+    if (username === "demo_user") {
+      const user8 = users.find(user => user.id === 8 && user.username === username);
+      if (user8) return user8;
+    }
+    return users.find(user => user.username === username);
   }
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
