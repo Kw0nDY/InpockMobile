@@ -189,8 +189,8 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100">
+      <div className="min-h-screen bg-background">
+        <header className="flex items-center justify-between p-4 bg-card border-b border-border">
           <div className="flex items-center">
             <Skeleton className="w-10 h-10 rounded-full mr-3" />
             <div>
@@ -214,8 +214,8 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100 sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      <header className="flex items-center justify-between p-4 bg-card border-b border-border sticky top-0 z-10">
         <div className="flex items-center">
           {(userData as any)?.profileImageUrl ? (
             <img 
@@ -225,7 +225,7 @@ export default function DashboardPage() {
             />
           ) : (
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
-              <span className="text-white font-medium text-sm">
+              <span className="text-primary-foreground font-medium text-sm">
                 {user?.name ? getInitials(user.name) : "사용자"}
               </span>
             </div>
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             <p className="font-medium text-sm korean-text">
               {user?.name || "사용자"}님
             </p>
-            <p className="text-gray-500 text-xs korean-text">
+            <p className="text-muted-foreground text-xs korean-text">
               오늘도 좋은 하루 되세요!
             </p>
           </div>
@@ -245,13 +245,13 @@ export default function DashboardPage() {
       <div className="p-4 pb-24 max-w-md mx-auto">
         {/* Stats Cards */}
         <div className="grid grid-cols-3 gap-3 mb-6">
-          <Card className="bg-white shadow-sm">
+          <Card className="bg-card shadow-sm">
             <CardContent className="p-4 text-center">
               <Link className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
                 {trackedUrls.length}
               </p>
-              <p className="text-xs text-gray-600 korean-text">연결</p>
+              <p className="text-xs text-muted-foreground korean-text">연결</p>
             </CardContent>
           </Card>
 
