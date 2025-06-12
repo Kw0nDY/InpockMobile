@@ -655,7 +655,7 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'image')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'image'
-                    ? 'border-[#8B6F47] bg-[#e9e0d2]'
+                    ? 'border-[#8B6F47] bg-[#f2eae3]'
                     : 'border-border hover:border-[#A0826D]'
                 }`}
               >
@@ -667,7 +667,7 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'video')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'video'
-                    ? 'border-[#8B6F47] bg-[#e9e0d2]'
+                    ? 'border-[#8B6F47] bg-[#f2eae3]'
                     : 'border-border hover:border-[#A0826D]'
                 }`}
               >
@@ -679,7 +679,7 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'links')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'links'
-                    ? 'border-[#8B6F47] bg-[#e9e0d2]'
+                    ? 'border-[#8B6F47] bg-[#f2eae3]'
                     : 'border-border hover:border-[#A0826D]'
                 }`}
               >
