@@ -5,7 +5,8 @@ import { ExternalLink, User, Image, Video, Link } from "lucide-react";
 import { trackPageView } from "../lib/analytics";
 
 export default function PublicViewPage() {
-  const { customUrl } = useParams();
+  const params = useParams();
+  const customUrl = params.customUrl;
 
   // Fetch user data by custom URL
   const { data: userData, isLoading: userLoading } = useQuery({

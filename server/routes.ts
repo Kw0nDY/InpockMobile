@@ -1382,7 +1382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get user's active links
       const links = await storage.getLinks(user.id);
-      const activeLinks = links.filter(link => link.isActive);
+      const activeLinks = links.filter((link: any) => link.isActive);
 
       res.json(activeLinks);
     } catch (error) {
