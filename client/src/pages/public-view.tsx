@@ -63,6 +63,36 @@ export default function PublicViewPage() {
     enabled: !!user?.id,
   });
 
+  // Helper function to extract video embed URL
+  const getVideoEmbedUrl = (url: string) => {
+    // YouTube
+    const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const youtubeMatch = url.match(youtubeRegex);
+    if (youtubeMatch) {
+      return `https://www.youtube.com/embed/${youtubeMatch[1]}`;
+    }
+
+    // Vimeo
+    const vimeoRegex = /(?:vimeo\.com\/)([0-9]+)/;
+    const vimeoMatch = url.match(vimeoRegex);
+    if (vimeoMatch) {
+      return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    }
+
+    return null;
+  };
+
+  // Filter video links from links data
+  const videoLinks = links.filter((link: any) => {
+    return getVideoEmbedUrl(link.originalUrl) !== null;
+  });
+
+  // Combine uploaded videos and video links
+  const allVideos = [
+    ...videos.map((video: any) => ({ ...video, type: 'upload' })),
+    ...videoLinks.map((link: any) => ({ ...link, type: 'link', embedUrl: getVideoEmbedUrl(link.originalUrl) }))
+  ];
+
   const copyToClipboard = async (originalUrl: string, shortCode: string) => {
     const shortUrl = `${window.location.host}/${shortCode}`;
     try {
@@ -331,33 +361,52 @@ export default function PublicViewPage() {
       case 'video':
         return (
           <div className="space-y-4">
-            {Array.isArray(videos) && videos.length > 0 ? (
+            {Array.isArray(allVideos) && allVideos.length > 0 ? (
               <div className="space-y-4">
-                {videos.map((video: any, index: number) => (
-                  <div key={video.id} className="relative">
+                {allVideos.map((video: any, index: number) => (
+                  <div key={video.id || `link-${index}`} className="relative">
                     <div className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] p-1 rounded-xl shadow-lg">
                       <div className="relative aspect-[16/10] bg-black rounded-lg overflow-hidden">
-                        <video
-                          src={video.filePath || video.mediaUrl}
-                          className="w-full h-full object-cover"
-                          poster={video.thumbnailUrl}
-                          controls
-                          preload="metadata"
-                        />
-                        {video.title && (
+                        {video.type === 'link' && video.embedUrl ? (
+                          <iframe
+                            src={video.embedUrl}
+                            className="w-full h-full"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title={video.title || 'Video'}
+                          />
+                        ) : (
+                          <video
+                            src={video.filePath || video.mediaUrl}
+                            className="w-full h-full object-cover"
+                            poster={video.thumbnailUrl}
+                            controls
+                            preload="metadata"
+                          />
+                        )}
+                        {video.title && video.type === 'upload' && (
                           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white text-sm p-3">
                             {video.title}
                           </div>
                         )}
                       </div>
                     </div>
+                    {video.type === 'link' && video.title && (
+                      <div className="mt-2 px-1">
+                        <h3 className="text-sm font-medium text-gray-800">{video.title}</h3>
+                        {video.description && (
+                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{video.description}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
                 <p className="text-gray-500 text-lg">동영상 없음</p>
-                <p className="text-gray-400 text-sm mt-2">아직 등록된 동영상이 없습니다.</p>
+                <p className="text-gray-400 text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
               </div>
             )}
           </div>
@@ -449,23 +498,23 @@ export default function PublicViewPage() {
                 className={`flex flex-col items-center gap-0.5 transition-colors ${
                   contentType === 'video' 
                     ? 'text-[#8B6F47]' 
-                    : videos.length > 0 
+                    : allVideos.length > 0 
                       ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
                       : 'text-gray-300'
                 }`}
-                onClick={() => videos.length > 0 && setCurrentContentType('video')}
+                onClick={() => allVideos.length > 0 && setCurrentContentType('video')}
               >
                 <div className={`p-1.5 rounded-full ${
                   contentType === 'video' 
                     ? 'bg-[#8B6F47]/10' 
-                    : videos.length > 0 
+                    : allVideos.length > 0 
                       ? 'hover:bg-gray-100' 
                       : ''
                 }`}>
                   <Video className="w-4 h-4" />
                 </div>
                 <span className="text-[10px] font-medium">동영상</span>
-                {videos.length > 0 && (
+                {allVideos.length > 0 && (
                   <div className="w-0.5 h-0.5 bg-current rounded-full"></div>
                 )}
               </div>
