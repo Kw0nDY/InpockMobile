@@ -95,9 +95,9 @@ export default function PublicViewPage() {
                   <div key={link.id} className="w-full">
                     {/* Thumbnail Style */}
                     {link.style === 'thumbnail' && (
-                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
                         <div 
-                          className="flex items-center gap-4 cursor-pointer"
+                          className="flex items-center gap-3 p-2 bg-white rounded-lg border relative cursor-pointer hover:bg-gray-50 transition-colors"
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -107,95 +107,82 @@ export default function PublicViewPage() {
                             <img 
                               src={link.customImageUrl || link.imageUrl} 
                               alt={link.title}
-                              className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                              className="w-12 h-12 rounded object-cover flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-16 h-16 bg-gradient-to-br from-[#B08A6B]/20 to-[#8B6F47]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                              <LinkIcon className="w-6 h-6 text-[#8B6F47]" />
-                            </div>
+                            <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
+                            <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
+                              {link.title}
+                            </div>
                             {link.description && (
-                              <p className="text-sm text-gray-600 line-clamp-2 mb-2">{link.description}</p>
+                              <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
                             )}
-                            <div className="flex items-center justify-between">
-                              <div className="text-sm text-[#8B6F47] font-medium">
-                                {window.location.host}/{link.shortCode}
+                            <div className="flex items-center gap-2 mt-1">
+                              <div 
+                                className="text-xs text-blue-600 cursor-pointer hover:underline flex-1"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(`/l/${link.shortCode}`, '_blank');
+                                }}
+                              >
+                                클릭수: {link.clicks || 0} | 단축링크: amusefit.co.kr/l/{link.shortCode}
                               </div>
-                              <div className="text-sm text-blue-600 font-medium">
-                                방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
-                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  copyToClipboard(`${window.location.origin}/l/${link.shortCode}`, link.shortCode);
+                                }}
+                                className="h-5 w-5 p-0 text-gray-400 hover:text-blue-600"
+                              >
+                                <Copy className="w-3 h-3" />
+                              </button>
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                              <span>내 방문: {link.ownerVisits || 0}</span>
+                              <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(link.originalUrl, link.shortCode);
-                            }}
-                            className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0"
-                          >
-                            {copiedLink === link.shortCode ? (
-                              <Check className="w-5 h-5 text-green-600" />
-                            ) : (
-                              <Copy className="w-5 h-5 text-[#8B6F47]" />
-                            )}
-                          </button>
                         </div>
                       </div>
                     )}
 
                     {/* Card Style */}
                     {link.style === 'card' && (
-                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 overflow-hidden hover:bg-white/95 transition-all duration-200 shadow-sm">
+                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
                         <div 
-                          className="cursor-pointer"
+                          className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                           }}
                         >
                           {(link.customImageUrl || link.imageUrl) && (
-                            <div className="aspect-video w-full overflow-hidden">
-                              <img 
-                                src={link.customImageUrl || link.imageUrl} 
-                                alt={link.title}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
+                            <img 
+                              src={link.customImageUrl || link.imageUrl} 
+                              alt={link.title}
+                              className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                            />
                           )}
-                          <div className="p-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-2">{link.title}</h3>
-                            {link.description && (
-                              <p className="text-sm text-gray-600 mb-3 line-clamp-3">{link.description}</p>
-                            )}
-                            <div className="flex items-center justify-between mb-3">
-                              <div className="text-sm text-[#8B6F47] font-medium">
-                                {window.location.host}/{link.shortCode}
-                              </div>
-                              <div className="text-sm text-blue-600 font-medium">
-                                방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
-                              </div>
-                            </div>
-                            <button
+                          <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                            <div className="text-sm font-medium truncate">{link.title}</div>
+                            <div 
+                              className="text-xs text-blue-200 mt-1 cursor-pointer hover:underline"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(link.originalUrl, link.shortCode);
+                                window.open(`/l/${link.shortCode}`, '_blank');
                               }}
-                              className="w-full bg-[#B08A6B] hover:bg-[#8B6F47] text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                             >
-                              {copiedLink === link.shortCode ? (
-                                <>
-                                  <Check className="w-4 h-4" />
-                                  복사됨
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="w-4 h-4" />
-                                  링크 복사
-                                </>
-                              )}
-                            </button>
+                              amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
+                            </div>
+                            <div className="text-xs text-gray-300 mt-1 flex gap-3">
+                              <span>내 방문: {link.ownerVisits || 0}</span>
+                              <span>외부 방문: {link.externalVisits || 0}</span>
+                            </div>
+                          </div>
+                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                            <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                           </div>
                         </div>
                       </div>
@@ -203,39 +190,78 @@ export default function PublicViewPage() {
 
                     {/* Simple Style */}
                     {link.style === 'simple' && (
-                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
                         <div 
-                          className="cursor-pointer"
+                          className="bg-white rounded-lg border p-3 relative cursor-pointer hover:bg-gray-50 transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                           }}
                         >
-                          <div className="flex items-center justify-between">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
-                              <div className="flex items-center gap-4">
-                                <div className="text-sm text-[#8B6F47] font-medium">
-                                  {window.location.host}/{link.shortCode}
-                                </div>
-                                <div className="text-sm text-blue-600 font-medium">
-                                  방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
-                                </div>
-                              </div>
-                            </div>
-                            <button
+                          {(link.customImageUrl || link.imageUrl) && (
+                            <img 
+                              src={link.customImageUrl || link.imageUrl} 
+                              alt={link.title}
+                              className="w-full h-20 object-cover rounded mb-2"
+                            />
+                          )}
+                          <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                          {link.description && (
+                            <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
+                          )}
+                          <div 
+                            className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              window.open(`/l/${link.shortCode}`, '_blank');
+                            }}
+                          >
+                            단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                          </div>
+                          <div className="text-xs text-gray-500 mb-2 flex gap-3">
+                            <span>내 방문: {link.ownerVisits || 0}</span>
+                            <span>외부 방문: {link.externalVisits || 0}</span>
+                          </div>
+                          <div className="w-full h-2 bg-gray-300 rounded"></div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Background Style */}
+                    {link.style === 'background' && (
+                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                        <div 
+                          className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
+                          style={{
+                            backgroundImage: (link.customImageUrl || link.imageUrl) 
+                              ? `url(${link.customImageUrl || link.imageUrl})` 
+                              : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'
+                          }}
+                          onClick={() => {
+                            window.open(link.originalUrl, '_blank');
+                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                          
+                          <div className="relative z-10 text-white">
+                            <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
+                            <div 
+                              className="text-xs text-blue-200 mb-2 cursor-pointer hover:underline drop-shadow-lg"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                copyToClipboard(link.originalUrl, link.shortCode);
+                                window.open(`/l/${link.shortCode}`, '_blank');
                               }}
-                              className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0 ml-4"
                             >
-                              {copiedLink === link.shortCode ? (
-                                <Check className="w-5 h-5 text-green-600" />
-                              ) : (
-                                <Copy className="w-5 h-5 text-[#8B6F47]" />
-                              )}
-                            </button>
+                              단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                            </div>
+                            <div className="text-xs text-gray-200 mb-2 flex gap-3 drop-shadow-lg">
+                              <span>내 방문: {link.ownerVisits || 0}</span>
+                              <span>외부 방문: {link.externalVisits || 0}</span>
+                            </div>
                           </div>
                         </div>
                       </div>
