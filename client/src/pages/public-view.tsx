@@ -93,54 +93,153 @@ export default function PublicViewPage() {
               <div className="space-y-4">
                 {links.map((link: any) => (
                   <div key={link.id} className="w-full">
-                    <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
-                      <div 
-                        className="flex items-center gap-4 cursor-pointer"
-                        onClick={() => {
-                          window.open(link.originalUrl, '_blank');
-                          fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                        }}
-                      >
-                        {(link.customImageUrl || link.imageUrl) ? (
-                          <img 
-                            src={link.customImageUrl || link.imageUrl} 
-                            alt={link.title}
-                            className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-[#B08A6B]/20 to-[#8B6F47]/20 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <LinkIcon className="w-6 h-6 text-[#8B6F47]" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
-                          {link.description && (
-                            <p className="text-sm text-gray-600 line-clamp-2 mb-2">{link.description}</p>
+                    {/* Thumbnail Style */}
+                    {link.style === 'thumbnail' && (
+                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                        <div 
+                          className="flex items-center gap-4 cursor-pointer"
+                          onClick={() => {
+                            window.open(link.originalUrl, '_blank');
+                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                          }}
+                        >
+                          {(link.customImageUrl || link.imageUrl) ? (
+                            <img 
+                              src={link.customImageUrl || link.imageUrl} 
+                              alt={link.title}
+                              className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                            />
+                          ) : (
+                            <div className="w-16 h-16 bg-gradient-to-br from-[#B08A6B]/20 to-[#8B6F47]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                              <LinkIcon className="w-6 h-6 text-[#8B6F47]" />
+                            </div>
                           )}
-                          <div className="flex items-center justify-between">
-                            <div className="text-sm text-[#8B6F47] font-medium">
-                              {window.location.host}/{link.shortCode}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
+                            {link.description && (
+                              <p className="text-sm text-gray-600 line-clamp-2 mb-2">{link.description}</p>
+                            )}
+                            <div className="flex items-center justify-between">
+                              <div className="text-sm text-[#8B6F47] font-medium">
+                                {window.location.host}/{link.shortCode}
+                              </div>
+                              <div className="text-sm text-blue-600 font-medium">
+                                방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
+                              </div>
                             </div>
-                            <div className="text-sm text-blue-600 font-medium">
-                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
+                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(link.originalUrl, link.shortCode);
+                            }}
+                            className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0"
+                          >
+                            {copiedLink === link.shortCode ? (
+                              <Check className="w-5 h-5 text-green-600" />
+                            ) : (
+                              <Copy className="w-5 h-5 text-[#8B6F47]" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Card Style */}
+                    {link.style === 'card' && (
+                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 overflow-hidden hover:bg-white/95 transition-all duration-200 shadow-sm">
+                        <div 
+                          className="cursor-pointer"
+                          onClick={() => {
+                            window.open(link.originalUrl, '_blank');
+                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                          }}
+                        >
+                          {(link.customImageUrl || link.imageUrl) && (
+                            <div className="aspect-video w-full overflow-hidden">
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
+                          )}
+                          <div className="p-4">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">{link.title}</h3>
+                            {link.description && (
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-3">{link.description}</p>
+                            )}
+                            <div className="flex items-center justify-between mb-3">
+                              <div className="text-sm text-[#8B6F47] font-medium">
+                                {window.location.host}/{link.shortCode}
+                              </div>
+                              <div className="text-sm text-blue-600 font-medium">
+                                방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
+                              </div>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(link.originalUrl, link.shortCode);
+                              }}
+                              className="w-full bg-[#B08A6B] hover:bg-[#8B6F47] text-white py-2 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                            >
+                              {copiedLink === link.shortCode ? (
+                                <>
+                                  <Check className="w-4 h-4" />
+                                  복사됨
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-4 h-4" />
+                                  링크 복사
+                                </>
+                              )}
+                            </button>
                           </div>
                         </div>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            copyToClipboard(link.originalUrl, link.shortCode);
-                          }}
-                          className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0"
-                        >
-                          {copiedLink === link.shortCode ? (
-                            <Check className="w-5 h-5 text-green-600" />
-                          ) : (
-                            <Copy className="w-5 h-5 text-[#8B6F47]" />
-                          )}
-                        </button>
                       </div>
-                    </div>
+                    )}
+
+                    {/* Simple Style */}
+                    {link.style === 'simple' && (
+                      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                        <div 
+                          className="cursor-pointer"
+                          onClick={() => {
+                            window.open(link.originalUrl, '_blank');
+                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                          }}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
+                              <div className="flex items-center gap-4">
+                                <div className="text-sm text-[#8B6F47] font-medium">
+                                  {window.location.host}/{link.shortCode}
+                                </div>
+                                <div className="text-sm text-blue-600 font-medium">
+                                  방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}회
+                                </div>
+                              </div>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(link.originalUrl, link.shortCode);
+                              }}
+                              className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0 ml-4"
+                            >
+                              {copiedLink === link.shortCode ? (
+                                <Check className="w-5 h-5 text-green-600" />
+                              ) : (
+                                <Copy className="w-5 h-5 text-[#8B6F47]" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
