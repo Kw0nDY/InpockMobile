@@ -201,6 +201,10 @@ export class MemStorage implements IStorage {
         style: "thumbnail",
         clicks: 127,
         isActive: true,
+        imageUrl: null,
+        customImageUrl: null,
+        cropData: null,
+        description: null,
         createdAt: new Date(),
       },
       {
@@ -212,6 +216,10 @@ export class MemStorage implements IStorage {
         style: "card",
         clicks: 89,
         isActive: true,
+        imageUrl: null,
+        customImageUrl: null,
+        cropData: null,
+        description: null,
         createdAt: new Date(),
       },
     ];

@@ -33,6 +33,10 @@ export const links = pgTable("links", {
   style: text("style", { enum: ['thumbnail', 'simple', 'card', 'background'] }).default("thumbnail"),
   clicks: integer("clicks").default(0),
   isActive: boolean("is_active").default(true),
+  imageUrl: text("image_url"),
+  customImageUrl: text("custom_image_url"),
+  cropData: text("crop_data"), // JSON string for crop coordinates
+  description: text("description"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
