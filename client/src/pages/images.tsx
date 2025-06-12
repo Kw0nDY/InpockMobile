@@ -214,97 +214,95 @@ export default function ImagesPage() {
               <p className="text-muted-foreground mb-4">
                 첫 번째 이미지를 업로드하여 갤러리를 시작하세요
               </p>
-              <Button onClick={() => setIsModalOpen(true)}>
-                <Plus className="w-4 h-4 mr-2" />
-                이미지 추가하기
-              </Button>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                {(images as any[]).map((image: any, index: number) => (
-                  <Card key={image.id} className="overflow-hidden">
-                    <CardContent className="p-0 relative">
-                      {/* Priority Badge */}
-                      <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
-                        #{index + 1}
-                      </div>
+            <div className="grid grid-cols-2 gap-4">
+              {(images as any[]).map((image: any, index: number) => (
+                <Card key={image.id} className="overflow-hidden">
+                  <CardContent className="p-0 relative">
+                    {/* Priority Badge */}
+                    <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
+                      #{index + 1}
+                    </div>
 
-                      {/* Reorder Controls */}
-                      <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
-                          onClick={() => moveImage(index, index - 1)}
-                          disabled={index === 0}
-                        >
-                          <ArrowUp className="w-3 h-3 text-white" />
-                        </Button>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
-                          onClick={() => moveImage(index, index + 1)}
-                          disabled={index === (images as any[]).length - 1}
-                        >
-                          <ArrowDown className="w-3 h-3 text-white" />
-                        </Button>
-                      </div>
+                    {/* Reorder Controls */}
+                    <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                        onClick={() => moveImage(index, index - 1)}
+                        disabled={index === 0}
+                      >
+                        <ArrowUp className="w-3 h-3 text-white" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                        onClick={() => moveImage(index, index + 1)}
+                        disabled={index === (images as any[]).length - 1}
+                      >
+                        <ArrowDown className="w-3 h-3 text-white" />
+                      </Button>
+                    </div>
 
-                      {/* Image */}
-                      <div className="aspect-square relative">
-                        <img
-                          src={getImageUrl(image)}
-                          alt={image.title || `이미지 ${index + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/placeholder-image.jpg';
-                          }}
-                        />
-                        
-                        {/* Delete Button */}
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          className="absolute bottom-2 right-2 h-8 w-8 p-0"
-                          onClick={() => deleteImageMutation.mutate(image.id)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
+                    {/* Image */}
+                    <div className="aspect-square relative">
+                      <img
+                        src={getImageUrl(image)}
+                        alt={image.title || `이미지 ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-image.jpg';
+                        }}
+                      />
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute bottom-2 right-2 h-8 w-8 p-0"
+                        onClick={() => deleteImageMutation.mutate(image.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
 
-                      {/* Image Info */}
-                      {(image.title || image.description) && (
-                        <div className="p-3 bg-card">
-                          {image.title && (
-                            <h4 className="font-medium text-foreground text-sm truncate">
-                              {image.title}
-                            </h4>
-                          )}
-                          {image.description && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                              {image.description}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-              
-              {/* Add More Images Button */}
-              <div className="text-center pt-4">
-                <Button onClick={() => setIsModalOpen(true)} size="lg" className="w-full max-w-sm">
-                  <Plus className="w-5 h-5 mr-2" />
-                  이미지 추가하기
-                </Button>
-              </div>
+                    {/* Image Info */}
+                    {(image.title || image.description) && (
+                      <div className="p-3 bg-card">
+                        {image.title && (
+                          <h4 className="font-medium text-foreground text-sm truncate">
+                            {image.title}
+                          </h4>
+                        )}
+                        {image.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {image.description}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </div>
+      </div>
+
+      {/* Fixed Add Button at Bottom */}
+      <div className="p-4 bg-background border-t border-border flex-shrink-0">
+        <Button 
+          onClick={() => setIsModalOpen(true)} 
+          size="lg" 
+          className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 text-lg rounded-xl"
+        >
+          <Plus className="w-6 h-6 mr-2" />
+          추가하기
+        </Button>
       </div>
 
       {/* Upload Modal */}
