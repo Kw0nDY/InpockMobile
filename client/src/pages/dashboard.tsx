@@ -467,178 +467,145 @@ export default function DashboardPage() {
                   }
                 })()}
 
-                {/* Unified Link Cards */}
+                {/* Display actual saved links */}
                 {currentContentType === 'links' && (
                   <div className="mb-4 space-y-3">
-                    {(() => {
-                      const settings = settingsData as any;
-                      const hasLinkUrl = settings?.linkUrl && settings.linkUrl.trim() !== '';
-                      const hasCustomUrl = settings?.customUrl && settings.customUrl.trim() !== '';
-                      
-                      // If there's any URL configured, show a unified card
-                      if (hasLinkUrl || hasCustomUrl) {
-                        // Determine the target URL and display info
-                        const targetUrl = hasLinkUrl ? settings.linkUrl : `${window.location.origin}/users/${settings.customUrl}`;
-                        const displayTitle = hasLinkUrl 
-                          ? (settings.linkTitle || '링크') 
-                          : (userData as any)?.name || '사용자';
-                        const displayUrl = hasLinkUrl 
-                          ? settings.linkUrl 
-                          : `amusefit.co.kr/users/${settings.customUrl}`;
-                        
-                        return (
-                          <div className="bg-gray-50 border rounded-lg p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <h3 className="text-base font-semibold text-gray-900 mb-2">
-                                  {displayTitle}
-                                </h3>
-                                {(settingsData as any)?.linkDescription && (
-                                  <p className="text-sm text-gray-600">{(settingsData as any).linkDescription}</p>
-                                )}
-                              </div>
-                              <div className="w-12 h-12 rounded bg-gray-200 flex items-center justify-center ml-4">
-                                <div className="w-6 h-6 text-gray-400">
-                                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <polyline points="21,15 16,10 5,21"/>
-                                  </svg>
-                                </div>
-                              </div>
-                            </div>
-                            
-                            <div className="mt-4 flex items-center justify-between">
-                              <Button 
-                                variant="outline" 
-                                size="sm"
-                                className="flex items-center space-x-2"
-                                onClick={() => {
-                                  window.open(targetUrl, '_blank');
-                                }}
-                              >
-                                <ExternalLink className="w-4 h-4" />
-                                <span>페이지 이동</span>
-                              </Button>
-                              
-                              <Button 
-                                variant="ghost" 
-                                size="sm" 
-                                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                onClick={async () => {
-                                  try {
-                                    const response = await fetch(`/api/settings/${user?.id}`, {
-                                      method: 'POST',
-                                      headers: { 'Content-Type': 'application/json' },
-                                      body: JSON.stringify({
-                                        linkTitle: '',
-                                        linkUrl: '',
-                                        linkDescription: '',
-                                        customUrl: '',
-                                        shortUrlType: 'default'
-                                      })
-                                    });
-                                    
-                                    if (response.ok) {
-                                      queryClient.invalidateQueries({
-                                        queryKey: [`/api/settings/${user?.id}`],
-                                      });
-                                    }
-                                  } catch (error) {
-                                    console.error('삭제 오류:', error);
-                                  }
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4 mr-1" />
-                                삭제
-                              </Button>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        // No URL configured - show empty state
-                        return (
-                          <div className="bg-gray-50 border rounded-lg p-6 text-center">
-                            <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                            <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
-                            <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => setLocation('/settings')}
+                    {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
+                      linksData.map((link: any) => (
+                        <div key={link.id}>
+                          {/* Thumbnail Style - Match links page exactly */}
+                          {link.style === 'thumbnail' && (
+                            <div 
+                              className="flex items-center gap-3 bg-white rounded-lg border p-3 cursor-pointer hover:shadow-sm transition-shadow"
+                              onClick={() => window.open(link.originalUrl, '_blank')}
                             >
-                              설정으로 이동
-                            </Button>
-                          </div>
-                        );
-                      }
-                    })()}
-
-                    {/* Additional empty state fallback */}
-                    {false && (
-                      <div className="bg-gray-50 border rounded-lg p-6 text-center">
-                        <Link className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm text-gray-500 mb-2">링크를 추가해서 프로필을 완성하세요</p>
-                        <p className="text-xs text-gray-400 mb-3">설정에서 링크와 URL을 추가해보세요</p>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => setLocation('/settings')}
-                        >
-                          설정으로 이동
-                        </Button>
-                      </div>
-                    )}
-
-                    {/* Additional Links from separate link creation */}
-                    {linksData && Array.isArray(linksData) && linksData.length > 0 && (
-                      <div className="space-y-3 mt-3">
-                        {linksData.map((link: any) => (
-                          <div key={link.id} className="bg-white border rounded-lg p-4">
-                            <div className="flex items-center space-x-3">
-                              <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-medium">
-                                <Link className="w-6 h-6" />
-                              </div>
-                              
-                              <div className="flex-1">
-                                <h3 className="text-sm font-semibold text-gray-900">
-                                  {link.title}
-                                </h3>
-                                <div className="text-xs text-blue-600 mt-1">
-                                  amusefit.co.kr/link/{link.shortCode}
-                                </div>
-                                {link.clicks > 0 && (
-                                  <div className="text-xs text-gray-400 mt-1">클릭 수: {link.clicks}</div>
+                              {(link.customImageUrl || link.imageUrl) ? (
+                                <img 
+                                  src={link.customImageUrl || link.imageUrl} 
+                                  alt={link.title}
+                                  className="w-12 h-12 rounded object-cover"
+                                />
+                              ) : (
+                                <div className="w-12 h-12 bg-gray-300 rounded"></div>
+                              )}
+                              <div className="text-left flex-1">
+                                <div className="text-sm font-medium text-gray-800 truncate">{link.title}</div>
+                                {link.description && (
+                                  <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
                                 )}
                               </div>
-                              
-                              <div className="flex items-center gap-1">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2"
-                                  onClick={() => {
-                                    const shortUrl = `${window.location.origin}/link/${link.shortCode}`;
-                                    window.open(shortUrl, '_blank');
-                                  }}
-                                >
-                                  <ExternalLink className="w-4 h-4" />
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                                  onClick={() => deleteLinkMutation.mutate(link.id)}
-                                  disabled={deleteLinkMutation.isPending}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="h-6 w-6 p-0 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-full"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
+                          
+                          {/* Simple Style - Match links page exactly */}
+                          {link.style === 'simple' && (
+                            <div 
+                              className="bg-white rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-colors flex flex-col justify-center relative" 
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                              <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
+                              {link.description && (
+                                <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
+                              )}
+                              <div className="w-full h-2 bg-gray-300 rounded"></div>
+                            </div>
+                          )}
+                          
+                          {/* Card Style - Match links page exactly */}
+                          {link.style === 'card' && (
+                            <div 
+                              className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
+                              {(link.customImageUrl || link.imageUrl) && (
+                                <img 
+                                  src={link.customImageUrl || link.imageUrl} 
+                                  alt={link.title}
+                                  className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                                />
+                              )}
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                              <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                                <div className="text-sm font-medium truncate">{link.title}</div>
+                                {link.description && (
+                                  <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
+                                )}
+                              </div>
+                              <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                                <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          )}
+
+                          {/* Background Style - Match links page exactly */}
+                          {link.style === 'background' && (
+                            <div 
+                              className="h-24 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
+                              style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
+                              onClick={() => window.open(link.originalUrl, '_blank')}
+                            >
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteLinkMutation.mutate(link.id);
+                                }}
+                                className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </Button>
+                              <div className="text-sm font-medium text-gray-800 truncate mb-2">{link.title}</div>
+                              {link.description && (
+                                <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
+                              )}
+                              <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
+                              <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
+                            </div>
+                          )}
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-12">
+                        <Link className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500 text-lg">링크 없음</p>
+                        <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
                       </div>
                     )}
+
+
 
 
                   </div>
