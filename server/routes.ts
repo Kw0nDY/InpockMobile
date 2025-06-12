@@ -88,37 +88,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let user = await storage.getUserByEmail(email);
       console.log("User lookup result:", { found: !!user, email });
 
-      // Create demo user if it doesn't exist
-      if (!user && email === "demo@amusefit.com") {
-        console.log("Creating demo user for AmuseFit...");
-        try {
-          // Check if username already exists
-          const existingUser = await storage.getUserByUsername("demo_user");
-          if (existingUser) {
-            console.log("Demo user already exists, using existing user");
-            user = existingUser;
-          } else {
-            user = await storage.createUser({
-              username: "demo_user",
-              email: "demo@amusefit.com",
-              password: "password123",
-              name: "김철수",
-              company: "AmuseFit Korea",
-              role: "user",
-            });
-            console.log("Demo user created successfully");
-          }
-        } catch (error) {
-          console.log("Error handling demo user:", error);
-          // If user creation fails due to duplicate, try to get existing user
-          const existingUser = await storage.getUserByUsername("demo_user");
-          if (existingUser) {
-            user = existingUser;
-            console.log("Using existing demo user");
-          }
-        }
-      }
-
       if (!user) {
         console.log("User not found for email:", email);
         return res.status(401).json({ message: "Invalid credentials" });
