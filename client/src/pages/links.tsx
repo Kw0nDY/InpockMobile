@@ -628,12 +628,11 @@ export default function LinksPage() {
         {/* Content */}
         <div className="p-4 space-y-4 pb-28">
           {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
-          <Card className="bg-white/70 border-[#8D6E63]/20 shadow-sm">
+          <Card className="bg-card shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-[#4E342E] flex items-center gap-2">
-                  <Eye className="w-4 h-4" />
-                  실시간 방문 추적
+                <h2 className="text-lg font-semibold text-card-foreground korean-text">
+                  링크
                 </h2>
                 <div className="flex items-center gap-1">
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -644,22 +643,22 @@ export default function LinksPage() {
               {/* Visit Stats - 총방문자, 일방문자, 월방문자 */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
+                  <div className="text-2xl font-bold text-primary mb-1">
                     {(userStats as any)?.totalVisits || 0}
                   </div>
-                  <div className="text-xs text-[#8D6E63]">총방문자</div>
+                  <div className="text-xs text-muted-foreground">총방문자</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
+                  <div className="text-2xl font-bold text-primary mb-1">
                     {(userStats as any)?.dailyVisits || 0}
                   </div>
-                  <div className="text-xs text-[#8D6E63]">일방문자</div>
+                  <div className="text-xs text-muted-foreground">일방문자</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
+                  <div className="text-2xl font-bold text-primary mb-1">
                     {(userStats as any)?.monthlyVisits || 0}
                   </div>
-                  <div className="text-xs text-[#8D6E63]">월방문자</div>
+                  <div className="text-xs text-muted-foreground">월방문자</div>
                 </div>
               </div>
 
@@ -682,7 +681,7 @@ export default function LinksPage() {
               {/* 빠른 추적 URL 섹션 */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-[#4E342E]">빠른 추적 URL</h3>
+                  <h3 className="text-sm font-medium text-foreground">빠른 추적 URL</h3>
                 </div>
                 
                 {/* Display Links with Their Styles */}
@@ -927,18 +926,7 @@ export default function LinksPage() {
           </Card>
         </div>
 
-        {/* Fixed Bottom Add Button */}
-        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="max-w-md mx-auto px-4">
-            <Button
-              onClick={() => setShowAddForm(true)}
-              className="w-full bg-gradient-to-r from-[#8D6E63] to-[#4E342E] hover:from-[#A1887F] hover:to-[#8D6E63] text-white py-4 rounded-xl font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3"
-            >
-              <Plus className="w-6 h-6" />
-              링크 추가하기
-            </Button>
-          </div>
-        </div>
+
       </div>
     </div>
   );
