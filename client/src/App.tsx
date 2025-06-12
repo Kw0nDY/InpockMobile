@@ -44,10 +44,15 @@ function Router() {
   
   // Pages that should not show bottom navigation
   const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
+  
+  // Check if current location is a public profile view (custom URL or /users/username)
+  const isPublicProfileView = location.startsWith("/users/") || 
+    (location.match(/^\/[a-zA-Z0-9_-]+$/) && 
+     !["dashboard", "links", "images", "videos", "settings", "chat", "analytics", "contacts", "marketplace", "manager", "profile"].includes(location.slice(1)));
+  
   const shouldShowBottomNav = !hideNavPages.includes(location) && 
     !location.startsWith("/reset-password/") && 
-    !location.startsWith("/users/") && 
-    !location.match(/^\/[a-zA-Z0-9_-]+$/);
+    !isPublicProfileView;
 
   return (
     <>
