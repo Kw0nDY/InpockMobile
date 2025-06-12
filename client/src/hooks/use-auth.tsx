@@ -28,9 +28,21 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   
-  // Clear any stale auth data on mount
+  // Initialize with demo user for development
   useEffect(() => {
-    localStorage.removeItem('auth_user');
+    // Set up demo user automatically
+    const demoUser: User = {
+      id: 1,
+      username: 'demo_user',
+      email: 'demo@amusefit.com',
+      name: '김철수',
+      role: 'user',
+      bio: '',
+      profileImageUrl: '',
+      introVideoUrl: '',
+      visitCount: 0
+    };
+    setUser(demoUser);
   }, []);
 
   // Save user to localStorage whenever user state changes

@@ -356,6 +356,11 @@ export default function SettingsPage() {
         console.log('User update data:', userUpdateData);
         const userResult = await updateUserMutation.mutateAsync(userUpdateData);
         console.log('User update result:', userResult);
+        
+        // Update auth context with new user data
+        if (userResult && userResult.user && user) {
+          setUser({ ...user, ...userResult.user });
+        }
       }
 
       const settingsUpdateData = {
@@ -405,6 +410,13 @@ export default function SettingsPage() {
       }
       
       console.log('Profile saved successfully');
+      
+      // Invalidate all related queries to refresh data everywhere
+      queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/settings/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/dashboard/stats/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/public/${user?.username}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/public/${profileData.customUrl || user?.username}`] });
       
       toast({
         title: "프로필 저장 완료",

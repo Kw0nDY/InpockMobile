@@ -40,13 +40,13 @@ export default function DashboardPage() {
     enabled: !!user?.id,
   });
 
-  const { data: settingsData } = useQuery({
-    queryKey: [`/api/settings/${user?.id}`],
+  const { data: userData } = useQuery({
+    queryKey: [`/api/user/${user?.id}`],
     enabled: !!user?.id,
   });
 
-  const { data: userData } = useQuery({
-    queryKey: [`/api/user/${user?.id}`],
+  const { data: settingsData } = useQuery({
+    queryKey: [`/api/settings/${user?.id}`],
     enabled: !!user?.id,
   });
 
