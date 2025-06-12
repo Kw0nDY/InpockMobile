@@ -134,7 +134,7 @@ export class MemStorage implements IStorage {
     // Create demo user
     const demoUser: User = {
       id: 1,
-      username: "demo_user",
+      username: "demo_user_old",
       email: "demo@amusefit.com",
       password: "password123",
       name: "김철수",
@@ -173,6 +173,14 @@ export class MemStorage implements IStorage {
       linkDescription: null,
       linkUrl: null,
       shortUrlType: "default",
+      backgroundTheme: "beige",
+      showProfileImage: true,
+      showBio: true,
+      showVisitCount: true,
+      layoutStyle: "centered",
+      instagramUrl: null,
+      twitterUrl: null,
+      youtubeUrl: null,
       updatedAt: new Date(),
     };
     this.userSettings.set(1, demoSettings);
@@ -656,6 +664,14 @@ export class MemStorage implements IStorage {
       linkDescription: insertSettings.linkDescription ?? null,
       linkUrl: insertSettings.linkUrl ?? null,
       shortUrlType: insertSettings.shortUrlType ?? "default",
+      backgroundTheme: insertSettings.backgroundTheme ?? "beige",
+      showProfileImage: insertSettings.showProfileImage ?? true,
+      showBio: insertSettings.showBio ?? true,
+      showVisitCount: insertSettings.showVisitCount ?? true,
+      layoutStyle: insertSettings.layoutStyle ?? "centered",
+      instagramUrl: insertSettings.instagramUrl ?? null,
+      twitterUrl: insertSettings.twitterUrl ?? null,
+      youtubeUrl: insertSettings.youtubeUrl ?? null,
       twoFactorEnabled: insertSettings.twoFactorEnabled ?? false,
       updatedAt: new Date(),
     };
