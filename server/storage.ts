@@ -491,6 +491,8 @@ export class MemStorage implements IStorage {
       createdAt: new Date(),
     };
     this.links.set(id, link);
+    
+    console.log(`[NEW-LINK] Created link ${id} starting with 0 visits`);
     return link;
   }
 
