@@ -37,7 +37,9 @@ export default function PublicViewPage() {
 
   const copyToClipboard = async (url: string, shortCode: string) => {
     try {
-      const shortUrl = `amusefit.co.kr/${shortCode}`;
+      // Use the current domain for the short URL
+      const currentDomain = window.location.origin;
+      const shortUrl = `${currentDomain}/${shortCode}`;
       await navigator.clipboard.writeText(shortUrl);
       setCopiedLink(shortCode);
       setTimeout(() => setCopiedLink(null), 2000);
@@ -111,7 +113,7 @@ export default function PublicViewPage() {
                                 <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{link.description}</div>
                               )}
                               <div className="text-xs text-gray-500 mt-1">
-                                단축 URL: amusefit.co.kr/{link.shortCode}
+                                단축 URL: {window.location.host}/{link.shortCode}
                               </div>
                               <div className="text-xs text-blue-600 mt-1">
                                 내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
@@ -149,7 +151,7 @@ export default function PublicViewPage() {
                               <div className="text-xs text-muted-foreground mb-2 line-clamp-2">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-500 mb-1">
-                              단축 URL: amusefit.co.kr/{link.shortCode}
+                              단축 URL: {window.location.host}/{link.shortCode}
                             </div>
                             <div className="text-xs text-blue-600 mb-2">
                               내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
@@ -195,7 +197,7 @@ export default function PublicViewPage() {
                               <div className="text-xs opacity-90 mt-1 line-clamp-2">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-300 mt-1">
-                              단축 URL: amusefit.co.kr/{link.shortCode}
+                              단축 URL: {window.location.host}/{link.shortCode}
                             </div>
                             <div className="text-xs text-blue-200 mt-1">
                               내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
@@ -246,7 +248,7 @@ export default function PublicViewPage() {
                               <div className="text-xs text-gray-200 mb-2 line-clamp-2 drop-shadow-lg">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-300 drop-shadow-lg">
-                              단축 URL: amusefit.co.kr/{link.shortCode}
+                              단축 URL: {window.location.host}/{link.shortCode}
                             </div>
                             <div className="text-xs text-blue-200 drop-shadow-lg">
                               내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
