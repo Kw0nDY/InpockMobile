@@ -614,16 +614,13 @@ export default function SettingsPage() {
                   <Label htmlFor="custom" className="cursor-pointer block">
                     <div className="font-medium text-foreground mb-1">커스텀</div>
                     <div className="text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <span className="break-all">{window.location.host}/</span>
-                        <Input
-                          value={profileData.customUrl || ''}
-                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
-                          placeholder="kimyolee"
-                          className="ml-0 inline-block w-24 h-6 text-sm border border-gray-300 rounded px-2 bg-background disabled:opacity-50 disabled:bg-gray-100"
-                          disabled={profileData.shortUrlType !== 'custom'}
-                        />
-                      </div>
+                      <span className="break-all">{window.location.host}/</span><Input
+                        value={profileData.customUrl || ''}
+                        onChange={(e) => updateProfileData('customUrl', e.target.value)}
+                        placeholder="kimyolee"
+                        className="inline-block w-24 h-6 text-sm border border-gray-300 rounded px-2 bg-background disabled:opacity-50 disabled:bg-gray-100"
+                        disabled={profileData.shortUrlType !== 'custom'}
+                      />
                     </div>
                   </Label>
                 </div>
