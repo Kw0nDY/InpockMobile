@@ -1245,12 +1245,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log(`[SHORT-URL] Found link: ${JSON.stringify(link)}`);
 
-      // Increment click count for proper visit tracking
+      // Record visit and increment click count for proper visit tracking
       try {
+        // Record the visit with proper tracking data
+        const clientIp = req.ip || req.connection?.remoteAddress || "127.0.0.1";
+        const userAgent = req.headers['user-agent'] || null;
+        const referrer = req.headers['referer'] || null;
+        
+        await storage.recordLinkVisit({
+          linkId: link.id,
+          visitorIp: clientIp,
+          userAgent: userAgent,
+          referrer: referrer,
+          isOwner: false, // Assume external visit for short URL access
+        });
+        
         await storage.incrementLinkClicks(link.id);
-        console.log(`[SHORT-URL] Click count incremented for link ${link.id} (clicks: ${link.clicks + 1})`);
-      } catch (clickError) {
-        console.error(`[SHORT-URL] Failed to increment clicks:`, clickError);
+        console.log(`[SHORT-URL] Visit recorded and click count incremented for link ${link.id}`);
+      } catch (error) {
+        console.error(`[SHORT-URL] Failed to record visit:`, error);
       }
 
       // Redirect to the target URL

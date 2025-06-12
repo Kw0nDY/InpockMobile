@@ -191,16 +191,16 @@ export default function PublicViewPage() {
                               className="absolute inset-0 w-full h-full object-cover rounded-lg"
                             />
                           )}
-                          <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                          <div className="relative z-10 bg-black/60 backdrop-blur-sm text-white p-3 rounded-lg">
                             <div className="text-sm font-medium truncate">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs opacity-90 mt-1 line-clamp-2">{link.description}</div>
+                              <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
                             )}
-                            <div className="text-xs text-gray-300 mt-1">
-                              단축 URL: {window.location.host}/{link.shortCode}
+                            <div className="text-xs text-gray-200 mt-1">
+                              {window.location.host}/{link.shortCode}
                             </div>
                             <div className="text-xs text-blue-200 mt-1">
-                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
                             </div>
                           </div>
                           <button

@@ -217,7 +217,7 @@ export class MemStorage implements IStorage {
     this.users.set(8, demoUser8);
     this.currentUserId = 9;
 
-    // Create demo links for user 1
+    // Create demo links for user 1 
     const demoLinks: Link[] = [
       {
         id: 1,
@@ -233,11 +233,13 @@ export class MemStorage implements IStorage {
         cropData: null,
         description: null,
         createdAt: new Date(),
+        ownerVisits: 15,
+        externalVisits: 42
       },
       {
         id: 2,
         userId: 1,
-        title: "제품 카탈로그",
+        title: "제품 카탈로그", 
         originalUrl: "https://inpock.com/catalog/demo",
         shortCode: "def456",
         style: "card",
@@ -248,6 +250,8 @@ export class MemStorage implements IStorage {
         cropData: null,
         description: null,
         createdAt: new Date(),
+        ownerVisits: 8,
+        externalVisits: 23
       },
     ];
     demoLinks.forEach(link => this.links.set(link.id, link));
@@ -333,6 +337,31 @@ export class MemStorage implements IStorage {
     
     demoVisits.forEach(visit => this.linkVisits.set(visit.id, visit));
     this.currentLinkVisitId = 14;
+
+    // Update link visit counts based on demo visits
+    const linkVisitCounts = new Map<number, { owner: number, external: number }>();
+    demoVisits.forEach(visit => {
+      const current = linkVisitCounts.get(visit.linkId) || { owner: 0, external: 0 };
+      if (visit.isOwner) {
+        current.owner++;
+      } else {
+        current.external++;
+      }
+      linkVisitCounts.set(visit.linkId, current);
+    });
+
+    // Apply visit counts to links
+    linkVisitCounts.forEach((counts, linkId) => {
+      const link = this.links.get(linkId);
+      if (link) {
+        const updatedLink = {
+          ...link,
+          ownerVisits: counts.owner,
+          externalVisits: counts.external
+        };
+        this.links.set(linkId, updatedLink);
+      }
+    });
 
     // Create demo deals
     const demoDeals: Deal[] = [
@@ -668,6 +697,10 @@ export class MemStorage implements IStorage {
     return updatedSettings;
   }
 
+  async getSettings(userId: number): Promise<UserSettings | undefined> {
+    return this.getUserSettings(userId);
+  }
+
   // Subscription methods
   async getUserSubscription(userId: number): Promise<Subscription | undefined> {
     return Array.from(this.subscriptions.values()).find(sub => sub.userId === userId);
@@ -810,9 +843,9 @@ export class MemStorage implements IStorage {
     }
   }
 
-  // Link Visit Tracking - Stub implementations for MemStorage
+  // Link Visit Tracking - Proper implementations for MemStorage
   async recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit> {
-    const id = 1; // Simple stub
+    const id = this.currentLinkVisitId++;
     const linkVisit: LinkVisit = {
       id,
       linkId: visit.linkId,
@@ -822,6 +855,7 @@ export class MemStorage implements IStorage {
       isOwner: visit.isOwner || false,
       visitedAt: new Date(),
     };
+    this.linkVisits.set(id, linkVisit);
     return linkVisit;
   }
 
