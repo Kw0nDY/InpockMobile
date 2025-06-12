@@ -1337,6 +1337,91 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Public view API endpoints for custom URLs
+  app.get("/api/public/:customUrl", async (req, res) => {
+    try {
+      const { customUrl } = req.params;
+      
+      // Find user by custom URL
+      const user = await storage.getUserByCustomUrl(customUrl);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return public user data
+      const publicUser = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        bio: user.bio,
+        profileImageUrl: user.profileImageUrl,
+        visitCount: user.visitCount
+      };
+
+      // Increment visit count
+      await storage.incrementUserVisitCount(user.id);
+
+      res.json(publicUser);
+    } catch (error) {
+      console.error("Public view fetch error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/public/:customUrl/links", async (req, res) => {
+    try {
+      const { customUrl } = req.params;
+      
+      // Find user by custom URL
+      const user = await storage.getUserByCustomUrl(customUrl);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's active links
+      const links = await storage.getLinks(user.id);
+      const activeLinks = links.filter(link => link.isActive);
+
+      res.json(activeLinks);
+    } catch (error) {
+      console.error("Public links fetch error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/public/:customUrl/settings", async (req, res) => {
+    try {
+      const { customUrl } = req.params;
+      
+      // Find user by custom URL
+      const user = await storage.getUserByCustomUrl(customUrl);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Get user's settings (only public information)
+      const settings = await storage.getSettings(user.id);
+      
+      if (!settings) {
+        return res.json({ contentType: 'links' });
+      }
+
+      // Return only public settings
+      const publicSettings = {
+        contentType: settings.contentType,
+        customUrl: settings.customUrl
+      };
+
+      res.json(publicSettings);
+    } catch (error) {
+      console.error("Public settings fetch error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -29,6 +29,7 @@ import KakaoCallback from "./pages/kakao-callback";
 import ForgotPasswordPage from "./pages/forgot-password";
 import FindIdPage from "./pages/find-id";
 import ProfilePage from "./pages/profile";
+import PublicViewPage from "./pages/public-view";
 import ResetPasswordPage from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 
@@ -67,6 +68,7 @@ function Router() {
         <Route path="/reset-password/:token" component={ResetPasswordPage} />
         <Route path="/oauth/kakao/callback" component={KakaoCallback} />
         <Route path="/users/:username" component={ProfilePage} />
+        <Route path="/:customUrl" component={PublicViewPage} />
         <Route component={NotFound} />
       </Switch>
       {shouldShowBottomNav && <BottomNav />}
