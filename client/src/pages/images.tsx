@@ -298,10 +298,10 @@ export default function ImagesPage() {
         <Button 
           onClick={() => setIsModalOpen(true)} 
           size="lg" 
-          className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 text-lg rounded-xl"
+          className="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 text-white font-bold py-4 text-lg rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-[1.02]"
         >
-          <Plus className="w-6 h-6 mr-2" />
-          추가하기
+          <Plus className="w-6 h-6 mr-3" />
+          이미지 추가하기
         </Button>
       </div>
 
