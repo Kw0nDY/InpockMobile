@@ -112,6 +112,7 @@ export class MemStorage implements IStorage {
   private subscriptions: Map<number, Subscription> = new Map();
   private passwordResetTokens: Map<string, PasswordResetToken> = new Map();
   private mediaUploads: Map<number, MediaUpload> = new Map();
+  private linkVisits: Map<number, LinkVisit> = new Map();
   
   private currentUserId = 1;
   private currentLinkId = 1;
@@ -122,6 +123,7 @@ export class MemStorage implements IStorage {
   private currentUserSettingsId = 1;
   private currentSubscriptionId = 1;
   private currentMediaUploadId = 1;
+  private currentLinkVisitId = 1;
 
   constructor() {
     // Initialize with some demo data
@@ -249,7 +251,88 @@ export class MemStorage implements IStorage {
       },
     ];
     demoLinks.forEach(link => this.links.set(link.id, link));
-    this.currentLinkId = 3;
+
+    // Create demo links for user 8 (current active user)
+    const demoLinksUser8: Link[] = [
+      {
+        id: 37,
+        userId: 8,
+        title: "[ENG] 🚨레전드 사건 발생! 서울 용산역 미니멀 라이프 스타일링 원데이클래스 수업 현장",
+        originalUrl: "https://www.youtube.com/watch?v=example1",
+        shortCode: "fit123",
+        style: "thumbnail",
+        clicks: 25,
+        isActive: true,
+        imageUrl: null,
+        customImageUrl: null,
+        cropData: null,
+        description: "피트니스 라이프스타일 원데이클래스",
+        createdAt: new Date(),
+      },
+      {
+        id: 38,
+        userId: 8,
+        title: "홈트레이닝 가이드",
+        originalUrl: "https://www.youtube.com/watch?v=example2",
+        shortCode: "home456",
+        style: "card",
+        clicks: 18,
+        isActive: true,
+        imageUrl: null,
+        customImageUrl: null,
+        cropData: null,
+        description: "집에서 할 수 있는 효과적인 운동법",
+        createdAt: new Date(),
+      },
+      {
+        id: 39,
+        userId: 8,
+        title: "영양 관리 팁",
+        originalUrl: "https://blog.example.com/nutrition",
+        shortCode: "nutr789",
+        style: "simple",
+        clicks: 12,
+        isActive: true,
+        imageUrl: null,
+        customImageUrl: null,
+        cropData: null,
+        description: "건강한 식단 관리 방법",
+        createdAt: new Date(),
+      }
+    ];
+    demoLinksUser8.forEach(link => this.links.set(link.id, link));
+    this.currentLinkId = 40;
+
+    // Create demo link visits for user 8's links to demonstrate analytics
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    
+    const demoVisits: LinkVisit[] = [
+      // Link 37 visits (fit123)
+      { id: 1, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 1000) },
+      { id: 2, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 2000) },
+      { id: 3, linkId: 37, visitorIp: "192.168.1.10", userAgent: "Safari", referrer: "https://google.com", isOwner: false, visitedAt: new Date(today.getTime() + 3000) },
+      { id: 4, linkId: 37, visitorIp: "192.168.1.11", userAgent: "Firefox", referrer: "https://youtube.com", isOwner: false, visitedAt: new Date(today.getTime() + 4000) },
+      { id: 5, linkId: 37, visitorIp: "192.168.1.12", userAgent: "Chrome", referrer: "https://instagram.com", isOwner: false, visitedAt: new Date(today.getTime() + 5000) },
+      
+      // Link 38 visits (home456)
+      { id: 6, linkId: 38, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 6000) },
+      { id: 7, linkId: 38, visitorIp: "192.168.1.20", userAgent: "Safari", referrer: "https://facebook.com", isOwner: false, visitedAt: new Date(today.getTime() + 7000) },
+      { id: 8, linkId: 38, visitorIp: "192.168.1.21", userAgent: "Edge", referrer: "https://twitter.com", isOwner: false, visitedAt: new Date(today.getTime() + 8000) },
+      
+      // Link 39 visits (nutr789)
+      { id: 9, linkId: 39, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 9000) },
+      { id: 10, linkId: 39, visitorIp: "192.168.1.30", userAgent: "Chrome", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 10000) },
+      
+      // Some older visits from previous days/months
+      { id: 11, linkId: 37, visitorIp: "192.168.1.40", userAgent: "Safari", referrer: "https://kakao.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 86400000) }, // 1 day into month
+      { id: 12, linkId: 37, visitorIp: "192.168.1.41", userAgent: "Firefox", referrer: "https://daum.net", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 172800000) }, // 2 days into month
+      { id: 13, linkId: 38, visitorIp: "192.168.1.42", userAgent: "Chrome", referrer: "https://google.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 259200000) }, // 3 days into month
+    ];
+    
+    demoVisits.forEach(visit => this.linkVisits.set(visit.id, visit));
+    this.currentLinkVisitId = 14;
 
     // Create demo deals
     const demoDeals: Deal[] = [
