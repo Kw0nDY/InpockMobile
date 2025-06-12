@@ -255,23 +255,23 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm">
+          <Card className="bg-card shadow-sm">
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
                 {typedData?.stats?.deals || 0}
               </p>
-              <p className="text-xs text-gray-600 korean-text">딜</p>
+              <p className="text-xs text-muted-foreground korean-text">딜</p>
             </CardContent>
           </Card>
 
-          <Card className="bg-white shadow-sm">
+          <Card className="bg-card shadow-sm">
             <CardContent className="p-4 text-center">
               <BarChart3 className="w-6 h-6 mx-auto mb-2 text-primary" />
               <p className="text-2xl font-bold text-primary">
                 {getTotalTrackedVisits()}
               </p>
-              <p className="text-xs text-gray-600 korean-text">방문 횟수</p>
+              <p className="text-xs text-muted-foreground korean-text">방문 횟수</p>
             </CardContent>
           </Card>
         </div>
@@ -280,9 +280,9 @@ export default function DashboardPage() {
 
         {/* Profile Content Section */}
         <div className="mt-6">
-          <Card className="bg-white shadow-sm">
+          <Card className="bg-card shadow-sm">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold text-gray-800 korean-text">
+              <CardTitle className="text-lg font-semibold text-card-foreground korean-text">
                 프로필 미리보기
               </CardTitle>
             </CardHeader>
@@ -290,13 +290,13 @@ export default function DashboardPage() {
 
 
               {/* Shortened URL Section */}
-              <div className="mb-4 p-3 bg-gray-50 rounded-lg border">
+              <div className="mb-4 p-3 bg-muted rounded-lg border border-border">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-700">단축 URL</span>
+                  <span className="text-sm font-medium text-foreground">단축 URL</span>
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-1 h-auto text-gray-500 hover:text-gray-700"
+                    className="p-1 h-auto text-muted-foreground hover:text-foreground"
                     onClick={() => {
                       const url = (settingsData as any)?.customUrl ? 
                         `https://amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                     <Copy className="w-4 h-4" />
                   </Button>
                 </div>
-                <div className="text-sm text-gray-600 font-mono">
+                <div className="text-sm text-muted-foreground font-mono">
                   {(settingsData as any)?.customUrl ? 
                     `amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
                     `amusefit.co.kr/users/${(userData as any)?.username || 'user'}`
@@ -317,7 +317,7 @@ export default function DashboardPage() {
 
               {/* Content Type Selection Display */}
               <div className="space-y-3">
-                <p className="text-sm font-medium text-gray-700 korean-text">선택된 진입 경로</p>
+                <p className="text-sm font-medium text-foreground korean-text">선택된 진입 경로</p>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { type: 'image', label: '이미지', icon: Image },
@@ -329,19 +329,19 @@ export default function DashboardPage() {
                       className={`p-3 rounded-lg border-2 transition-all ${
                         currentContentType === type
                           ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 bg-gray-50'
+                          : 'border-border bg-muted'
                       }`}
                     >
                       <div className="flex flex-col items-center space-y-1">
                         <Icon className={`w-5 h-5 ${
                           currentContentType === type
                             ? 'text-primary'
-                            : 'text-gray-400'
+                            : 'text-muted-foreground'
                         }`} />
                         <span className={`text-xs korean-text ${
                           currentContentType === type
                             ? 'text-primary font-medium'
-                            : 'text-gray-500'
+                            : 'text-muted-foreground'
                         }`}>
                           {label}
                         </span>
@@ -480,7 +480,7 @@ export default function DashboardPage() {
                   <div className="space-y-3">
                     {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
                       linksData.map((link: any) => (
-                        <div key={link.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
+                        <div key={link.id} className="bg-card rounded-lg border border-border p-4 hover:shadow-sm transition-shadow cursor-pointer">
                           <div className="flex items-center space-x-3">
                             {(link.customImageUrl || link.imageUrl) ? (
                               <img 
@@ -489,26 +489,26 @@ export default function DashboardPage() {
                                 className="w-12 h-12 rounded-lg object-cover"
                               />
                             ) : (
-                              <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                                <ExternalLink className="w-6 h-6 text-gray-400" />
+                              <div className="w-12 h-12 bg-muted rounded-lg flex items-center justify-center">
+                                <ExternalLink className="w-6 h-6 text-muted-foreground" />
                               </div>
                             )}
                             <div className="flex-1">
-                              <h3 className="font-medium text-[#8B4513] text-sm">{link.title}</h3>
+                              <h3 className="font-medium text-primary text-sm">{link.title}</h3>
                               {link.description && (
-                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">{link.description}</p>
+                                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{link.description}</p>
                               )}
-                              <p className="text-xs text-gray-500 mt-1">{new URL(link.originalUrl).hostname}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{new URL(link.originalUrl).hostname}</p>
                             </div>
-                            <ExternalLink className="w-4 h-4 text-gray-400" />
+                            <ExternalLink className="w-4 h-4 text-muted-foreground" />
                           </div>
                         </div>
                       ))
                     ) : (
                       <div className="text-center py-12">
-                        <ExternalLink className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <p className="text-gray-500 text-lg">링크 없음</p>
-                        <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
+                        <ExternalLink className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                        <p className="text-muted-foreground text-lg">링크 없음</p>
+                        <p className="text-muted-foreground text-sm mt-2">아직 등록된 링크가 없습니다.</p>
                       </div>
                     )}
 
@@ -523,7 +523,7 @@ export default function DashboardPage() {
               <Button
                 onClick={() => setLocation('/settings')}
                 variant="outline"
-                className="w-full border-primary text-primary hover:bg-primary hover:text-white"
+                className="w-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
               >
                 프로필 설정 수정
               </Button>
