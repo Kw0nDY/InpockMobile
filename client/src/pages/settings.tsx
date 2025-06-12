@@ -423,8 +423,8 @@ export default function SettingsPage() {
 
   const handleCopyUrl = () => {
     const url = profileData.shortUrlType === 'custom' && profileData.customUrl
-      ? `amusefit.co.kr/users/${profileData.customUrl}`
-      : `amusefit.co.kr/users/${user?.username || 'default'}`;
+      ? `${window.location.origin}/${profileData.customUrl}`
+      : `${window.location.origin}/users/${user?.username || 'demo_user'}`;
     
     navigator.clipboard.writeText(url);
     setCopied(true);
@@ -637,7 +637,7 @@ export default function SettingsPage() {
                   onClick={handleCopyUrl}
                   className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 border-border"
                 >
-                  {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
+                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
               </div>
             </div>
