@@ -217,11 +217,19 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="flex items-center">
-          <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
-            <span className="text-white font-medium text-sm">
-              {user?.name ? getInitials(user.name) : "사용자"}
-            </span>
-          </div>
+          {userData?.profileImageUrl ? (
+            <img 
+              src={userData.profileImageUrl} 
+              alt={userData.name || userData.username}
+              className="w-10 h-10 rounded-full object-cover mr-3"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center mr-3">
+              <span className="text-white font-medium text-sm">
+                {user?.name ? getInitials(user.name) : "사용자"}
+              </span>
+            </div>
+          )}
           <div>
             <p className="font-medium text-sm korean-text">
               {user?.name || "사용자"}님
