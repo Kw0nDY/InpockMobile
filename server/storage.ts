@@ -704,8 +704,8 @@ export class DatabaseStorage implements IStorage {
       totalVisits: visits.length,
       dailyVisits: visits.filter(v => v.visitedAt && v.visitedAt > dayAgo).length,
       monthlyVisits: visits.filter(v => v.visitedAt && v.visitedAt > monthAgo).length,
-      ownerVisits: visits.filter(v => v.isOwnerVisit).length,
-      externalVisits: visits.filter(v => !v.isOwnerVisit).length,
+      ownerVisits: visits.filter(v => v.isOwner).length,
+      externalVisits: visits.filter(v => !v.isOwner).length,
     };
   }
 
@@ -760,7 +760,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMediaUpload(id: number): Promise<boolean> {
     const result = await db.delete(mediaUploads).where(eq(mediaUploads.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount || 0) > 0;
   }
 
   async reorderMediaUploads(userId: number, mediaType: string, mediaIds: number[]): Promise<MediaUpload[]> {
@@ -795,8 +795,66 @@ export class DatabaseStorage implements IStorage {
     return updated || undefined;
   }
 
+  // Helper methods for routes compatibility
+  async getSettings(userId: number): Promise<UserSettings | undefined> {
+    return this.getUserSettings(userId);
+  }
+
+  async incrementUserVisitCount(userId: number): Promise<void> {
+    // Update user visit count - can be implemented later if needed
+  }
+
+  async getMediaByUserAndType(userId: number, mediaType: string): Promise<MediaUpload[]> {
+    return this.getMediaUploads(userId, mediaType);
+  }
+
+  async updateMedia(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined> {
+    return this.updateMediaUpload(id, updates);
+  }
+
+  async createMedia(media: InsertMediaUpload): Promise<MediaUpload> {
+    return this.createMediaUpload(media);
+  }
+
+  async reorderUserMedia(userId: number, mediaType: string, mediaIds: number[]): Promise<MediaUpload[]> {
+    return this.reorderMediaUploads(userId, mediaType, mediaIds);
+  }
+
+  async getUserMediaUploads(userId: number): Promise<MediaUpload[]> {
+    return this.getMediaUploads(userId);
+  }
+
+  async updateMediaOrder(userId: number, mediaType: string, mediaIds: number[]): Promise<MediaUpload[]> {
+    return this.reorderMediaUploads(userId, mediaType, mediaIds);
+  }
+
+  async getUserDeals(userId: number): Promise<Deal[]> {
+    return this.getDeals(userId);
+  }
+
+  async getUserActivities(userId: number): Promise<Activity[]> {
+    return this.getActivities(userId);
+  }
+
+  async getDealsByCategory(category: string): Promise<Deal[]> {
+    return [];
+  }
+
+  async getUserSubscription(userId: number): Promise<Subscription | undefined> {
+    const subscriptions = await this.getSubscriptions(userId);
+    return subscriptions[0] || undefined;
+  }
+
+  async updateSubscription(id: number, updates: Partial<Subscription>): Promise<Subscription | undefined> {
+    return undefined;
+  }
+
+  async markTokenAsUsed(token: string): Promise<void> {
+    await this.deletePasswordResetToken(token);
+  }
+
   // Other methods remain as stubs for now (deals, chats, messages, etc.)
-  async getDeals(userId: number): Promise<Deal[]> { return []; }
+  async getDeals(userId?: number): Promise<Deal[]> { return []; }
   async getDeal(id: number): Promise<Deal | undefined> { return undefined; }
   async createDeal(deal: InsertDeal): Promise<Deal> { throw new Error("Not implemented"); }
   async updateDeal(id: number, updates: Partial<Deal>): Promise<Deal | undefined> { return undefined; }
