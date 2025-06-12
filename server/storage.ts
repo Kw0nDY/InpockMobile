@@ -1,10 +1,8 @@
 import { 
-  users, links, deals, chats, messages, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads, linkVisits,
+  users, links, deals, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads, linkVisits,
   type User, type InsertUser,
   type Link, type InsertLink,
   type Deal, type InsertDeal,
-  type Chat, type InsertChat,
-  type Message, type InsertMessage,
   type Activity, type InsertActivity,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
@@ -61,14 +59,7 @@ export interface IStorage {
   getDeal(id: number): Promise<Deal | undefined>;
   createDeal(deal: InsertDeal): Promise<Deal>;
 
-  // Chats
-  getChats(userId: number): Promise<Chat[]>;
-  getChat(id: number): Promise<Chat | undefined>;
-  createChat(chat: InsertChat): Promise<Chat>;
 
-  // Messages
-  getMessages(chatId: number): Promise<Message[]>;
-  createMessage(message: InsertMessage): Promise<Message>;
 
   // Activities
   getUserActivities(userId: number): Promise<Activity[]>;
@@ -106,8 +97,7 @@ export class MemStorage implements IStorage {
   private users: Map<number, User> = new Map();
   private links: Map<number, Link> = new Map();
   private deals: Map<number, Deal> = new Map();
-  private chats: Map<number, Chat> = new Map();
-  private messages: Map<number, Message> = new Map();
+
   private activities: Map<number, Activity> = new Map();
   private userSettings: Map<number, UserSettings> = new Map();
   private subscriptions: Map<number, Subscription> = new Map();
@@ -118,8 +108,7 @@ export class MemStorage implements IStorage {
   private currentUserId = 1;
   private currentLinkId = 1;
   private currentDealId = 1;
-  private currentChatId = 1;
-  private currentMessageId = 1;
+
   private currentActivityId = 1;
   private currentUserSettingsId = 1;
   private currentSubscriptionId = 1;
@@ -360,46 +349,9 @@ export class MemStorage implements IStorage {
     return newDeal;
   }
 
-  // Chats methods
-  async getChats(userId: number): Promise<Chat[]> {
-    return Array.from(this.chats.values()).filter(chat => 
-      chat.participantIds?.includes(userId)
-    );
-  }
 
-  async getChat(id: number): Promise<Chat | undefined> {
-    return this.chats.get(id);
-  }
 
-  async createChat(chat: InsertChat): Promise<Chat> {
-    const newChat: Chat = {
-      ...chat,
-      id: this.currentChatId++,
-      participantIds: chat.participantIds || null,
-      lastMessageAt: chat.lastMessageAt || null,
-      createdAt: new Date(),
-    };
-    this.chats.set(newChat.id, newChat);
-    return newChat;
-  }
 
-  // Messages methods
-  async getMessages(chatId: number): Promise<Message[]> {
-    return Array.from(this.messages.values()).filter(message => message.chatId === chatId);
-  }
-
-  async createMessage(message: InsertMessage): Promise<Message> {
-    const newMessage: Message = {
-      ...message,
-      id: this.currentMessageId++,
-      type: message.type || null,
-      mediaUrl: message.mediaUrl || null,
-      isRead: message.isRead || null,
-      sentAt: new Date(),
-    };
-    this.messages.set(newMessage.id, newMessage);
-    return newMessage;
-  }
 
   // User settings methods
   async getSettings(userId: number): Promise<UserSettings | undefined> {

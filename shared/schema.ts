@@ -234,7 +234,6 @@ export const LINK_STYLES = ['thumbnail', 'simple', 'card', 'background'] as cons
 export const usersRelations = relations(users, ({ many, one }) => ({
   links: many(links),
   deals: many(deals),
-  sentMessages: many(messages),
   activities: many(activities),
   settings: one(userSettings),
   subscription: one(subscriptions),
