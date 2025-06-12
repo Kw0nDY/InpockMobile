@@ -458,25 +458,25 @@ export default function SettingsPage() {
     : `amusefit.co.kr/users/${user?.username || 'default'}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 p-4">
+      <header className="bg-card border-b border-border p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="text-gray-600 hover:text-gray-800"
+              className="text-muted-foreground hover:text-foreground"
             >
               <ChevronLeft className="w-5 h-5" />
             </Button>
-            <h1 className="text-lg font-semibold text-gray-800">프로필 설정</h1>
+            <h1 className="text-lg font-semibold text-foreground">프로필 설정</h1>
           </div>
           <Button
             onClick={handleSaveProfile}
             disabled={updateSettingsMutation.isPending}
-            className="bg-primary text-white hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
           >
             {updateSettingsMutation.isPending ? '저장 중...' : '저장'}
           </Button>
@@ -485,9 +485,9 @@ export default function SettingsPage() {
 
       <div className="p-4 space-y-6">
         {/* Profile Section */}
-        <Card className="bg-white shadow-sm">
+        <Card className="bg-card shadow-sm border-border">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">프로필</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">프로필</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Avatar */}
@@ -497,11 +497,11 @@ export default function SettingsPage() {
                   <img
                     src={(userData as any).profileImageUrl}
                     alt="프로필 이미지"
-                    className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
+                    className="w-20 h-20 rounded-full object-cover border-2 border-border"
                   />
                 ) : (
                   <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium text-xl">
+                    <span className="text-primary-foreground font-medium text-xl">
                       {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
                     </span>
                   </div>
@@ -510,10 +510,10 @@ export default function SettingsPage() {
                   size="sm"
                   onClick={handleProfileImageUpload}
                   disabled={isUploadingProfile}
-                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border-2 border-gray-200 text-gray-600 hover:text-gray-800 disabled:opacity-50"
+                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-border text-muted-foreground hover:text-foreground disabled:opacity-50"
                 >
                   {isUploadingProfile ? (
-                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin" />
+                    <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
                   ) : (
                     <Camera className="w-4 h-4" />
                   )}
@@ -539,38 +539,38 @@ export default function SettingsPage() {
 
             {/* Name */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-gray-700">이름</Label>
+              <Label htmlFor="name" className="text-sm font-medium text-foreground">이름</Label>
               <Input
                 id="name"
                 value={profileData.name}
                 onChange={(e) => updateProfileData('name', e.target.value)}
                 placeholder="이름을 입력하세요"
-                className="border-gray-200 focus:border-primary"
+                className="border-border focus:border-primary bg-background"
               />
             </div>
 
             {/* Email */}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">이메일</Label>
+              <Label htmlFor="email" className="text-sm font-medium text-foreground">이메일</Label>
               <Input
                 id="email"
                 type="email"
                 value={profileData.email}
                 onChange={(e) => updateProfileData('email', e.target.value)}
                 placeholder="이메일을 입력하세요"
-                className="border-gray-200 focus:border-primary"
+                className="border-border focus:border-primary bg-background"
               />
             </div>
 
             {/* Bio */}
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-sm font-medium text-gray-700">소개</Label>
+              <Label htmlFor="bio" className="text-sm font-medium text-foreground">소개</Label>
               <Textarea
                 id="bio"
                 value={profileData.bio}
                 onChange={(e) => updateProfileData('bio', e.target.value)}
                 placeholder="자신을 소개해보세요"
-                className="border-gray-200 focus:border-primary resize-none"
+                className="border-border focus:border-primary resize-none bg-background"
                 rows={3}
               />
             </div>
@@ -584,9 +584,9 @@ export default function SettingsPage() {
 
 
         {/* Short URL Settings */}
-        <Card className="bg-white shadow-sm">
+        <Card className="bg-card shadow-sm border-border">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">단축 URL 설정</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">단축 URL 설정</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <RadioGroup
@@ -598,8 +598,8 @@ export default function SettingsPage() {
                 <RadioGroupItem value="default" id="default" />
                 <Label htmlFor="default" className="cursor-pointer">
                   <div>
-                    <div className="font-medium">기본값</div>
-                    <div className="text-sm text-gray-500">amusefit.co.kr/users/{user?.username || 'demo_user'}</div>
+                    <div className="font-medium text-foreground">기본값</div>
+                    <div className="text-sm text-muted-foreground">amusefit.co.kr/users/{user?.username || 'demo_user'}</div>
                   </div>
                 </Label>
               </div>
