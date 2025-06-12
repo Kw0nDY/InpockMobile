@@ -182,20 +182,11 @@ export default function ImagesPage() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="p-4 border-b border-border bg-card">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">이미지 관리</h1>
-            <p className="text-sm text-muted-foreground">
-              사용할 이미지를 업로드하고 우선순위를 설정하세요
-            </p>
-          </div>
-          <Button 
-            onClick={() => setIsModalOpen(true)}
-            className="bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            이미지 추가
-          </Button>
+        <div>
+          <h1 className="text-xl font-bold text-foreground">이미지 관리</h1>
+          <p className="text-sm text-muted-foreground">
+            사용할 이미지를 업로드하고 우선순위를 설정하세요
+          </p>
         </div>
       </div>
 

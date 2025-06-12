@@ -52,6 +52,11 @@ export default function PublicViewPage() {
     enabled: !!identifier,
   });
 
+  const { data: images = [], isLoading: imagesLoading } = useQuery<any[]>({
+    queryKey: [`/api/media/${user?.id}/image`],
+    enabled: !!user?.id,
+  });
+
   const copyToClipboard = async (originalUrl: string, shortCode: string) => {
     const shortUrl = `${window.location.host}/${shortCode}`;
     try {
@@ -63,7 +68,7 @@ export default function PublicViewPage() {
     }
   };
 
-  if (userLoading || settingsLoading || linksLoading) {
+  if (userLoading || settingsLoading || linksLoading || imagesLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47]"></div>
@@ -274,6 +279,41 @@ export default function PublicViewPage() {
                 <LinkIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg">링크 없음</p>
                 <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
+              </div>
+            )}
+          </div>
+        );
+      case 'image':
+        return (
+          <div className="space-y-4">
+            {Array.isArray(images) && images.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {images.map((image: any, index: number) => (
+                  <div key={image.id} className="relative aspect-square">
+                    <img
+                      src={image.filePath || image.mediaUrl || '/placeholder-image.jpg'}
+                      alt={image.title || `이미지 ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => {
+                        window.location.href = `/users/${user.username}/images`;
+                      }}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-image.jpg';
+                      }}
+                    />
+                    {image.title && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2 rounded-b-lg">
+                        {image.title}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">이미지 없음</p>
+                <p className="text-gray-400 text-sm mt-2">아직 등록된 이미지가 없습니다.</p>
               </div>
             )}
           </div>
