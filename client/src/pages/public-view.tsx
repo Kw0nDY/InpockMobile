@@ -77,7 +77,7 @@ export default function PublicViewPage() {
                       {/* Thumbnail Style */}
                       {link.style === 'thumbnail' && (
                         <div 
-                          className="flex items-center gap-3 h-full p-2 bg-white rounded-lg border cursor-pointer hover:shadow-sm transition-shadow"
+                          className="flex items-center gap-3 h-full p-2 bg-card rounded-lg border border-border cursor-pointer hover:shadow-sm transition-shadow"
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             // Track click
@@ -91,12 +91,12 @@ export default function PublicViewPage() {
                               className="w-12 h-12 rounded object-cover"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gray-300 rounded"></div>
+                            <div className="w-12 h-12 bg-muted rounded"></div>
                           )}
                           <div className="text-left flex-1">
-                            <div className="text-sm font-medium text-gray-800 truncate">{link.title}</div>
+                            <div className="text-sm font-medium text-foreground truncate">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
+                              <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{link.description}</div>
                             )}
                           </div>
                         </div>
@@ -105,25 +105,25 @@ export default function PublicViewPage() {
                       {/* Simple Style */}
                       {link.style === 'simple' && (
                         <div 
-                          className="bg-white rounded-lg border p-3 h-full flex flex-col justify-center cursor-pointer hover:bg-gray-50 transition-colors" 
+                          className="bg-card rounded-lg border border-border p-3 h-full flex flex-col justify-center cursor-pointer hover:bg-muted transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             // Track click
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                           }}
                         >
-                          <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
+                          <div className="text-sm font-medium text-foreground truncate mb-1">{link.title}</div>
                           {link.description && (
-                            <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
+                            <div className="text-xs text-muted-foreground mb-2 line-clamp-1">{link.description}</div>
                           )}
-                          <div className="w-full h-2 bg-gray-300 rounded"></div>
+                          <div className="w-full h-2 bg-muted rounded"></div>
                         </div>
                       )}
                       
                       {/* Card Style */}
                       {link.style === 'card' && (
                         <div 
-                          className="bg-gray-400 rounded-lg h-full flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
+                          className="bg-accent rounded-lg h-full flex flex-col justify-center p-3 relative cursor-pointer hover:bg-accent/80 transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             // Track click
@@ -212,10 +212,10 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F3F0]">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-md mx-auto bg-background min-h-screen">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-white">
+        <div className="p-4 border-b border-border bg-card">
           <div className="flex items-center space-x-3">
             {user.profileImageUrl ? (
               <img 
@@ -224,16 +224,16 @@ export default function PublicViewPage() {
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-500" />
+              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                <User className="w-6 h-6 text-muted-foreground" />
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-[#8B4513]">
+              <h1 className="text-lg font-semibold text-primary">
                 {user.name || user.username}
               </h1>
               {user.bio && (
-                <p className="text-sm text-gray-600 mt-1">{user.bio}</p>
+                <p className="text-sm text-muted-foreground mt-1">{user.bio}</p>
               )}
             </div>
           </div>
