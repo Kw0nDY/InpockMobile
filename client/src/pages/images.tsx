@@ -1,12 +1,22 @@
 import { useState, useRef } from "react";
-import { Plus, X, Upload, Trash2, Download, Share2, Edit2 } from "lucide-react";
+import { Plus, Upload, Trash2, GripVertical, Camera, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+
+interface ImageUpload {
+  id: number;
+  title: string | null;
+  description: string | null;
+  filePath: string;
+  displayOrder: number;
+  createdAt: string;
+}
 
 export default function ImagesPage() {
   const { user } = useAuth();
@@ -14,12 +24,13 @@ export default function ImagesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const { data: images, isLoading } = useQuery({
-    queryKey: [`/api/media/${user?.id}`],
+  // Get images ordered by displayOrder
+  const { data: images = [], isLoading } = useQuery({
+    queryKey: [`/api/media/${user?.id}/image`],
     enabled: !!user?.id,
   });
 
@@ -33,12 +44,8 @@ export default function ImagesPage() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}`] });
-      setTitle("");
-      setDescription("");
-      setSelectedFile(null);
-      setPreviewUrl("");
-      setIsModalOpen(false);
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] });
+      resetForm();
       toast({
         title: "이미지 업로드 완료",
         description: "새로운 이미지가 성공적으로 업로드되었습니다.",
@@ -60,239 +67,316 @@ export default function ImagesPage() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] });
       toast({
         title: "이미지 삭제 완료",
         description: "이미지가 성공적으로 삭제되었습니다.",
       });
-    }
+    },
   });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type.startsWith('image/')) {
-        setSelectedFile(file);
-        const url = URL.createObjectURL(file);
-        setPreviewUrl(url);
-      } else {
-        toast({
-          title: "파일 형식 오류",
-          description: "이미지 파일만 업로드할 수 있습니다.",
-          variant: "destructive",
-        });
-      }
+  const reorderImagesMutation = useMutation({
+    mutationFn: async (orderedIds: number[]) => {
+      const response = await fetch('/api/media/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user?.id,
+          mediaType: 'image',
+          orderedIds
+        })
+      });
+      if (!response.ok) throw new Error('Failed to reorder images');
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] });
+    },
+  });
+
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setSelectedFiles([]);
+    setPreviewUrls([]);
+    setIsModalOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
     }
   };
 
-  const handleUpload = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedFile || !user?.id) return;
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const imageFiles = files.filter(file => file.type.startsWith('image/'));
+    
+    if (imageFiles.length === 0) {
+      toast({
+        title: "잘못된 파일 형식",
+        description: "이미지 파일만 업로드할 수 있습니다.",
+        variant: "destructive",
+      });
+      return;
+    }
 
-    const formData = new FormData();
-    formData.append('file', selectedFile);
-    formData.append('userId', user.id.toString());
-    formData.append('type', 'image');
-    if (title) formData.append('title', title);
-    if (description) formData.append('description', description);
-
-    uploadImageMutation.mutate(formData);
+    setSelectedFiles(imageFiles);
+    
+    // Create preview URLs
+    const urls = imageFiles.map(file => URL.createObjectURL(file));
+    setPreviewUrls(urls);
   };
 
-  const handleCopyUrl = (imageUrl: string) => {
-    navigator.clipboard.writeText(imageUrl);
-    toast({
-      title: "URL 복사됨",
-      description: "이미지 URL이 클립보드에 복사되었습니다.",
-    });
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0) {
+      toast({
+        title: "파일을 선택해주세요",
+        description: "업로드할 이미지를 선택해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Upload each file
+    for (const file of selectedFiles) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('userId', user?.id?.toString() || '');
+      formData.append('type', 'image');
+      formData.append('title', title || file.name);
+      formData.append('description', description || '');
+
+      await uploadImageMutation.mutateAsync(formData);
+    }
   };
+
+  const moveImage = (fromIndex: number, toIndex: number) => {
+    const imageList = Array.from(images as any[]);
+    if (toIndex < 0 || toIndex >= imageList.length) return;
+
+    const [movedItem] = imageList.splice(fromIndex, 1);
+    imageList.splice(toIndex, 0, movedItem);
+
+    const orderedIds = imageList.map((item: any) => item.id);
+    reorderImagesMutation.mutate(orderedIds);
+  };
+
+  const getImageUrl = (image: any) => {
+    return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-48"></div>
+          <div className="grid grid-cols-2 gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="aspect-square bg-muted rounded-xl"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-50 pb-20">
-        {/* Images Section */}
-        <div className="p-4 relative min-h-[calc(100vh-5rem)]">
-          {/* Add Button inside section */}
-          <div className="absolute bottom-4 right-4 z-10">
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="w-12 h-12 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
-            >
-              <Plus className="w-5 h-5" />
-            </Button>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="p-4 border-b border-border bg-card">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">이미지 관리</h1>
+            <p className="text-sm text-muted-foreground">
+              사용할 이미지를 업로드하고 우선순위를 설정하세요
+            </p>
           </div>
-          {isLoading ? (
-            <div className="grid grid-cols-2 gap-4">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="aspect-square bg-gray-200 rounded-lg"></div>
-                </div>
-              ))}
-            </div>
-          ) : images && Array.isArray(images) && images.length > 0 ? (
-            <div className="grid grid-cols-2 gap-4">
-              {images
-                .filter((media: any) => media.mediaType === 'image')
-                .map((image: any) => {
-                  const imageUrl = image.mediaUrl || image.filePath;
-                  const imageTitle = image.title || image.fileName || '이미지';
-                  
-                  return (
-                    <Card key={image.id} className="bg-white shadow-sm overflow-hidden">
-                      <div className="aspect-square relative">
-                        <img
-                          src={imageUrl}
-                          alt={imageTitle}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            target.nextElementSibling?.classList.remove('hidden');
-                          }}
-                        />
-                        <div className="hidden w-full h-full flex items-center justify-center bg-gray-100 absolute inset-0">
-                          <div className="text-center">
-                            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                            <p className="text-xs text-gray-500">이미지를 불러올 수 없습니다</p>
-                          </div>
-                        </div>
-                        <div className="absolute top-2 right-2 flex space-x-1">
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleCopyUrl(imageUrl)}
-                            className="p-1 bg-black/50 hover:bg-black/70 text-white rounded"
-                          >
-                            <Share2 className="w-3 h-3" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => deleteImageMutation.mutate(image.id)}
-                            disabled={deleteImageMutation.isPending}
-                            className="p-1 bg-black/50 hover:bg-red-600 text-white rounded"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
-                      </div>
-                      {(image.title || image.description) && (
-                        <CardContent className="p-3">
-                          {image.title && (
-                            <h3 className="font-medium text-sm text-gray-900 mb-1">{image.title}</h3>
-                          )}
-                          {image.description && (
-                            <p className="text-xs text-gray-600">{image.description}</p>
-                          )}
-                        </CardContent>
-                      )}
-                    </Card>
-                  );
-                })}
-            </div>
-          ) : (
-            <div className="text-center py-20">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Plus className="w-8 h-8 text-gray-400" />
-              </div>
-              <p className="text-gray-500 mb-2">아직 업로드된 이미지가 없습니다</p>
-              <p className="text-sm text-gray-400">+ 버튼을 눌러 새 이미지를 추가해보세요</p>
-            </div>
-          )}
+          <Button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            이미지 추가
+          </Button>
         </div>
       </div>
 
+      {/* Image Gallery */}
+      <div className="p-4">
+        {(images as any[]).length === 0 ? (
+          <div className="text-center py-12">
+            <Camera className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-foreground mb-2">이미지가 없습니다</h3>
+            <p className="text-muted-foreground mb-4">
+              첫 번째 이미지를 업로드하여 갤러리를 시작하세요
+            </p>
+            <Button onClick={() => setIsModalOpen(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              이미지 추가하기
+            </Button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4">
+            {(images as any[]).map((image: any, index: number) => (
+              <Card key={image.id} className="overflow-hidden">
+                <CardContent className="p-0 relative">
+                  {/* Priority Badge */}
+                  <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
+                    #{index + 1}
+                  </div>
+
+                  {/* Reorder Controls */}
+                  <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                      onClick={() => moveImage(index, index - 1)}
+                      disabled={index === 0}
+                    >
+                      <ArrowUp className="w-3 h-3 text-white" />
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                      onClick={() => moveImage(index, index + 1)}
+                      disabled={index === (images as any[]).length - 1}
+                    >
+                      <ArrowDown className="w-3 h-3 text-white" />
+                    </Button>
+                  </div>
+
+                  {/* Image */}
+                  <div className="aspect-square relative">
+                    <img
+                      src={getImageUrl(image)}
+                      alt={image.title || `이미지 ${index + 1}`}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-image.jpg';
+                      }}
+                    />
+                    
+                    {/* Delete Button */}
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute bottom-2 right-2 h-8 w-8 p-0"
+                      onClick={() => deleteImageMutation.mutate(image.id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+
+                  {/* Image Info */}
+                  {(image.title || image.description) && (
+                    <div className="p-3 bg-card">
+                      {image.title && (
+                        <h4 className="font-medium text-foreground text-sm truncate">
+                          {image.title}
+                        </h4>
+                      )}
+                      {image.description && (
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                          {image.description}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* Upload Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-900">이미지 업로드</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsModalOpen(false)}
-                className="p-1 hover:bg-gray-100 rounded"
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>이미지 업로드</DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* File Input */}
+            <div
+              className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <p className="text-sm text-muted-foreground">
+                클릭하여 이미지를 선택하세요
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                PNG, JPG, GIF 파일 지원
+              </p>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={handleFileSelect}
+              className="hidden"
+            />
+
+            {/* Preview */}
+            {previewUrls.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-sm font-medium">미리보기</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {previewUrls.map((url, index) => (
+                    <div key={index} className="aspect-square relative">
+                      <img
+                        src={url}
+                        alt={`미리보기 ${index + 1}`}
+                        className="w-full h-full object-cover rounded"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Title Input */}
+            <div>
+              <label className="text-sm font-medium">제목 (선택사항)</label>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="이미지 제목을 입력하세요"
+                className="mt-1"
+              />
+            </div>
+
+            {/* Description Input */}
+            <div>
+              <label className="text-sm font-medium">설명 (선택사항)</label>
+              <Input
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="이미지 설명을 입력하세요"
+                className="mt-1"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={resetForm} className="flex-1">
+                취소
+              </Button>
+              <Button 
+                onClick={handleUpload} 
+                disabled={selectedFiles.length === 0 || uploadImageMutation.isPending}
+                className="flex-1"
               >
-                <X className="w-5 h-5 text-gray-500" />
+                {uploadImageMutation.isPending ? "업로드 중..." : "업로드"}
               </Button>
             </div>
-
-            {/* Modal Content */}
-            <div className="p-4 space-y-4">
-              <form onSubmit={handleUpload} className="space-y-4">
-                {/* File Upload */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">이미지 선택 *</label>
-                  <div
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors"
-                  >
-                    {previewUrl ? (
-                      <div className="relative w-full h-full">
-                        <img
-                          src={previewUrl}
-                          alt="Preview"
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg">
-                          <p className="text-white text-sm">클릭하여 변경</p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
-                        <p className="text-sm text-gray-500">이미지를 선택하세요</p>
-                        <p className="text-xs text-gray-400">JPG, PNG, GIF 지원</p>
-                      </div>
-                    )}
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                  />
-                </div>
-
-                {/* Title */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">제목 (선택사항)</label>
-                  <Input
-                    type="text"
-                    placeholder="이미지 제목을 입력하세요"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                {/* Description */}
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-gray-700">설명 (선택사항)</label>
-                  <Input
-                    type="text"
-                    placeholder="이미지 설명을 입력하세요"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="w-full p-3 border border-gray-200 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                  />
-                </div>
-
-                <Button
-                  type="submit"
-                  disabled={uploadImageMutation.isPending || !selectedFile}
-                  className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-lg font-medium disabled:bg-gray-300"
-                >
-                  {uploadImageMutation.isPending ? "업로드 중..." : "업로드 완료"}
-                </Button>
-              </form>
-            </div>
           </div>
-        </div>
-      )}
-    </>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 }
