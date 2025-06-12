@@ -89,6 +89,10 @@ app.use((req, res, next) => {
   try {
     let demoUser = await storage.getUserByEmail("demo@amusefit.com");
     if (!demoUser) {
+      demoUser = await storage.getUserByUsername("demo_user");
+    }
+    
+    if (!demoUser) {
       console.log("Creating demo user on startup...");
       demoUser = await storage.createUser({
         username: "demo_user",
@@ -101,6 +105,22 @@ app.use((req, res, next) => {
       console.log("Demo user created on startup:", demoUser.email);
     } else {
       console.log("Demo user already exists:", demoUser.email);
+    }
+    
+    // Ensure default settings exist for demo user
+    const settings = await storage.getUserSettings(demoUser.id);
+    if (!settings) {
+      await storage.createUserSettings({
+        userId: demoUser.id,
+        customUrl: "demo_user",
+        contentType: "links",
+        notifications: true,
+        marketing: true,
+        showProfileImage: true,
+        showBio: true,
+        backgroundTheme: "linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)"
+      });
+      console.log("Demo user settings created");
     }
   } catch (error) {
     console.error("Failed to create demo user on startup:", error);

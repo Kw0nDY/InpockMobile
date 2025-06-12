@@ -597,4 +597,240 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+import { db } from "./db";
+import { eq, desc, and, gte, sql } from "drizzle-orm";
+
+export class DatabaseStorage implements IStorage {
+  // Users
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
+    const [setting] = await db.select().from(userSettings).where(eq(userSettings.customUrl, customUrl));
+    if (!setting) return undefined;
+    return this.getUser(setting.userId);
+  }
+
+  async getUserByPhone(phone: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.phone, phone));
+    return user || undefined;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+
+  async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
+    const [updated] = await db.update(users).set(updates).where(eq(users.id, id)).returning();
+    return updated || undefined;
+  }
+
+  // Links
+  async getLinks(userId: number): Promise<Link[]> {
+    return db.select().from(links).where(eq(links.userId, userId)).orderBy(desc(links.createdAt));
+  }
+
+  async getLink(id: number): Promise<Link | undefined> {
+    const [link] = await db.select().from(links).where(eq(links.id, id));
+    return link || undefined;
+  }
+
+  async getLinkByShortCode(shortCode: string): Promise<Link | undefined> {
+    const [link] = await db.select().from(links).where(eq(links.shortCode, shortCode));
+    return link || undefined;
+  }
+
+  async createLink(link: InsertLink): Promise<Link> {
+    const [newLink] = await db.insert(links).values(link).returning();
+    return newLink;
+  }
+
+  async updateLink(id: number, updates: Partial<Link>): Promise<Link | undefined> {
+    const [updated] = await db.update(links).set(updates).where(eq(links.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteLink(id: number): Promise<boolean> {
+    const result = await db.delete(links).where(eq(links.id, id));
+    return (result.rowCount || 0) > 0;
+  }
+
+  async incrementLinkClicks(id: number): Promise<void> {
+    await db.update(links).set({ 
+      clicks: sql`${links.clicks} + 1` 
+    }).where(eq(links.id, id));
+  }
+
+  // Link Visits
+  async recordLinkVisit(visit: InsertLinkVisit): Promise<LinkVisit> {
+    const [newVisit] = await db.insert(linkVisits).values(visit).returning();
+    return newVisit;
+  }
+
+  async getLinkVisits(linkId: number): Promise<LinkVisit[]> {
+    return db.select().from(linkVisits).where(eq(linkVisits.linkId, linkId));
+  }
+
+  async getLinkVisitStats(linkId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    const visits = await this.getLinkVisits(linkId);
+    const now = new Date();
+    const dayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    return {
+      totalVisits: visits.length,
+      dailyVisits: visits.filter(v => v.visitedAt && v.visitedAt > dayAgo).length,
+      monthlyVisits: visits.filter(v => v.visitedAt && v.visitedAt > monthAgo).length,
+      ownerVisits: visits.filter(v => v.isOwnerVisit).length,
+      externalVisits: visits.filter(v => !v.isOwnerVisit).length,
+    };
+  }
+
+  async getUserLinkStats(userId: number): Promise<{
+    totalVisits: number;
+    dailyVisits: number;
+    monthlyVisits: number;
+    ownerVisits: number;
+    externalVisits: number;
+  }> {
+    const userLinks = await this.getLinks(userId);
+    let totalVisits = 0, dailyVisits = 0, monthlyVisits = 0, ownerVisits = 0, externalVisits = 0;
+
+    for (const link of userLinks) {
+      const stats = await this.getLinkVisitStats(link.id);
+      totalVisits += stats.totalVisits;
+      dailyVisits += stats.dailyVisits;
+      monthlyVisits += stats.monthlyVisits;
+      ownerVisits += stats.ownerVisits;
+      externalVisits += stats.externalVisits;
+    }
+
+    return { totalVisits, dailyVisits, monthlyVisits, ownerVisits, externalVisits };
+  }
+
+  // Media Uploads
+  async getMediaUploads(userId: number, mediaType?: string): Promise<MediaUpload[]> {
+    if (mediaType) {
+      return db.select().from(mediaUploads)
+        .where(and(eq(mediaUploads.userId, userId), eq(mediaUploads.mediaType, mediaType)))
+        .orderBy(mediaUploads.displayOrder, desc(mediaUploads.createdAt));
+    }
+    return db.select().from(mediaUploads)
+      .where(eq(mediaUploads.userId, userId))
+      .orderBy(mediaUploads.displayOrder, desc(mediaUploads.createdAt));
+  }
+
+  async getMediaUpload(id: number): Promise<MediaUpload | undefined> {
+    const [media] = await db.select().from(mediaUploads).where(eq(mediaUploads.id, id));
+    return media || undefined;
+  }
+
+  async createMediaUpload(media: InsertMediaUpload): Promise<MediaUpload> {
+    const [newMedia] = await db.insert(mediaUploads).values(media).returning();
+    return newMedia;
+  }
+
+  async updateMediaUpload(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined> {
+    const [updated] = await db.update(mediaUploads).set(updates).where(eq(mediaUploads.id, id)).returning();
+    return updated || undefined;
+  }
+
+  async deleteMediaUpload(id: number): Promise<boolean> {
+    const result = await db.delete(mediaUploads).where(eq(mediaUploads.id, id));
+    return result.rowCount > 0;
+  }
+
+  async reorderMediaUploads(userId: number, mediaType: string, mediaIds: number[]): Promise<MediaUpload[]> {
+    const updates: MediaUpload[] = [];
+    
+    for (let i = 0; i < mediaIds.length; i++) {
+      const [updated] = await db.update(mediaUploads)
+        .set({ displayOrder: i })
+        .where(and(eq(mediaUploads.id, mediaIds[i]), eq(mediaUploads.userId, userId)))
+        .returning();
+      if (updated) {
+        updates.push(updated);
+      }
+    }
+    
+    return updates;
+  }
+
+  // User Settings
+  async getUserSettings(userId: number): Promise<UserSettings | undefined> {
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
+    return settings || undefined;
+  }
+
+  async createUserSettings(settings: InsertUserSettings): Promise<UserSettings> {
+    const [newSettings] = await db.insert(userSettings).values(settings).returning();
+    return newSettings;
+  }
+
+  async updateUserSettings(userId: number, updates: Partial<UserSettings>): Promise<UserSettings | undefined> {
+    const [updated] = await db.update(userSettings).set(updates).where(eq(userSettings.userId, userId)).returning();
+    return updated || undefined;
+  }
+
+  // Other methods remain as stubs for now (deals, chats, messages, etc.)
+  async getDeals(userId: number): Promise<Deal[]> { return []; }
+  async getDeal(id: number): Promise<Deal | undefined> { return undefined; }
+  async createDeal(deal: InsertDeal): Promise<Deal> { throw new Error("Not implemented"); }
+  async updateDeal(id: number, updates: Partial<Deal>): Promise<Deal | undefined> { return undefined; }
+  async deleteDeal(id: number): Promise<boolean> { return false; }
+
+  async getPublicDeals(): Promise<Deal[]> { return []; }
+  async searchDeals(query: string): Promise<Deal[]> { return []; }
+
+  async getChats(userId: number): Promise<Chat[]> { return []; }
+  async getChat(id: number): Promise<Chat | undefined> { return undefined; }
+  async createChat(chat: InsertChat): Promise<Chat> { throw new Error("Not implemented"); }
+  async updateChat(id: number, updates: Partial<Chat>): Promise<Chat | undefined> { return undefined; }
+
+  async getMessages(chatId: number): Promise<Message[]> { return []; }
+  async createMessage(message: InsertMessage): Promise<Message> { throw new Error("Not implemented"); }
+
+  async getActivities(userId: number): Promise<Activity[]> { return []; }
+  async createActivity(activity: InsertActivity): Promise<Activity> { throw new Error("Not implemented"); }
+
+  async getSubscriptions(userId: number): Promise<Subscription[]> { return []; }
+  async createSubscription(subscription: InsertSubscription): Promise<Subscription> { throw new Error("Not implemented"); }
+
+  async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> { throw new Error("Not implemented"); }
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> { return undefined; }
+  async deletePasswordResetToken(token: string): Promise<boolean> { return false; }
+
+  async getUserByPublicIdentifier(identifier: string): Promise<User | undefined> {
+    // First try by username
+    let user = await this.getUserByUsername(identifier);
+    if (user) return user;
+    
+    // Then try by custom URL
+    return this.getUserByCustomUrl(identifier);
+  }
+}
+
+export const storage = new DatabaseStorage();
