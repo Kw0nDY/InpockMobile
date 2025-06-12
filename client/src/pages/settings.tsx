@@ -608,14 +608,14 @@ export default function SettingsPage() {
                 <RadioGroupItem value="custom" id="custom" />
                 <Label htmlFor="custom" className="cursor-pointer">
                   <div>
-                    <div className="font-medium">커스텀</div>
-                    <div className="flex items-center text-sm text-gray-500">
+                    <div className="font-medium text-foreground">커스텀</div>
+                    <div className="flex items-center text-sm text-muted-foreground">
                       <span>amusefit.co.kr/users/</span>
                       <Input
                         value={profileData.customUrl || ''}
                         onChange={(e) => updateProfileData('customUrl', e.target.value)}
                         placeholder="kimyolee"
-                        className="ml-1 w-20 h-6 text-xs border-gray-300 px-1"
+                        className="ml-1 w-20 h-6 text-xs border-border px-1 bg-background"
                         disabled={profileData.shortUrlType !== 'custom'}
                       />
                     </div>
@@ -625,17 +625,17 @@ export default function SettingsPage() {
             </RadioGroup>
 
             {/* URL Display & Copy */}
-            <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="p-3 bg-muted rounded-lg">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-xs text-gray-500">단축링크</div>
-                  <div className="text-sm text-gray-800 font-mono">{shortUrl}</div>
+                  <div className="text-xs text-muted-foreground">단축링크</div>
+                  <div className="text-sm text-foreground font-mono">{shortUrl}</div>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleCopyUrl}
-                  className="text-gray-600 hover:text-gray-800 h-8 w-8 p-0"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 border-border"
                 >
                   {copied ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
                 </Button>
@@ -645,9 +645,9 @@ export default function SettingsPage() {
         </Card>
 
         {/* Entry Type Selection */}
-        <Card className="bg-white shadow-sm">
+        <Card className="bg-card shadow-sm border-border">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">진입 타입 선택</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">진입 타입 선택</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4">
@@ -655,36 +655,36 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'image')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'image'
-                    ? 'border-[#8B4513] bg-[#F5F3F0]'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-primary bg-accent'
+                    : 'border-border hover:border-primary/50'
                 }`}
               >
-                <Image className="w-8 h-8 text-gray-600 mb-2" />
-                <span className="text-sm font-medium text-gray-700">이미지</span>
+                <Image className="w-8 h-8 text-muted-foreground mb-2" />
+                <span className="text-sm font-medium text-foreground">이미지</span>
               </button>
               
               <button
                 onClick={() => updateProfileData('contentType', 'video')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'video'
-                    ? 'border-[#8B4513] bg-[#F5F3F0]'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-primary bg-accent'
+                    : 'border-border hover:border-primary/50'
                 }`}
               >
-                <Video className="w-8 h-8 text-gray-600 mb-2" />
-                <span className="text-sm font-medium text-gray-700">동영상</span>
+                <Video className="w-8 h-8 text-muted-foreground mb-2" />
+                <span className="text-sm font-medium text-foreground">동영상</span>
               </button>
               
               <button
                 onClick={() => updateProfileData('contentType', 'links')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'links'
-                    ? 'border-[#8B4513] bg-[#F5F3F0]'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-primary bg-accent'
+                    : 'border-border hover:border-primary/50'
                 }`}
               >
-                <ExternalLink className="w-8 h-8 text-gray-600 mb-2" />
-                <span className="text-sm font-medium text-gray-700">링크 카드</span>
+                <ExternalLink className="w-8 h-8 text-muted-foreground mb-2" />
+                <span className="text-sm font-medium text-foreground">링크 카드</span>
               </button>
             </div>
           </CardContent>
@@ -694,9 +694,9 @@ export default function SettingsPage() {
 
 
         {/* 계정 관리 섹션 */}
-        <Card className="border border-gray-200">
+        <Card className="border border-border bg-card">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-gray-800">계정 관리</CardTitle>
+            <CardTitle className="text-lg font-semibold text-foreground">계정 관리</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="p-4 bg-red-50 rounded-lg border border-red-200">
