@@ -54,21 +54,7 @@ export const deals = pgTable("deals", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const chats = pgTable("chats", {
-  id: serial("id").primaryKey(),
-  participants: text("participants").array().notNull(),
-  lastMessage: text("last_message"),
-  lastMessageTime: timestamp("last_message_time").defaultNow(),
-  isRead: boolean("is_read").default(false),
-});
 
-export const messages = pgTable("messages", {
-  id: serial("id").primaryKey(),
-  chatId: integer("chat_id").notNull(),
-  senderId: integer("sender_id").notNull(),
-  content: text("content").notNull(),
-  timestamp: timestamp("timestamp").defaultNow(),
-});
 
 export const activities = pgTable("activities", {
   id: serial("id").primaryKey(),
@@ -185,15 +171,7 @@ export const insertDealSchema = createInsertSchema(deals).omit({
   createdAt: true,
 });
 
-export const insertChatSchema = createInsertSchema(chats).omit({
-  id: true,
-  lastMessageTime: true,
-});
 
-export const insertMessageSchema = createInsertSchema(messages).omit({
-  id: true,
-  timestamp: true,
-});
 
 export const insertActivitySchema = createInsertSchema(activities).omit({
   id: true,
@@ -229,11 +207,7 @@ export type InsertLink = z.infer<typeof insertLinkSchema>;
 export type Deal = typeof deals.$inferSelect;
 export type InsertDeal = z.infer<typeof insertDealSchema>;
 
-export type Chat = typeof chats.$inferSelect;
-export type InsertChat = z.infer<typeof insertChatSchema>;
 
-export type Message = typeof messages.$inferSelect;
-export type InsertMessage = z.infer<typeof insertMessageSchema>;
 
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
@@ -281,20 +255,7 @@ export const dealsRelations = relations(deals, ({ one }) => ({
   }),
 }));
 
-export const chatsRelations = relations(chats, ({ many }) => ({
-  messages: many(messages),
-}));
 
-export const messagesRelations = relations(messages, ({ one }) => ({
-  chat: one(chats, {
-    fields: [messages.chatId],
-    references: [chats.id],
-  }),
-  sender: one(users, {
-    fields: [messages.senderId],
-    references: [users.id],
-  }),
-}));
 
 export const activitiesRelations = relations(activities, ({ one }) => ({
   user: one(users, {
