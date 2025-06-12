@@ -821,8 +821,30 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteLink(id: number): Promise<boolean> {
-    const result = await db.delete(links).where(eq(links.id, id));
-    return (result.rowCount || 0) > 0;
+    try {
+      console.log(`[DELETE-LINK] Checking if link ${id} exists...`);
+      // First check if the link exists
+      const existingLink = await db.select().from(links).where(eq(links.id, id));
+      console.log(`[DELETE-LINK] Found ${existingLink.length} links with ID ${id}`);
+      
+      if (existingLink.length === 0) {
+        console.log(`[DELETE-LINK] Link ${id} does not exist`);
+        return false;
+      }
+
+      console.log(`[DELETE-LINK] Deleting link ${id}...`);
+      // Delete related link_visits first to avoid foreign key constraint issues
+      await db.delete(linkVisits).where(eq(linkVisits.linkId, id));
+      console.log(`[DELETE-LINK] Deleted related visits for link ${id}`);
+      
+      // Delete the link
+      await db.delete(links).where(eq(links.id, id));
+      console.log(`[DELETE-LINK] Successfully deleted link ${id}`);
+      return true;
+    } catch (error) {
+      console.error("[DELETE-LINK] Database error:", error);
+      throw error;
+    }
   }
 
   async incrementLinkClicks(id: number): Promise<void> {

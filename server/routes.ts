@@ -429,14 +429,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/links/:id", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
+      console.log(`[DELETE-LINK] Attempting to delete link with ID: ${id}`);
+      
       const deleted = await storage.deleteLink(id);
+      console.log(`[DELETE-LINK] Delete result: ${deleted}`);
 
       if (!deleted) {
+        console.log(`[DELETE-LINK] Link ${id} not found`);
         return res.status(404).json({ message: "Link not found" });
       }
 
+      console.log(`[DELETE-LINK] Successfully deleted link ${id}`);
       res.status(204).send();
     } catch (error) {
+      console.error("[DELETE-LINK] Error:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
