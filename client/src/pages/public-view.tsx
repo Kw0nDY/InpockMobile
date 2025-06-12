@@ -98,6 +98,9 @@ export default function PublicViewPage() {
                             {link.description && (
                               <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{link.description}</div>
                             )}
+                            <div className="text-xs text-blue-600 mt-1">
+                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            </div>
                           </div>
                         </div>
                       )}
@@ -116,6 +119,9 @@ export default function PublicViewPage() {
                           {link.description && (
                             <div className="text-xs text-muted-foreground mb-2 line-clamp-1">{link.description}</div>
                           )}
+                          <div className="text-xs text-blue-600 mb-2">
+                            내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                          </div>
                           <div className="w-full h-2 bg-muted rounded"></div>
                         </div>
                       )}
@@ -142,6 +148,9 @@ export default function PublicViewPage() {
                             {link.description && (
                               <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
                             )}
+                            <div className="text-xs text-blue-200 mt-1">
+                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            </div>
                           </div>
                           <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 border-2 border-white rounded-full"></div>
@@ -175,6 +184,9 @@ export default function PublicViewPage() {
                             {link.description && (
                               <div className="text-xs text-gray-200 mb-2 line-clamp-1 drop-shadow-lg">{link.description}</div>
                             )}
+                            <div className="text-xs text-blue-200 drop-shadow-lg">
+                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            </div>
                           </div>
                         </div>
                       )}
