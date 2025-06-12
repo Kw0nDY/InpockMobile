@@ -1251,6 +1251,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { identifier } = req.params;
       
+      // Debug storage state
+      const allUsers = await storage.getAllUsers();
+      console.log(`[PUBLIC-API] Total users in storage: ${allUsers.length}`);
+      console.log(`[PUBLIC-API] Looking for identifier: ${identifier}`);
+      console.log(`[PUBLIC-API] Available usernames: ${allUsers.map(u => u.username).join(', ')}`);
+      
       // Try to find user by custom URL first, then by username
       let user = await storage.getUserByCustomUrl(identifier);
       if (!user) {
@@ -1258,8 +1264,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       if (!user) {
+        console.log(`[PUBLIC-API] User not found for identifier: ${identifier}`);
         return res.status(404).json({ message: "User not found" });
       }
+
+      console.log(`[PUBLIC-API] Found user: ${JSON.stringify({ id: user.id, username: user.username, name: user.name })}`);
 
       // Return public user data
       const publicUser = {
