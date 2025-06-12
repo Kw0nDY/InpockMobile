@@ -478,7 +478,6 @@ export default function DashboardPage() {
                 {/* Links Content - Match Public View Page */}
                 {currentContentType === 'links' && (
                   <div className="space-y-3">
-                    <p className="text-sm font-medium text-gray-700 korean-text mb-2">방문자가 볼 링크 화면</p>
                     {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
                       linksData.map((link: any) => (
                         <div key={link.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-sm transition-shadow cursor-pointer">
