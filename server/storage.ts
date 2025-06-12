@@ -361,6 +361,10 @@ export class MemStorage implements IStorage {
       style: insertLink.style || "thumbnail",
       clicks: 0,
       isActive: insertLink.isActive !== undefined ? insertLink.isActive : true,
+      imageUrl: insertLink.imageUrl || null,
+      customImageUrl: insertLink.customImageUrl || null,
+      cropData: insertLink.cropData || null,
+      description: insertLink.description || null,
       createdAt: new Date(),
     };
     this.links.set(id, link);

@@ -1,12 +1,15 @@
-import { useState } from "react";
-import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2, Copy } from "lucide-react";
+import { useState, useRef, useCallback } from "react";
+import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2, Copy, Upload, Camera, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/queryClient";
+import { queryClient, apiRequest } from "@/lib/queryClient";
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
 
@@ -20,11 +23,19 @@ export default function LinksPage() {
   const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [url, setUrl] = useState("");
+  const [description, setDescription] = useState("");
   const [selectedStyle, setSelectedStyle] = useState<LinkStyle>(THUMBNAIL);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [customImageUrl, setCustomImageUrl] = useState("");
+  const [showImageCrop, setShowImageCrop] = useState(false);
+  const [crop, setCrop] = useState<any>({ unit: '%', width: 90, aspect: 16 / 9 });
+  const [completedCrop, setCompletedCrop] = useState<any>(null);
+  const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: linksData, isLoading } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
