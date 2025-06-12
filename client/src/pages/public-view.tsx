@@ -152,20 +152,30 @@ export default function PublicViewPage() {
                       {/* Background Style */}
                       {link.style === 'background' && (
                         <div 
-                          className="h-full flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
-                          style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
+                          className="h-full flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
+                          style={{
+                            backgroundImage: (link.customImageUrl || link.imageUrl) 
+                              ? `url(${link.customImageUrl || link.imageUrl})` 
+                              : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat'
+                          }}
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             // Track click
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                           }}
                         >
-                          <div className="text-sm font-medium text-gray-800 truncate mb-2">{link.title}</div>
-                          {link.description && (
-                            <div className="text-xs text-gray-600 mb-2 line-clamp-1">{link.description}</div>
-                          )}
-                          <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
-                          <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
+                          {/* Dark overlay for text readability */}
+                          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                          
+                          <div className="relative z-10 text-white">
+                            <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
+                            {link.description && (
+                              <div className="text-xs text-gray-200 mb-2 line-clamp-1 drop-shadow-lg">{link.description}</div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
