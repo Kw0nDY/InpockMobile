@@ -492,6 +492,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // URL metadata fetching endpoint
+  app.post("/api/url-metadata", async (req, res) => {
+    try {
+      const { url } = req.body;
+      if (!url) {
+        return res.status(400).json({ message: "URL is required" });
+      }
+
+      console.log(`[URL-METADATA] Fetching metadata for: ${url}`);
+      
+      const response = await fetch(url, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const html = await response.text();
+      
+      // Extract metadata using regex patterns
+      const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+      const descriptionMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/i) ||
+                              html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i);
+      const imageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
+                        html.match(/<meta[^>]*name="twitter:image"[^>]*content="([^"]+)"/i);
+      
+      const metadata = {
+        title: titleMatch ? titleMatch[1].trim() : null,
+        description: descriptionMatch ? descriptionMatch[1].trim() : null,
+        image: imageMatch ? imageMatch[1].trim() : null,
+        url: url
+      };
+      
+      console.log(`[URL-METADATA] Extracted metadata:`, metadata);
+      res.json(metadata);
+    } catch (error) {
+      console.error("[URL-METADATA] Error:", error);
+      res.status(500).json({ message: "Failed to fetch metadata" });
+    }
+  });
+
   // Short link redirect routes
   app.get("/link/:shortCode", async (req, res) => {
     try {

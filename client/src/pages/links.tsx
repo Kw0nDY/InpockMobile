@@ -52,7 +52,17 @@ export default function LinksPage() {
   const links = Array.isArray(linksData) ? linksData : [];
 
   const createLinkMutation = useMutation({
-    mutationFn: async (data: { title: string; originalUrl: string; userId: number; shortCode: string; style?: string }) => {
+    mutationFn: async (data: { 
+      title: string; 
+      originalUrl: string; 
+      userId: number; 
+      shortCode: string; 
+      style?: string;
+      description?: string;
+      imageUrl?: string;
+      customImageUrl?: string;
+      cropData?: string;
+    }) => {
       const response = await fetch('/api/links', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -65,9 +75,11 @@ export default function LinksPage() {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
       setTitle("");
       setUrl("");
+      setDescription("");
       setSelectedStyle(THUMBNAIL);
       setSelectedImage(null);
       setImageFile(null);
+      setCustomImageUrl("");
       setShowAddForm(false);
       toast({
         title: "링크 생성 완료",
@@ -147,6 +159,34 @@ export default function LinksPage() {
     setImageFile(null);
   };
 
+  // URL metadata fetching
+  const fetchUrlMetadata = useCallback(async (url: string) => {
+    if (!url || !url.startsWith('http')) return;
+    
+    setIsLoadingMetadata(true);
+    try {
+      const response = await fetch('/api/url-metadata', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+      
+      if (response.ok) {
+        const metadata = await response.json();
+        if (metadata.title && !title) setTitle(metadata.title);
+        if (metadata.description && !description) setDescription(metadata.description);
+        if (metadata.image && !selectedImage) {
+          setSelectedImage(metadata.image);
+          setCustomImageUrl(metadata.image);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch metadata:', error);
+    } finally {
+      setIsLoadingMetadata(false);
+    }
+  }, [title, description, selectedImage]);
+
   const handleCreateLink = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !url || !user?.id) return;
@@ -157,7 +197,11 @@ export default function LinksPage() {
       originalUrl: url,
       userId: user.id,
       shortCode,
-      style: selectedStyle
+      style: selectedStyle,
+      description: description || undefined,
+      imageUrl: selectedImage || undefined,
+      customImageUrl: customImageUrl || undefined,
+      cropData: completedCrop ? JSON.stringify(completedCrop) : undefined
     });
   };
 
@@ -314,21 +358,42 @@ export default function LinksPage() {
             <form onSubmit={handleCreateLink} className="space-y-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#8B4513]">연결될 주소 *</label>
-                <Input
-                  type="url"
-                  placeholder=""
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C]"
-                  required
-                />
+                <div className="relative">
+                  <Input
+                    type="url"
+                    placeholder="https://example.com"
+                    value={url}
+                    onChange={(e) => setUrl(e.target.value)}
+                    onBlur={() => fetchUrlMetadata(url)}
+                    className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C]"
+                    required
+                  />
+                  {isLoadingMetadata && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-[#8B4513]"></div>
+                    </div>
+                  )}
+                </div>
+                {url && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fetchUrlMetadata(url)}
+                    disabled={isLoadingMetadata}
+                    className="text-xs"
+                  >
+                    <Eye className="w-3 h-3 mr-1" />
+                    미리보기 가져오기
+                  </Button>
+                )}
               </div>
 
               <div className="space-y-2">
                 <label className="text-sm font-medium text-[#8B4513]">타이틀 *</label>
                 <Input
                   type="text"
-                  placeholder=""
+                  placeholder="링크 타이틀을 입력하세요"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C]"
@@ -337,39 +402,104 @@ export default function LinksPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-[#8B4513]">이미지</label>
-                {selectedImage ? (
-                  <div className="relative w-full h-24 border-2 border-gray-300 rounded-lg overflow-hidden">
-                    <img 
-                      src={selectedImage} 
-                      alt="Selected" 
-                      className="w-full h-full object-cover"
-                    />
-                    <button
+                <label className="text-sm font-medium text-[#8B4513]">설명</label>
+                <Textarea
+                  placeholder="링크에 대한 간단한 설명을 입력하세요"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full p-3 border border-gray-200 rounded-lg focus:border-[#A0825C] focus:ring-1 focus:ring-[#A0825C] resize-none"
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-[#8B4513]">이미지</label>
+                  {selectedImage && (
+                    <Button
                       type="button"
-                      onClick={removeImage}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowImageCrop(true)}
+                      className="text-xs"
                     >
-                      ×
-                    </button>
+                      <Camera className="w-3 h-3 mr-1" />
+                      편집
+                    </Button>
+                  )}
+                </div>
+                
+                {selectedImage ? (
+                  <div className="space-y-2">
+                    <div className="relative w-full h-32 border-2 border-gray-300 rounded-lg overflow-hidden">
+                      <img 
+                        src={selectedImage} 
+                        alt="Selected" 
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={removeImage}
+                        className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    {/* Custom Image URL Input */}
+                    <div className="space-y-1">
+                      <label className="text-xs text-gray-600">또는 이미지 URL 직접 입력</label>
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/image.jpg"
+                        value={customImageUrl}
+                        onChange={(e) => {
+                          setCustomImageUrl(e.target.value);
+                          if (e.target.value) {
+                            setSelectedImage(e.target.value);
+                          }
+                        }}
+                        className="text-xs"
+                      />
+                    </div>
                   </div>
                 ) : (
-                  <label className="flex items-center justify-center w-full h-24 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <div className="text-center">
-                      <Plus className="w-8 h-8 text-gray-400 mx-auto mb-1" />
-                      <p className="text-xs text-gray-500">
-                        이미지를 직접 첨부하거나
-                        <br />
-                        자동을 검색해서 첨부하세요
-                      </p>
+                  <div className="space-y-2">
+                    <label className="flex items-center justify-center w-full h-32 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400 transition-colors">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <div className="text-center">
+                        <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                        <p className="text-xs text-gray-500">
+                          이미지를 업로드하거나
+                          <br />
+                          URL 입력으로 자동 검색
+                        </p>
+                      </div>
+                    </label>
+                    
+                    {/* Custom Image URL Input */}
+                    <div className="space-y-1">
+                      <label className="text-xs text-gray-600">이미지 URL</label>
+                      <Input
+                        type="url"
+                        placeholder="https://example.com/image.jpg"
+                        value={customImageUrl}
+                        onChange={(e) => {
+                          setCustomImageUrl(e.target.value);
+                          if (e.target.value) {
+                            setSelectedImage(e.target.value);
+                          }
+                        }}
+                        className="text-xs"
+                      />
                     </div>
-                  </label>
+                  </div>
                 )}
               </div>
 
