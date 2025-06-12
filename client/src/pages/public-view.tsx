@@ -292,26 +292,30 @@ export default function PublicViewPage() {
         return (
           <div className="space-y-4">
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-4">
                 {images.map((image: any, index: number) => (
-                  <div key={image.id} className="relative aspect-square">
-                    <img
-                      src={image.filePath || image.mediaUrl || '/placeholder-image.jpg'}
-                      alt={image.title || `이미지 ${index + 1}`}
-                      className="w-full h-full object-cover rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
-                      onClick={() => {
-                        window.location.href = `/users/${user.username}/images`;
-                      }}
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                    {image.title && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2 rounded-b-lg">
-                        {image.title}
+                  <div key={image.id} className="relative">
+                    <div className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] p-1 rounded-xl shadow-lg">
+                      <div className="relative aspect-[16/10] bg-white rounded-lg overflow-hidden">
+                        <img
+                          src={image.filePath || image.mediaUrl || '/placeholder-image.jpg'}
+                          alt={image.title || `이미지 ${index + 1}`}
+                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                          onClick={() => {
+                            window.location.href = `/users/${user.username}/images`;
+                          }}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/placeholder-image.jpg';
+                          }}
+                        />
+                        {image.title && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white text-sm p-3">
+                            {image.title}
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -327,21 +331,25 @@ export default function PublicViewPage() {
         return (
           <div className="space-y-4">
             {Array.isArray(videos) && videos.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-4">
                 {videos.map((video: any, index: number) => (
-                  <div key={video.id} className="relative aspect-video bg-black rounded-lg overflow-hidden">
-                    <video
-                      src={video.filePath || video.mediaUrl}
-                      className="w-full h-full object-cover"
-                      poster={video.thumbnailUrl}
-                      controls
-                      preload="metadata"
-                    />
-                    {video.title && (
-                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2">
-                        {video.title}
+                  <div key={video.id} className="relative">
+                    <div className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] p-1 rounded-xl shadow-lg">
+                      <div className="relative aspect-[16/10] bg-black rounded-lg overflow-hidden">
+                        <video
+                          src={video.filePath || video.mediaUrl}
+                          className="w-full h-full object-cover"
+                          poster={video.thumbnailUrl}
+                          controls
+                          preload="metadata"
+                        />
+                        {video.title && (
+                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white text-sm p-3">
+                            {video.title}
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
                 ))}
               </div>
