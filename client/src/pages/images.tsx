@@ -307,12 +307,12 @@ export default function ImagesPage() {
 
       {/* Upload Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] flex flex-col">
           <DialogHeader>
             <DialogTitle>이미지 업로드</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="space-y-4 flex-1 overflow-y-auto">
             {/* File Input */}
             <div
               className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
@@ -344,17 +344,22 @@ export default function ImagesPage() {
             {/* Preview */}
             {previewUrls.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-sm font-medium">미리보기</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {previewUrls.map((url, index) => (
-                    <div key={index} className="aspect-square relative">
-                      <img
-                        src={url}
-                        alt={`미리보기 ${index + 1}`}
-                        className="w-full h-full object-cover rounded"
-                      />
-                    </div>
-                  ))}
+                <h4 className="text-sm font-medium">미리보기 ({previewUrls.length}개)</h4>
+                <div className="max-h-40 overflow-y-auto border rounded-lg p-2">
+                  <div className="grid grid-cols-2 gap-2">
+                    {previewUrls.map((url, index) => (
+                      <div key={index} className="aspect-square relative">
+                        <img
+                          src={url}
+                          alt={`미리보기 ${index + 1}`}
+                          className="w-full h-full object-cover rounded"
+                        />
+                        <div className="absolute top-1 left-1 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded">
+                          {index + 1}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             )}
@@ -381,20 +386,21 @@ export default function ImagesPage() {
               />
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" onClick={resetForm} className="flex-1">
-                취소
-              </Button>
-              <Button 
-                onClick={handleUpload} 
-                disabled={selectedFiles.length === 0 || uploadImageMutation.isPending}
-                className="flex-1"
-              >
-                {uploadImageMutation.isPending ? "업로드 중..." : 
-                 selectedFiles.length > 1 ? `${selectedFiles.length}개 업로드` : "업로드"}
-              </Button>
-            </div>
+          </div>
+          
+          {/* Action Buttons - Fixed at bottom */}
+          <div className="flex gap-2 pt-4 border-t border-border bg-background">
+            <Button variant="outline" onClick={resetForm} className="flex-1">
+              취소
+            </Button>
+            <Button 
+              onClick={handleUpload} 
+              disabled={selectedFiles.length === 0 || uploadImageMutation.isPending}
+              className="flex-1"
+            >
+              {uploadImageMutation.isPending ? "업로드 중..." : 
+               selectedFiles.length > 1 ? `${selectedFiles.length}개 업로드` : "업로드"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
