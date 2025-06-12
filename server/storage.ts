@@ -18,6 +18,7 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByCustomUrl(customUrl: string): Promise<User | undefined>;
   getUserByPhone(phone: string): Promise<User | undefined>;
   getAllUsers(): Promise<User[]>;
   createUser(user: InsertUser): Promise<User>;
@@ -294,6 +295,15 @@ export class MemStorage implements IStorage {
     return Array.from(this.users.values()).find(user => user.username === username);
   }
 
+  async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
+    // First check if any user has this custom URL in their settings
+    const settings = Array.from(this.userSettings.values()).find(s => s.customUrl === customUrl);
+    if (settings) {
+      return this.users.get(settings.userId);
+    }
+    return undefined;
+  }
+
   async getUserByPhone(phone: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(user => user.phone === phone);
   }
@@ -340,6 +350,10 @@ export class MemStorage implements IStorage {
   // Link methods
   async getLinks(userId: number): Promise<Link[]> {
     return Array.from(this.links.values()).filter(link => link.userId === userId);
+  }
+
+  async getAllLinks(userId: number): Promise<Link[]> {
+    return this.getLinks(userId);
   }
 
   async getLink(id: number): Promise<Link | undefined> {

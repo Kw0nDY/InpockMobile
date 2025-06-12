@@ -832,6 +832,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Profile routes - public access
+  app.get("/api/profile/:username", async (req, res) => {
+    try {
+      const { username } = req.params;
+      
+      // Try to find user by custom URL first, then by username
+      let user = await storage.getUserByCustomUrl(username);
+      if (!user) {
+        user = await storage.getUserByUsername(username);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Return public user data
+      const publicUserData = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        bio: user.bio,
+        profileImageUrl: user.profileImageUrl,
+        introVideoUrl: user.introVideoUrl,
+        contentType: user.contentType
+      };
+
+      res.json(publicUserData);
+    } catch (error) {
+      console.error('Profile fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/profile/:username/links", async (req, res) => {
+    try {
+      const { username } = req.params;
+      
+      let user = await storage.getUserByCustomUrl(username);
+      if (!user) {
+        user = await storage.getUserByUsername(username);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const links = await storage.getAllLinks(user.id);
+      res.json(links);
+    } catch (error) {
+      console.error('Profile links fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/profile/:username/settings", async (req, res) => {
+    try {
+      const { username } = req.params;
+      
+      let user = await storage.getUserByCustomUrl(username);
+      if (!user) {
+        user = await storage.getUserByUsername(username);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const settings = await storage.getSettings(user.id);
+      
+      // Return only public settings data
+      const publicSettings = {
+        contentType: settings?.contentType || 'links',
+        customUrl: settings?.customUrl || user.username
+      };
+
+      res.json(publicSettings);
+    } catch (error) {
+      console.error('Profile settings fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Find ID route
   app.post("/api/auth/find-id", async (req, res) => {
     try {
