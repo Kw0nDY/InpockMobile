@@ -96,6 +96,15 @@ export const userSettings = pgTable("user_settings", {
   linkDescription: text("link_description"),
   linkUrl: text("link_url"),
   shortUrlType: text("short_url_type").default("default"), // default, custom, link
+  // View screen settings
+  backgroundTheme: text("background_theme").default("beige"), // beige, white, dark, gradient
+  showProfileImage: boolean("show_profile_image").default(true),
+  showBio: boolean("show_bio").default(true),
+  showVisitCount: boolean("show_visit_count").default(true),
+  layoutStyle: text("layout_style").default("centered"), // centered, fullwidth
+  instagramUrl: text("instagram_url"),
+  twitterUrl: text("twitter_url"),
+  youtubeUrl: text("youtube_url"),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 

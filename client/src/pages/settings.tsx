@@ -30,7 +30,16 @@ export default function SettingsPage() {
     contentType: 'links',
     linkTitle: '',
     linkDescription: '',
-    linkUrl: ''
+    linkUrl: '',
+    // View screen settings
+    backgroundTheme: 'beige',
+    showProfileImage: true,
+    showBio: true,
+    showVisitCount: true,
+    layoutStyle: 'centered',
+    instagramUrl: '',
+    twitterUrl: '',
+    youtubeUrl: ''
   });
 
 
@@ -691,6 +700,141 @@ export default function SettingsPage() {
         </Card>
 
 
+
+        {/* View 화면 설정 */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-gray-800">View 화면 설정</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* 배경 테마 설정 */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">배경 테마</Label>
+              <RadioGroup 
+                value={profileData.backgroundTheme || 'beige'} 
+                onValueChange={(value) => updateProfileData('backgroundTheme', value)}
+                className="grid grid-cols-2 gap-3"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="beige" id="beige" />
+                  <Label htmlFor="beige" className="cursor-pointer flex items-center gap-2">
+                    <div className="w-4 h-4 bg-[#F5F3F0] border rounded"></div>
+                    <span>베이지 (기본)</span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="white" id="white" />
+                  <Label htmlFor="white" className="cursor-pointer flex items-center gap-2">
+                    <div className="w-4 h-4 bg-white border rounded"></div>
+                    <span>화이트</span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="dark" id="dark" />
+                  <Label htmlFor="dark" className="cursor-pointer flex items-center gap-2">
+                    <div className="w-4 h-4 bg-gray-800 border rounded"></div>
+                    <span>다크</span>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="gradient" id="gradient" />
+                  <Label htmlFor="gradient" className="cursor-pointer flex items-center gap-2">
+                    <div className="w-4 h-4 bg-gradient-to-r from-blue-400 to-purple-500 border rounded"></div>
+                    <span>그라디언트</span>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* 프로필 표시 설정 */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">프로필 정보 표시</Label>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">프로필 이미지 표시</span>
+                  <input 
+                    type="checkbox" 
+                    checked={profileData.showProfileImage !== false}
+                    onChange={(e) => updateProfileData('showProfileImage', e.target.checked)}
+                    className="rounded"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">바이오 표시</span>
+                  <input 
+                    type="checkbox" 
+                    checked={profileData.showBio !== false}
+                    onChange={(e) => updateProfileData('showBio', e.target.checked)}
+                    className="rounded"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-600">방문자 수 표시</span>
+                  <input 
+                    type="checkbox" 
+                    checked={profileData.showVisitCount !== false}
+                    onChange={(e) => updateProfileData('showVisitCount', e.target.checked)}
+                    className="rounded"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* 레이아웃 설정 */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">레이아웃 스타일</Label>
+              <RadioGroup 
+                value={profileData.layoutStyle || 'centered'} 
+                onValueChange={(value) => updateProfileData('layoutStyle', value)}
+                className="space-y-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="centered" id="centered" />
+                  <Label htmlFor="centered" className="cursor-pointer">
+                    <div>
+                      <div className="font-medium">중앙 정렬</div>
+                      <div className="text-sm text-gray-500">컨텐츠를 화면 중앙에 배치</div>
+                    </div>
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="fullwidth" id="fullwidth" />
+                  <Label htmlFor="fullwidth" className="cursor-pointer">
+                    <div>
+                      <div className="font-medium">전체 너비</div>
+                      <div className="text-sm text-gray-500">화면 전체 너비 활용</div>
+                    </div>
+                  </Label>
+                </div>
+              </RadioGroup>
+            </div>
+
+            {/* 소셜 링크 설정 */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium text-gray-700">소셜 링크</Label>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Instagram URL"
+                  value={profileData.instagramUrl || ''}
+                  onChange={(e) => updateProfileData('instagramUrl', e.target.value)}
+                  className="border-gray-200 focus:border-primary"
+                />
+                <Input
+                  placeholder="Twitter/X URL"
+                  value={profileData.twitterUrl || ''}
+                  onChange={(e) => updateProfileData('twitterUrl', e.target.value)}
+                  className="border-gray-200 focus:border-primary"
+                />
+                <Input
+                  placeholder="YouTube URL"
+                  value={profileData.youtubeUrl || ''}
+                  onChange={(e) => updateProfileData('youtubeUrl', e.target.value)}
+                  className="border-gray-200 focus:border-primary"
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* 계정 관리 섹션 */}
         <Card className="border border-gray-200">
