@@ -507,7 +507,7 @@ export default function DashboardPage() {
                       ))
                     ) : (
                       <div className="text-center py-12">
-                        <Link className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <ExternalLink className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                         <p className="text-gray-500 text-lg">링크 없음</p>
                         <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
                       </div>
