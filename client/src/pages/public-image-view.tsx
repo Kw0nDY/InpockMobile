@@ -110,7 +110,7 @@ export default function PublicImageView() {
             아직 이미지가 없습니다
           </h2>
           <p className="text-gray-600">
-            {userData?.name || username}님이 곧 멋진 이미지를 업로드할 예정입니다
+            {(userData as any)?.name || username}님이 곧 멋진 이미지를 업로드할 예정입니다
           </p>
         </div>
       </div>
@@ -180,22 +180,22 @@ export default function PublicImageView() {
       <div className="absolute top-0 left-0 right-0 z-30 p-4 bg-gradient-to-b from-black/50 to-transparent">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {userData?.profileImageUrl ? (
+            {(userData as any)?.profileImageUrl ? (
               <img
-                src={userData.profileImageUrl}
-                alt={userData.name}
+                src={(userData as any).profileImageUrl}
+                alt={(userData as any).name}
                 className="w-10 h-10 rounded-full border-2 border-white"
               />
             ) : (
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
                 <span className="text-white font-medium">
-                  {(userData?.name || username)[0]?.toUpperCase()}
+                  {((userData as any)?.name || username)[0]?.toUpperCase()}
                 </span>
               </div>
             )}
             <div>
               <h1 className="text-white font-semibold">
-                {userData?.name || username}
+                {(userData as any)?.name || username}
               </h1>
               {currentImage?.title && (
                 <p className="text-white/80 text-sm">
