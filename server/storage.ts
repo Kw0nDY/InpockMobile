@@ -774,6 +774,16 @@ export class DatabaseStorage implements IStorage {
     return user || undefined;
   }
 
+  async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
+    // First get settings with the custom URL
+    const [settings] = await db.select().from(userSettings).where(eq(userSettings.customUrl, customUrl));
+    if (!settings) return undefined;
+    
+    // Then get the user
+    const [user] = await db.select().from(users).where(eq(users.id, settings.userId));
+    return user || undefined;
+  }
+
   async getUserByPhone(phone: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.phone, phone));
     return user || undefined;
@@ -817,6 +827,10 @@ export class DatabaseStorage implements IStorage {
 
   async getLinks(userId: number): Promise<Link[]> {
     return await db.select().from(links).where(eq(links.userId, userId));
+  }
+
+  async getAllLinks(userId: number): Promise<Link[]> {
+    return this.getLinks(userId);
   }
 
   async getLink(id: number): Promise<Link | undefined> {
@@ -975,6 +989,10 @@ export class DatabaseStorage implements IStorage {
   async getUserSettings(userId: number): Promise<UserSettings | undefined> {
     const [settings] = await db.select().from(userSettings).where(eq(userSettings.userId, userId));
     return settings || undefined;
+  }
+
+  async getSettings(userId: number): Promise<UserSettings | undefined> {
+    return this.getUserSettings(userId);
   }
 
   async createUserSettings(insertSettings: InsertUserSettings): Promise<UserSettings> {

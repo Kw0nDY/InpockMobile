@@ -19,13 +19,13 @@ export default function ProfilePage() {
   // Fetch user's links
   const { data: linksData, isLoading: linksLoading } = useQuery({
     queryKey: [`/api/profile/${username}/links`],
-    enabled: !!username && userData?.id,
+    enabled: !!username && !!(userData as any)?.id,
   });
 
   // Fetch user's settings
   const { data: settingsData } = useQuery({
     queryKey: [`/api/profile/${username}/settings`],
-    enabled: !!username && userData?.id,
+    enabled: !!username && !!(userData as any)?.id,
   });
 
   useEffect(() => {
