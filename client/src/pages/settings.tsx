@@ -613,15 +613,17 @@ export default function SettingsPage() {
                 <div className="flex-1">
                   <Label htmlFor="custom" className="cursor-pointer block">
                     <div className="font-medium text-foreground mb-1">커스텀</div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <span className="break-all">{window.location.host}/</span>
-                      <Input
-                        value={profileData.customUrl || ''}
-                        onChange={(e) => updateProfileData('customUrl', e.target.value)}
-                        placeholder="kimyolee"
-                        className="ml-1 flex-1 max-w-32 h-7 text-sm border-border px-2 bg-background disabled:opacity-50"
-                        disabled={profileData.shortUrlType !== 'custom'}
-                      />
+                    <div className="text-sm text-muted-foreground">
+                      <div className="flex items-center">
+                        <span className="break-all">{window.location.host}/</span>
+                        <Input
+                          value={profileData.customUrl || ''}
+                          onChange={(e) => updateProfileData('customUrl', e.target.value)}
+                          placeholder="kimyolee"
+                          className="ml-0 inline-block w-24 h-6 text-sm border border-gray-300 rounded px-2 bg-background disabled:opacity-50 disabled:bg-gray-100"
+                          disabled={profileData.shortUrlType !== 'custom'}
+                        />
+                      </div>
                     </div>
                   </Label>
                 </div>
