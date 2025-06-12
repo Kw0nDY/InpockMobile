@@ -138,7 +138,7 @@ export default function PublicViewPage() {
                       
                       {/* Simple Style */}
                       {link.style === 'simple' && (
-                        <div className="bg-card rounded-lg border border-border p-3 h-full flex flex-col justify-center group relative">
+                        <div className="bg-white/85 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-3 h-full flex flex-col justify-center group relative hover:bg-white/90 transition-all duration-200">
                           <div 
                             className="flex-1 cursor-pointer"
                             onClick={() => {
@@ -146,29 +146,28 @@ export default function PublicViewPage() {
                               fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                             }}
                           >
-                            <div className="text-sm font-medium text-foreground truncate mb-1">{link.title}</div>
+                            <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs text-muted-foreground mb-2 line-clamp-2">{link.description}</div>
+                              <div className="text-xs text-gray-600 mb-1 line-clamp-1">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-500 mb-1">
-                              단축 URL: {window.location.host}/{link.shortCode}
+                              {window.location.host}/{link.shortCode}
                             </div>
-                            <div className="text-xs text-blue-600 mb-2">
-                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            <div className="text-xs text-blue-600">
+                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
                             </div>
-                            <div className="w-full h-2 bg-muted rounded"></div>
                           </div>
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
                               copyToClipboard(link.originalUrl, link.shortCode);
                             }}
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-[#B08A6B]/15 rounded-lg"
                           >
                             {copiedLink === link.shortCode ? (
-                              <Check className="w-3 h-3 text-green-600" />
+                              <Check className="w-3.5 h-3.5 text-green-600" />
                             ) : (
-                              <Copy className="w-3 h-3 text-gray-600" />
+                              <Copy className="w-3.5 h-3.5 text-[#8B6F47]" />
                             )}
                           </button>
                         </div>
@@ -239,19 +238,19 @@ export default function PublicViewPage() {
                               fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                             }}
                           />
-                          {/* Dark overlay for text readability */}
-                          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                          {/* Gradient overlay for better readability */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent rounded-lg"></div>
                           
                           <div className="relative z-10 text-white">
-                            <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
+                            <div className="text-sm font-medium truncate mb-1">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs text-gray-200 mb-2 line-clamp-2 drop-shadow-lg">{link.description}</div>
+                              <div className="text-xs text-gray-200 mb-1 line-clamp-1">{link.description}</div>
                             )}
-                            <div className="text-xs text-gray-300 drop-shadow-lg">
-                              단축 URL: {window.location.host}/{link.shortCode}
+                            <div className="text-xs text-gray-300 mb-1">
+                              {window.location.host}/{link.shortCode}
                             </div>
-                            <div className="text-xs text-blue-200 drop-shadow-lg">
-                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            <div className="text-xs text-blue-200">
+                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
                             </div>
                           </div>
                           <button

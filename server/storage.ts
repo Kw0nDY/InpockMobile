@@ -233,8 +233,6 @@ export class MemStorage implements IStorage {
         cropData: null,
         description: null,
         createdAt: new Date(),
-        ownerVisits: 15,
-        externalVisits: 42
       },
       {
         id: 2,
@@ -250,8 +248,6 @@ export class MemStorage implements IStorage {
         cropData: null,
         description: null,
         createdAt: new Date(),
-        ownerVisits: 8,
-        externalVisits: 23
       },
     ];
     demoLinks.forEach(link => this.links.set(link.id, link));
@@ -313,30 +309,36 @@ export class MemStorage implements IStorage {
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
     const demoVisits: LinkVisit[] = [
-      // Link 37 visits (fit123)
-      { id: 1, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 1000) },
-      { id: 2, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 2000) },
-      { id: 3, linkId: 37, visitorIp: "192.168.1.10", userAgent: "Safari", referrer: "https://google.com", isOwner: false, visitedAt: new Date(today.getTime() + 3000) },
-      { id: 4, linkId: 37, visitorIp: "192.168.1.11", userAgent: "Firefox", referrer: "https://youtube.com", isOwner: false, visitedAt: new Date(today.getTime() + 4000) },
-      { id: 5, linkId: 37, visitorIp: "192.168.1.12", userAgent: "Chrome", referrer: "https://instagram.com", isOwner: false, visitedAt: new Date(today.getTime() + 5000) },
+      // Link 1 visits (abc123) for user 1
+      { id: 1, linkId: 1, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 1000) },
+      { id: 2, linkId: 1, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 2000) },
+      { id: 3, linkId: 1, visitorIp: "192.168.1.10", userAgent: "Safari", referrer: "https://google.com", isOwner: false, visitedAt: new Date(today.getTime() + 3000) },
+      { id: 4, linkId: 1, visitorIp: "192.168.1.11", userAgent: "Firefox", referrer: "https://youtube.com", isOwner: false, visitedAt: new Date(today.getTime() + 4000) },
+      { id: 5, linkId: 1, visitorIp: "192.168.1.12", userAgent: "Chrome", referrer: "https://instagram.com", isOwner: false, visitedAt: new Date(today.getTime() + 5000) },
       
-      // Link 38 visits (home456)
-      { id: 6, linkId: 38, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 6000) },
-      { id: 7, linkId: 38, visitorIp: "192.168.1.20", userAgent: "Safari", referrer: "https://facebook.com", isOwner: false, visitedAt: new Date(today.getTime() + 7000) },
-      { id: 8, linkId: 38, visitorIp: "192.168.1.21", userAgent: "Edge", referrer: "https://twitter.com", isOwner: false, visitedAt: new Date(today.getTime() + 8000) },
+      // Link 2 visits (def456) for user 1
+      { id: 6, linkId: 2, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 6000) },
+      { id: 7, linkId: 2, visitorIp: "192.168.1.20", userAgent: "Safari", referrer: "https://facebook.com", isOwner: false, visitedAt: new Date(today.getTime() + 7000) },
+      { id: 8, linkId: 2, visitorIp: "192.168.1.21", userAgent: "Edge", referrer: "https://twitter.com", isOwner: false, visitedAt: new Date(today.getTime() + 8000) },
       
-      // Link 39 visits (nutr789)
-      { id: 9, linkId: 39, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 9000) },
-      { id: 10, linkId: 39, visitorIp: "192.168.1.30", userAgent: "Chrome", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 10000) },
+      // Link 37 visits (fit123) for user 8
+      { id: 9, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 9000) },
+      { id: 10, linkId: 37, visitorIp: "192.168.1.30", userAgent: "Chrome", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 10000) },
       
       // Some older visits from previous days/months
-      { id: 11, linkId: 37, visitorIp: "192.168.1.40", userAgent: "Safari", referrer: "https://kakao.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 86400000) }, // 1 day into month
-      { id: 12, linkId: 37, visitorIp: "192.168.1.41", userAgent: "Firefox", referrer: "https://daum.net", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 172800000) }, // 2 days into month
-      { id: 13, linkId: 38, visitorIp: "192.168.1.42", userAgent: "Chrome", referrer: "https://google.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 259200000) }, // 3 days into month
+      { id: 11, linkId: 1, visitorIp: "192.168.1.40", userAgent: "Safari", referrer: "https://kakao.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 86400000) }, // 1 day into month
+      { id: 12, linkId: 1, visitorIp: "192.168.1.41", userAgent: "Firefox", referrer: "https://daum.net", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 172800000) }, // 2 days into month
+      { id: 13, linkId: 2, visitorIp: "192.168.1.42", userAgent: "Chrome", referrer: "https://google.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 259200000) }, // 3 days into month
+      
+      // Add visits for link 40 (current active link for user 1)
+      { id: 14, linkId: 40, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 11000) },
+      { id: 15, linkId: 40, visitorIp: "192.168.1.50", userAgent: "Safari", referrer: "https://youtube.com", isOwner: false, visitedAt: new Date(today.getTime() + 12000) },
+      { id: 16, linkId: 40, visitorIp: "192.168.1.51", userAgent: "Firefox", referrer: "https://instagram.com", isOwner: false, visitedAt: new Date(today.getTime() + 13000) },
+      { id: 17, linkId: 40, visitorIp: "192.168.1.52", userAgent: "Edge", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 14000) },
     ];
     
     demoVisits.forEach(visit => this.linkVisits.set(visit.id, visit));
-    this.currentLinkVisitId = 14;
+    this.currentLinkVisitId = 18;
 
     // Update link visit counts based on demo visits
     const linkVisitCounts = new Map<number, { owner: number, external: number }>();
