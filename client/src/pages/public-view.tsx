@@ -1,81 +1,86 @@
+import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
-import { ExternalLink, User, Image, Video, Link, Copy, Check } from "lucide-react";
-import { trackPageView } from "../lib/analytics";
+import { User, Link as LinkIcon, Copy, Check } from "lucide-react";
+
+interface UserProfile {
+  id: number;
+  username: string;
+  name: string;
+  bio?: string;
+  profileImage?: string;
+  links: Array<{
+    id: number;
+    title: string;
+    originalUrl: string;
+    shortCode: string;
+    style: 'thumbnail' | 'simple' | 'card' | 'background';
+    description?: string;
+    imageUrl?: string;
+    customImageUrl?: string;
+    ownerVisits?: number;
+    externalVisits?: number;
+  }>;
+}
+
+interface UserSettings {
+  contentType: 'links' | 'media' | 'both';
+  customUrl: string;
+  showProfileImage: boolean;
+  showBio: boolean;
+  showVisitCount: boolean;
+  backgroundTheme: string;
+}
 
 export default function PublicViewPage() {
-  const params = useParams();
-  // Handle both /users/:username and /:customUrl patterns
-  const identifier = params.username || params.customUrl;
+  const { username } = useParams<{ username: string }>();
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
-  // Fetch user data by custom URL
-  const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: [`/api/public/${identifier}`],
-    enabled: !!identifier,
+  const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
+    queryKey: ['/api/public', username],
+    enabled: !!username,
   });
 
-  // Fetch user's links if user exists
-  const { data: linksData, isLoading: linksLoading } = useQuery({
-    queryKey: [`/api/public/${identifier}/links`],
-    enabled: !!identifier && !!userData,
+  const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
+    queryKey: ['/api/public', username, 'settings'],
+    enabled: !!username,
   });
 
-  // Fetch user's settings
-  const { data: settingsData } = useQuery({
-    queryKey: [`/api/public/${identifier}/settings`],
-    enabled: !!identifier && !!userData,
+  const { data: links = [], isLoading: linksLoading } = useQuery({
+    queryKey: ['/api/public', username, 'links'],
+    enabled: !!username,
   });
 
-  useEffect(() => {
-    if (identifier) {
-      const path = params.username ? `/users/${identifier}` : `/${identifier}`;
-      trackPageView(path, path);
-    }
-  }, [identifier, params.username]);
-
-  const copyToClipboard = async (url: string, shortCode: string) => {
+  const copyToClipboard = async (originalUrl: string, shortCode: string) => {
+    const shortUrl = `${window.location.host}/${shortCode}`;
     try {
-      // Use the current domain for the short URL
-      const currentDomain = window.location.origin;
-      const shortUrl = `${currentDomain}/${shortCode}`;
       await navigator.clipboard.writeText(shortUrl);
       setCopiedLink(shortCode);
       setTimeout(() => setCopiedLink(null), 2000);
     } catch (err) {
-      console.error('Failed to copy: ', err);
+      console.error('Failed to copy:', err);
     }
   };
 
-  if (userLoading) {
+  if (userLoading || settingsLoading || linksLoading) {
     return (
-      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47]"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#8B4513] mx-auto mb-4"></div>
-          <p className="text-[#8B4513]">페이지를 불러오는 중...</p>
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">사용자를 찾을 수 없습니다</h1>
+          <p className="text-gray-600">요청하신 프로필이 존재하지 않습니다.</p>
         </div>
       </div>
     );
   }
 
-  if (!userData) {
-    return (
-      <div className="min-h-screen bg-[#F5F3F0] flex items-center justify-center">
-        <div className="text-center">
-          <User className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-700 mb-2">페이지를 찾을 수 없습니다</h1>
-          <p className="text-gray-500">요청하신 페이지가 존재하지 않습니다.</p>
-        </div>
-      </div>
-    );
-  }
-
-  const user = userData as any;
-  const links = linksData as any[] || [];
-  const settings = settingsData as any;
-
-  // Determine content type from settings (default to links)
   const contentType = settings?.contentType || 'links';
 
   const renderContent = () => {
@@ -84,262 +89,114 @@ export default function PublicViewPage() {
         return (
           <div className="space-y-4">
             {links.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {links.map((link: any) => (
-                  <div key={link.id} className="w-full h-32 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 overflow-hidden">
-                    <div className="p-2 w-full h-full">
-                      {/* Thumbnail Style */}
-                      {link.style === 'thumbnail' && (
-                        <div className="flex items-center gap-3 h-full p-2 bg-card rounded-lg border border-border group relative">
-                          <div 
-                            className="flex items-center gap-3 flex-1 cursor-pointer"
-                            onClick={() => {
-                              window.open(link.originalUrl, '_blank');
-                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                            }}
-                          >
-                            {(link.customImageUrl || link.imageUrl) ? (
-                              <img 
-                                src={link.customImageUrl || link.imageUrl} 
-                                alt={link.title}
-                                className="w-12 h-12 rounded object-cover"
-                              />
-                            ) : (
-                              <div className="w-12 h-12 bg-muted rounded"></div>
-                            )}
-                            <div className="text-left flex-1 min-w-0">
-                              <div className="text-sm font-medium text-gray-800 truncate">{link.title}</div>
-                              {link.description && (
-                                <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
-                              )}
-                              <div className="text-xs text-gray-500 mt-1">
-                                {window.location.host}/{link.shortCode}
-                              </div>
-                              <div className="text-xs text-blue-600 mt-1">
-                                방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
-                              </div>
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(link.originalUrl, link.shortCode);
-                            }}
-                            className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-muted rounded"
-                          >
-                            {copiedLink === link.shortCode ? (
-                              <Check className="w-4 h-4 text-green-600" />
-                            ) : (
-                              <Copy className="w-4 h-4 text-gray-600" />
-                            )}
-                          </button>
-                        </div>
-                      )}
-                      
-                      {/* Simple Style */}
-                      {link.style === 'simple' && (
-                        <div className="bg-white/85 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-3 h-full flex flex-col justify-center group relative hover:bg-white/90 transition-all duration-200">
-                          <div 
-                            className="flex-1 cursor-pointer"
-                            onClick={() => {
-                              window.open(link.originalUrl, '_blank');
-                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                            }}
-                          >
-                            <div className="text-sm font-medium text-gray-800 truncate mb-1">{link.title}</div>
-                            {link.description && (
-                              <div className="text-xs text-gray-600 mb-1 line-clamp-1">{link.description}</div>
-                            )}
-                            <div className="text-xs text-gray-500 mb-1">
-                              {window.location.host}/{link.shortCode}
-                            </div>
-                            <div className="text-xs text-blue-600">
-                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(link.originalUrl, link.shortCode);
-                            }}
-                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 hover:bg-[#B08A6B]/15 rounded-lg"
-                          >
-                            {copiedLink === link.shortCode ? (
-                              <Check className="w-3.5 h-3.5 text-green-600" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5 text-[#8B6F47]" />
-                            )}
-                          </button>
-                        </div>
-                      )}
-                      
-                      {/* Card Style */}
-                      {link.style === 'card' && (
-                        <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/25 h-full flex flex-col justify-center p-3 relative group hover:bg-white/95 transition-all duration-200 shadow-sm">
-                          <div
-                            className="absolute inset-0 cursor-pointer rounded-xl"
-                            onClick={() => {
-                              window.open(link.originalUrl, '_blank');
-                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                            }}
+                  <div key={link.id} className="w-full">
+                    <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-[#B08A6B]/20 p-4 hover:bg-white/95 transition-all duration-200 shadow-sm">
+                      <div 
+                        className="flex items-center gap-4 cursor-pointer"
+                        onClick={() => {
+                          window.open(link.originalUrl, '_blank');
+                          fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                        }}
+                      >
+                        {(link.customImageUrl || link.imageUrl) ? (
+                          <img 
+                            src={link.customImageUrl || link.imageUrl} 
+                            alt={link.title}
+                            className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
                           />
-                          {(link.customImageUrl || link.imageUrl) && (
-                            <div className="absolute inset-0 rounded-xl overflow-hidden">
-                              <img 
-                                src={link.customImageUrl || link.imageUrl} 
-                                alt={link.title}
-                                className="w-full h-full object-cover"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
-                            </div>
+                        ) : (
+                          <div className="w-16 h-16 bg-gradient-to-br from-[#B08A6B]/20 to-[#8B6F47]/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <LinkIcon className="w-6 h-6 text-[#8B6F47]" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-base font-semibold text-gray-800 truncate mb-1">{link.title}</h3>
+                          {link.description && (
+                            <p className="text-sm text-gray-600 line-clamp-2 mb-2">{link.description}</p>
                           )}
-                          <div className="relative z-10 text-gray-800">
-                            <div className="text-sm font-medium truncate mb-1">{link.title}</div>
-                            {link.description && (
-                              <div className="text-xs text-gray-600 mb-1 line-clamp-1">{link.description}</div>
-                            )}
-                            <div className="text-xs text-gray-500 mb-1">
+                          <div className="flex items-center justify-between">
+                            <div className="text-sm text-[#8B6F47] font-medium">
                               {window.location.host}/{link.shortCode}
                             </div>
-                            <div className="text-xs text-blue-600">
+                            <div className="text-sm text-blue-600 font-medium">
                               방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
                             </div>
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(link.originalUrl, link.shortCode);
-                            }}
-                            className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 bg-black/40 hover:bg-black/60 rounded-lg"
-                          >
-                            {copiedLink === link.shortCode ? (
-                              <Check className="w-3.5 h-3.5 text-green-400" />
-                            ) : (
-                              <Copy className="w-3.5 h-3.5 text-white" />
-                            )}
-                          </button>
                         </div>
-                      )}
-
-                      {/* Background Style */}
-                      {link.style === 'background' && (
-                        <div 
-                          className="h-full flex flex-col justify-center p-3 relative rounded-lg overflow-hidden group" 
-                          style={{
-                            backgroundImage: (link.customImageUrl || link.imageUrl) 
-                              ? `url(${link.customImageUrl || link.imageUrl})` 
-                              : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundRepeat: 'no-repeat'
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyToClipboard(link.originalUrl, link.shortCode);
                           }}
+                          className="p-2 hover:bg-[#B08A6B]/15 rounded-lg transition-colors flex-shrink-0"
                         >
-                          <div
-                            className="absolute inset-0 cursor-pointer"
-                            onClick={() => {
-                              window.open(link.originalUrl, '_blank');
-                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                            }}
-                          />
-                          {/* Gradient overlay for better readability */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent rounded-lg"></div>
-                          
-                          <div className="relative z-10 text-white">
-                            <div className="text-sm font-medium truncate mb-1">{link.title}</div>
-                            {link.description && (
-                              <div className="text-xs text-gray-200 mb-1 line-clamp-1">{link.description}</div>
-                            )}
-                            <div className="text-xs text-gray-300 mb-1">
-                              {window.location.host}/{link.shortCode}
-                            </div>
-                            <div className="text-xs text-blue-200">
-                              방문 {(link.ownerVisits || 0) + (link.externalVisits || 0)}
-                            </div>
-                          </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              copyToClipboard(link.originalUrl, link.shortCode);
-                            }}
-                            className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-black bg-opacity-50 hover:bg-opacity-70 rounded"
-                          >
-                            {copiedLink === link.shortCode ? (
-                              <Check className="w-3 h-3 text-green-400" />
-                            ) : (
-                              <Copy className="w-3 h-3 text-white" />
-                            )}
-                          </button>
-                        </div>
-                      )}
+                          {copiedLink === link.shortCode ? (
+                            <Check className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <Copy className="w-5 h-5 text-[#8B6F47]" />
+                          )}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-12">
-                <Link className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                <LinkIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                 <p className="text-gray-500 text-lg">링크 없음</p>
                 <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
               </div>
             )}
           </div>
         );
-      
-      case 'image':
+      case 'media':
         return (
           <div className="text-center py-12">
-            <Image className="w-16 h-16 bg-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center" />
-            <p className="text-gray-500 text-lg">이미지 기능</p>
-            <p className="text-gray-400 text-sm mt-2">준비 중입니다.</p>
+            <p className="text-gray-500">미디어 콘텐츠</p>
           </div>
         );
-      
-      case 'video':
-        return (
-          <div className="text-center py-12">
-            <Video className="w-16 h-16 bg-gray-200 rounded-lg mx-auto mb-4 flex items-center justify-center" />
-            <p className="text-gray-500 text-lg">비디오 기능</p>
-            <p className="text-gray-400 text-sm mt-2">준비 중입니다.</p>
-          </div>
-        );
-      
       default:
         return (
           <div className="text-center py-12">
-            <User className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <p className="text-gray-500 text-lg">콘텐츠 없음</p>
-            <p className="text-gray-400 text-sm mt-2">표시할 콘텐츠가 없습니다.</p>
+            <p className="text-gray-500">콘텐츠 없음</p>
           </div>
         );
     }
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-md mx-auto bg-background min-h-screen">
+    <div 
+      className="min-h-screen"
+      style={{
+        background: settings?.backgroundTheme || 'linear-gradient(135deg, #f0e6d6 0%, #f4ead5 50%, #f8f0e5 100%)'
+      }}
+    >
+      <div className="max-w-md mx-auto">
         {/* Header */}
-        <div className="p-4 border-b border-border bg-card">
-          <div className="flex items-center space-x-3">
-            {user.profileImageUrl ? (
+        <div className="bg-white/80 backdrop-blur-sm border-b border-[#B08A6B]/20 px-6 py-4">
+          <div className="flex items-center gap-3">
+            {settings?.showProfileImage && user.profileImage ? (
               <img 
-                src={user.profileImageUrl} 
-                alt={user.name || user.username}
+                src={user.profileImage} 
+                alt={user.name}
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                <User className="w-6 h-6 text-muted-foreground" />
+              <div className="w-12 h-12 bg-gradient-to-br from-[#B08A6B] to-[#8B6F47] rounded-full flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-primary">
-                {user.name || user.username}
-              </h1>
-              {user.bio && (
-                <p className="text-sm text-muted-foreground mt-1">{user.bio}</p>
-              )}
+              <h1 className="text-lg font-bold text-gray-800">{user.name}</h1>
+              <p className="text-sm text-gray-600">@{user.username}</p>
             </div>
           </div>
+          {settings?.showBio && user.bio && (
+            <p className="text-sm text-gray-700 mt-3">{user.bio}</p>
+          )}
         </div>
 
         {/* Content */}

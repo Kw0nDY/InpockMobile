@@ -330,40 +330,11 @@ export class MemStorage implements IStorage {
       { id: 12, linkId: 1, visitorIp: "192.168.1.41", userAgent: "Firefox", referrer: "https://daum.net", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 172800000) }, // 2 days into month
       { id: 13, linkId: 2, visitorIp: "192.168.1.42", userAgent: "Chrome", referrer: "https://google.com", isOwner: false, visitedAt: new Date(thisMonth.getTime() + 259200000) }, // 3 days into month
       
-      // Add visits for link 40 (current active link for user 1)
-      { id: 14, linkId: 40, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 11000) },
-      { id: 15, linkId: 40, visitorIp: "192.168.1.50", userAgent: "Safari", referrer: "https://youtube.com", isOwner: false, visitedAt: new Date(today.getTime() + 12000) },
-      { id: 16, linkId: 40, visitorIp: "192.168.1.51", userAgent: "Firefox", referrer: "https://instagram.com", isOwner: false, visitedAt: new Date(today.getTime() + 13000) },
-      { id: 17, linkId: 40, visitorIp: "192.168.1.52", userAgent: "Edge", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 14000) },
+      // Only keep visits for older demo links, not for newly created links
     ];
     
     demoVisits.forEach(visit => this.linkVisits.set(visit.id, visit));
-    this.currentLinkVisitId = 18;
-
-    // Update link visit counts based on demo visits
-    const linkVisitCounts = new Map<number, { owner: number, external: number }>();
-    demoVisits.forEach(visit => {
-      const current = linkVisitCounts.get(visit.linkId) || { owner: 0, external: 0 };
-      if (visit.isOwner) {
-        current.owner++;
-      } else {
-        current.external++;
-      }
-      linkVisitCounts.set(visit.linkId, current);
-    });
-
-    // Apply visit counts to links
-    linkVisitCounts.forEach((counts, linkId) => {
-      const link = this.links.get(linkId);
-      if (link) {
-        const updatedLink = {
-          ...link,
-          ownerVisits: counts.owner,
-          externalVisits: counts.external
-        };
-        this.links.set(linkId, updatedLink);
-      }
-    });
+    this.currentLinkVisitId = 14;
 
     // Create demo deals
     const demoDeals: Deal[] = [
