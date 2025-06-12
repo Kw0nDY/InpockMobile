@@ -126,6 +126,15 @@ export default function VideosPage() {
   };
 
   const handleUpload = async () => {
+    if (!user?.id) {
+      toast({
+        title: "로그인이 필요합니다",
+        description: "동영상을 업로드하려면 로그인해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (selectedFiles.length === 0) {
       toast({
         title: "파일을 선택해주세요",
@@ -139,7 +148,7 @@ export default function VideosPage() {
     for (const file of selectedFiles) {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('userId', user?.id?.toString() || '');
+      formData.append('userId', user.id.toString());
       formData.append('type', 'video');
       formData.append('title', title || file.name);
       formData.append('description', description || '');

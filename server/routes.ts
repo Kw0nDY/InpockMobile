@@ -1104,11 +1104,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const file = req.file;
       const { userId, type, title, description } = req.body;
       
+      console.log('Media upload request body:', req.body);
+      console.log('File received:', file ? { name: file.filename, type: file.mimetype } : 'No file');
+      
       if (!file) {
         return res.status(400).json({ error: 'No file uploaded' });
       }
 
       if (!userId || isNaN(parseInt(userId))) {
+        console.log('Invalid userId received:', userId, 'Type:', typeof userId);
         return res.status(400).json({ error: 'Invalid user ID' });
       }
 
