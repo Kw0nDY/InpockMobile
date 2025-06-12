@@ -25,7 +25,52 @@
   --destructive-foreground: 0 0% 98%;
   --ring: 15 35% 18%;
   --radius: 0.75rem;
-  
+}
+
+/* Toast slide animations */
+@keyframes toast-slide-in-bottom {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toast-slide-out-bottom {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes toast-slide-out-right {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Toast animation utilities */
+.toast-enter {
+  animation: toast-slide-in-bottom 0.3s ease-out;
+}
+
+.toast-exit {
+  animation: toast-slide-out-right 0.3s ease-in;
+}
+
+:root {
   /* Custom brown theme colors */
   --primary-light: 15 25% 60%; /* #B39C8A - Lighter brown */
   --primary-dark: 15 35% 15%; /* #3E2723 - Darker brown */
