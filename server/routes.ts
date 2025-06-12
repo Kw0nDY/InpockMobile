@@ -404,9 +404,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const link = await storage.createLink(linkData);
 
       res.status(201).json(link);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Link creation error details:", error);
-      res.status(400).json({ message: "Invalid request data", error: error.message });
+      res.status(400).json({ message: "Invalid request data", error: error?.message || "Unknown error" });
     }
   });
 

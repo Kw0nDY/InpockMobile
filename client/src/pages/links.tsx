@@ -192,7 +192,7 @@ export default function LinksPage() {
     if (!title || !url || !user?.id) return;
 
     const shortCode = generateShortCode(title);
-    createLinkMutation.mutate({
+    const linkData = {
       title,
       originalUrl: url,
       userId: user.id,
@@ -202,7 +202,10 @@ export default function LinksPage() {
       imageUrl: selectedImage || undefined,
       customImageUrl: customImageUrl || undefined,
       cropData: completedCrop ? JSON.stringify(completedCrop) : undefined
-    });
+    };
+    
+    console.log('Creating link with data:', linkData);
+    createLinkMutation.mutate(linkData);
   };
 
   // URL 추가 폼 화면
@@ -511,6 +514,60 @@ export default function LinksPage() {
                 {createLinkMutation.isPending ? "생성 중..." : "추가 완료"}
               </Button>
             </form>
+
+            {/* Image Crop Modal */}
+            {showImageCrop && selectedImage && (
+              <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                <div className="bg-white rounded-lg max-w-lg w-full max-h-[90vh] overflow-hidden">
+                  <div className="p-4 border-b">
+                    <h3 className="text-lg font-medium">이미지 편집</h3>
+                  </div>
+                  
+                  <div className="p-4">
+                    <div className="mb-4">
+                      <ReactCrop
+                        crop={crop}
+                        onChange={(c) => setCrop(c)}
+                        onComplete={(c) => setCompletedCrop(c)}
+                        aspect={16 / 9}
+                        className="max-h-64"
+                      >
+                        <img
+                          ref={imgRef}
+                          src={selectedImage}
+                          alt="Crop preview"
+                          className="max-w-full h-auto"
+                        />
+                      </ReactCrop>
+                    </div>
+                    
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setShowImageCrop(false)}
+                      >
+                        취소
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => {
+                          if (completedCrop) {
+                            // Store crop data
+                            const cropData = JSON.stringify(completedCrop);
+                            console.log('Crop applied:', cropData);
+                          }
+                          setShowImageCrop(false);
+                        }}
+                        className="bg-[#A0825C] hover:bg-[#8B4513]"
+                      >
+                        적용
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
