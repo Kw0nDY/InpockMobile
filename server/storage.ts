@@ -131,10 +131,10 @@ export class MemStorage implements IStorage {
   }
 
   private initializeDemoData() {
-    // Create demo user
+    // Create main demo user with demo_user username
     const demoUser: User = {
       id: 1,
-      username: "demo_user_old",
+      username: "demo_user",
       email: "demo@amusefit.com",
       password: "password123",
       name: "김철수",
@@ -201,29 +201,7 @@ export class MemStorage implements IStorage {
     this.subscriptions.set(1, demoSubscription);
     this.currentSubscriptionId = 2;
 
-    // Create additional demo user (user 8 - current active user)
-    const demoUser8: User = {
-      id: 8,
-      username: "demo_user",
-      email: "demo8@amusefit.com", 
-      password: "password123",
-      name: "김철수",
-      phone: "010-1234-5678",
-      company: "AmuseFit Korea",
-      role: "user",
-      avatar: null,
-      profileImageUrl: null,
-      introVideoUrl: null,
-      bio: null,
-      customUrl: null,
-      contentType: "links",
-      visitCount: 0,
-      provider: null,
-      providerId: null,
-      createdAt: new Date(),
-    };
-    this.users.set(8, demoUser8);
-    this.currentUserId = 9;
+    this.currentUserId = 2;
 
     // Create demo links for user 1 
     const demoLinks: Link[] = [
@@ -260,11 +238,11 @@ export class MemStorage implements IStorage {
     ];
     demoLinks.forEach(link => this.links.set(link.id, link));
 
-    // Create demo links for user 8 (current active user)
-    const demoLinksUser8: Link[] = [
+    // Create demo links for user 1 (main demo user)
+    const demoLinksUser1: Link[] = [
       {
         id: 37,
-        userId: 8,
+        userId: 1,
         title: "[ENG] 🚨레전드 사건 발생! 서울 용산역 미니멀 라이프 스타일링 원데이클래스 수업 현장",
         originalUrl: "https://www.youtube.com/watch?v=example1",
         shortCode: "fit123",
@@ -279,7 +257,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 38,
-        userId: 8,
+        userId: 1,
         title: "홈트레이닝 가이드",
         originalUrl: "https://www.youtube.com/watch?v=example2",
         shortCode: "home456",
@@ -294,7 +272,7 @@ export class MemStorage implements IStorage {
       },
       {
         id: 39,
-        userId: 8,
+        userId: 1,
         title: "영양 관리 팁",
         originalUrl: "https://blog.example.com/nutrition",
         shortCode: "nutr789",
@@ -308,7 +286,7 @@ export class MemStorage implements IStorage {
         createdAt: new Date(),
       }
     ];
-    demoLinksUser8.forEach(link => this.links.set(link.id, link));
+    demoLinksUser1.forEach(link => this.links.set(link.id, link));
     this.currentLinkId = 40;
 
     // Create demo link visits for user 8's links to demonstrate analytics
@@ -409,13 +387,7 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    // Prioritize user ID 8 for demo_user to show the correct links
-    const users = Array.from(this.users.values());
-    if (username === "demo_user") {
-      const user8 = users.find(user => user.id === 8 && user.username === username);
-      if (user8) return user8;
-    }
-    return users.find(user => user.username === username);
+    return Array.from(this.users.values()).find(user => user.username === username);
   }
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
