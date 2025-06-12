@@ -217,10 +217,10 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-gray-50">
       <header className="flex items-center justify-between p-4 bg-white border-b border-gray-100 sticky top-0 z-10">
         <div className="flex items-center">
-          {userData?.profileImageUrl ? (
+          {(userData as any)?.profileImageUrl ? (
             <img 
-              src={userData.profileImageUrl} 
-              alt={userData.name || userData.username}
+              src={(userData as any).profileImageUrl} 
+              alt={(userData as any)?.name || (userData as any)?.username}
               className="w-10 h-10 rounded-full object-cover mr-3"
             />
           ) : (

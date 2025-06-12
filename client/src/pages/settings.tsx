@@ -140,6 +140,12 @@ export default function SettingsPage() {
 
 
 
+  // Fetch user data
+  const { data: userData } = useQuery({
+    queryKey: [`/api/user/${user?.id}`],
+    enabled: !!user?.id,
+  });
+
   // Fetch user settings
   const { data: userSettings, isLoading: settingsLoading } = useQuery({
     queryKey: [`/api/settings/${user?.id}`],
@@ -211,7 +217,7 @@ export default function SettingsPage() {
     },
     onSuccess: (data) => {
       updateUserMutation.mutate({
-        avatar: data.path
+        profileImageUrl: data.path
       });
       
       toast({
@@ -308,7 +314,7 @@ export default function SettingsPage() {
 
   const handleDeleteProfileImage = () => {
     updateUserMutation.mutate({
-      avatar: null
+      profileImageUrl: null
     });
     
     toast({
@@ -487,9 +493,9 @@ export default function SettingsPage() {
             {/* Avatar */}
             <div className="flex items-center space-x-4">
               <div className="relative">
-                {(user as any)?.avatar ? (
+                {(userData as any)?.profileImageUrl ? (
                   <img
-                    src={(user as any).avatar}
+                    src={(userData as any).profileImageUrl}
                     alt="프로필 이미지"
                     className="w-20 h-20 rounded-full object-cover border-2 border-gray-200"
                   />
@@ -512,7 +518,7 @@ export default function SettingsPage() {
                     <Camera className="w-4 h-4" />
                   )}
                 </Button>
-                {(user as any)?.avatar && (
+                {(userData as any)?.profileImageUrl && (
                   <Button
                     size="sm"
                     onClick={handleDeleteProfileImage}
@@ -525,7 +531,7 @@ export default function SettingsPage() {
               <div className="flex-1">
                 <p className="text-sm text-gray-600 mb-1">프로필 사진</p>
                 <p className="text-xs text-gray-500">클릭하여 이미지를 변경하세요</p>
-                {(user as any)?.avatar && (
+                {(userData as any)?.profileImageUrl && (
                   <p className="text-xs text-red-500 mt-1">빨간 버튼을 클릭하여 삭제할 수 있습니다</p>
                 )}
               </div>
