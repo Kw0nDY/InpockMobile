@@ -25,22 +25,22 @@ export default function ManagerPage() {
   const mockNotifications = [
     {
       id: 1,
-      title: "신규 사용자 가입",
-      description: "5명의 신규 사용자가 가입했습니다",
+      title: "새로운 PT 회원 등록",
+      description: "5명의 새로운 회원이 퍼스널 트레이닝에 등록했습니다",
       time: "30분 전",
       priority: "normal",
     },
     {
       id: 2,
-      title: "시스템 업데이트",
-      description: "새로운 기능이 추가되었습니다",
+      title: "운동 프로그램 업데이트",
+      description: "새로운 HIIT 운동 프로그램이 추가되었습니다",
       time: "2시간 전",
       priority: "normal",
     },
     {
       id: 3,
-      title: "보안 알림",
-      description: "비정상적인 접근이 감지되었습니다",
+      title: "헬스장 이용 집중 시간",
+      description: "오후 7-9시 헬스장 이용률이 90%를 초과했습니다",
       time: "4시간 전",
       priority: "high",
     },
