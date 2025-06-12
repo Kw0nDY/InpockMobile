@@ -297,18 +297,18 @@ export default function VideosPage() {
 
       {/* Upload Modal */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[80vh] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>동영상 업로드</DialogTitle>
           </DialogHeader>
           
-          <div className="space-y-4">
+          <div className="flex-1 overflow-y-auto space-y-4 pr-2">
             {/* File Input */}
             <div
-              className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary transition-colors"
+              className="border-2 border-dashed border-border rounded-lg p-4 text-center cursor-pointer hover:border-primary transition-colors"
               onClick={() => fileInputRef.current?.click()}
             >
-              <Upload className="w-8 h-8 text-muted-foreground mx-auto mb-2" />
+              <Upload className="w-6 h-6 text-muted-foreground mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">
                 클릭하여 동영상을 선택하세요
               </p>
@@ -330,7 +330,7 @@ export default function VideosPage() {
             {previewUrls.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">미리보기</h4>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto">
                   {previewUrls.map((url, index) => (
                     <div key={index} className="aspect-video relative">
                       <video
@@ -366,20 +366,20 @@ export default function VideosPage() {
                 className="mt-1"
               />
             </div>
+          </div>
 
-            {/* Action Buttons */}
-            <div className="flex gap-2 pt-4">
-              <Button variant="outline" onClick={resetForm} className="flex-1">
-                취소
-              </Button>
-              <Button 
-                onClick={handleUpload} 
-                disabled={selectedFiles.length === 0 || uploadVideoMutation.isPending}
-                className="flex-1"
-              >
-                {uploadVideoMutation.isPending ? "업로드 중..." : "업로드"}
-              </Button>
-            </div>
+          {/* Action Buttons */}
+          <div className="flex gap-2 pt-4 flex-shrink-0 border-t border-border">
+            <Button variant="outline" onClick={resetForm} className="flex-1">
+              취소
+            </Button>
+            <Button 
+              onClick={handleUpload} 
+              disabled={selectedFiles.length === 0 || uploadVideoMutation.isPending}
+              className="flex-1"
+            >
+              {uploadVideoMutation.isPending ? "업로드 중..." : "업로드"}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
