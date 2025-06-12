@@ -308,9 +308,13 @@ export default function DashboardPage() {
                     size="sm"
                     className="p-1 h-auto text-muted-foreground hover:text-foreground"
                     onClick={() => {
+                      console.log('settingsData:', settingsData);
+                      console.log('userData:', userData);
+                      const username = (userData as any)?.username || 'demo_user';
                       const url = (settingsData as any)?.customUrl ? 
                         `${window.location.protocol}//${window.location.host}/${(settingsData as any).customUrl}` : 
-                        `${window.location.protocol}//${window.location.host}/${(userData as any)?.username || 'user'}`;
+                        `${window.location.protocol}//${window.location.host}/${username}`;
+                      console.log('Generated URL:', url);
                       navigator.clipboard.writeText(url);
                       toast({
                         title: "URL 복사됨",
@@ -324,7 +328,7 @@ export default function DashboardPage() {
                 <div className="text-sm text-muted-foreground font-mono">
                   {(settingsData as any)?.customUrl ? 
                     `${window.location.host}/${(settingsData as any).customUrl}` : 
-                    `${window.location.host}/${(userData as any)?.username || 'user'}`
+                    `${window.location.host}/${(userData as any)?.username || 'demo_user'}`
                   }
                 </div>
               </div>
