@@ -44,7 +44,10 @@ function Router() {
   
   // Pages that should not show bottom navigation
   const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
-  const shouldShowBottomNav = !hideNavPages.includes(location) && !location.startsWith("/reset-password/") && !location.startsWith("/users/");
+  const shouldShowBottomNav = !hideNavPages.includes(location) && 
+    !location.startsWith("/reset-password/") && 
+    !location.startsWith("/users/") && 
+    !location.match(/^\/[a-zA-Z0-9_-]+$/);
 
   return (
     <>
