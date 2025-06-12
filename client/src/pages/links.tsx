@@ -614,24 +614,24 @@ export default function LinksPage() {
     );
   }
 
-  // 메인 링크 페이지 - 첨부 사진과 동일한 레이아웃
+  // 메인 링크 페이지 - 홈, 이미지, 동영상 페이지와 동일한 레이아웃
   return (
     <div className="min-h-screen bg-[#F5F3F0] pb-20">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+      <div className="max-w-md mx-auto bg-[#F5F3F0] min-h-screen">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-40">
+        <div className="flex items-center justify-between p-4 border-b border-[#8D6E63]/20 sticky top-0 bg-[#F5F3F0] z-40">
           <div className="w-6"></div>
-          <h1 className="text-lg font-semibold text-[#8B4513]">링크</h1>
+          <h1 className="text-lg font-semibold text-[#4E342E]">링크</h1>
           <div className="w-6"></div>
         </div>
 
         {/* Content */}
         <div className="p-4 space-y-4 pb-28">
           {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
-          <Card className="bg-[#F5F3F0] border-none shadow-sm">
+          <Card className="bg-white/70 border-[#8D6E63]/20 shadow-sm">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-medium text-[#8B4513] flex items-center gap-2">
+                <h2 className="text-sm font-medium text-[#4E342E] flex items-center gap-2">
                   <Eye className="w-4 h-4" />
                   실시간 방문 추적
                 </h2>
@@ -644,22 +644,22 @@ export default function LinksPage() {
               {/* Visit Stats - 총방문자, 일방문자, 월방문자 */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
                     {(userStats as any)?.totalVisits || 0}
                   </div>
-                  <div className="text-xs text-gray-500">총방문자</div>
+                  <div className="text-xs text-[#8D6E63]">총방문자</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
                     {(userStats as any)?.dailyVisits || 0}
                   </div>
-                  <div className="text-xs text-gray-500">일방문자</div>
+                  <div className="text-xs text-[#8D6E63]">일방문자</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-[#8B4513] mb-1">
+                  <div className="text-2xl font-bold text-[#4E342E] mb-1">
                     {(userStats as any)?.monthlyVisits || 0}
                   </div>
-                  <div className="text-xs text-gray-500">월방문자</div>
+                  <div className="text-xs text-[#8D6E63]">월방문자</div>
                 </div>
               </div>
 
@@ -682,14 +682,14 @@ export default function LinksPage() {
               {/* 빠른 추적 URL 섹션 */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-[#8B4513]">빠른 추적 URL</h3>
+                  <h3 className="text-sm font-medium text-[#4E342E]">빠른 추적 URL</h3>
                 </div>
                 
                 {/* Display Links with Their Styles */}
                 {links && links.length > 0 ? (
                   <div className="space-y-3">
                     {links.map((link: any) => (
-                      <div key={link.id} className="border border-gray-200 rounded-lg p-3 bg-white">
+                      <div key={link.id} className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
                         {/* Thumbnail Style */}
                         {link.style === 'thumbnail' && (
                           <div 
@@ -898,7 +898,7 @@ export default function LinksPage() {
                 {!showConfirmDialog ? (
                   <Button
                     onClick={() => setShowConfirmDialog(true)}
-                    className="w-full bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#A0825C]"
+                    className="w-full bg-white/70 hover:bg-white/90 text-[#4E342E] py-3 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#8D6E63]"
                   >
                     <Plus className="w-5 h-5" />
                     URL 추가하기
@@ -910,13 +910,13 @@ export default function LinksPage() {
                         setShowConfirmDialog(false);
                         setShowAddForm(true);
                       }}
-                      className="bg-[#A0825C] hover:bg-[#8B4513] text-white py-3 rounded-lg font-medium"
+                      className="bg-[#4E342E] hover:bg-[#8D6E63] text-white py-3 rounded-lg font-medium"
                     >
                       추가
                     </Button>
                     <Button
                       onClick={() => setShowConfirmDialog(false)}
-                      className="bg-white hover:bg-gray-50 text-[#A0825C] py-3 rounded-lg font-medium border border-[#A0825C]"
+                      className="bg-white/70 hover:bg-white/90 text-[#4E342E] py-3 rounded-lg font-medium border border-[#8D6E63]"
                     >
                       취소
                     </Button>
@@ -925,6 +925,19 @@ export default function LinksPage() {
               </div>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Fixed Bottom Add Button */}
+        <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="max-w-md mx-auto px-4">
+            <Button
+              onClick={() => setShowAddForm(true)}
+              className="w-full bg-gradient-to-r from-[#8D6E63] to-[#4E342E] hover:from-[#A1887F] hover:to-[#8D6E63] text-white py-4 rounded-xl font-medium text-base shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-3"
+            >
+              <Plus className="w-6 h-6" />
+              링크 추가하기
+            </Button>
+          </div>
         </div>
       </div>
     </div>

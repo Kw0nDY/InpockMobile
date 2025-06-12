@@ -474,23 +474,14 @@ export default function PublicViewPage() {
                 className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'image' 
                     ? 'text-[#4E342E]' 
-                    : images.length > 0 
-                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
-                      : 'text-[#A1887F] cursor-not-allowed'
+                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
                 }`}
-                onClick={() => {
-                  if (images.length > 0) {
-                    setCurrentContentType('image');
-                  }
-                }}
-                disabled={images.length === 0}
+                onClick={() => setCurrentContentType('image')}
               >
                 <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'image' 
                     ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : images.length > 0 
-                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
-                      : 'opacity-50'
+                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
                 }`}>
                   <Image className="w-5 h-5" />
                 </div>
@@ -505,23 +496,14 @@ export default function PublicViewPage() {
                 className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'video' 
                     ? 'text-[#4E342E]' 
-                    : allVideos.length > 0 
-                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
-                      : 'text-[#A1887F] cursor-not-allowed'
+                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
                 }`}
-                onClick={() => {
-                  if (allVideos.length > 0) {
-                    setCurrentContentType('video');
-                  }
-                }}
-                disabled={allVideos.length === 0}
+                onClick={() => setCurrentContentType('video')}
               >
                 <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'video' 
                     ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : allVideos.length > 0 
-                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
-                      : 'opacity-50'
+                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
                 }`}>
                   <Video className="w-5 h-5" />
                 </div>
@@ -536,23 +518,14 @@ export default function PublicViewPage() {
                 className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'links' 
                     ? 'text-[#4E342E]' 
-                    : links.length > 0 
-                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
-                      : 'text-[#A1887F] cursor-not-allowed'
+                    : 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105'
                 }`}
-                onClick={() => {
-                  if (links.length > 0) {
-                    setCurrentContentType('links');
-                  }
-                }}
-                disabled={links.length === 0}
+                onClick={() => setCurrentContentType('links')}
               >
                 <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'links' 
                     ? 'bg-[#4E342E]/15 shadow-sm' 
-                    : links.length > 0 
-                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
-                      : 'opacity-50'
+                    : 'hover:bg-[#EFE5DC] hover:shadow-sm'
                 }`}>
                   <LinkIcon className="w-5 h-5" />
                 </div>
