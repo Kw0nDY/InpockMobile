@@ -64,6 +64,50 @@ export default function PublicViewPage() {
   // Determine content type from settings (default to links)
   const contentType = settings?.contentType || 'links';
 
+  // Apply view screen settings
+  const backgroundTheme = settings?.backgroundTheme || 'beige';
+  const showProfileImage = settings?.showProfileImage !== false;
+  const showBio = settings?.showBio !== false;
+  const showVisitCount = settings?.showVisitCount !== false;
+  const layoutStyle = settings?.layoutStyle || 'centered';
+
+  // Background theme styles
+  const getBackgroundClass = () => {
+    switch (backgroundTheme) {
+      case 'white':
+        return 'bg-white';
+      case 'dark':
+        return 'bg-gray-900';
+      case 'gradient':
+        return 'bg-gradient-to-br from-blue-400 via-purple-500 to-pink-500';
+      case 'beige':
+      default:
+        return 'bg-[#F5F3F0]';
+    }
+  };
+
+  const getTextColorClass = () => {
+    switch (backgroundTheme) {
+      case 'dark':
+        return 'text-white';
+      case 'gradient':
+        return 'text-white';
+      default:
+        return 'text-[#8B4513]';
+    }
+  };
+
+  const getCardClass = () => {
+    switch (backgroundTheme) {
+      case 'dark':
+        return 'bg-gray-800 border-gray-700';
+      case 'gradient':
+        return 'bg-white/20 backdrop-blur-sm border-white/30';
+      default:
+        return 'bg-white border-gray-200';
+    }
+  };
+
   const renderContent = () => {
     switch (contentType) {
       case 'links':
@@ -212,31 +256,72 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F3F0]">
-      <div className="max-w-md mx-auto bg-white min-h-screen">
+    <div className={`min-h-screen ${getBackgroundClass()}`}>
+      <div className={`${layoutStyle === 'fullwidth' ? 'w-full' : 'max-w-md mx-auto'} ${getCardClass()} min-h-screen`}>
         {/* Header */}
-        <div className="p-4 border-b border-gray-200 bg-white">
+        <div className={`p-4 border-b ${getCardClass()}`}>
           <div className="flex items-center space-x-3">
-            {user.profileImageUrl ? (
+            {showProfileImage && user.profileImageUrl ? (
               <img 
                 src={user.profileImageUrl} 
                 alt={user.name || user.username}
                 className="w-12 h-12 rounded-full object-cover"
               />
-            ) : (
-              <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center">
-                <User className="w-6 h-6 text-gray-500" />
+            ) : showProfileImage ? (
+              <div className={`w-12 h-12 rounded-full ${backgroundTheme === 'dark' ? 'bg-gray-600' : 'bg-gray-300'} flex items-center justify-center`}>
+                <User className={`w-6 h-6 ${backgroundTheme === 'dark' ? 'text-gray-300' : 'text-gray-500'}`} />
               </div>
-            )}
+            ) : null}
             <div className="flex-1">
-              <h1 className="text-lg font-semibold text-[#8B4513]">
+              <h1 className={`text-lg font-semibold ${getTextColorClass()}`}>
                 {user.name || user.username}
               </h1>
-              {user.bio && (
-                <p className="text-sm text-gray-600 mt-1">{user.bio}</p>
+              {showBio && user.bio && (
+                <p className={`text-sm ${backgroundTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'} mt-1`}>{user.bio}</p>
+              )}
+              {showVisitCount && (
+                <p className={`text-xs ${backgroundTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mt-1`}>
+                  방문자 {user.visitCount || 0}명
+                </p>
               )}
             </div>
           </div>
+
+          {/* Social Links */}
+          {(settings?.instagramUrl || settings?.twitterUrl || settings?.youtubeUrl) && (
+            <div className="flex items-center space-x-3 mt-4">
+              {settings.instagramUrl && (
+                <a 
+                  href={settings.instagramUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={`p-2 rounded-full ${backgroundTheme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+                >
+                  <span className="text-pink-500">📷</span>
+                </a>
+              )}
+              {settings.twitterUrl && (
+                <a 
+                  href={settings.twitterUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={`p-2 rounded-full ${backgroundTheme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+                >
+                  <span className="text-blue-400">🐦</span>
+                </a>
+              )}
+              {settings.youtubeUrl && (
+                <a 
+                  href={settings.youtubeUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className={`p-2 rounded-full ${backgroundTheme === 'dark' ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-100 hover:bg-gray-200'} transition-colors`}
+                >
+                  <span className="text-red-500">📺</span>
+                </a>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Content */}

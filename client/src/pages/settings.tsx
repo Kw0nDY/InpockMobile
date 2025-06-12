@@ -265,7 +265,16 @@ export default function SettingsPage() {
         contentType: (userSettings as any).contentType || 'links',
         linkTitle: (userSettings as any).linkTitle || '',
         linkDescription: (userSettings as any).linkDescription || '',
-        linkUrl: (userSettings as any).linkUrl || ''
+        linkUrl: (userSettings as any).linkUrl || '',
+        // View screen settings
+        backgroundTheme: (userSettings as any).backgroundTheme || 'beige',
+        showProfileImage: (userSettings as any).showProfileImage !== false,
+        showBio: (userSettings as any).showBio !== false,
+        showVisitCount: (userSettings as any).showVisitCount !== false,
+        layoutStyle: (userSettings as any).layoutStyle || 'centered',
+        instagramUrl: (userSettings as any).instagramUrl || '',
+        twitterUrl: (userSettings as any).twitterUrl || '',
+        youtubeUrl: (userSettings as any).youtubeUrl || ''
       }));
     }
   }, [userSettings]);
@@ -375,6 +384,15 @@ export default function SettingsPage() {
         linkDescription: profileData.linkDescription,
         linkUrl: profileData.linkUrl,
         shortUrlType: profileData.shortUrlType,
+        // View screen settings
+        backgroundTheme: profileData.backgroundTheme,
+        showProfileImage: profileData.showProfileImage,
+        showBio: profileData.showBio,
+        showVisitCount: profileData.showVisitCount,
+        layoutStyle: profileData.layoutStyle,
+        instagramUrl: profileData.instagramUrl,
+        twitterUrl: profileData.twitterUrl,
+        youtubeUrl: profileData.youtubeUrl,
       };
       console.log('Settings update data:', settingsUpdateData);
       const settingsResult = await updateSettingsMutation.mutateAsync(settingsUpdateData);
