@@ -379,7 +379,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.userId);
       const links = await storage.getLinks(userId);
-      res.json(links);
+      
+      // Add visit statistics to each link
+      const linksWithStats = await Promise.all(
+        links.map(async (link: any) => {
+          const stats = await storage.getLinkVisitStats(link.id);
+          return {
+            ...link,
+            ownerVisits: stats.ownerVisits,
+            externalVisits: stats.externalVisits,
+            totalVisits: stats.totalVisits,
+            dailyVisits: stats.dailyVisits,
+            monthlyVisits: stats.monthlyVisits
+          };
+        })
+      );
+      
+      res.json(linksWithStats);
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }
@@ -1257,7 +1273,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const links = await storage.getLinks(user.id);
       const activeLinks = links.filter((link: any) => link.isActive);
 
-      res.json(activeLinks);
+      // Add visit statistics to each link
+      const linksWithStats = await Promise.all(
+        activeLinks.map(async (link: any) => {
+          const stats = await storage.getLinkVisitStats(link.id);
+          return {
+            ...link,
+            ownerVisits: stats.ownerVisits,
+            externalVisits: stats.externalVisits,
+            totalVisits: stats.totalVisits,
+            dailyVisits: stats.dailyVisits,
+            monthlyVisits: stats.monthlyVisits
+          };
+        })
+      );
+
+      res.json(linksWithStats);
     } catch (error) {
       console.error("Public links fetch error:", error);
       res.status(500).json({ message: "Internal server error" });
