@@ -135,16 +135,30 @@ export default function ImagesPage() {
       return;
     }
 
-    // Upload each file
-    for (const file of selectedFiles) {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('userId', user?.id?.toString() || '');
-      formData.append('type', 'image');
-      formData.append('title', title || file.name);
-      formData.append('description', description || '');
+    try {
+      // Upload each file
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('userId', user?.id?.toString() || '');
+        formData.append('type', 'image');
+        formData.append('title', title || file.name.replace(/\.[^/.]+$/, ""));
+        formData.append('description', description || '');
 
-      await uploadImageMutation.mutateAsync(formData);
+        await uploadImageMutation.mutateAsync(formData);
+      }
+      
+      toast({
+        title: "모든 이미지 업로드 완료",
+        description: `${selectedFiles.length}개의 이미지가 성공적으로 업로드되었습니다.`,
+      });
+    } catch (error) {
+      toast({
+        title: "업로드 중 오류 발생",
+        description: "일부 이미지 업로드에 실패했습니다.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -309,8 +323,13 @@ export default function ImagesPage() {
                 클릭하여 이미지를 선택하세요
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                PNG, JPG, GIF 파일 지원
+                PNG, JPG, GIF 파일 지원 • 여러 파일 선택 가능
               </p>
+              {selectedFiles.length > 0 && (
+                <p className="text-xs text-primary mt-2 font-medium">
+                  {selectedFiles.length}개 파일 선택됨
+                </p>
+              )}
             </div>
 
             <input
@@ -372,7 +391,8 @@ export default function ImagesPage() {
                 disabled={selectedFiles.length === 0 || uploadImageMutation.isPending}
                 className="flex-1"
               >
-                {uploadImageMutation.isPending ? "업로드 중..." : "업로드"}
+                {uploadImageMutation.isPending ? "업로드 중..." : 
+                 selectedFiles.length > 1 ? `${selectedFiles.length}개 업로드` : "업로드"}
               </Button>
             </div>
           </div>
