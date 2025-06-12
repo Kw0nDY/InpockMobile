@@ -655,8 +655,8 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'image')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'image'
-                    ? 'border-[#8B6F47] bg-[#f0e6d6]'
-                    : 'border-border hover:border-[#A0826D]'
+                    ? 'border-[#B08A6B] bg-[#f0e6d6]'
+                    : 'border-border hover:border-[#B08A6B]'
                 }`}
               >
                 <Image className="w-8 h-8 text-muted-foreground mb-2" />
@@ -667,8 +667,8 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'video')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'video'
-                    ? 'border-[#8B6F47] bg-[#f0e6d6]'
-                    : 'border-border hover:border-[#A0826D]'
+                    ? 'border-[#B08A6B] bg-[#f0e6d6]'
+                    : 'border-border hover:border-[#B08A6B]'
                 }`}
               >
                 <Video className="w-8 h-8 text-muted-foreground mb-2" />
@@ -679,8 +679,8 @@ export default function SettingsPage() {
                 onClick={() => updateProfileData('contentType', 'links')}
                 className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
                   profileData.contentType === 'links'
-                    ? 'border-[#8B6F47] bg-[#f0e6d6]'
-                    : 'border-border hover:border-[#A0826D]'
+                    ? 'border-[#B08A6B] bg-[#f0e6d6]'
+                    : 'border-border hover:border-[#B08A6B]'
                 }`}
               >
                 <ExternalLink className="w-8 h-8 text-muted-foreground mb-2" />
