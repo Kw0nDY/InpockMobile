@@ -770,6 +770,10 @@ export default function LinksPage() {
                             >
                               단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
                             </div>
+                            <div className="text-xs text-gray-500 mb-2 flex gap-3">
+                              <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
+                              <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
+                            </div>
                             <div className="w-full h-2 bg-gray-300 rounded"></div>
                           </div>
                         )}
@@ -809,6 +813,10 @@ export default function LinksPage() {
                               >
                                 amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
                               </div>
+                              <div className="text-xs text-gray-300 mt-1 flex gap-3">
+                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
+                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
+                              </div>
                             </div>
                             <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
                               <div className="w-3 h-3 border-2 border-white rounded-full"></div>
@@ -843,6 +851,10 @@ export default function LinksPage() {
                               }}
                             >
                               단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                            </div>
+                            <div className="text-xs text-gray-600 mb-2 flex gap-3">
+                              <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
+                              <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
                             </div>
                             <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
                             <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
