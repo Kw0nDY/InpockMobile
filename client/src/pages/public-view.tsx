@@ -1,13 +1,14 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { ExternalLink, User, Image, Video, Link } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ExternalLink, User, Image, Video, Link, Copy, Check } from "lucide-react";
 import { trackPageView } from "../lib/analytics";
 
 export default function PublicViewPage() {
   const params = useParams();
   // Handle both /users/:username and /:customUrl patterns
   const identifier = params.username || params.customUrl;
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
   // Fetch user data by custom URL
   const { data: userData, isLoading: userLoading } = useQuery({
@@ -33,6 +34,17 @@ export default function PublicViewPage() {
       trackPageView(path, path);
     }
   }, [identifier, params.username]);
+
+  const copyToClipboard = async (url: string, shortCode: string) => {
+    try {
+      const shortUrl = `amusefit.co.kr/${shortCode}`;
+      await navigator.clipboard.writeText(shortUrl);
+      setCopiedLink(shortCode);
+      setTimeout(() => setCopiedLink(null), 2000);
+    } catch (err) {
+      console.error('Failed to copy: ', err);
+    }
+  };
 
   if (userLoading) {
     return (
@@ -76,72 +88,100 @@ export default function PublicViewPage() {
                     <div className="p-2 w-full h-full">
                       {/* Thumbnail Style */}
                       {link.style === 'thumbnail' && (
-                        <div 
-                          className="flex items-center gap-3 h-full p-2 bg-card rounded-lg border border-border cursor-pointer hover:shadow-sm transition-shadow"
-                          onClick={() => {
-                            window.open(link.originalUrl, '_blank');
-                            // Track click
-                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                          }}
-                        >
-                          {(link.customImageUrl || link.imageUrl) ? (
-                            <img 
-                              src={link.customImageUrl || link.imageUrl} 
-                              alt={link.title}
-                              className="w-12 h-12 rounded object-cover"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 bg-muted rounded"></div>
-                          )}
-                          <div className="text-left flex-1">
-                            <div className="text-sm font-medium text-foreground truncate">{link.title}</div>
-                            {link.description && (
-                              <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{link.description}</div>
+                        <div className="flex items-center gap-3 h-full p-2 bg-card rounded-lg border border-border group relative">
+                          <div 
+                            className="flex items-center gap-3 flex-1 cursor-pointer"
+                            onClick={() => {
+                              window.open(link.originalUrl, '_blank');
+                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                            }}
+                          >
+                            {(link.customImageUrl || link.imageUrl) ? (
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="w-12 h-12 rounded object-cover"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-muted rounded"></div>
                             )}
-                            <div className="text-xs text-gray-500 mt-1">
-                              단축 URL: amusefit.co.kr/{link.shortCode}
-                            </div>
-                            <div className="text-xs text-blue-600 mt-1">
-                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            <div className="text-left flex-1 min-w-0">
+                              <div className="text-sm font-medium text-foreground truncate">{link.title}</div>
+                              {link.description && (
+                                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{link.description}</div>
+                              )}
+                              <div className="text-xs text-gray-500 mt-1">
+                                단축 URL: amusefit.co.kr/{link.shortCode}
+                              </div>
+                              <div className="text-xs text-blue-600 mt-1">
+                                내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                              </div>
                             </div>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(link.originalUrl, link.shortCode);
+                            }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity p-2 hover:bg-muted rounded"
+                          >
+                            {copiedLink === link.shortCode ? (
+                              <Check className="w-4 h-4 text-green-600" />
+                            ) : (
+                              <Copy className="w-4 h-4 text-gray-600" />
+                            )}
+                          </button>
                         </div>
                       )}
                       
                       {/* Simple Style */}
                       {link.style === 'simple' && (
-                        <div 
-                          className="bg-card rounded-lg border border-border p-3 h-full flex flex-col justify-center cursor-pointer hover:bg-muted transition-colors" 
-                          onClick={() => {
-                            window.open(link.originalUrl, '_blank');
-                            // Track click
-                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                          }}
-                        >
-                          <div className="text-sm font-medium text-foreground truncate mb-1">{link.title}</div>
-                          {link.description && (
-                            <div className="text-xs text-muted-foreground mb-2 line-clamp-1">{link.description}</div>
-                          )}
-                          <div className="text-xs text-gray-500 mb-1">
-                            단축 URL: amusefit.co.kr/{link.shortCode}
+                        <div className="bg-card rounded-lg border border-border p-3 h-full flex flex-col justify-center group relative">
+                          <div 
+                            className="flex-1 cursor-pointer"
+                            onClick={() => {
+                              window.open(link.originalUrl, '_blank');
+                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                            }}
+                          >
+                            <div className="text-sm font-medium text-foreground truncate mb-1">{link.title}</div>
+                            {link.description && (
+                              <div className="text-xs text-muted-foreground mb-2 line-clamp-2">{link.description}</div>
+                            )}
+                            <div className="text-xs text-gray-500 mb-1">
+                              단축 URL: amusefit.co.kr/{link.shortCode}
+                            </div>
+                            <div className="text-xs text-blue-600 mb-2">
+                              내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                            </div>
+                            <div className="w-full h-2 bg-muted rounded"></div>
                           </div>
-                          <div className="text-xs text-blue-600 mb-2">
-                            내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
-                          </div>
-                          <div className="w-full h-2 bg-muted rounded"></div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(link.originalUrl, link.shortCode);
+                            }}
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-muted rounded"
+                          >
+                            {copiedLink === link.shortCode ? (
+                              <Check className="w-3 h-3 text-green-600" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-gray-600" />
+                            )}
+                          </button>
                         </div>
                       )}
                       
                       {/* Card Style */}
                       {link.style === 'card' && (
-                        <div 
-                          className="bg-accent rounded-lg h-full flex flex-col justify-center p-3 relative cursor-pointer hover:bg-accent/80 transition-colors" 
-                          onClick={() => {
-                            window.open(link.originalUrl, '_blank');
-                            // Track click
-                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                          }}
-                        >
+                        <div className="bg-accent rounded-lg h-full flex flex-col justify-center p-3 relative group">
+                          <div
+                            className="absolute inset-0 cursor-pointer"
+                            onClick={() => {
+                              window.open(link.originalUrl, '_blank');
+                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                            }}
+                          />
                           {(link.customImageUrl || link.imageUrl) && (
                             <img 
                               src={link.customImageUrl || link.imageUrl} 
@@ -152,7 +192,7 @@ export default function PublicViewPage() {
                           <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
                             <div className="text-sm font-medium truncate">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
+                              <div className="text-xs opacity-90 mt-1 line-clamp-2">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-300 mt-1">
                               단축 URL: amusefit.co.kr/{link.shortCode}
@@ -161,9 +201,19 @@ export default function PublicViewPage() {
                               내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
                             </div>
                           </div>
-                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                            <div className="w-3 h-3 border-2 border-white rounded-full"></div>
-                          </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(link.originalUrl, link.shortCode);
+                            }}
+                            className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-black bg-opacity-50 hover:bg-opacity-70 rounded"
+                          >
+                            {copiedLink === link.shortCode ? (
+                              <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-white" />
+                            )}
+                          </button>
                         </div>
                       )}
 
