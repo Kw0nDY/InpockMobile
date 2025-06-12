@@ -6,31 +6,33 @@ import { trackPageView } from "../lib/analytics";
 
 export default function PublicViewPage() {
   const params = useParams();
-  const customUrl = params.customUrl;
+  // Handle both /users/:username and /:customUrl patterns
+  const identifier = params.username || params.customUrl;
 
   // Fetch user data by custom URL
   const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: [`/api/public/${customUrl}`],
-    enabled: !!customUrl,
+    queryKey: [`/api/public/${identifier}`],
+    enabled: !!identifier,
   });
 
   // Fetch user's links if user exists
   const { data: linksData, isLoading: linksLoading } = useQuery({
-    queryKey: [`/api/public/${customUrl}/links`],
-    enabled: !!customUrl && !!userData,
+    queryKey: [`/api/public/${identifier}/links`],
+    enabled: !!identifier && !!userData,
   });
 
   // Fetch user's settings
   const { data: settingsData } = useQuery({
-    queryKey: [`/api/public/${customUrl}/settings`],
-    enabled: !!customUrl && !!userData,
+    queryKey: [`/api/public/${identifier}/settings`],
+    enabled: !!identifier && !!userData,
   });
 
   useEffect(() => {
-    if (customUrl) {
-      trackPageView(`/${customUrl}`, `/${customUrl}`);
+    if (identifier) {
+      const path = params.username ? `/users/${identifier}` : `/${identifier}`;
+      trackPageView(path, path);
     }
-  }, [customUrl]);
+  }, [identifier, params.username]);
 
   if (userLoading) {
     return (

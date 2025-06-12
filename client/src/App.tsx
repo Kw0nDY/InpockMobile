@@ -67,7 +67,7 @@ function Router() {
         <Route path="/find-id" component={FindIdPage} />
         <Route path="/reset-password/:token" component={ResetPasswordPage} />
         <Route path="/oauth/kakao/callback" component={KakaoCallback} />
-        <Route path="/users/:username" component={ProfilePage} />
+        <Route path="/users/:username" component={PublicViewPage} />
         <Route path="/:customUrl" component={PublicViewPage} />
         <Route component={NotFound} />
       </Switch>

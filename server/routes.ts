@@ -1338,12 +1338,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Public view API endpoints for custom URLs
-  app.get("/api/public/:customUrl", async (req, res) => {
+  app.get("/api/public/:identifier", async (req, res) => {
     try {
-      const { customUrl } = req.params;
+      const { identifier } = req.params;
       
-      // Find user by custom URL
-      const user = await storage.getUserByCustomUrl(customUrl);
+      // Try to find user by custom URL first, then by username
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -1369,12 +1372,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/public/:customUrl/links", async (req, res) => {
+  app.get("/api/public/:identifier/links", async (req, res) => {
     try {
-      const { customUrl } = req.params;
+      const { identifier } = req.params;
       
-      // Find user by custom URL
-      const user = await storage.getUserByCustomUrl(customUrl);
+      // Try to find user by custom URL first, then by username
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -1391,12 +1397,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/public/:customUrl/settings", async (req, res) => {
+  app.get("/api/public/:identifier/settings", async (req, res) => {
     try {
-      const { customUrl } = req.params;
+      const { identifier } = req.params;
       
-      // Find user by custom URL
-      const user = await storage.getUserByCustomUrl(customUrl);
+      // Try to find user by custom URL first, then by username
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
       
       if (!user) {
         return res.status(404).json({ message: "User not found" });
