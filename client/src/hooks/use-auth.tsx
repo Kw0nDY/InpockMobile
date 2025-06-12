@@ -26,32 +26,12 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(() => {
-    // Try to load user from localStorage on initialization
-    try {
-      const savedUser = localStorage.getItem('auth_user');
-      if (savedUser) {
-        return JSON.parse(savedUser);
-      }
-      // If no saved user, create a demo user for testing
-      const demoUser = {
-        id: 1,
-        username: "demo",
-        email: "demo@example.com",
-        name: "데모 사용자",
-        company: "데모 회사",
-        role: "user",
-        bio: "안녕하세요! 데모 사용자입니다.",
-        profileImageUrl: "",
-        introVideoUrl: "",
-        visitCount: 0
-      };
-      localStorage.setItem('auth_user', JSON.stringify(demoUser));
-      return demoUser;
-    } catch {
-      return null;
-    }
-  });
+  const [user, setUser] = useState<User | null>(null);
+  
+  // Clear any stale auth data on mount
+  useEffect(() => {
+    localStorage.removeItem('auth_user');
+  }, []);
 
   // Save user to localStorage whenever user state changes
   useEffect(() => {
