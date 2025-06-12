@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { User, Link as LinkIcon, Copy, Check, Image, Video, Home } from "lucide-react";
+import { User, Link as LinkIcon, Copy, Check, Image, Video, Home, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { queryClient } from "@/lib/queryClient";
 
 interface UserProfile {
   id: number;
@@ -37,6 +39,7 @@ export default function PublicViewPage() {
   const identifier = params.username || params.customUrl || '';
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const [currentContentType, setCurrentContentType] = useState<string | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -92,6 +95,34 @@ export default function PublicViewPage() {
     ...videos.map((video: any) => ({ ...video, type: 'upload' })),
     ...videoLinks.map((link: any) => ({ ...link, type: 'link', embedUrl: getVideoEmbedUrl(link.originalUrl) }))
   ];
+
+  // Auto-refresh every 30 seconds for real-time updates
+  useEffect(() => {
+    if (!identifier) return;
+    
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}/links`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/video`] });
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [identifier, user?.id]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}/settings`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/public/${identifier}/links`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/image`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/media/${user?.id}/video`] })
+      ]);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   const copyToClipboard = async (originalUrl: string, shortCode: string) => {
     const shortUrl = `${window.location.host}/${shortCode}`;
@@ -455,6 +486,17 @@ export default function PublicViewPage() {
               <p className="text-muted-foreground text-xs korean-text">@{user.username}</p>
             </div>
           </div>
+          
+          {/* Refresh Button */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+            className="p-2 h-8 w-8"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
         </header>
 
         {/* Scrollable Content */}

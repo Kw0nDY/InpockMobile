@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Heart, X, Share2, MessageCircle } from "lucide-react";
+import { ChevronLeft, ChevronRight, Heart, X, Share2, MessageCircle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { useLocation, useParams } from "wouter";
+import { queryClient } from "@/lib/queryClient";
 
 export default function PublicImageView() {
   const params = useParams<{ username?: string; customUrl?: string }>();
@@ -10,6 +11,7 @@ export default function PublicImageView() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [, setLocation] = useLocation();
 
   // Get user data
@@ -24,6 +26,29 @@ export default function PublicImageView() {
   });
 
   const minSwipeDistance = 50;
+
+  // Auto-refresh every 30 seconds for real-time updates
+  useEffect(() => {
+    if (!username || !(userData as any)?.id) return;
+    
+    const interval = setInterval(() => {
+      queryClient.invalidateQueries({ queryKey: [`/api/media/${(userData as any)?.id}/image`] });
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [username, (userData as any)?.id]);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: [`/api/public/${username}`] }),
+        queryClient.invalidateQueries({ queryKey: [`/api/media/${(userData as any)?.id}/image`] })
+      ]);
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 500);
+    }
+  };
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
@@ -205,14 +230,25 @@ export default function PublicImageView() {
             </div>
           </div>
 
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-white hover:bg-white/20 h-8 w-8 p-0"
-            onClick={() => setLocation('/')}
-          >
-            <X className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+            >
+              <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/20 h-8 w-8 p-0"
+              onClick={() => setLocation('/')}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
