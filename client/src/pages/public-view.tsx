@@ -220,7 +220,7 @@ export default function PublicViewPage() {
                       {/* Background Style */}
                       {link.style === 'background' && (
                         <div 
-                          className="h-full flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
+                          className="h-full flex flex-col justify-center p-3 relative rounded-lg overflow-hidden group" 
                           style={{
                             backgroundImage: (link.customImageUrl || link.imageUrl) 
                               ? `url(${link.customImageUrl || link.imageUrl})` 
@@ -229,19 +229,21 @@ export default function PublicViewPage() {
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat'
                           }}
-                          onClick={() => {
-                            window.open(link.originalUrl, '_blank');
-                            // Track click
-                            fetch(`/api/links/${link.id}/click`, { method: 'POST' });
-                          }}
                         >
+                          <div
+                            className="absolute inset-0 cursor-pointer"
+                            onClick={() => {
+                              window.open(link.originalUrl, '_blank');
+                              fetch(`/api/links/${link.id}/click`, { method: 'POST' });
+                            }}
+                          />
                           {/* Dark overlay for text readability */}
                           <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
                           
                           <div className="relative z-10 text-white">
                             <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
                             {link.description && (
-                              <div className="text-xs text-gray-200 mb-2 line-clamp-1 drop-shadow-lg">{link.description}</div>
+                              <div className="text-xs text-gray-200 mb-2 line-clamp-2 drop-shadow-lg">{link.description}</div>
                             )}
                             <div className="text-xs text-gray-300 drop-shadow-lg">
                               단축 URL: amusefit.co.kr/{link.shortCode}
@@ -250,6 +252,19 @@ export default function PublicViewPage() {
                               내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
                             </div>
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              copyToClipboard(link.originalUrl, link.shortCode);
+                            }}
+                            className="absolute top-2 right-2 z-20 opacity-0 group-hover:opacity-100 transition-opacity p-1 bg-black bg-opacity-50 hover:bg-opacity-70 rounded"
+                          >
+                            {copiedLink === link.shortCode ? (
+                              <Check className="w-3 h-3 text-green-400" />
+                            ) : (
+                              <Copy className="w-3 h-3 text-white" />
+                            )}
+                          </button>
                         </div>
                       )}
                     </div>

@@ -1218,6 +1218,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Direct short URL redirect route - matches amusefit.co.kr/{shortCode} pattern
+  app.get("/:shortCode", async (req, res, next) => {
+    try {
+      const shortCode = req.params.shortCode;
+      
+      // Skip if it's a known route like 'api', 'users', etc.
+      const knownRoutes = ['api', 'users', 'login', 'dashboard', 'links', 'images', 'videos', 'settings', 'uploads', 'oauth', 'link', 'l', 'test', 'demo_user'];
+      if (knownRoutes.includes(shortCode)) {
+        return next(); // Let other routes handle it
+      }
+      
+      console.log(`[SHORT-URL] Attempting to redirect shortCode: ${shortCode}`);
+      
+      const link = await storage.getLinkByShortCode(shortCode);
+      
+      if (!link) {
+        console.log(`[SHORT-URL] Link not found for shortCode: ${shortCode}`);
+        return next(); // Let other routes handle it (might be a username)
+      }
+
+      console.log(`[SHORT-URL] Found link: ${JSON.stringify(link)}`);
+
+      // Increment click count for proper visit tracking
+      try {
+        await storage.incrementLinkClicks(link.id);
+        console.log(`[SHORT-URL] Click count incremented for link ${link.id}`);
+      } catch (clickError) {
+        console.error(`[SHORT-URL] Failed to increment clicks:`, clickError);
+      }
+
+      // Redirect to the target URL
+      console.log(`[SHORT-URL] Redirecting to: ${link.originalUrl}`);
+      res.redirect(302, link.originalUrl);
+    } catch (error) {
+      console.error("Short URL redirect error:", error);
+      return next(); // Let other routes handle it
+    }
+  });
+
   // Note: Removed server-side /users/:identifier route to allow React routing
 
   // Public view API endpoints for custom URLs
