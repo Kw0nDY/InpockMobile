@@ -605,7 +605,7 @@ export default function LinksPage() {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-4 pb-24">
           {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
           <Card className="bg-[#F5F3F0] border-none shadow-sm">
             <CardContent className="p-4">
@@ -827,10 +827,20 @@ export default function LinksPage() {
                         {/* Background Style */}
                         {link.style === 'background' && (
                           <div 
-                            className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity" 
-                            style={{background: 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)'}}
+                            className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
+                            style={{
+                              backgroundImage: (link.customImageUrl || link.imageUrl) 
+                                ? `url(${link.customImageUrl || link.imageUrl})` 
+                                : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
+                              backgroundSize: 'cover',
+                              backgroundPosition: 'center',
+                              backgroundRepeat: 'no-repeat'
+                            }}
                             onClick={() => window.open(link.originalUrl, '_blank')}
                           >
+                            {/* Dark overlay for text readability */}
+                            <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                            
                             <Button
                               variant="ghost"
                               size="sm"
@@ -838,26 +848,27 @@ export default function LinksPage() {
                                 e.stopPropagation();
                                 deleteLinkMutation.mutate(link.id);
                               }}
-                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm"
+                              className="absolute top-1 right-1 h-6 w-6 p-0 bg-white border border-gray-200 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-full shadow-sm z-20"
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
-                            <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
-                            <div 
-                              className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(`/l/${link.shortCode}`, '_blank');
-                              }}
-                            >
-                              단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                            
+                            <div className="relative z-10 text-white">
+                              <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
+                              <div 
+                                className="text-xs text-blue-200 mb-2 cursor-pointer hover:underline drop-shadow-lg"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(`/l/${link.shortCode}`, '_blank');
+                                }}
+                              >
+                                단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
+                              </div>
+                              <div className="text-xs text-gray-200 mb-2 flex gap-3 drop-shadow-lg">
+                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
+                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
+                              </div>
                             </div>
-                            <div className="text-xs text-gray-600 mb-2 flex gap-3">
-                              <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
-                              <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
-                            </div>
-                            <div className="w-full h-2 bg-gray-400 rounded mb-1"></div>
-                            <div className="w-3/4 h-2 bg-gray-400 rounded"></div>
                           </div>
                         )}
                       </div>
