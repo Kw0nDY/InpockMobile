@@ -588,54 +588,58 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-foreground">단축 URL 설정</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <RadioGroup
               value={profileData.shortUrlType}
               onValueChange={(value) => updateProfileData('shortUrlType', value)}
-              className="space-y-3"
+              className="space-y-4"
             >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="default" id="default" />
-                <Label htmlFor="default" className="cursor-pointer">
-                  <div>
-                    <div className="font-medium text-foreground">기본값</div>
-                    <div className="text-sm text-muted-foreground">{window.location.host}/{user?.username || 'demo_user'}</div>
-                  </div>
-                </Label>
+              {/* 기본값 옵션 */}
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="default" id="default" className="mt-1" />
+                <div className="flex-1">
+                  <Label htmlFor="default" className="cursor-pointer block">
+                    <div className="font-medium text-foreground mb-1">기본값</div>
+                    <div className="text-sm text-muted-foreground break-all">
+                      {window.location.host}/{user?.username || 'demo_user'}
+                    </div>
+                  </Label>
+                </div>
               </div>
               
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="custom" id="custom" />
-                <Label htmlFor="custom" className="cursor-pointer">
-                  <div>
-                    <div className="font-medium text-foreground">커스텀</div>
+              {/* 커스텀 옵션 */}
+              <div className="flex items-start space-x-3">
+                <RadioGroupItem value="custom" id="custom" className="mt-1" />
+                <div className="flex-1">
+                  <Label htmlFor="custom" className="cursor-pointer block">
+                    <div className="font-medium text-foreground mb-1">커스텀</div>
                     <div className="flex items-center text-sm text-muted-foreground">
-                      <span>{window.location.host}/</span>
+                      <span className="break-all">{window.location.host}/</span>
                       <Input
                         value={profileData.customUrl || ''}
                         onChange={(e) => updateProfileData('customUrl', e.target.value)}
                         placeholder="kimyolee"
-                        className="ml-1 w-20 h-6 text-xs border-border px-1 bg-background"
+                        className="ml-1 flex-1 max-w-32 h-7 text-sm border-border px-2 bg-background disabled:opacity-50"
                         disabled={profileData.shortUrlType !== 'custom'}
                       />
                     </div>
-                  </div>
-                </Label>
+                  </Label>
+                </div>
               </div>
             </RadioGroup>
 
             {/* URL Display & Copy */}
-            <div className="p-3 bg-muted rounded-lg">
+            <div className="p-4 bg-muted rounded-lg border">
               <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-muted-foreground">단축링크</div>
-                  <div className="text-sm text-foreground font-mono">{shortUrl}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-muted-foreground mb-1">단축링크</div>
+                  <div className="text-sm text-foreground font-mono break-all pr-2">{shortUrl}</div>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleCopyUrl}
-                  className="text-muted-foreground hover:text-foreground h-8 w-10 p-0 border-border"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 border-border flex-shrink-0"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
