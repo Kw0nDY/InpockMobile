@@ -289,7 +289,7 @@ export class MemStorage implements IStorage {
     demoLinksUser1.forEach(link => this.links.set(link.id, link));
     this.currentLinkId = 40;
 
-    // Create demo link visits for user 8's links to demonstrate analytics
+    // Create demo link visits for user 1's links to demonstrate analytics
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -307,7 +307,7 @@ export class MemStorage implements IStorage {
       { id: 7, linkId: 2, visitorIp: "192.168.1.20", userAgent: "Safari", referrer: "https://facebook.com", isOwner: false, visitedAt: new Date(today.getTime() + 7000) },
       { id: 8, linkId: 2, visitorIp: "192.168.1.21", userAgent: "Edge", referrer: "https://twitter.com", isOwner: false, visitedAt: new Date(today.getTime() + 8000) },
       
-      // Link 37 visits (fit123) for user 8
+      // Link 37 visits (fit123) for user 1
       { id: 9, linkId: 37, visitorIp: "127.0.0.1", userAgent: "Chrome", referrer: null, isOwner: true, visitedAt: new Date(today.getTime() + 9000) },
       { id: 10, linkId: 37, visitorIp: "192.168.1.30", userAgent: "Chrome", referrer: "https://naver.com", isOwner: false, visitedAt: new Date(today.getTime() + 10000) },
       
