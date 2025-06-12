@@ -309,9 +309,13 @@ export default function DashboardPage() {
                     className="p-1 h-auto text-muted-foreground hover:text-foreground"
                     onClick={() => {
                       const url = (settingsData as any)?.customUrl ? 
-                        `https://amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
-                        `https://amusefit.co.kr/users/${(userData as any)?.username || 'user'}`;
+                        `${window.location.protocol}//${window.location.host}/${(settingsData as any).customUrl}` : 
+                        `${window.location.protocol}//${window.location.host}/${(userData as any)?.username || 'user'}`;
                       navigator.clipboard.writeText(url);
+                      toast({
+                        title: "URL 복사됨",
+                        description: "단축 URL이 클립보드에 복사되었습니다.",
+                      });
                     }}
                   >
                     <Copy className="w-4 h-4" />
