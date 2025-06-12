@@ -38,17 +38,17 @@ export default function PublicViewPage() {
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
-    queryKey: ['/api/public', identifier],
+    queryKey: [`/api/public/${identifier}`],
     enabled: !!identifier,
   });
 
   const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
-    queryKey: ['/api/public', identifier, 'settings'],
+    queryKey: [`/api/public/${identifier}/settings`],
     enabled: !!identifier,
   });
 
   const { data: links = [], isLoading: linksLoading } = useQuery<any[]>({
-    queryKey: ['/api/public', identifier, 'links'],
+    queryKey: [`/api/public/${identifier}/links`],
     enabled: !!identifier,
   });
 
