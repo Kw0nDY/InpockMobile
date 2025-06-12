@@ -2,13 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { ChevronLeft, ChevronRight, Heart, X, Share2, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation } from "wouter";
+import { useLocation, useParams } from "wouter";
 
-interface PublicImageViewProps {
-  username: string;
-}
-
-export default function PublicImageView({ username }: PublicImageViewProps) {
+export default function PublicImageView() {
+  const params = useParams<{ username?: string; customUrl?: string }>();
+  const username = params.username || params.customUrl || '';
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -21,8 +19,8 @@ export default function PublicImageView({ username }: PublicImageViewProps) {
 
   // Get user's images ordered by priority
   const { data: images = [], isLoading } = useQuery({
-    queryKey: [`/api/media/${userData?.id}/image`],
-    enabled: !!userData?.id,
+    queryKey: [`/api/media/${(userData as any)?.id}/image`],
+    enabled: !!(userData as any)?.id,
   });
 
   const minSwipeDistance = 50;

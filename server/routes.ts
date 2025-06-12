@@ -789,6 +789,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Media reordering endpoint
+  app.put("/api/media/reorder", async (req, res) => {
+    try {
+      const { userId, mediaType, orderedIds } = req.body;
+      
+      if (!userId || !mediaType || !Array.isArray(orderedIds)) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const reorderedMedia = await storage.reorderUserMedia(userId, mediaType, orderedIds);
+      res.json(reorderedMedia);
+    } catch (error) {
+      console.error("Media reordering error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get user media by type with proper ordering
+  app.get("/api/media/:userId/:mediaType", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const { mediaType } = req.params;
+      
+      const media = await storage.getMediaByUserAndType(userId, mediaType);
+      res.json(media);
+    } catch (error) {
+      console.error("Media fetch error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Delete media item
+  app.delete("/api/media/:id", async (req, res) => {
+    try {
+      const mediaId = parseInt(req.params.id);
+      const success = await storage.deleteMediaUpload(mediaId);
+      
+      if (!success) {
+        return res.status(404).json({ message: "Media not found" });
+      }
+      
+      res.json({ message: "Media deleted successfully" });
+    } catch (error) {
+      console.error("Media deletion error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // Subscription routes
   app.get("/api/subscription/:userId", async (req, res) => {
     try {
@@ -877,7 +925,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const links = await storage.getAllLinks(user.id);
+      const links = await storage.getLinks(user.id);
       res.json(links);
     } catch (error) {
       console.error('Profile links fetch error:', error);
