@@ -83,6 +83,28 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
+  
+  // Initialize demo user on server startup
+  const { storage } = await import("./storage");
+  try {
+    let demoUser = await storage.getUserByEmail("demo@amusefit.com");
+    if (!demoUser) {
+      console.log("Creating demo user on startup...");
+      demoUser = await storage.createUser({
+        username: "demo_user",
+        email: "demo@amusefit.com",
+        password: "password123",
+        name: "김철수",
+        company: "AmuseFit Korea",
+        role: "user",
+      });
+      console.log("Demo user created on startup:", demoUser.email);
+    } else {
+      console.log("Demo user already exists:", demoUser.email);
+    }
+  } catch (error) {
+    console.error("Failed to create demo user on startup:", error);
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
