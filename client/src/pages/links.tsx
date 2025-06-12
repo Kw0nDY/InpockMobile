@@ -618,11 +618,14 @@ export default function LinksPage() {
   return (
     <div className="min-h-screen bg-[#F5F3F0] pb-20">
       <div className="max-w-md mx-auto bg-[#F5F3F0] min-h-screen">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#8D6E63]/20 sticky top-0 bg-[#F5F3F0] z-40">
-          <div className="w-6"></div>
-          <h1 className="text-lg font-semibold text-[#4E342E]">링크</h1>
-          <div className="w-6"></div>
+        {/* Fixed Header */}
+        <div className="p-4 border-b border-border bg-card flex-shrink-0">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">링크 관리</h1>
+            <p className="text-sm text-muted-foreground">
+              링크를 추가하고 방문 통계를 확인하세요
+            </p>
+          </div>
         </div>
 
         {/* Content */}

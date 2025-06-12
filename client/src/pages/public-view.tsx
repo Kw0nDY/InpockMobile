@@ -106,18 +106,18 @@ export default function PublicViewPage() {
 
   if (userLoading || settingsLoading || linksLoading || imagesLoading || videosLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47]"></div>
+      <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4E342E]"></div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">사용자를 찾을 수 없습니다</h1>
-          <p className="text-gray-600">요청하신 프로필이 존재하지 않습니다.</p>
+          <h1 className="text-2xl font-bold text-[#4E342E] mb-2">사용자를 찾을 수 없습니다</h1>
+          <p className="text-[#8D6E63]">요청하신 프로필이 존재하지 않습니다.</p>
         </div>
       </div>
     );
@@ -136,9 +136,9 @@ export default function PublicViewPage() {
                   <div key={link.id} className="w-full">
                     {/* Thumbnail Style */}
                     {link.style === 'thumbnail' && (
-                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
                         <div 
-                          className="flex items-center gap-3 p-2 bg-white rounded-lg border relative cursor-pointer hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-3 p-2 bg-white/90 rounded-lg border border-[#EFE5DC] relative cursor-pointer hover:bg-[#EFE5DC] transition-colors"
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -151,18 +151,18 @@ export default function PublicViewPage() {
                               className="w-12 h-12 rounded object-cover flex-shrink-0"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
+                            <div className="w-12 h-12 bg-[#EFE5DC] rounded flex-shrink-0"></div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
+                            <div className="text-sm font-medium text-[#4E342E] truncate hover:text-[#8D6E63]">
                               {link.title}
                             </div>
                             {link.description && (
-                              <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
+                              <div className="text-xs text-[#8D6E63] mt-1 line-clamp-1">{link.description}</div>
                             )}
                             <div className="flex items-center gap-2 mt-1">
                               <div 
-                                className="text-xs text-blue-600 cursor-pointer hover:underline flex-1"
+                                className="text-xs text-[#A1887F] cursor-pointer hover:underline flex-1"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   window.open(`/l/${link.shortCode}`, '_blank');
@@ -175,12 +175,12 @@ export default function PublicViewPage() {
                                   e.stopPropagation();
                                   copyToClipboard(`${window.location.origin}/l/${link.shortCode}`, link.shortCode);
                                 }}
-                                className="h-5 w-5 p-0 text-gray-400 hover:text-blue-600"
+                                className="h-5 w-5 p-0 text-[#8D6E63] hover:text-[#4E342E]"
                               >
                                 <Copy className="w-3 h-3" />
                               </button>
                             </div>
-                            <div className="text-xs text-gray-500 mt-1 flex gap-3">
+                            <div className="text-xs text-[#A1887F] mt-1 flex gap-3">
                               <span>내 방문: {link.ownerVisits || 0}</span>
                               <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
@@ -191,9 +191,9 @@ export default function PublicViewPage() {
 
                     {/* Card Style */}
                     {link.style === 'card' && (
-                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
                         <div 
-                          className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
+                          className="bg-[#EFE5DC] rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-[#D7CCC8] transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -206,10 +206,10 @@ export default function PublicViewPage() {
                               className="absolute inset-0 w-full h-full object-cover rounded-lg"
                             />
                           )}
-                          <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
+                          <div className="relative z-10 bg-[#4E342E]/80 text-white p-2 rounded">
                             <div className="text-sm font-medium truncate">{link.title}</div>
                             <div 
-                              className="text-xs text-blue-200 mt-1 cursor-pointer hover:underline"
+                              className="text-xs text-[#EFE5DC] mt-1 cursor-pointer hover:underline"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/l/${link.shortCode}`, '_blank');
@@ -217,12 +217,12 @@ export default function PublicViewPage() {
                             >
                               amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
                             </div>
-                            <div className="text-xs text-gray-300 mt-1 flex gap-3">
+                            <div className="text-xs text-[#A1887F] mt-1 flex gap-3">
                               <span>내 방문: {link.ownerVisits || 0}</span>
                               <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
                           </div>
-                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-[#4E342E]/80 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 border-2 border-white rounded-full"></div>
                           </div>
                         </div>
@@ -231,9 +231,9 @@ export default function PublicViewPage() {
 
                     {/* Simple Style */}
                     {link.style === 'simple' && (
-                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
                         <div 
-                          className="bg-white rounded-lg border p-3 relative cursor-pointer hover:bg-gray-50 transition-colors" 
+                          className="bg-white/90 rounded-lg border border-[#EFE5DC] p-3 relative cursor-pointer hover:bg-[#EFE5DC] transition-colors" 
                           onClick={() => {
                             window.open(link.originalUrl, '_blank');
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
@@ -246,7 +246,7 @@ export default function PublicViewPage() {
                               className="w-full h-20 object-cover rounded mb-2"
                             />
                           )}
-                          <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                          <div className="text-sm font-medium text-[#4E342E] truncate mb-2 hover:text-[#8D6E63]">{link.title}</div>
                           {link.description && (
                             <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
                           )}
