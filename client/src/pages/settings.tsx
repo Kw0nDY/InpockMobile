@@ -454,8 +454,8 @@ export default function SettingsPage() {
   };
 
   const shortUrl = profileData.shortUrlType === 'custom' && profileData.customUrl
-    ? `amusefit.co.kr/users/${profileData.customUrl}`
-    : `amusefit.co.kr/users/${user?.username || 'default'}`;
+    ? `${window.location.host}/${profileData.customUrl}`
+    : `${window.location.host}/${user?.username || 'demo_user'}`;
 
   return (
     <div className="min-h-screen bg-background pb-20">

@@ -46,7 +46,7 @@ export default function PublicViewPage() {
     enabled: !!username,
   });
 
-  const { data: links = [], isLoading: linksLoading } = useQuery({
+  const { data: links = [], isLoading: linksLoading } = useQuery<any[]>({
     queryKey: ['/api/public', username, 'links'],
     enabled: !!username,
   });
@@ -88,7 +88,7 @@ export default function PublicViewPage() {
       case 'links':
         return (
           <div className="space-y-4">
-            {links.length > 0 ? (
+            {Array.isArray(links) && links.length > 0 ? (
               <div className="space-y-4">
                 {links.map((link: any) => (
                   <div key={link.id} className="w-full">
