@@ -43,10 +43,31 @@ export default function LinksPage() {
     refetchInterval: 5000, // Auto-refresh every 5 seconds to show updated click counts
   });
 
-  const { data: visitStats } = useQuery({
+  // Hook to get individual link statistics
+  const useIndividualLinkStats = (linkId: number) => {
+    return useQuery({
+      queryKey: [`/api/links/${linkId}/stats`],
+      enabled: !!linkId,
+      refetchInterval: 5000, // Auto-refresh individual link stats
+    });
+  };
+
+  // Component to display individual link stats
+  const LinkStatsDisplay = ({ linkId }: { linkId: number }) => {
+    const { data: stats } = useIndividualLinkStats(linkId);
+    return (
+      <div className="text-xs text-gray-500 mt-1 flex gap-3">
+        <span>내 방문: {stats?.ownerVisits || 0}</span>
+        <span>외부 방문: {stats?.externalVisits || 0}</span>
+      </div>
+    );
+  };
+
+  // Get overall user statistics for the top summary
+  const { data: userStats } = useQuery({
     queryKey: [`/api/user/${user?.id}/link-stats`],
     enabled: !!user?.id,
-    refetchInterval: 5000, // Auto-refresh visitor stats
+    refetchInterval: 5000,
   });
 
   const links = Array.isArray(linksData) ? linksData : [];
@@ -624,19 +645,19 @@ export default function LinksPage() {
               <div className="grid grid-cols-3 gap-4 mb-6">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {(visitStats as any)?.totalVisits || 0}
+                    {userStats?.totalVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">총방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {(visitStats as any)?.dailyVisits || 0}
+                    {userStats?.dailyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">일방문자</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-[#8B4513] mb-1">
-                    {(visitStats as any)?.monthlyVisits || 0}
+                    {userStats?.monthlyVisits || 0}
                   </div>
                   <div className="text-xs text-gray-500">월방문자</div>
                 </div>
@@ -714,10 +735,7 @@ export default function LinksPage() {
                                   <Copy className="w-3 h-3" />
                                 </Button>
                               </div>
-                              <div className="text-xs text-gray-500 mt-1 flex gap-3">
-                                <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
-                                <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
-                              </div>
+                              <LinkStatsDisplay linkId={link.id} />
                             </div>
                             <Button
                               variant="ghost"
@@ -770,10 +788,7 @@ export default function LinksPage() {
                             >
                               단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
                             </div>
-                            <div className="text-xs text-gray-500 mb-2 flex gap-3">
-                              <span>내 방문: {(visitStats as any)?.ownerVisits || 0}</span>
-                              <span>외부 방문: {(visitStats as any)?.externalVisits || 0}</span>
-                            </div>
+                            <LinkStatsDisplay linkId={link.id} />
                             <div className="w-full h-2 bg-gray-300 rounded"></div>
                           </div>
                         )}

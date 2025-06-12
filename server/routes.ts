@@ -463,6 +463,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Individual link statistics
+  app.get("/api/links/:id/stats", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      console.log(`[LINK-STATS] Getting individual stats for link ${id}`);
+      const stats = await storage.getLinkVisitStats(id);
+      console.log(`[LINK-STATS] Individual stats result:`, stats);
+      res.json(stats);
+    } catch (error) {
+      console.error("[LINK-STATS] Individual stats error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // User's overall link visit statistics
   app.get("/api/user/:userId/link-stats", async (req, res) => {
     try {
