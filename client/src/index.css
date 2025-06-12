@@ -50,13 +50,13 @@
   }
 }
 
-@keyframes toast-slide-out-right {
+@keyframes toast-slide-out-bottom {
   from {
-    transform: translateX(0);
+    transform: translateY(0);
     opacity: 1;
   }
   to {
-    transform: translateX(100%);
+    transform: translateY(100%);
     opacity: 0;
   }
 }
@@ -67,7 +67,7 @@
 }
 
 .toast-exit {
-  animation: toast-slide-out-right 0.3s ease-in;
+  animation: toast-slide-out-bottom 0.3s ease-in;
 }
 
 :root {
