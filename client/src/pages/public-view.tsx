@@ -407,74 +407,74 @@ export default function PublicViewPage() {
 
         {/* Footer with Content Type Icons */}
         <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20">
-          <div className="max-w-md mx-auto px-6 py-3">
-            <div className="flex justify-center items-center gap-8">
+          <div className="max-w-md mx-auto px-4 py-2">
+            <div className="flex justify-center items-center gap-6">
               {/* Images Icon */}
-              <div className={`flex flex-col items-center gap-1 transition-colors ${
+              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
                 contentType === 'image' 
                   ? 'text-[#8B6F47]' 
                   : images.length > 0 
                     ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
                     : 'text-gray-300'
               }`}>
-                <div className={`p-2 rounded-full ${
+                <div className={`p-1.5 rounded-full ${
                   contentType === 'image' 
                     ? 'bg-[#8B6F47]/10' 
                     : images.length > 0 
                       ? 'hover:bg-gray-100' 
                       : ''
                 }`}>
-                  <Image className="w-5 h-5" />
+                  <Image className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-medium">이미지</span>
+                <span className="text-[10px] font-medium">이미지</span>
                 {images.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-current rounded-full mt-0.5"></div>
                 )}
               </div>
 
               {/* Videos Icon */}
-              <div className={`flex flex-col items-center gap-1 transition-colors ${
+              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
                 contentType === 'video' 
                   ? 'text-[#8B6F47]' 
                   : videos.length > 0 
                     ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
                     : 'text-gray-300'
               }`}>
-                <div className={`p-2 rounded-full ${
+                <div className={`p-1.5 rounded-full ${
                   contentType === 'video' 
                     ? 'bg-[#8B6F47]/10' 
                     : videos.length > 0 
                       ? 'hover:bg-gray-100' 
                       : ''
                 }`}>
-                  <Video className="w-5 h-5" />
+                  <Video className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-medium">동영상</span>
+                <span className="text-[10px] font-medium">동영상</span>
                 {videos.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-current rounded-full mt-0.5"></div>
                 )}
               </div>
 
               {/* Links Icon */}
-              <div className={`flex flex-col items-center gap-1 transition-colors ${
+              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
                 contentType === 'links' 
                   ? 'text-[#8B6F47]' 
                   : links.length > 0 
                     ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
                     : 'text-gray-300'
               }`}>
-                <div className={`p-2 rounded-full ${
+                <div className={`p-1.5 rounded-full ${
                   contentType === 'links' 
                     ? 'bg-[#8B6F47]/10' 
                     : links.length > 0 
                       ? 'hover:bg-gray-100' 
                       : ''
                 }`}>
-                  <LinkIcon className="w-5 h-5" />
+                  <LinkIcon className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-medium">링크</span>
+                <span className="text-[10px] font-medium">링크</span>
                 {links.length > 0 && (
-                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                  <div className="w-0.5 h-0.5 bg-current rounded-full mt-0.5"></div>
                 )}
               </div>
             </div>
