@@ -69,7 +69,8 @@ export default function DashboardPage() {
       if (!response.ok) {
         throw new Error('Failed to delete link');
       }
-      return response.json();
+      // DELETE requests return 204 No Content, so we don't parse JSON
+      return { success: true };
     },
     onSuccess: () => {
       // 캐시 무효화를 더 강력하게 수행
