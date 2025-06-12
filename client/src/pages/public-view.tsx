@@ -248,10 +248,10 @@ export default function PublicViewPage() {
                           )}
                           <div className="text-sm font-medium text-[#4E342E] truncate mb-2 hover:text-[#8D6E63]">{link.title}</div>
                           {link.description && (
-                            <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
+                            <div className="text-xs text-[#8D6E63] mb-2 line-clamp-2">{link.description}</div>
                           )}
                           <div 
-                            className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
+                            className="text-xs text-[#A1887F] mb-2 cursor-pointer hover:underline"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(`/l/${link.shortCode}`, '_blank');
@@ -259,24 +259,24 @@ export default function PublicViewPage() {
                           >
                             단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
                           </div>
-                          <div className="text-xs text-gray-500 mb-2 flex gap-3">
+                          <div className="text-xs text-[#A1887F] mb-2 flex gap-3">
                             <span>내 방문: {link.ownerVisits || 0}</span>
                             <span>외부 방문: {link.externalVisits || 0}</span>
                           </div>
-                          <div className="w-full h-2 bg-gray-300 rounded"></div>
+                          <div className="w-full h-2 bg-[#EFE5DC] rounded"></div>
                         </div>
                       </div>
                     )}
 
                     {/* Background Style */}
                     {link.style === 'background' && (
-                      <div className="border border-gray-200 rounded-lg p-3 bg-white">
+                      <div className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
                         <div 
                           className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
                           style={{
                             backgroundImage: (link.customImageUrl || link.imageUrl) 
                               ? `url(${link.customImageUrl || link.imageUrl})` 
-                              : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
+                              : 'repeating-linear-gradient(45deg, #EFE5DC, #EFE5DC 10px, #D7CCC8 10px, #D7CCC8 20px)',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundRepeat: 'no-repeat'
@@ -286,12 +286,12 @@ export default function PublicViewPage() {
                             fetch(`/api/links/${link.id}/click`, { method: 'POST' });
                           }}
                         >
-                          <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                          <div className="absolute inset-0 bg-[#4E342E]/40 rounded-lg"></div>
                           
                           <div className="relative z-10 text-white">
                             <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
                             <div 
-                              className="text-xs text-blue-200 mb-2 cursor-pointer hover:underline drop-shadow-lg"
+                              className="text-xs text-[#EFE5DC] mb-2 cursor-pointer hover:underline drop-shadow-lg"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 window.open(`/l/${link.shortCode}`, '_blank');
@@ -299,7 +299,7 @@ export default function PublicViewPage() {
                             >
                               단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
                             </div>
-                            <div className="text-xs text-gray-200 mb-2 flex gap-3 drop-shadow-lg">
+                            <div className="text-xs text-[#A1887F] mb-2 flex gap-3 drop-shadow-lg">
                               <span>내 방문: {link.ownerVisits || 0}</span>
                               <span>외부 방문: {link.externalVisits || 0}</span>
                             </div>
@@ -312,9 +312,9 @@ export default function PublicViewPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <LinkIcon className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">링크 없음</p>
-                <p className="text-gray-400 text-sm mt-2">아직 등록된 링크가 없습니다.</p>
+                <LinkIcon className="w-16 h-16 text-[#EFE5DC] mx-auto mb-4" />
+                <p className="text-[#8D6E63] text-lg">링크 없음</p>
+                <p className="text-[#A1887F] text-sm mt-2">아직 등록된 링크가 없습니다.</p>
               </div>
             )}
           </div>
@@ -326,7 +326,7 @@ export default function PublicViewPage() {
               <div className="space-y-4">
                 {images.map((image: any, index: number) => (
                   <div key={image.id} className="relative">
-                    <div className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] p-1 rounded-xl shadow-lg">
+                    <div className="bg-gradient-to-r from-[#8D6E63] to-[#A1887F] p-1 rounded-xl shadow-lg">
                       <div className="relative aspect-[16/10] bg-white rounded-lg overflow-hidden">
                         <img
                           src={image.filePath || image.mediaUrl || '/placeholder-image.jpg'}
@@ -352,8 +352,8 @@ export default function PublicViewPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">이미지 없음</p>
-                <p className="text-gray-400 text-sm mt-2">아직 등록된 이미지가 없습니다.</p>
+                <p className="text-[#8D6E63] text-lg">이미지 없음</p>
+                <p className="text-[#A1887F] text-sm mt-2">아직 등록된 이미지가 없습니다.</p>
               </div>
             )}
           </div>
@@ -365,7 +365,7 @@ export default function PublicViewPage() {
               <div className="space-y-4">
                 {allVideos.map((video: any, index: number) => (
                   <div key={video.id || `link-${index}`} className="relative">
-                    <div className="bg-gradient-to-r from-[#D4AF37] to-[#B8860B] p-1 rounded-xl shadow-lg">
+                    <div className="bg-gradient-to-r from-[#8D6E63] to-[#A1887F] p-1 rounded-xl shadow-lg">
                       <div className="relative aspect-[16/10] bg-black rounded-lg overflow-hidden">
                         {video.type === 'link' && video.embedUrl ? (
                           <iframe
@@ -394,9 +394,9 @@ export default function PublicViewPage() {
                     </div>
                     {video.type === 'link' && video.title && (
                       <div className="mt-2 px-1">
-                        <h3 className="text-sm font-medium text-gray-800">{video.title}</h3>
+                        <h3 className="text-sm font-medium text-[#4E342E]">{video.title}</h3>
                         {video.description && (
-                          <p className="text-xs text-gray-600 mt-1 line-clamp-2">{video.description}</p>
+                          <p className="text-xs text-[#8D6E63] mt-1 line-clamp-2">{video.description}</p>
                         )}
                       </div>
                     )}
@@ -405,8 +405,8 @@ export default function PublicViewPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">동영상 없음</p>
-                <p className="text-gray-400 text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
+                <p className="text-[#8D6E63] text-lg">동영상 없음</p>
+                <p className="text-[#A1887F] text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
               </div>
             )}
           </div>
@@ -430,12 +430,12 @@ export default function PublicViewPage() {
     <div 
       className="h-screen flex flex-col"
       style={{
-        background: settings?.backgroundTheme || 'linear-gradient(135deg, #f0e6d6 0%, #f4ead5 50%, #f8f0e5 100%)'
+        background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
       }}
     >
       <div className="max-w-md mx-auto w-full flex flex-col h-full">
         {/* Fixed Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-[#B08A6B]/20 px-6 py-4 flex-shrink-0">
+        <div className="bg-white/80 backdrop-blur-sm border-b border-[#8D6E63]/20 px-6 py-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             {settings?.showProfileImage && user.profileImage ? (
               <img 
@@ -444,17 +444,17 @@ export default function PublicViewPage() {
                 className="w-12 h-12 rounded-full object-cover"
               />
             ) : (
-              <div className="w-12 h-12 bg-gradient-to-br from-[#B08A6B] to-[#8B6F47] rounded-full flex items-center justify-center">
+              <div className="w-12 h-12 bg-gradient-to-br from-[#8D6E63] to-[#A1887F] rounded-full flex items-center justify-center">
                 <User className="w-6 h-6 text-white" />
               </div>
             )}
             <div className="flex-1">
-              <h1 className="text-lg font-bold text-gray-800">{user.name}</h1>
-              <p className="text-sm text-gray-600">@{user.username}</p>
+              <h1 className="text-lg font-bold text-[#4E342E]">{user.name}</h1>
+              <p className="text-sm text-[#8D6E63]">@{user.username}</p>
             </div>
           </div>
           {settings?.showBio && user.bio && (
-            <p className="text-sm text-gray-700 mt-3">{user.bio}</p>
+            <p className="text-sm text-[#8D6E63] mt-3">{user.bio}</p>
           )}
         </div>
 
