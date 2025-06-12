@@ -93,23 +93,23 @@ export default function PublicImageView() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      <div className="min-h-screen bg-[#F5F5DC] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4E342E]"></div>
       </div>
     );
   }
 
   if (!images || (images as any[]).length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-orange-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#F5F5DC] to-[#EFE5DC] flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="w-24 h-24 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="w-24 h-24 bg-[#D7CCC8] rounded-full flex items-center justify-center mx-auto mb-4">
             <span className="text-2xl">📸</span>
           </div>
-          <h2 className="text-xl font-semibold text-gray-800 mb-2">
+          <h2 className="text-xl font-semibold text-[#4E342E] mb-2">
             아직 이미지가 없습니다
           </h2>
-          <p className="text-gray-600">
+          <p className="text-[#8D6E63]">
             {(userData as any)?.name || username}님이 곧 멋진 이미지를 업로드할 예정입니다
           </p>
         </div>
@@ -157,7 +157,7 @@ export default function PublicImageView() {
           <Button
             variant="ghost"
             size="lg"
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 p-0 bg-black/20 hover:bg-black/40 text-white"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 p-0 bg-[#4E342E]/20 hover:bg-[#4E342E]/40 text-white"
             onClick={prevImage}
           >
             <ChevronLeft className="w-8 h-8" />
@@ -168,7 +168,7 @@ export default function PublicImageView() {
           <Button
             variant="ghost"
             size="lg"
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 p-0 bg-black/20 hover:bg-black/40 text-white"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 p-0 bg-[#4E342E]/20 hover:bg-[#4E342E]/40 text-white"
             onClick={nextImage}
           >
             <ChevronRight className="w-8 h-8" />
@@ -239,7 +239,7 @@ export default function PublicImageView() {
           <Button
             variant="ghost"
             size="lg"
-            className="h-14 w-14 p-0 bg-white/20 hover:bg-white/30 text-white rounded-full"
+            className="h-14 w-14 p-0 bg-[#4E342E]/20 hover:bg-[#4E342E]/30 text-white rounded-full"
             onClick={handleShare}
           >
             <Share2 className="w-6 h-6" />
@@ -248,7 +248,7 @@ export default function PublicImageView() {
           <Button
             variant="ghost"
             size="lg"
-            className="h-16 w-16 p-0 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white rounded-full"
+            className="h-16 w-16 p-0 bg-gradient-to-r from-[#8D6E63] to-[#4E342E] hover:from-[#A1887F] hover:to-[#8D6E63] text-white rounded-full"
           >
             <Heart className="w-8 h-8" />
           </Button>
@@ -256,7 +256,7 @@ export default function PublicImageView() {
           <Button
             variant="ghost"
             size="lg"
-            className="h-14 w-14 p-0 bg-white/20 hover:bg-white/30 text-white rounded-full"
+            className="h-14 w-14 p-0 bg-[#4E342E]/20 hover:bg-[#4E342E]/30 text-white rounded-full"
           >
             <MessageCircle className="w-6 h-6" />
           </Button>

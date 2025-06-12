@@ -467,85 +467,100 @@ export default function PublicViewPage() {
 
         {/* Footer with Content Type Icons */}
         <div className="fixed bottom-0 left-0 right-0">
-          <div className="max-w-md mx-auto bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20 px-6 py-3">
-            <div className="flex justify-center items-center gap-4">
+          <div className="max-w-md mx-auto bg-[#F5F5DC]/95 backdrop-blur-sm border-t border-[#8D6E63]/30 px-6 py-3">
+            <div className="flex justify-center items-center gap-6">
               {/* Images Icon */}
-              <div 
-                className={`flex flex-col items-center gap-0.5 transition-colors ${
+              <button 
+                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'image' 
-                    ? 'text-[#8B6F47]' 
+                    ? 'text-[#4E342E]' 
                     : images.length > 0 
-                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                      : 'text-gray-300'
+                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
+                      : 'text-[#A1887F] cursor-not-allowed'
                 }`}
-                onClick={() => images.length > 0 && setCurrentContentType('image')}
+                onClick={() => {
+                  if (images.length > 0) {
+                    setCurrentContentType('image');
+                  }
+                }}
+                disabled={images.length === 0}
               >
-                <div className={`p-1.5 rounded-full ${
+                <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'image' 
-                    ? 'bg-[#8B6F47]/10' 
+                    ? 'bg-[#4E342E]/15 shadow-sm' 
                     : images.length > 0 
-                      ? 'hover:bg-gray-100' 
-                      : ''
+                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
+                      : 'opacity-50'
                 }`}>
-                  <Image className="w-4 h-4" />
+                  <Image className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-medium">이미지</span>
                 {images.length > 0 && (
-                  <div className="w-0.5 h-0.5 bg-current rounded-full"></div>
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
                 )}
-              </div>
+              </button>
 
               {/* Videos Icon */}
-              <div 
-                className={`flex flex-col items-center gap-0.5 transition-colors ${
+              <button 
+                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'video' 
-                    ? 'text-[#8B6F47]' 
+                    ? 'text-[#4E342E]' 
                     : allVideos.length > 0 
-                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                      : 'text-gray-300'
+                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
+                      : 'text-[#A1887F] cursor-not-allowed'
                 }`}
-                onClick={() => allVideos.length > 0 && setCurrentContentType('video')}
+                onClick={() => {
+                  if (allVideos.length > 0) {
+                    setCurrentContentType('video');
+                  }
+                }}
+                disabled={allVideos.length === 0}
               >
-                <div className={`p-1.5 rounded-full ${
+                <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'video' 
-                    ? 'bg-[#8B6F47]/10' 
+                    ? 'bg-[#4E342E]/15 shadow-sm' 
                     : allVideos.length > 0 
-                      ? 'hover:bg-gray-100' 
-                      : ''
+                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
+                      : 'opacity-50'
                 }`}>
-                  <Video className="w-4 h-4" />
+                  <Video className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-medium">동영상</span>
                 {allVideos.length > 0 && (
-                  <div className="w-0.5 h-0.5 bg-current rounded-full"></div>
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
                 )}
-              </div>
+              </button>
 
               {/* Links Icon */}
-              <div 
-                className={`flex flex-col items-center gap-0.5 transition-colors ${
+              <button 
+                className={`flex flex-col items-center gap-1 transition-all duration-200 ${
                   contentType === 'links' 
-                    ? 'text-[#8B6F47]' 
+                    ? 'text-[#4E342E]' 
                     : links.length > 0 
-                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                      : 'text-gray-300'
+                      ? 'text-[#8D6E63] hover:text-[#4E342E] cursor-pointer hover:scale-105' 
+                      : 'text-[#A1887F] cursor-not-allowed'
                 }`}
-                onClick={() => links.length > 0 && setCurrentContentType('links')}
+                onClick={() => {
+                  if (links.length > 0) {
+                    setCurrentContentType('links');
+                  }
+                }}
+                disabled={links.length === 0}
               >
-                <div className={`p-1.5 rounded-full ${
+                <div className={`p-2 rounded-full transition-all duration-200 ${
                   contentType === 'links' 
-                    ? 'bg-[#8B6F47]/10' 
+                    ? 'bg-[#4E342E]/15 shadow-sm' 
                     : links.length > 0 
-                      ? 'hover:bg-gray-100' 
-                      : ''
+                      ? 'hover:bg-[#EFE5DC] hover:shadow-sm' 
+                      : 'opacity-50'
                 }`}>
-                  <LinkIcon className="w-4 h-4" />
+                  <LinkIcon className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-medium">링크</span>
                 {links.length > 0 && (
-                  <div className="w-0.5 h-0.5 bg-current rounded-full"></div>
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
                 )}
-              </div>
+              </button>
             </div>
           </div>
         </div>
