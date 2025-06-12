@@ -428,14 +428,14 @@ export default function PublicViewPage() {
 
   return (
     <div 
-      className="min-h-screen"
+      className="h-screen flex flex-col"
       style={{
         background: settings?.backgroundTheme || 'linear-gradient(135deg, #f0e6d6 0%, #f4ead5 50%, #f8f0e5 100%)'
       }}
     >
-      <div className="max-w-md mx-auto">
-        {/* Header */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-[#B08A6B]/20 px-6 py-4">
+      <div className="max-w-md mx-auto w-full flex flex-col h-full">
+        {/* Fixed Header */}
+        <div className="bg-white/80 backdrop-blur-sm border-b border-[#B08A6B]/20 px-6 py-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             {settings?.showProfileImage && user.profileImage ? (
               <img 
@@ -458,9 +458,11 @@ export default function PublicViewPage() {
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-4 pb-16">
-          {renderContent()}
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 pb-20">
+            {renderContent()}
+          </div>
         </div>
 
         {/* Footer with Content Type Icons */}
