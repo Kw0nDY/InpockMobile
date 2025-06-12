@@ -31,7 +31,7 @@ import { useToast } from "@/hooks/use-toast";
 export default function DashboardPage() {
   const { user } = useAuth();
   const [, setLocation] = useLocation();
-  const [previewType, setPreviewType] = useState<string | null>(null);
+
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -153,8 +153,8 @@ export default function DashboardPage() {
   const userLinks = linksData as any;
   const currentUser = userData as any;
 
-  // Get current content type, with previewType override for interactive preview
-  const currentContentType = previewType || userSettings?.contentType || 'links';
+  // Get current content type from settings only
+  const currentContentType = userSettings?.contentType || 'links';
 
   useEffect(() => {
     if (user) {
@@ -308,7 +308,7 @@ export default function DashboardPage() {
 
               {/* Content Type Selection Display */}
               <div className="space-y-3">
-                <p className="text-sm font-medium text-gray-700 korean-text">선택된 콘텐츠</p>
+                <p className="text-sm font-medium text-gray-700 korean-text">선택된 진입 경로</p>
                 <div className="grid grid-cols-3 gap-2">
                   {[
                     { type: 'image', label: '이미지', icon: Image },
@@ -317,11 +317,10 @@ export default function DashboardPage() {
                   ].map(({ type, label, icon: Icon }) => (
                     <div
                       key={type}
-                      onClick={() => setPreviewType(type)}
-                      className={`p-3 rounded-lg border-2 transition-all cursor-pointer hover:border-primary/50 ${
+                      className={`p-3 rounded-lg border-2 transition-all ${
                         currentContentType === type
                           ? 'border-primary bg-primary/5'
-                          : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                          : 'border-gray-200 bg-gray-50'
                       }`}
                     >
                       <div className="flex flex-col items-center space-y-1">
