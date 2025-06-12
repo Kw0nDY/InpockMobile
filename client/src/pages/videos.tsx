@@ -179,9 +179,9 @@ export default function VideosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="p-4 border-b border-border bg-card">
+    <div className="h-screen flex flex-col bg-background">
+      {/* Fixed Header */}
+      <div className="p-4 border-b border-border bg-card flex-shrink-0">
         <div>
           <h1 className="text-xl font-bold text-foreground">동영상 관리</h1>
           <p className="text-sm text-muted-foreground">
@@ -190,22 +190,19 @@ export default function VideosPage() {
         </div>
       </div>
 
-      {/* Video Gallery */}
-      <div className="p-4">
-        {(videos as any[]).length === 0 ? (
-          <div className="text-center py-12">
-            <Video className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-foreground mb-2">동영상이 없습니다</h3>
-            <p className="text-muted-foreground mb-4">
-              첫 번째 동영상을 업로드하여 갤러리를 시작하세요
-            </p>
-            <Button onClick={() => setIsModalOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              동영상 추가하기
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-4">
+      {/* Scrollable Video Gallery */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4">
+          {(videos as any[]).length === 0 ? (
+            <div className="text-center py-12">
+              <Video className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">동영상이 없습니다</h3>
+              <p className="text-muted-foreground mb-4">
+                첫 번째 동영상을 업로드하여 갤러리를 시작하세요
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
             {(videos as any[]).map((video: any, index: number) => (
               <Card key={video.id} className="overflow-hidden">
                 <CardContent className="p-0 relative">
@@ -281,8 +278,21 @@ export default function VideosPage() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Fixed Add Button at Bottom */}
+      <div className="p-4 pb-24 bg-background border-t border-border flex-shrink-0">
+        <Button 
+          onClick={() => setIsModalOpen(true)} 
+          size="lg" 
+          className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-4 text-lg rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-[1.02]"
+        >
+          <Plus className="w-6 h-6 mr-3" />
+          동영상 추가하기
+        </Button>
       </div>
 
       {/* Upload Modal */}
