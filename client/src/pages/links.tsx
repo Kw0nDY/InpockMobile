@@ -656,11 +656,22 @@ export default function LinksPage() {
                             className="flex items-center gap-3 p-2 bg-white rounded-lg border relative cursor-pointer hover:bg-gray-50 transition-colors"
                             onClick={() => window.open(link.originalUrl, '_blank')}
                           >
-                            <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
+                            {(link.customImageUrl || link.imageUrl) ? (
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="w-12 h-12 rounded object-cover flex-shrink-0"
+                              />
+                            ) : (
+                              <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
                                 {link.title}
                               </div>
+                              {link.description && (
+                                <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
+                              )}
                               <div className="flex items-center gap-2 mt-1">
                                 <div 
                                   className="text-xs text-blue-600 cursor-pointer hover:underline flex-1"
@@ -720,7 +731,17 @@ export default function LinksPage() {
                             >
                               <Trash2 className="w-3 h-3" />
                             </Button>
+                            {(link.customImageUrl || link.imageUrl) && (
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="w-full h-20 object-cover rounded mb-2"
+                              />
+                            )}
                             <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
+                            {link.description && (
+                              <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
+                            )}
                             <div 
                               className="text-xs text-blue-600 mb-2 cursor-pointer hover:underline"
                               onClick={(e) => {
@@ -740,6 +761,13 @@ export default function LinksPage() {
                             className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
                             onClick={() => window.open(link.originalUrl, '_blank')}
                           >
+                            {(link.customImageUrl || link.imageUrl) && (
+                              <img 
+                                src={link.customImageUrl || link.imageUrl} 
+                                alt={link.title}
+                                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                              />
+                            )}
                             <Button
                               variant="ghost"
                               size="sm"

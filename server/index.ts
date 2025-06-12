@@ -4,6 +4,10 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// Increase request size limits
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 // Profile upload route - MUST be registered before other middleware
 app.post("/api/upload/profile", async (req, res) => {
   console.log('Profile upload route hit directly');
