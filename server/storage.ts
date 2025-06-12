@@ -836,8 +836,9 @@ export class MemStorage implements IStorage {
     ownerVisits: number;
     externalVisits: number;
   }> {
-    const link = this.links.get(linkId);
-    if (!link) {
+    const visits = Array.from(this.linkVisits.values()).filter(visit => visit.linkId === linkId);
+    
+    if (visits.length === 0) {
       return {
         totalVisits: 0,
         dailyVisits: 0,
@@ -847,15 +848,33 @@ export class MemStorage implements IStorage {
       };
     }
 
-    // For demo purposes, generate different stats for each link based on their ID and characteristics
-    const baseVisits = link.clicks || 0;
-    const linkSpecificMultiplier = (linkId % 5) + 1; // Creates variation between 1-5
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     
-    const totalVisits = baseVisits + linkSpecificMultiplier * 2;
-    const ownerVisits = Math.floor(totalVisits * 0.3); // 30% owner visits
-    const externalVisits = totalVisits - ownerVisits;
-    const dailyVisits = Math.floor(totalVisits * 0.4); // 40% of total as recent
-    const monthlyVisits = totalVisits;
+    let totalVisits = visits.length;
+    let dailyVisits = 0;
+    let monthlyVisits = 0;
+    let ownerVisits = 0;
+    let externalVisits = 0;
+    
+    visits.forEach(visit => {
+      const visitDate = new Date(visit.visitedAt || new Date());
+      
+      if (visitDate >= today) {
+        dailyVisits++;
+      }
+      
+      if (visitDate >= thisMonth) {
+        monthlyVisits++;
+      }
+      
+      if (visit.isOwner) {
+        ownerVisits++;
+      } else {
+        externalVisits++;
+      }
+    });
 
     return {
       totalVisits,
@@ -1405,4 +1424,4 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();
