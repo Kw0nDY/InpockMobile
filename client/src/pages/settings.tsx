@@ -635,7 +635,7 @@ export default function SettingsPage() {
                   variant="outline"
                   size="sm"
                   onClick={handleCopyUrl}
-                  className="text-muted-foreground hover:text-foreground h-8 w-8 p-0 border-border"
+                  className="text-muted-foreground hover:text-foreground h-8 w-10 p-0 border-border"
                 >
                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </Button>
