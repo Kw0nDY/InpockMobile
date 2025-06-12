@@ -36,6 +36,7 @@ export default function PublicViewPage() {
   const params = useParams<{ username?: string; customUrl?: string }>();
   const identifier = params.username || params.customUrl || '';
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  const [currentContentType, setCurrentContentType] = useState<string | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -92,7 +93,7 @@ export default function PublicViewPage() {
     );
   }
 
-  const contentType = settings?.contentType || 'links';
+  const contentType = currentContentType || settings?.contentType || 'links';
 
   const renderContent = () => {
     switch (contentType) {
@@ -418,13 +419,16 @@ export default function PublicViewPage() {
           <div className="max-w-md mx-auto bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20 px-6 py-3">
             <div className="flex justify-center items-center gap-4">
               {/* Images Icon */}
-              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
-                contentType === 'image' 
-                  ? 'text-[#8B6F47]' 
-                  : images.length > 0 
-                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                    : 'text-gray-300'
-              }`}>
+              <div 
+                className={`flex flex-col items-center gap-0.5 transition-colors ${
+                  contentType === 'image' 
+                    ? 'text-[#8B6F47]' 
+                    : images.length > 0 
+                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                      : 'text-gray-300'
+                }`}
+                onClick={() => images.length > 0 && setCurrentContentType('image')}
+              >
                 <div className={`p-1.5 rounded-full ${
                   contentType === 'image' 
                     ? 'bg-[#8B6F47]/10' 
@@ -441,13 +445,16 @@ export default function PublicViewPage() {
               </div>
 
               {/* Videos Icon */}
-              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
-                contentType === 'video' 
-                  ? 'text-[#8B6F47]' 
-                  : videos.length > 0 
-                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                    : 'text-gray-300'
-              }`}>
+              <div 
+                className={`flex flex-col items-center gap-0.5 transition-colors ${
+                  contentType === 'video' 
+                    ? 'text-[#8B6F47]' 
+                    : videos.length > 0 
+                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                      : 'text-gray-300'
+                }`}
+                onClick={() => videos.length > 0 && setCurrentContentType('video')}
+              >
                 <div className={`p-1.5 rounded-full ${
                   contentType === 'video' 
                     ? 'bg-[#8B6F47]/10' 
@@ -464,13 +471,16 @@ export default function PublicViewPage() {
               </div>
 
               {/* Links Icon */}
-              <div className={`flex flex-col items-center gap-0.5 transition-colors ${
-                contentType === 'links' 
-                  ? 'text-[#8B6F47]' 
-                  : links.length > 0 
-                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
-                    : 'text-gray-300'
-              }`}>
+              <div 
+                className={`flex flex-col items-center gap-0.5 transition-colors ${
+                  contentType === 'links' 
+                    ? 'text-[#8B6F47]' 
+                    : links.length > 0 
+                      ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                      : 'text-gray-300'
+                }`}
+                onClick={() => links.length > 0 && setCurrentContentType('links')}
+              >
                 <div className={`p-1.5 rounded-full ${
                   contentType === 'links' 
                     ? 'bg-[#8B6F47]/10' 
