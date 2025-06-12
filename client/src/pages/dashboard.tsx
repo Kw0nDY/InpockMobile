@@ -309,8 +309,8 @@ export default function DashboardPage() {
                 </div>
                 <div className="text-sm text-muted-foreground font-mono">
                   {(settingsData as any)?.customUrl ? 
-                    `amusefit.co.kr/users/${(settingsData as any).customUrl}` : 
-                    `amusefit.co.kr/users/${(userData as any)?.username || 'user'}`
+                    `${window.location.host}/${(settingsData as any).customUrl}` : 
+                    `${window.location.host}/${(userData as any)?.username || 'user'}`
                   }
                 </div>
               </div>
