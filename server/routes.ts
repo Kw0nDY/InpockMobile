@@ -1218,14 +1218,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Direct short URL redirect route - matches amusefit.co.kr/{shortCode} pattern
+  // Direct short URL redirect route - matches domain/{shortCode} pattern
   app.get("/:shortCode", async (req, res, next) => {
     try {
       const shortCode = req.params.shortCode;
       
-      // Skip if it's a known route like 'api', 'users', etc.
+      // Skip if it's a known route, file, or development artifact
       const knownRoutes = ['api', 'users', 'login', 'dashboard', 'links', 'images', 'videos', 'settings', 'uploads', 'oauth', 'link', 'l', 'test', 'demo_user'];
-      if (knownRoutes.includes(shortCode)) {
+      const fileExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.css', '.js', '.ico', '.svg'];
+      const devArtifacts = ['@react-refresh', 'generated-icon'];
+      
+      if (knownRoutes.includes(shortCode) || 
+          fileExtensions.some(ext => shortCode.includes(ext)) ||
+          devArtifacts.some(artifact => shortCode.includes(artifact))) {
         return next(); // Let other routes handle it
       }
       
@@ -1243,7 +1248,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Increment click count for proper visit tracking
       try {
         await storage.incrementLinkClicks(link.id);
-        console.log(`[SHORT-URL] Click count incremented for link ${link.id}`);
+        console.log(`[SHORT-URL] Click count incremented for link ${link.id} (clicks: ${link.clicks + 1})`);
       } catch (clickError) {
         console.error(`[SHORT-URL] Failed to increment clicks:`, clickError);
       }

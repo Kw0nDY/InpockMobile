@@ -191,7 +191,31 @@ export class MemStorage implements IStorage {
     this.subscriptions.set(1, demoSubscription);
     this.currentSubscriptionId = 2;
 
-    // Create demo links
+    // Create additional demo user (user 8 - current active user)
+    const demoUser8: User = {
+      id: 8,
+      username: "demo_user",
+      email: "demo8@amusefit.com", 
+      password: "password123",
+      name: "김철수",
+      phone: "010-1234-5678",
+      company: "AmuseFit Korea",
+      role: "user",
+      avatar: null,
+      profileImageUrl: null,
+      introVideoUrl: null,
+      bio: null,
+      customUrl: null,
+      contentType: "links",
+      visitCount: 0,
+      provider: null,
+      providerId: null,
+      createdAt: new Date(),
+    };
+    this.users.set(8, demoUser8);
+    this.currentUserId = 9;
+
+    // Create demo links for user 1
     const demoLinks: Link[] = [
       {
         id: 1,
@@ -766,12 +790,32 @@ export class MemStorage implements IStorage {
     ownerVisits: number;
     externalVisits: number;
   }> {
+    // Get all links for the user
+    const userLinks = this.getLinks(userId);
+    const links = await userLinks;
+    
+    // Calculate totals by summing individual link stats
+    let totalVisits = 0;
+    let dailyVisits = 0;
+    let monthlyVisits = 0;
+    let ownerVisits = 0;
+    let externalVisits = 0;
+    
+    for (const link of links) {
+      const linkStats = await this.getLinkVisitStats(link.id);
+      totalVisits += linkStats.totalVisits;
+      dailyVisits += linkStats.dailyVisits;
+      monthlyVisits += linkStats.monthlyVisits;
+      ownerVisits += linkStats.ownerVisits;
+      externalVisits += linkStats.externalVisits;
+    }
+    
     return {
-      totalVisits: 0,
-      dailyVisits: 0,
-      monthlyVisits: 0,
-      ownerVisits: 0,
-      externalVisits: 0
+      totalVisits,
+      dailyVisits,
+      monthlyVisits,
+      ownerVisits,
+      externalVisits
     };
   }
 }
