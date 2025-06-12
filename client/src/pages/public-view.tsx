@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { User, Link as LinkIcon, Copy, Check } from "lucide-react";
+import { User, Link as LinkIcon, Copy, Check, Image, Video, Home } from "lucide-react";
 
 interface UserProfile {
   id: number;
@@ -24,7 +24,7 @@ interface UserProfile {
 }
 
 interface UserSettings {
-  contentType: 'links' | 'media' | 'both';
+  contentType: 'links' | 'image' | 'video' | 'media' | 'both';
   customUrl: string;
   showProfileImage: boolean;
   showBio: boolean;
@@ -57,6 +57,11 @@ export default function PublicViewPage() {
     enabled: !!user?.id,
   });
 
+  const { data: videos = [], isLoading: videosLoading } = useQuery<any[]>({
+    queryKey: [`/api/media/${user?.id}/video`],
+    enabled: !!user?.id,
+  });
+
   const copyToClipboard = async (originalUrl: string, shortCode: string) => {
     const shortUrl = `${window.location.host}/${shortCode}`;
     try {
@@ -68,7 +73,7 @@ export default function PublicViewPage() {
     }
   };
 
-  if (userLoading || settingsLoading || linksLoading || imagesLoading) {
+  if (userLoading || settingsLoading || linksLoading || imagesLoading || videosLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f0e6d6] via-[#f4ead5] to-[#f8f0e5] flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#8B6F47]"></div>
@@ -318,6 +323,36 @@ export default function PublicViewPage() {
             )}
           </div>
         );
+      case 'video':
+        return (
+          <div className="space-y-4">
+            {Array.isArray(videos) && videos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {videos.map((video: any, index: number) => (
+                  <div key={video.id} className="relative aspect-video bg-black rounded-lg overflow-hidden">
+                    <video
+                      src={video.filePath || video.mediaUrl}
+                      className="w-full h-full object-cover"
+                      poster={video.thumbnailUrl}
+                      controls
+                      preload="metadata"
+                    />
+                    {video.title && (
+                      <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-2">
+                        {video.title}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">동영상 없음</p>
+                <p className="text-gray-400 text-sm mt-2">아직 등록된 동영상이 없습니다.</p>
+              </div>
+            )}
+          </div>
+        );
       case 'media':
         return (
           <div className="text-center py-12">
@@ -366,8 +401,84 @@ export default function PublicViewPage() {
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 pb-20">
           {renderContent()}
+        </div>
+
+        {/* Footer with Content Type Icons */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-sm border-t border-[#B08A6B]/20">
+          <div className="max-w-md mx-auto px-6 py-3">
+            <div className="flex justify-center items-center gap-8">
+              {/* Images Icon */}
+              <div className={`flex flex-col items-center gap-1 transition-colors ${
+                contentType === 'image' 
+                  ? 'text-[#8B6F47]' 
+                  : images.length > 0 
+                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                    : 'text-gray-300'
+              }`}>
+                <div className={`p-2 rounded-full ${
+                  contentType === 'image' 
+                    ? 'bg-[#8B6F47]/10' 
+                    : images.length > 0 
+                      ? 'hover:bg-gray-100' 
+                      : ''
+                }`}>
+                  <Image className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium">이미지</span>
+                {images.length > 0 && (
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                )}
+              </div>
+
+              {/* Videos Icon */}
+              <div className={`flex flex-col items-center gap-1 transition-colors ${
+                contentType === 'video' 
+                  ? 'text-[#8B6F47]' 
+                  : videos.length > 0 
+                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                    : 'text-gray-300'
+              }`}>
+                <div className={`p-2 rounded-full ${
+                  contentType === 'video' 
+                    ? 'bg-[#8B6F47]/10' 
+                    : videos.length > 0 
+                      ? 'hover:bg-gray-100' 
+                      : ''
+                }`}>
+                  <Video className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium">동영상</span>
+                {videos.length > 0 && (
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                )}
+              </div>
+
+              {/* Links Icon */}
+              <div className={`flex flex-col items-center gap-1 transition-colors ${
+                contentType === 'links' 
+                  ? 'text-[#8B6F47]' 
+                  : links.length > 0 
+                    ? 'text-gray-600 hover:text-[#8B6F47] cursor-pointer' 
+                    : 'text-gray-300'
+              }`}>
+                <div className={`p-2 rounded-full ${
+                  contentType === 'links' 
+                    ? 'bg-[#8B6F47]/10' 
+                    : links.length > 0 
+                      ? 'hover:bg-gray-100' 
+                      : ''
+                }`}>
+                  <LinkIcon className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium">링크</span>
+                {links.length > 0 && (
+                  <div className="w-1 h-1 bg-current rounded-full"></div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
