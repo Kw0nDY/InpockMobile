@@ -605,7 +605,7 @@ export default function LinksPage() {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-4 pb-24">
+        <div className="p-4 space-y-4 pb-28">
           {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
           <Card className="bg-[#F5F3F0] border-none shadow-sm">
             <CardContent className="p-4">
