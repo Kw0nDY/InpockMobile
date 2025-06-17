@@ -47,6 +47,9 @@ export default function PublicViewPage() {
   // Tinder-style image navigation
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  
+  // Profile panel animation state
+  const [isProfileClosing, setIsProfileClosing] = useState(false);
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
@@ -171,7 +174,7 @@ export default function PublicViewPage() {
     const dragDistance = dragCurrentY - dragStartY;
     // If dragged down more than 30px, close the modal
     if (dragDistance > 30) {
-      setShowProfileDetails(false);
+      closeProfilePanel();
     }
     
     setIsDragging(false);
@@ -198,7 +201,7 @@ export default function PublicViewPage() {
     const dragDistance = dragCurrentY - dragStartY;
     // If dragged down more than 30px, close the modal
     if (dragDistance > 30) {
-      setShowProfileDetails(false);
+      closeProfilePanel();
     }
     
     setIsMouseDragging(false);
@@ -219,7 +222,7 @@ export default function PublicViewPage() {
       
       const dragDistance = dragCurrentY - dragStartY;
       if (dragDistance > 30) {
-        setShowProfileDetails(false);
+        closeProfilePanel();
       }
       
       setIsMouseDragging(false);
@@ -238,6 +241,15 @@ export default function PublicViewPage() {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
+
+  // Helper function to close profile panel with animation
+  const closeProfilePanel = () => {
+    setIsProfileClosing(true);
+    setTimeout(() => {
+      setShowProfileDetails(false);
+      setIsProfileClosing(false);
+    }, 300);
+  };
 
   // Tinder-style navigation functions
   const handleLeftTap = () => {
@@ -839,14 +851,17 @@ export default function PublicViewPage() {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   style={{
-                    transform: isDragging && dragCurrentY > dragStartY ? 
-                      `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
-                      'translateY(0)',
-                    opacity: isDragging && dragCurrentY > dragStartY ? 
-                      Math.max(0.3, 1 - (dragCurrentY - dragStartY) / 200) : 1,
-                    transition: isDragging ? 'none' : 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    transform: isProfileClosing ? 'translateY(100%)' :
+                              isDragging && dragCurrentY > dragStartY ? 
+                              `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
+                              'translateY(0)',
+                    opacity: isProfileClosing ? 0 :
+                            isDragging && dragCurrentY > dragStartY ? 
+                            Math.max(0.3, 1 - (dragCurrentY - dragStartY) / 200) : 1,
+                    transition: isProfileClosing ? 'all 0.3s ease-out' :
+                               isDragging ? 'none' : 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                     cursor: isDragging ? 'grabbing' : 'grab',
-                    animation: isDragging ? 'none' : 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards'
+                    animation: !isProfileClosing && !isDragging ? 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' : 'none'
                   }}
                 >
                   <div className="max-w-md mx-auto text-white">
