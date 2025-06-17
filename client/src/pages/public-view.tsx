@@ -835,14 +835,14 @@ export default function PublicViewPage() {
             {/* Profile Details Panel - Fade Up */}
             {showProfileDetails && (
               <div 
-                className="absolute inset-0 z-20 flex items-end"
+                className="fixed inset-0 z-20 flex items-end"
                 onClick={() => setShowProfileDetails(false)}
                 style={{
                   animation: 'fadeIn 0.5s ease-out'
                 }}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 pb-20 transform overscroll-none"
+                  className="w-full max-w-md mx-auto bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 pb-16 transform overscroll-none"
                   onClick={(e) => e.stopPropagation()}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
