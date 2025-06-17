@@ -45,6 +45,7 @@ export default function PublicViewPage() {
   const [isMouseDragging, setIsMouseDragging] = useState(false);
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [nextImageIndex, setNextImageIndex] = useState<number | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -239,25 +240,31 @@ export default function PublicViewPage() {
   // Handle left/right tap navigation
   const handleLeftTap = () => {
     if (images.length > 1 && !imageTransition) {
+      const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
+      setNextImageIndex(nextIndex);
       setSlideDirection('right');
       setImageTransition(true);
       setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentImageIndex(nextIndex);
         setImageTransition(false);
         setSlideDirection(null);
-      }, 150);
+        setNextImageIndex(null);
+      }, 300);
     }
   };
 
   const handleRightTap = () => {
     if (images.length > 1 && !imageTransition) {
+      const nextIndex = (currentImageIndex + 1) % images.length;
+      setNextImageIndex(nextIndex);
       setSlideDirection('left');
       setImageTransition(true);
       setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        setCurrentImageIndex(nextIndex);
         setImageTransition(false);
         setSlideDirection(null);
-      }, 150);
+        setNextImageIndex(null);
+      }, 300);
     }
   };
 
@@ -686,20 +693,60 @@ export default function PublicViewPage() {
           <>
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-20 overflow-hidden">
-                <img 
-                  key={currentImageIndex} // Force re-render on index change
-                  src={getImageUrl(images[currentImageIndex])}
-                  alt="배경 이미지"
-                  className={`w-full h-full object-cover transition-transform duration-300 ease-out ${
-                    imageTransition && slideDirection === 'left' ? '-translate-x-full opacity-0' :
-                    imageTransition && slideDirection === 'right' ? 'translate-x-full opacity-0' :
-                    'translate-x-0 opacity-100'
-                  }`}
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder-image.jpg';
+                <div 
+                  className="relative w-full h-full"
+                  style={{
+                    transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%)' :
+                               imageTransition && slideDirection === 'right' ? 'translateX(100%)' :
+                               'translateX(0)',
+                    transition: 'transform 300ms ease-out',
+                    display: 'flex',
+                    width: imageTransition && nextImageIndex !== null ? '200%' : '100%'
                   }}
-                />
+                >
+                  {/* Previous image (for right slide) */}
+                  {imageTransition && slideDirection === 'right' && nextImageIndex !== null && (
+                    <div className="w-full h-full flex-shrink-0">
+                      <img 
+                        src={getImageUrl(images[nextImageIndex])}
+                        alt="이전 이미지"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-image.jpg';
+                        }}
+                      />
+                    </div>
+                  )}
+                  
+                  {/* Current Image */}
+                  <div className="w-full h-full flex-shrink-0">
+                    <img 
+                      src={getImageUrl(images[currentImageIndex])}
+                      alt="현재 이미지"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-image.jpg';
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Next image (for left slide) */}
+                  {imageTransition && slideDirection === 'left' && nextImageIndex !== null && (
+                    <div className="w-full h-full flex-shrink-0">
+                      <img 
+                        src={getImageUrl(images[nextImageIndex])}
+                        alt="다음 이미지"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-image.jpg';
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
                 
