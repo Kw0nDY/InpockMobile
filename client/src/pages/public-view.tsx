@@ -254,23 +254,7 @@ export default function PublicViewPage() {
 
     const interval = setInterval(() => {
       if (!imageTransition && !showProfileDetails) {
-        const nextIndex = (currentImageIndex + 1) % images.length;
-        
-        // Store current as previous for animation
-        setPreviousImageIndex(currentImageIndex);
-        setSlideDirection('right');
-        setImageTransition(true);
-        
-        // Update to next index after brief delay for smooth transition
-        setTimeout(() => {
-          setCurrentImageIndex(nextIndex);
-        }, 50);
-        
-        // Clear animation state after animation completes
-        setTimeout(() => {
-          setImageTransition(false);
-          setSlideDirection(null);
-        }, 300);
+        handleRightTap(true); // Pass true to indicate this is from auto-slide
       }
     }, 5000);
 
@@ -293,6 +277,10 @@ export default function PublicViewPage() {
     showToastMessage(newState ? '자동 넘김 활성화' : '자동 넘김 비활성화');
   };
 
+  // Event handler wrappers for manual navigation
+  const handleLeftTapManual = () => handleLeftTap(false);
+  const handleRightTapManual = () => handleRightTap(false);
+
   // Helper function to close profile panel with animation
   const closeProfilePanel = () => {
     setIsProfileClosing(true);
@@ -303,10 +291,12 @@ export default function PublicViewPage() {
   };
 
   // Tinder-style navigation functions
-  const handleLeftTap = () => {
+  const handleLeftTap = (fromAutoSlide = false) => {
     if (images.length > 1 && !imageTransition) {
-      // Disable auto-slide when user manually navigates
-      setAutoSlideEnabled(false);
+      if (!fromAutoSlide) {
+        // Only disable auto-slide when user manually navigates
+        setAutoSlideEnabled(false);
+      }
       
       const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
       
@@ -324,16 +314,20 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-        // Re-enable auto-slide after manual interaction
-        setTimeout(() => setAutoSlideEnabled(true), 2000);
+        // Re-enable auto-slide after manual interaction (only if disabled manually)
+        if (!fromAutoSlide) {
+          setTimeout(() => setAutoSlideEnabled(true), 2000);
+        }
       }, 300);
     }
   };
 
-  const handleRightTap = () => {
+  const handleRightTap = (fromAutoSlide = false) => {
     if (images.length > 1 && !imageTransition) {
-      // Disable auto-slide when user manually navigates
-      setAutoSlideEnabled(false);
+      if (!fromAutoSlide) {
+        // Only disable auto-slide when user manually navigates
+        setAutoSlideEnabled(false);
+      }
       
       const nextIndex = (currentImageIndex + 1) % images.length;
       
@@ -351,8 +345,10 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-        // Re-enable auto-slide after manual interaction
-        setTimeout(() => setAutoSlideEnabled(true), 2000);
+        // Re-enable auto-slide after manual interaction (only if disabled manually)
+        if (!fromAutoSlide) {
+          setTimeout(() => setAutoSlideEnabled(true), 2000);
+        }
       }, 300);
     }
   };
@@ -840,14 +836,14 @@ export default function PublicViewPage() {
                     {/* Left tap zone */}
                     <div 
                       className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-                      onClick={handleLeftTap}
-                      onTouchEnd={handleLeftTap}
+                      onClick={handleLeftTapManual}
+                      onTouchEnd={handleLeftTapManual}
                     />
                     {/* Right tap zone */}
                     <div 
                       className="absolute right-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-                      onClick={handleRightTap}
-                      onTouchEnd={handleRightTap}
+                      onClick={handleRightTapManual}
+                      onTouchEnd={handleRightTapManual}
                     />
                   </>
                 )}
@@ -1043,6 +1039,28 @@ export default function PublicViewPage() {
                     )}
 
 
+
+                    {/* Navigation buttons */}
+                    {images.length > 1 && (
+                      <div className="flex justify-center space-x-4 mb-6">
+                        <button
+                          onClick={handleLeftTapManual}
+                          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-3 shadow-lg active:scale-95"
+                        >
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={handleRightTapManual}
+                          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-3 shadow-lg active:scale-95"
+                        >
+                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
 
                     <div className="text-center">
                       <p className="text-white/60 text-sm korean-text">위의 핸들을 드래그하거나 아무 곳이나 터치하세요</p>
