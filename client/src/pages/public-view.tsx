@@ -42,6 +42,7 @@ export default function PublicViewPage() {
   const [currentContentType, setCurrentContentType] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showProfileDetails, setShowProfileDetails] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -600,40 +601,105 @@ export default function PublicViewPage() {
 
             {/* Profile overlay - only for image view */}
             <div className="absolute bottom-20 left-0 right-0 z-10 p-6">
-              <div className="text-white">
-                {/* User name - large and prominent like Julia in reference */}
-                <h1 className="text-5xl font-bold mb-3 korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
-                  {user.name}
-                </h1>
-                
-                {/* User info with profile image */}
-                <div className="flex items-center space-x-3">
-                  {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
-                    <img 
-                      src={user.profileImageUrl || user.profileImage} 
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
-                      <span className="text-white font-medium text-lg">
-                        {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <p className="text-white/90 text-base korean-text font-medium" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                      @{user.username}
-                    </p>
-                    {settings?.showBio && user.bio && (
-                      <p className="text-white/80 text-sm mt-1 korean-text" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                        {user.bio}
-                      </p>
-                    )}
+              <div 
+                className="flex items-end space-x-3 cursor-pointer"
+                onClick={() => setShowProfileDetails(!showProfileDetails)}
+              >
+                {/* Profile Image */}
+                {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                  <img 
+                    src={user.profileImageUrl || user.profileImage} 
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
+                    <span className="text-white font-medium text-lg">
+                      {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                    </span>
                   </div>
+                )}
+                
+                {/* Name and Username - Horizontal Layout */}
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
+                      {user.name}
+                    </h1>
+                    <span className="text-white/60 text-sm">•</span>
+                  </div>
+                  <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                    @{user.username}
+                  </p>
                 </div>
               </div>
             </div>
+
+            {/* Profile Details Panel - Fade Up */}
+            {showProfileDetails && (
+              <div 
+                className="absolute inset-0 z-20 flex items-end"
+                onClick={() => setShowProfileDetails(false)}
+              >
+                <div 
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-300 ease-out animate-in slide-in-from-bottom-4"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="max-w-md mx-auto text-white">
+                    {/* Close indicator */}
+                    <div className="flex justify-center mb-4">
+                      <div className="w-12 h-1 bg-white/50 rounded-full"></div>
+                    </div>
+                    
+                    {/* Profile Header */}
+                    <div className="flex items-center space-x-4 mb-6">
+                      {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                        <img 
+                          src={user.profileImageUrl || user.profileImage} 
+                          alt={user.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                          <span className="text-white font-medium text-xl">
+                            {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                          </span>
+                        </div>
+                      )}
+                      
+                      <div>
+                        <h2 className="text-2xl font-bold korean-text">{user.name}</h2>
+                        <p className="text-white/80 korean-text">@{user.username}</p>
+                      </div>
+                    </div>
+
+                    {/* Bio Section */}
+                    {settings?.showBio && user.bio && (
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2 korean-text">소개</h3>
+                        <p className="text-white/90 leading-relaxed korean-text">{user.bio}</p>
+                      </div>
+                    )}
+
+                    {/* Additional Stats or Info */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="text-center">
+                        <p className="text-2xl font-bold">{Array.isArray(images) ? images.length : 0}</p>
+                        <p className="text-white/70 text-sm korean-text">이미지</p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-2xl font-bold">{Array.isArray(allVideos) ? allVideos.length : 0}</p>
+                        <p className="text-white/70 text-sm korean-text">동영상</p>
+                      </div>
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-white/60 text-sm korean-text">프로필을 닫으려면 아무 곳이나 터치하세요</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           /* Regular view for videos and links */
