@@ -716,7 +716,7 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="h-screen bg-black overflow-hidden">
+    <div className="min-h-screen bg-black overflow-hidden fixed inset-0">
       <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
         {/* Content based on selected tab */}
         {contentType === 'image' ? (

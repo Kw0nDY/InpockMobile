@@ -19,18 +19,11 @@ body {
   /* Mobile web app behavior */
   overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
-  height: 100vh;
-  height: -webkit-fill-available;
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
 }
 
 #root {
-  height: 100vh;
-  height: -webkit-fill-available;
+  min-height: 100vh;
   position: relative;
-  overflow: hidden;
 }
 
 :root {
