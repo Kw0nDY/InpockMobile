@@ -327,72 +327,78 @@ export default function LinksPage() {
             {/* Style Selection */}
             <div className="space-y-3">
               <label className="text-sm font-medium text-[#8B4513]">스타일 *</label>
-              <div className="grid grid-cols-4 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setSelectedStyle(THUMBNAIL)}
-                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  className={`p-4 rounded-lg border-2 text-center transition-all ${
                     selectedStyle === THUMBNAIL
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-full h-6 bg-gray-200 rounded mx-auto mb-1 flex items-center px-1">
-                    <div className="w-4 h-4 bg-gray-400 rounded mr-1"></div>
-                    <div className="flex-1 h-1.5 bg-gray-400 rounded"></div>
+                  <div className="w-full h-8 bg-white rounded border mb-2 flex items-center px-2">
+                    <div className="w-6 h-6 bg-[#8B4513] rounded mr-2 flex-shrink-0"></div>
+                    <div className="flex-1">
+                      <div className="h-2 bg-gray-300 rounded mb-1"></div>
+                      <div className="h-1.5 bg-gray-200 rounded w-3/4"></div>
+                    </div>
                   </div>
-                  <div className="text-xs text-gray-600">썸네일</div>
+                  <div className="text-xs font-medium text-gray-700">썸네일</div>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => setSelectedStyle(SIMPLE)}
-                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  className={`p-4 rounded-lg border-2 text-center transition-all ${
                     selectedStyle === SIMPLE
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-full h-6 bg-gray-200 rounded mx-auto mb-1 flex flex-col justify-center px-1">
-                    <div className="w-full h-1.5 bg-gray-400 rounded mb-0.5"></div>
-                    <div className="w-2/3 h-1 bg-gray-300 rounded"></div>
+                  <div className="w-full h-8 bg-white rounded border mb-2 flex flex-col justify-center px-2">
+                    <div className="h-2.5 bg-gray-400 rounded mb-1"></div>
+                    <div className="h-1 bg-gray-200 rounded"></div>
                   </div>
-                  <div className="text-xs text-gray-600">심플</div>
+                  <div className="text-xs font-medium text-gray-700">심플</div>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => setSelectedStyle(CARD)}
-                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  className={`p-4 rounded-lg border-2 text-center transition-all ${
                     selectedStyle === CARD
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-full h-6 bg-gray-400 rounded mx-auto mb-1 relative">
-                    <div className="absolute bottom-0.5 right-0.5 w-2 h-2 bg-white rounded-full flex items-center justify-center">
-                      <div className="w-1 h-1 border border-gray-400 rounded-full"></div>
+                  <div className="w-full h-8 bg-[#8B4513] rounded mb-2 relative overflow-hidden">
+                    <div className="absolute bottom-1 left-1 right-1 bg-black/50 text-white text-[6px] leading-none p-0.5 rounded">
+                      <div className="w-full h-1 bg-white/80 rounded mb-0.5"></div>
+                      <div className="w-2/3 h-0.5 bg-white/60 rounded"></div>
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">카드</div>
+                  <div className="text-xs font-medium text-gray-700">카드</div>
                 </button>
                 
                 <button
                   type="button"
                   onClick={() => setSelectedStyle(BACKGROUND)}
-                  className={`p-3 rounded-lg border-2 text-center transition-all ${
+                  className={`p-4 rounded-lg border-2 text-center transition-all ${
                     selectedStyle === BACKGROUND
                       ? 'border-[#A0825C] bg-[#F5F3F0]'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <div className="w-full h-6 rounded mx-auto mb-1" style={{background: 'repeating-linear-gradient(45deg, #f0f0f0, #f0f0f0 3px, #d0d0d0 3px, #d0d0d0 6px)'}}>
-                    <div className="p-0.5">
-                      <div className="w-full h-1 bg-gray-400 rounded mb-0.5"></div>
-                      <div className="w-2/3 h-0.5 bg-gray-400 rounded"></div>
+                  <div className="w-full h-8 rounded mb-2 relative overflow-hidden" style={{
+                    background: 'linear-gradient(135deg, #8B4513 0%, #A0825C 100%)'
+                  }}>
+                    <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-[6px] leading-none">
+                      <div className="w-4/5 h-1 bg-white/90 rounded mb-0.5"></div>
+                      <div className="w-3/5 h-0.5 bg-white/70 rounded"></div>
                     </div>
                   </div>
-                  <div className="text-xs text-gray-600">배경</div>
+                  <div className="text-xs font-medium text-gray-700">배경</div>
                 </button>
               </div>
             </div>
