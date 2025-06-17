@@ -169,8 +169,8 @@ export default function PublicViewPage() {
     if (!isDragging) return;
     
     const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 80px, close the modal
-    if (dragDistance > 80) {
+    // If dragged down more than 30px, close the modal
+    if (dragDistance > 30) {
       setShowProfileDetails(false);
     }
     
@@ -196,8 +196,8 @@ export default function PublicViewPage() {
     if (!isMouseDragging || !isDragging) return;
     
     const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 80px, close the modal
-    if (dragDistance > 80) {
+    // If dragged down more than 30px, close the modal
+    if (dragDistance > 30) {
       setShowProfileDetails(false);
     }
     
@@ -218,7 +218,7 @@ export default function PublicViewPage() {
       if (!isMouseDragging || !isDragging) return;
       
       const dragDistance = dragCurrentY - dragStartY;
-      if (dragDistance > 80) {
+      if (dragDistance > 30) {
         setShowProfileDetails(false);
       }
       
