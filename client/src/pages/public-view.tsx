@@ -814,9 +814,9 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile overlay - only for image view */}
-            <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-50 p-4 w-full max-w-md">
+            <div className="absolute bottom-20 left-0 right-0 z-10 p-4">
               <div 
-                className="flex items-end space-x-3 cursor-pointer bg-black/70 p-4 rounded-xl backdrop-blur-md shadow-2xl border border-white/20"
+                className="flex items-end space-x-3 cursor-pointer"
                 onClick={() => setShowProfileDetails(!showProfileDetails)}
               >
                 {/* Profile Image */}
