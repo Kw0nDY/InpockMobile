@@ -890,37 +890,64 @@ export default function PublicViewPage() {
 
             {/* Profile overlay - only for image view */}
             <div className="absolute bottom-20 left-0 right-0 z-10 p-4">
-              <div 
-                className="flex items-end space-x-3 cursor-pointer"
-                onClick={() => setShowProfileDetails(!showProfileDetails)}
-              >
-                {/* Profile Image */}
-                {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
-                  <img 
-                    src={user.profileImageUrl || user.profileImage} 
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
-                    <span className="text-white font-medium text-lg">
-                      {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
-                    </span>
-                  </div>
+              <div className="flex items-end justify-between">
+                {/* Left navigation button */}
+                {images.length > 1 && (
+                  <button
+                    onClick={handleLeftTapManual}
+                    className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
                 )}
-                
-                {/* Name and Username - Horizontal Layout */}
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
-                      {user.name}
-                    </h1>
-                    <span className="text-white/60 text-sm">•</span>
+
+                {/* Profile section - center */}
+                <div 
+                  className="flex items-end space-x-3 cursor-pointer flex-1 mx-4"
+                  onClick={() => setShowProfileDetails(!showProfileDetails)}
+                >
+                  {/* Profile Image */}
+                  {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                    <img 
+                      src={user.profileImageUrl || user.profileImage} 
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
+                      <span className="text-white font-medium text-lg">
+                        {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                      </span>
+                    </div>
+                  )}
+                  
+                  {/* Name and Username - Horizontal Layout */}
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2">
+                      <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
+                        {user.name}
+                      </h1>
+                      <span className="text-white/60 text-sm">•</span>
+                    </div>
+                    <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                      @{user.username}
+                    </p>
                   </div>
-                  <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                    @{user.username}
-                  </p>
                 </div>
+
+                {/* Right navigation button */}
+                {images.length > 1 && (
+                  <button
+                    onClick={handleRightTapManual}
+                    className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                )}
               </div>
             </div>
 
