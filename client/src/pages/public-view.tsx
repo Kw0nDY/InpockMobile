@@ -98,7 +98,24 @@ export default function PublicViewPage() {
     ...videoLinks.map((link: any) => ({ ...link, type: 'link', embedUrl: getVideoEmbedUrl(link.originalUrl) }))
   ];
 
+  // Image navigation functions
+  const nextImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
 
+  const prevImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  const getImageUrl = (image: any) => {
+    return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
+  };
+
+  const contentType = currentContentType || settings?.contentType || 'links';
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -112,6 +129,22 @@ export default function PublicViewPage() {
 
     return () => clearInterval(interval);
   }, [identifier, user?.id]);
+
+  // Keyboard navigation for images
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (currentContentType === 'image' && images.length > 0) {
+        if (event.key === 'ArrowLeft') {
+          prevImage();
+        } else if (event.key === 'ArrowRight') {
+          nextImage();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentContentType, images.length]);
 
 
 
@@ -167,41 +200,6 @@ export default function PublicViewPage() {
       </div>
     );
   }
-
-  const contentType = currentContentType || settings?.contentType || 'links';
-
-  // Image navigation functions
-  const nextImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
-
-  const getImageUrl = (image: any) => {
-    return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
-  };
-
-  // Keyboard navigation for images
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (contentType === 'image' && images.length > 0) {
-        if (event.key === 'ArrowLeft') {
-          prevImage();
-        } else if (event.key === 'ArrowRight') {
-          nextImage();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [contentType, images.length]);
 
   const renderContent = () => {
     switch (contentType) {
