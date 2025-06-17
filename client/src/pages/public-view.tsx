@@ -43,9 +43,7 @@ export default function PublicViewPage() {
   const [dragCurrentY, setDragCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDragging, setIsMouseDragging] = useState(false);
-  const [imageTransition, setImageTransition] = useState(false);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [nextImageIndex, setNextImageIndex] = useState<number | null>(null);
+
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -237,36 +235,7 @@ export default function PublicViewPage() {
     };
   }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
 
-  // Handle left/right tap navigation
-  const handleLeftTap = () => {
-    if (images.length > 1 && !imageTransition) {
-      const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
-      setNextImageIndex(nextIndex);
-      setSlideDirection('right');
-      setImageTransition(true);
-      setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
-        setImageTransition(false);
-        setSlideDirection(null);
-        setNextImageIndex(null);
-      }, 300);
-    }
-  };
 
-  const handleRightTap = () => {
-    if (images.length > 1 && !imageTransition) {
-      const nextIndex = (currentImageIndex + 1) % images.length;
-      setNextImageIndex(nextIndex);
-      setSlideDirection('left');
-      setImageTransition(true);
-      setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
-        setImageTransition(false);
-        setSlideDirection(null);
-        setNextImageIndex(null);
-      }, 300);
-    }
-  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -692,80 +661,20 @@ export default function PublicViewPage() {
           /* Full screen image view with profile overlay */
           <>
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="absolute inset-0 pb-20 overflow-hidden">
-                <div className="relative w-full h-full">
-                  {/* Next Image (behind current) */}
-                  {nextImageIndex !== null && (
-                    <div className="absolute inset-0 w-full h-full">
-                      <img 
-                        src={getImageUrl(images[nextImageIndex])}
-                        alt="다음 이미지"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/placeholder-image.jpg';
-                        }}
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Current Image (slides out) */}
-                  <div 
-                    className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
-                    style={{
-                      transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-10deg)' :
-                                 imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(10deg)' :
-                                 'translateX(0) rotate(0deg)',
-                      transformOrigin: 'center bottom'
-                    }}
-                  >
-                    <img 
-                      src={getImageUrl(images[currentImageIndex])}
-                      alt="현재 이미지"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                  </div>
-                </div>
+              <div className="absolute inset-0 pb-20">
+                <img 
+                  src={getImageUrl(images[currentImageIndex])}
+                  alt="배경 이미지"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder-image.jpg';
+                  }}
+                />
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
                 
-                {/* Left and Right tap zones for navigation */}
-                {images.length > 1 && (
-                  <>
-                    {/* Left tap zone */}
-                    <div 
-                      className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-                      onClick={handleLeftTap}
-                      onTouchEnd={handleLeftTap}
-                    />
-                    {/* Right tap zone */}
-                    <div 
-                      className="absolute right-0 top-0 w-1/3 h-full z-10 cursor-pointer"
-                      onClick={handleRightTap}
-                      onTouchEnd={handleRightTap}
-                    />
-                  </>
-                )}
-                
-                {/* Image indicators for multiple images */}
-                {images.length > 1 && (
-                  <div className="absolute top-4 right-4 flex space-x-1 z-20">
-                    {images.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                          index === currentImageIndex
-                            ? 'bg-white'
-                            : 'bg-white/50'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
+
               </div>
             ) : (
               <div 
