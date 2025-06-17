@@ -644,8 +644,8 @@ export default function PublicViewPage() {
                 background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
               }}
             >
-              <div className="flex-1 overflow-y-auto bg-background">
-                <div className="pt-6 px-4 pb-24 max-w-md mx-auto">
+              <div className="h-full overflow-y-auto bg-background pt-4">
+                <div className="px-4 pb-24 max-w-md mx-auto">
                   {/* Bio Section */}
                   {settings?.showBio && user.bio && (
                     <div className="mb-6">
