@@ -723,9 +723,12 @@ export default function PublicViewPage() {
               <div 
                 className="absolute inset-0 z-20 flex items-end"
                 onClick={() => setShowProfileDetails(false)}
+                style={{
+                  animation: 'fadeIn 0.5s ease-out'
+                }}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-1000 ease-out animate-in slide-in-from-bottom-4"
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform"
                   onClick={(e) => e.stopPropagation()}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
@@ -737,8 +740,9 @@ export default function PublicViewPage() {
                     transform: isDragging && dragCurrentY > dragStartY ? 
                       `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
                       'translateY(0)',
-                    transition: isDragging ? 'none' : 'transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                    cursor: isDragging ? 'grabbing' : 'grab'
+                    transition: isDragging ? 'none' : 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    cursor: isDragging ? 'grabbing' : 'grab',
+                    animation: 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards'
                   }}
                 >
                   <div className="max-w-md mx-auto text-white">

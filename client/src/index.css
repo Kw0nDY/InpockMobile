@@ -70,6 +70,27 @@
   animation: toast-slide-out-bottom 0.3s ease-in;
 }
 
+/* Profile panel animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpSlow {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
 :root {
   /* Custom brown theme colors */
   --primary-light: 15 25% 60%; /* #B39C8A - Lighter brown */
