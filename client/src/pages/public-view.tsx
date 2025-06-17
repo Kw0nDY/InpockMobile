@@ -567,8 +567,8 @@ export default function PublicViewPage() {
   return (
     <div className="h-screen relative overflow-hidden bg-black">
       <div className="max-w-md mx-auto w-full h-full relative">
-        {/* Full screen background image - primary content */}
-        {contentType === 'image' && Array.isArray(images) && images.length > 0 ? (
+        {/* Full screen background image - only show images */}
+        {Array.isArray(images) && images.length > 0 ? (
           <div className="absolute inset-0 pb-20">
             <img 
               src={getImageUrl(images[0])}
@@ -589,8 +589,8 @@ export default function PublicViewPage() {
               background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
             }}
           >
-            <div className="p-6 max-w-sm">
-              {renderContent()}
+            <div className="p-6 max-w-sm text-center">
+              <p className="text-[#4E342E] text-lg">이미지가 없습니다</p>
             </div>
           </div>
         )}
@@ -632,47 +632,14 @@ export default function PublicViewPage() {
           </div>
         </div>
 
-        {/* Footer with Content Type Icons */}
+        {/* Footer with Images Only */}
         <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
-          <div className="flex items-center justify-around py-2">
-            {/* Images Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'image' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setCurrentContentType('image')}
-            >
+          <div className="flex items-center justify-center py-2">
+            {/* Images Icon - Always Active */}
+            <div className="flex flex-col items-center py-2 px-3 text-primary">
               <Image className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">이미지</span>
-            </button>
-
-            {/* Videos Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'video' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setCurrentContentType('video')}
-            >
-              <Video className="w-6 h-6 mb-1" />
-              <span className="text-xs korean-text">동영상</span>
-            </button>
-
-            {/* Links Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'links' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setCurrentContentType('links')}
-            >
-              <LinkIcon className="w-6 h-6 mb-1" />
-              <span className="text-xs korean-text">링크</span>
-            </button>
+            </div>
           </div>
         </nav>
       </div>
