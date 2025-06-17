@@ -695,14 +695,14 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="max-w-md mx-auto min-h-screen relative bg-black">
+    <div className="h-screen bg-black overflow-hidden">
+      <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
           /* Full screen image view with profile overlay */
           <>
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="absolute inset-0 pb-20 overflow-hidden">
+              <div className="absolute inset-0 pb-16 overflow-hidden">
                 <div className="relative w-full h-full">
                   {/* Background image stack - shows next images */}
                   <div className="absolute inset-0 w-full h-full">
@@ -797,7 +797,7 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile overlay - only for image view */}
-            <div className="absolute bottom-20 left-0 right-0 z-10 p-6">
+            <div className="absolute bottom-16 left-0 right-0 z-10 p-4">
               <div 
                 className="flex items-end space-x-3 cursor-pointer"
                 onClick={() => setShowProfileDetails(!showProfileDetails)}
@@ -842,7 +842,7 @@ export default function PublicViewPage() {
                 }}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform overscroll-none"
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 pb-20 transform overscroll-none"
                   onClick={(e) => e.stopPropagation()}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
@@ -864,7 +864,7 @@ export default function PublicViewPage() {
                     animation: !isProfileClosing && !isDragging ? 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' : 'none'
                   }}
                 >
-                  <div className="max-w-md mx-auto text-white px-6">
+                  <div className="max-w-md mx-auto text-white px-4">
                     {/* Drag handle */}
                     <div className="flex justify-center mb-4 py-2">
                       <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
