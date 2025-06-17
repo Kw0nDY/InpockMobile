@@ -162,8 +162,8 @@ export default function PublicViewPage() {
     if (!isDragging) return;
     
     const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 100px, close the modal
-    if (dragDistance > 100) {
+    // If dragged down more than 80px, close the modal
+    if (dragDistance > 80) {
       setShowProfileDetails(false);
     }
     
@@ -189,8 +189,8 @@ export default function PublicViewPage() {
     if (!isMouseDragging || !isDragging) return;
     
     const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 100px, close the modal
-    if (dragDistance > 100) {
+    // If dragged down more than 80px, close the modal
+    if (dragDistance > 80) {
       setShowProfileDetails(false);
     }
     
@@ -211,7 +211,7 @@ export default function PublicViewPage() {
       if (!isMouseDragging || !isDragging) return;
       
       const dragDistance = dragCurrentY - dragStartY;
-      if (dragDistance > 100) {
+      if (dragDistance > 80) {
         setShowProfileDetails(false);
       }
       
@@ -740,9 +740,11 @@ export default function PublicViewPage() {
                     transform: isDragging && dragCurrentY > dragStartY ? 
                       `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
                       'translateY(0)',
-                    transition: isDragging ? 'none' : 'transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    opacity: isDragging && dragCurrentY > dragStartY ? 
+                      Math.max(0.3, 1 - (dragCurrentY - dragStartY) / 200) : 1,
+                    transition: isDragging ? 'none' : 'all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
                     cursor: isDragging ? 'grabbing' : 'grab',
-                    animation: 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards'
+                    animation: isDragging ? 'none' : 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards'
                   }}
                 >
                   <div className="max-w-md mx-auto text-white">
