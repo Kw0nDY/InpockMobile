@@ -42,6 +42,7 @@ export default function PublicViewPage() {
   const [dragStartY, setDragStartY] = useState(0);
   const [dragCurrentY, setDragCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
+  const [isMouseDragging, setIsMouseDragging] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -170,6 +171,66 @@ export default function PublicViewPage() {
     setDragStartY(0);
     setDragCurrentY(0);
   };
+
+  // Mouse drag handlers
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragStartY(e.clientY);
+    setDragCurrentY(e.clientY);
+    setIsMouseDragging(true);
+    setIsDragging(true);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isMouseDragging || !isDragging) return;
+    setDragCurrentY(e.clientY);
+  };
+
+  const handleMouseUp = () => {
+    if (!isMouseDragging || !isDragging) return;
+    
+    const dragDistance = dragCurrentY - dragStartY;
+    // If dragged down more than 100px, close the modal
+    if (dragDistance > 100) {
+      setShowProfileDetails(false);
+    }
+    
+    setIsMouseDragging(false);
+    setIsDragging(false);
+    setDragStartY(0);
+    setDragCurrentY(0);
+  };
+
+  // Global mouse events for drag outside component
+  useEffect(() => {
+    const handleGlobalMouseMove = (e: MouseEvent) => {
+      if (!isMouseDragging || !isDragging) return;
+      setDragCurrentY(e.clientY);
+    };
+
+    const handleGlobalMouseUp = () => {
+      if (!isMouseDragging || !isDragging) return;
+      
+      const dragDistance = dragCurrentY - dragStartY;
+      if (dragDistance > 100) {
+        setShowProfileDetails(false);
+      }
+      
+      setIsMouseDragging(false);
+      setIsDragging(false);
+      setDragStartY(0);
+      setDragCurrentY(0);
+    };
+
+    if (isMouseDragging) {
+      document.addEventListener('mousemove', handleGlobalMouseMove);
+      document.addEventListener('mouseup', handleGlobalMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleGlobalMouseMove);
+      document.removeEventListener('mouseup', handleGlobalMouseUp);
+    };
+  }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -664,22 +725,26 @@ export default function PublicViewPage() {
                 onClick={() => setShowProfileDetails(false)}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-700 ease-out animate-in slide-in-from-bottom-4"
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-1000 ease-out animate-in slide-in-from-bottom-4"
                   onClick={(e) => e.stopPropagation()}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
                   style={{
                     transform: isDragging && dragCurrentY > dragStartY ? 
                       `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
                       'translateY(0)',
-                    transition: isDragging ? 'none' : 'transform 0.7s ease-out'
+                    transition: isDragging ? 'none' : 'transform 1s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+                    cursor: isDragging ? 'grabbing' : 'grab'
                   }}
                 >
                   <div className="max-w-md mx-auto text-white">
-                    {/* Close indicator */}
-                    <div className="flex justify-center mb-4">
-                      <div className="w-12 h-1 bg-white/50 rounded-full"></div>
+                    {/* Drag handle */}
+                    <div className="flex justify-center mb-4 py-2">
+                      <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
                     </div>
                     
                     {/* Profile Header */}
@@ -753,7 +818,7 @@ export default function PublicViewPage() {
 
 
                     <div className="text-center">
-                      <p className="text-white/60 text-sm korean-text">프로필을 닫으려면 아무 곳이나 터치하세요</p>
+                      <p className="text-white/60 text-sm korean-text">위의 핸들을 드래그하거나 아무 곳이나 터치하세요</p>
                     </div>
                   </div>
                 </div>
