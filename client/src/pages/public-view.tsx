@@ -1033,24 +1033,33 @@ export default function PublicViewPage() {
 
 
                     {/* Navigation buttons */}
-                    {images.length > 1 && (
-                      <div className="flex justify-center space-x-4 mb-6">
-                        <button
-                          onClick={handleLeftTapManual}
-                          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-3 shadow-lg active:scale-95"
-                        >
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                          </svg>
-                        </button>
-                        <button
-                          onClick={handleRightTapManual}
-                          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-3 shadow-lg active:scale-95"
-                        >
-                          <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </button>
+                    {contentType === 'image' && (
+                      <div className="mb-6">
+                        <div className="flex justify-center items-center space-x-6 mb-3">
+                          <button
+                            onClick={handleLeftTapManual}
+                            className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-4 shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={images.length <= 1}
+                          >
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={handleRightTapManual}
+                            className="bg-white/20 backdrop-blur-sm hover:bg-white/30 transition-all duration-200 rounded-full p-4 shadow-lg active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={images.length <= 1}
+                          >
+                            <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </button>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xs text-white/70 korean-text">
+                            이미지 {currentImageIndex + 1} / {images.length}
+                          </div>
+                        </div>
                       </div>
                     )}
 
