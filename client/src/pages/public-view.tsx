@@ -673,21 +673,64 @@ export default function PublicViewPage() {
                       </div>
                     </div>
 
-                    {/* Bio Section */}
-                    {settings?.showBio && user.bio && (
+                    {/* Fitness Introduction */}
+                    {user.fitnessIntro && (
                       <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2 korean-text">소개</h3>
-                        <p className="text-white/90 leading-relaxed korean-text">{user.bio}</p>
+                        <h3 className="text-lg font-semibold mb-2 korean-text">전문 소개</h3>
+                        <p className="text-white/90 leading-relaxed korean-text">{user.fitnessIntro}</p>
                       </div>
                     )}
 
-                    {/* Additional Stats or Info */}
+                    {/* Personal Information */}
+                    <div className="mb-6 space-y-4">
+                      <h3 className="text-lg font-semibold korean-text">개인 정보</h3>
+                      {user.birthDate && (
+                        <div className="flex justify-between items-center py-2 border-b border-white/20">
+                          <span className="text-white/70 korean-text">생년월일</span>
+                          <span className="text-white korean-text">{user.birthDate}</span>
+                        </div>
+                      )}
+                      {user.currentGym && (
+                        <div className="flex justify-between items-center py-2 border-b border-white/20">
+                          <span className="text-white/70 korean-text">근무 헬스장</span>
+                          <span className="text-white korean-text">{user.currentGym}</span>
+                        </div>
+                      )}
+                      {user.gymAddress && (
+                        <div className="flex justify-between items-center py-2 border-b border-white/20">
+                          <span className="text-white/70 korean-text">헬스장 주소</span>
+                          <span className="text-white text-sm korean-text">{user.gymAddress}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Certifications */}
+                    {user.fitnessCertifications && (
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-3 korean-text">자격증</h3>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                          <p className="text-white/90 leading-relaxed korean-text">{user.fitnessCertifications}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Awards */}
+                    {user.fitnessAwards && (
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-3 korean-text">수상 내역</h3>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+                          <p className="text-white/90 leading-relaxed korean-text">{user.fitnessAwards}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Content Stats */}
                     <div className="grid grid-cols-2 gap-4 mb-6">
-                      <div className="text-center">
+                      <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <p className="text-2xl font-bold">{Array.isArray(images) ? images.length : 0}</p>
                         <p className="text-white/70 text-sm korean-text">이미지</p>
                       </div>
-                      <div className="text-center">
+                      <div className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-4">
                         <p className="text-2xl font-bold">{Array.isArray(allVideos) ? allVideos.length : 0}</p>
                         <p className="text-white/70 text-sm korean-text">동영상</p>
                       </div>
