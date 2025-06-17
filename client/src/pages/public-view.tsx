@@ -39,6 +39,9 @@ export default function PublicViewPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showProfileDetails, setShowProfileDetails] = useState(false);
+  const [dragStartY, setDragStartY] = useState(0);
+  const [dragCurrentY, setDragCurrentY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -143,7 +146,30 @@ export default function PublicViewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentContentType, images.length]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setDragStartY(e.touches[0].clientY);
+    setDragCurrentY(e.touches[0].clientY);
+    setIsDragging(true);
+  };
 
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    setDragCurrentY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    
+    const dragDistance = dragCurrentY - dragStartY;
+    // If dragged down more than 100px, close the modal
+    if (dragDistance > 100) {
+      setShowProfileDetails(false);
+    }
+    
+    setIsDragging(false);
+    setDragStartY(0);
+    setDragCurrentY(0);
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -638,8 +664,17 @@ export default function PublicViewPage() {
                 onClick={() => setShowProfileDetails(false)}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-300 ease-out animate-in slide-in-from-bottom-4"
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform transition-all duration-700 ease-out animate-in slide-in-from-bottom-4"
                   onClick={(e) => e.stopPropagation()}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  style={{
+                    transform: isDragging && dragCurrentY > dragStartY ? 
+                      `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
+                      'translateY(0)',
+                    transition: isDragging ? 'none' : 'transform 0.7s ease-out'
+                  }}
                 >
                   <div className="max-w-md mx-auto text-white">
                     {/* Close indicator */}
@@ -692,12 +727,7 @@ export default function PublicViewPage() {
                           <span className="text-white korean-text">{user.currentGym}</span>
                         </div>
                       )}
-                      {user.gymAddress && (
-                        <div className="flex justify-between items-center py-2 border-b border-white/20">
-                          <span className="text-white/70 korean-text">헬스장 주소</span>
-                          <span className="text-white text-sm korean-text">{user.gymAddress}</span>
-                        </div>
-                      )}
+
                     </div>
 
                     {/* Certifications */}
