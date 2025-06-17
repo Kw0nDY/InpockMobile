@@ -113,21 +113,7 @@ export default function PublicViewPage() {
     return () => clearInterval(interval);
   }, [identifier, user?.id]);
 
-  // Keyboard navigation for images
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (currentContentType === 'image' && images.length > 0) {
-        if (event.key === 'ArrowLeft') {
-          prevImage();
-        } else if (event.key === 'ArrowRight') {
-          nextImage();
-        }
-      }
-    };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentContentType, images.length]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -183,6 +169,39 @@ export default function PublicViewPage() {
   }
 
   const contentType = currentContentType || settings?.contentType || 'links';
+
+  // Image navigation functions
+  const nextImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  const getImageUrl = (image: any) => {
+    return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
+  };
+
+  // Keyboard navigation for images
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (contentType === 'image' && images.length > 0) {
+        if (event.key === 'ArrowLeft') {
+          prevImage();
+        } else if (event.key === 'ArrowRight') {
+          nextImage();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [contentType, images.length]);
 
   const renderContent = () => {
     switch (contentType) {
