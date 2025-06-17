@@ -254,7 +254,7 @@ export default function PublicViewPage() {
   // Tinder-style navigation functions
   const handleLeftTap = () => {
     if (images.length > 1 && !imageTransition) {
-      setSlideDirection('right');
+      setSlideDirection('left');
       setImageTransition(true);
       setTimeout(() => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
@@ -266,7 +266,7 @@ export default function PublicViewPage() {
 
   const handleRightTap = () => {
     if (images.length > 1 && !imageTransition) {
-      setSlideDirection('left');
+      setSlideDirection('right');
       setImageTransition(true);
       setTimeout(() => {
         setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -797,7 +797,7 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile overlay - only for image view */}
-            <div className="absolute bottom-16 left-0 right-0 z-10 p-4">
+            <div className="absolute bottom-20 left-0 right-0 z-10 p-4">
               <div 
                 className="flex items-end space-x-3 cursor-pointer"
                 onClick={() => setShowProfileDetails(!showProfileDetails)}
