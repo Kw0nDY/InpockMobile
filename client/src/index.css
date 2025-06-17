@@ -197,6 +197,12 @@ body {
   }
 }
 
+/* Prevent overscroll behavior */
+.overscroll-none {
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* Extra small screens */
 @media screen and (max-width: 360px) {
   html {

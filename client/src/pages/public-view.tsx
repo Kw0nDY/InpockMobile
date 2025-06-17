@@ -842,11 +842,20 @@ export default function PublicViewPage() {
                 }}
               >
                 <div 
-                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform"
+                  className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform overscroll-none"
                   onClick={(e) => e.stopPropagation()}
-                  onTouchStart={handleTouchStart}
-                  onTouchMove={handleTouchMove}
-                  onTouchEnd={handleTouchEnd}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    handleTouchStart(e);
+                  }}
+                  onTouchMove={(e) => {
+                    e.preventDefault();
+                    handleTouchMove(e);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.preventDefault();
+                    handleTouchEnd();
+                  }}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
