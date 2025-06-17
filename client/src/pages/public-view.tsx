@@ -49,6 +49,8 @@ export default function PublicViewPage() {
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [previousImageIndex, setPreviousImageIndex] = useState(0);
   const [autoSlideEnabled, setAutoSlideEnabled] = useState(true);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   
   // Profile panel animation state
   const [isProfileClosing, setIsProfileClosing] = useState(false);
@@ -274,6 +276,22 @@ export default function PublicViewPage() {
 
     return () => clearInterval(interval);
   }, [autoSlideEnabled, images, contentType, imageTransition, currentImageIndex, showProfileDetails]);
+
+  // Toast notification helper
+  const showToastMessage = (message: string) => {
+    setToastMessage(message);
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 2000);
+  };
+
+  // Toggle auto-slide function
+  const toggleAutoSlide = () => {
+    const newState = !autoSlideEnabled;
+    setAutoSlideEnabled(newState);
+    showToastMessage(newState ? '자동 넘김 활성화' : '자동 넘김 비활성화');
+  };
 
   // Helper function to close profile panel with animation
   const closeProfilePanel = () => {
@@ -759,6 +777,15 @@ export default function PublicViewPage() {
 
   return (
     <div className="min-h-screen bg-black overflow-hidden fixed inset-0">
+      {/* iPhone-style Toast Notification */}
+      <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-out ${
+        showToast ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      }`}>
+        <div className="bg-black/80 backdrop-blur-md text-white px-4 py-2 rounded-full shadow-lg border border-white/20">
+          <span className="text-sm font-medium korean-text">{toastMessage}</span>
+        </div>
+      </div>
+
       <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
@@ -841,15 +868,26 @@ export default function PublicViewPage() {
                   </div>
                 )}
 
-                {/* Auto-slide indicator */}
-                {autoSlideEnabled && images.length > 1 && !showProfileDetails && (
-                  <div className="absolute top-4 left-4 z-20">
-                    <div className="bg-black/50 backdrop-blur-sm rounded-full p-1.5 flex items-center justify-center">
-                      <div className="w-3 h-3 border border-white/60 rounded-full flex items-center justify-center">
-                        <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                {/* Auto-slide toggle button */}
+                {images.length > 1 && !showProfileDetails && (
+                  <button 
+                    className="absolute top-4 left-4 z-20 transition-all duration-200 hover:scale-110 active:scale-95"
+                    onClick={toggleAutoSlide}
+                  >
+                    <div className={`bg-black/50 backdrop-blur-sm rounded-full p-1.5 flex items-center justify-center transition-all duration-200 ${
+                      autoSlideEnabled ? 'border border-white/30' : 'border border-white/60'
+                    }`}>
+                      <div className={`w-3 h-3 rounded-full flex items-center justify-center transition-all duration-200 ${
+                        autoSlideEnabled ? 'border border-white/60 bg-transparent' : 'bg-white/30'
+                      }`}>
+                        {autoSlideEnabled ? (
+                          <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                        ) : (
+                          <div className="w-1 h-1 bg-white/60 rounded-full"></div>
+                        )}
                       </div>
                     </div>
-                  </div>
+                  </button>
                 )}
 
               </div>
