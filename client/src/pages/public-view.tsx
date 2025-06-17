@@ -890,7 +890,7 @@ export default function PublicViewPage() {
 
             {/* Navigation buttons overlay - left bottom position */}
             {images.length > 1 && (
-              <div className="absolute bottom-32 left-4 z-10">
+              <div className="absolute bottom-24 left-4 z-10">
                 <div className="flex items-center space-x-4">
                   {/* Left navigation button */}
                   <button
