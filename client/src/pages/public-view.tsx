@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { User, Link as LinkIcon, Copy, Check, Image, Video, Home, RefreshCw } from "lucide-react";
+import { User, Link as LinkIcon, Copy, Check, Image, Video, Home, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { queryClient } from "@/lib/queryClient";
 
@@ -41,6 +41,7 @@ export default function PublicViewPage() {
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const [currentContentType, setCurrentContentType] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -164,6 +165,39 @@ export default function PublicViewPage() {
   }
 
   const contentType = currentContentType || settings?.contentType || 'links';
+
+  // Image navigation functions
+  const nextImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (images.length > 0) {
+      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+    }
+  };
+
+  // Keyboard navigation for images
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (contentType === 'image' && images.length > 0) {
+        if (event.key === 'ArrowLeft') {
+          prevImage();
+        } else if (event.key === 'ArrowRight') {
+          nextImage();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [contentType, images.length]);
+
+  const getImageUrl = (image: any) => {
+    return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
+  };
 
   const renderContent = () => {
     switch (contentType) {
@@ -360,42 +394,101 @@ export default function PublicViewPage() {
           </div>
         );
       case 'image':
+        if (!Array.isArray(images) || images.length === 0) {
+          return (
+            <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#4E342E] to-[#3E2723] text-white">
+              <Image className="w-24 h-24 mb-6 text-white/70" />
+              <h2 className="text-3xl font-bold mb-3">갤러리</h2>
+              <p className="text-lg text-white/80 text-center max-w-md">
+                아직 등록된 이미지가 없습니다
+              </p>
+            </div>
+          );
+        }
+
+        const currentImage = images[currentImageIndex];
+        
         return (
-          <div className="space-y-4">
-            {Array.isArray(images) && images.length > 0 ? (
-              <div className="space-y-4">
-                {images.map((image: any, index: number) => (
-                  <div key={image.id} className="relative">
-                    <div className="bg-card shadow-sm rounded-lg border border-border overflow-hidden">
-                      <div className="relative aspect-[16/10] bg-muted">
-                        <img
-                          src={image.filePath || image.mediaUrl || '/placeholder-image.jpg'}
-                          alt={image.title || `이미지 ${index + 1}`}
-                          className="w-full h-full object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                          onClick={() => {
-                            window.location.href = `/users/${user.username}/images`;
-                          }}
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = '/placeholder-image.jpg';
-                          }}
-                        />
-                        {image.title && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white text-sm p-3">
-                            {image.title}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+          <div className="h-screen relative overflow-hidden bg-black">
+            {/* Full-screen background image */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-in-out"
+              style={{
+                backgroundImage: `url(${getImageUrl(currentImage)})`,
+              }}
+            >
+              {/* Dark overlay for better text readability */}
+              <div className="absolute inset-0 bg-black/40"></div>
+            </div>
+
+            {/* Content overlay */}
+            <div className="relative z-10 h-full flex flex-col justify-between p-6 text-white">
+              
+              {/* Top bar */}
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium">
+                    {currentImageIndex + 1} / {images.length}
                   </div>
-                ))}
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-foreground text-lg">이미지 없음</p>
-                <p className="text-muted-foreground text-sm mt-2">아직 등록된 이미지가 없습니다.</p>
+
+              {/* Center content */}
+              <div className="flex-1 flex items-end pb-20">
+                <div className="max-w-2xl">
+                  <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight drop-shadow-lg">
+                    {currentImage?.title || "갤러리 작품"}
+                  </h1>
+                  
+                  {currentImage?.description && (
+                    <p className="text-lg md:text-xl text-white/90 leading-relaxed drop-shadow-md">
+                      {currentImage.description}
+                    </p>
+                  )}
+                </div>
               </div>
-            )}
+
+              {/* Bottom navigation */}
+              <div className="flex justify-center items-center gap-6">
+                
+                {/* Previous button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
+                  onClick={prevImage}
+                  disabled={images.length <= 1}
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </Button>
+
+                {/* Image indicators */}
+                <div className="flex gap-2">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                        index === currentImageIndex 
+                          ? 'bg-white' 
+                          : 'bg-white/30 hover:bg-white/50'
+                      }`}
+                      onClick={() => setCurrentImageIndex(index)}
+                    />
+                  ))}
+                </div>
+
+                {/* Next button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
+                  onClick={nextImage}
+                  disabled={images.length <= 1}
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </Button>
+              </div>
+            </div>
           </div>
         );
       case 'video':

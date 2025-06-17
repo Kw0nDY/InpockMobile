@@ -1,5 +1,5 @@
-import { useState, useRef, useEffect } from "react";
-import { Plus, Upload, Trash2, Camera, ChevronLeft, ChevronRight, Edit3, Settings, ArrowUp, ArrowDown } from "lucide-react";
+import { useState, useRef } from "react";
+import { Plus, Upload, Trash2, Camera, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,8 +22,6 @@ export default function ImagesPage() {
   const { user } = useAuth();
   const { toast } = useToast();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isManageMode, setIsManageMode] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -179,292 +177,132 @@ export default function ImagesPage() {
     return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
   };
 
-  const nextImage = () => {
-    if ((images as any[]).length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % (images as any[]).length);
-    }
-  };
-
-  const prevImage = () => {
-    if ((images as any[]).length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + (images as any[]).length) % (images as any[]).length);
-    }
-  };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isManageMode && (images as any[]).length > 0) {
-        if (event.key === 'ArrowLeft') {
-          prevImage();
-        } else if (event.key === 'ArrowRight') {
-          nextImage();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isManageMode, images]);
-
   if (isLoading) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#4E342E]">
-        <div className="text-center text-white">
-          <Camera className="w-16 h-16 mx-auto mb-4 animate-pulse" />
-          <p className="text-lg">갤러리를 불러오는 중...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // No images state
-  if ((images as any[]).length === 0) {
-    return (
-      <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#4E342E] to-[#3E2723] text-white relative">
-        <Camera className="w-24 h-24 mb-6 text-white/70" />
-        <h2 className="text-3xl font-bold mb-3">아트 갤러리</h2>
-        <p className="text-lg text-white/80 mb-8 text-center max-w-md">
-          첫 번째 작품을 업로드하여 당신만의 디지털 갤러리를 시작하세요
-        </p>
-        
-        <Button 
-          onClick={() => setIsModalOpen(true)} 
-          size="lg" 
-          className="bg-white text-[#4E342E] hover:bg-white/90 font-bold py-4 px-8 text-lg rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-105"
-        >
-          <Plus className="w-6 h-6 mr-3" />
-          첫 작품 업로드
-        </Button>
-
-        {/* Settings button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-white/10"
-          onClick={() => setIsManageMode(true)}
-        >
-          <Settings className="w-6 h-6" />
-        </Button>
-      </div>
-    );
-  }
-
-  // Management mode
-  if (isManageMode) {
-    return (
-      <div className="h-screen flex flex-col bg-background">
-        {/* Header */}
-        <div className="p-4 border-b border-border bg-card flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-foreground">갤러리 관리</h1>
-            <p className="text-sm text-muted-foreground">
-              이미지 순서 변경 및 관리
-            </p>
-          </div>
-          <Button
-            variant="outline"
-            onClick={() => setIsManageMode(false)}
-          >
-            갤러리 보기
-          </Button>
-        </div>
-
-        {/* Scrollable Image Grid */}
-        <div className="flex-1 overflow-y-auto p-4">
+      <div className="min-h-screen bg-background p-4">
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 bg-muted rounded w-48"></div>
           <div className="grid grid-cols-2 gap-4">
-            {(images as any[]).map((image: any, index: number) => (
-              <Card key={image.id} className="overflow-hidden">
-                <CardContent className="p-0 relative">
-                  {/* Priority Badge */}
-                  <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
-                    #{index + 1}
-                  </div>
-
-                  {/* Reorder Controls */}
-                  <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
-                      onClick={() => moveImage(index, index - 1)}
-                      disabled={index === 0}
-                    >
-                      <ArrowUp className="w-3 h-3 text-white" />
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
-                      onClick={() => moveImage(index, index + 1)}
-                      disabled={index === (images as any[]).length - 1}
-                    >
-                      <ArrowDown className="w-3 h-3 text-white" />
-                    </Button>
-                  </div>
-
-                  {/* Image */}
-                  <div className="aspect-square relative">
-                    <img
-                      src={getImageUrl(image)}
-                      alt={image.title || `이미지 ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                    
-                    {/* Delete Button */}
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="absolute bottom-2 right-2 h-8 w-8 p-0"
-                      onClick={() => deleteImageMutation.mutate(image.id)}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-
-                  {/* Image Info */}
-                  {(image.title || image.description) && (
-                    <div className="p-3 bg-card">
-                      {image.title && (
-                        <h4 className="font-medium text-foreground text-sm truncate">
-                          {image.title}
-                        </h4>
-                      )}
-                      {image.description && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          {image.description}
-                        </p>
-                      )}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="aspect-square bg-muted rounded-xl"></div>
             ))}
           </div>
         </div>
-
-        {/* Add Button */}
-        <div className="p-4 pb-24 bg-background border-t border-border">
-          <Button 
-            onClick={() => setIsModalOpen(true)} 
-            size="lg" 
-            className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-4 text-lg rounded-xl"
-          >
-            <Plus className="w-6 h-6 mr-3" />
-            이미지 추가하기
-          </Button>
-        </div>
       </div>
     );
   }
 
-  // Full-screen gallery view
-  const currentImage = (images as any[])[currentImageIndex];
-  
   return (
-    <div>
-      <div className="h-screen relative overflow-hidden bg-black">
-        {/* Full-screen background image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-in-out"
-          style={{
-            backgroundImage: `url(${getImageUrl(currentImage)})`,
-          }}
-        >
-          {/* Dark overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/40"></div>
+    <div className="h-screen flex flex-col bg-background">
+      {/* Fixed Header */}
+      <div className="p-4 border-b border-border bg-card flex-shrink-0">
+        <div>
+          <h1 className="text-xl font-bold text-foreground">이미지 관리</h1>
+          <p className="text-sm text-muted-foreground">
+            사용할 이미지를 업로드하고 우선순위를 설정하세요
+          </p>
         </div>
+      </div>
 
-        {/* Content overlay */}
-        <div className="relative z-10 h-full flex flex-col justify-between p-6 text-white">
-          
-          {/* Top bar */}
-          <div className="flex justify-between items-start">
-            <div className="flex items-center gap-2">
-              <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium">
-                {currentImageIndex + 1} / {(images as any[]).length}
-              </div>
+      {/* Scrollable Image Gallery */}
+      <div className="flex-1 overflow-y-auto">
+        <div className="p-4">
+          {(images as any[]).length === 0 ? (
+            <div className="text-center py-12">
+              <Camera className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-foreground mb-2">이미지가 없습니다</h3>
+              <p className="text-muted-foreground mb-4">
+                첫 번째 이미지를 업로드하여 갤러리를 시작하세요
+              </p>
             </div>
-            
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white/70 hover:text-white hover:bg-white/10 backdrop-blur-sm"
-              onClick={() => setIsManageMode(true)}
-            >
-              <Settings className="w-6 h-6" />
-            </Button>
-          </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-4">
+              {(images as any[]).map((image: any, index: number) => (
+                <Card key={image.id} className="overflow-hidden">
+                  <CardContent className="p-0 relative">
+                    {/* Priority Badge */}
+                    <div className="absolute top-2 left-2 z-10 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full font-medium">
+                      #{index + 1}
+                    </div>
 
-          {/* Center content */}
-          <div className="flex-1 flex items-end pb-20">
-            <div className="max-w-2xl">
-              <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight drop-shadow-lg">
-                {currentImage?.title || "갤러리 작품"}
-              </h1>
-              
-              {currentImage?.description && (
-                <p className="text-lg md:text-xl text-white/90 leading-relaxed drop-shadow-md">
-                  {currentImage.description}
-                </p>
-              )}
-            </div>
-          </div>
+                    {/* Reorder Controls */}
+                    <div className="absolute top-2 right-2 z-10 flex flex-col gap-1">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                        onClick={() => moveImage(index, index - 1)}
+                        disabled={index === 0}
+                      >
+                        <ArrowUp className="w-3 h-3 text-white" />
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="h-6 w-6 p-0 bg-black/50 hover:bg-black/70"
+                        onClick={() => moveImage(index, index + 1)}
+                        disabled={index === (images as any[]).length - 1}
+                      >
+                        <ArrowDown className="w-3 h-3 text-white" />
+                      </Button>
+                    </div>
 
-          {/* Bottom navigation */}
-          <div className="flex justify-center items-center gap-6">
-            
-            {/* Previous button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
-              onClick={prevImage}
-              disabled={(images as any[]).length <= 1}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </Button>
+                    {/* Image */}
+                    <div className="aspect-square relative">
+                      <img
+                        src={getImageUrl(image)}
+                        alt={image.title || `이미지 ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.src = '/placeholder-image.jpg';
+                        }}
+                      />
+                      
+                      {/* Delete Button */}
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="absolute bottom-2 right-2 h-8 w-8 p-0"
+                        onClick={() => deleteImageMutation.mutate(image.id)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
 
-            {/* Image indicators */}
-            <div className="flex gap-2">
-              {(images as any[]).map((_, index) => (
-                <button
-                  key={index}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                    index === currentImageIndex 
-                      ? 'bg-white' 
-                      : 'bg-white/30 hover:bg-white/50'
-                  }`}
-                  onClick={() => setCurrentImageIndex(index)}
-                />
+                    {/* Image Info */}
+                    {(image.title || image.description) && (
+                      <div className="p-3 bg-card">
+                        {image.title && (
+                          <h4 className="font-medium text-foreground text-sm truncate">
+                            {image.title}
+                          </h4>
+                        )}
+                        {image.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {image.description}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               ))}
             </div>
-
-            {/* Next button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
-              onClick={nextImage}
-              disabled={(images as any[]).length <= 1}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </Button>
-          </div>
-
-          {/* Add image floating button */}
-          <Button
-            onClick={() => setIsModalOpen(true)}
-            size="icon"
-            className="absolute bottom-6 right-6 w-14 h-14 rounded-full bg-[#4E342E] hover:bg-[#3E2723] text-white shadow-2xl transition-all duration-200 hover:scale-110"
-          >
-            <Plus className="w-6 h-6" />
-          </Button>
+          )}
         </div>
+      </div>
+
+      {/* Fixed Add Button at Bottom */}
+      <div className="p-4 pb-24 bg-background border-t border-border flex-shrink-0">
+        <Button 
+          onClick={() => setIsModalOpen(true)} 
+          size="lg" 
+          className="w-full bg-[#4E342E] hover:bg-[#3E2723] text-white font-bold py-4 text-lg rounded-xl shadow-lg transition-all duration-200 hover:shadow-xl transform hover:scale-[1.02]"
+        >
+          <Plus className="w-6 h-6 mr-3" />
+          이미지 추가하기
+        </Button>
       </div>
 
       {/* Upload Modal */}
