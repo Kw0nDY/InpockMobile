@@ -248,7 +248,7 @@ export default function PublicViewPage() {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
         setImageTransition(false);
         setSlideDirection(null);
-      }, 300);
+      }, 250);
     }
   };
 
@@ -260,7 +260,7 @@ export default function PublicViewPage() {
         setCurrentImageIndex((prev) => (prev + 1) % images.length);
         setImageTransition(false);
         setSlideDirection(null);
-      }, 300);
+      }, 250);
     }
   };
 
@@ -692,11 +692,15 @@ export default function PublicViewPage() {
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-20 overflow-hidden">
                 <div className="relative w-full h-full">
-                  {/* Next image (behind current) */}
+                  {/* Background image stack - shows next images */}
                   <div className="absolute inset-0 w-full h-full">
                     <img 
-                      src={getImageUrl(images[(currentImageIndex + 1) % images.length])}
-                      alt="다음 이미지"
+                      src={getImageUrl(images[
+                        slideDirection === 'left' ? (currentImageIndex + 1) % images.length :
+                        slideDirection === 'right' ? (currentImageIndex - 1 + images.length) % images.length :
+                        (currentImageIndex + 1) % images.length
+                      ])}
+                      alt="뒤 이미지"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -705,14 +709,15 @@ export default function PublicViewPage() {
                     />
                   </div>
                   
-                  {/* Current image (slides out) */}
+                  {/* Current image card (slides out like Tinder) */}
                   <div 
-                    className="absolute inset-0 w-full h-full transition-all duration-300 ease-out"
+                    className="absolute inset-0 w-full h-full z-10"
                     style={{
-                      transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-10deg)' :
-                                 imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(10deg)' :
+                      transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-15deg)' :
+                                 imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(15deg)' :
                                  'translateX(0) rotate(0deg)',
-                      opacity: imageTransition ? 0.7 : 1,
+                      opacity: imageTransition ? 0 : 1,
+                      transition: 'transform 300ms ease-out, opacity 300ms ease-out',
                       transformOrigin: 'center bottom'
                     }}
                   >
