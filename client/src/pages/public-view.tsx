@@ -695,14 +695,14 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="h-screen relative overflow-hidden bg-black">
-      <div className="max-w-md mx-auto w-full h-full relative">
+    <div className="h-screen w-screen fixed inset-0 overflow-hidden bg-black">
+      <div className="w-full h-full relative" style={{ maxWidth: '100vw' }}>
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
           /* Full screen image view with profile overlay */
           <>
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="absolute inset-0 pb-20 overflow-hidden">
+              <div className="absolute inset-0 pb-16 sm:pb-20 overflow-hidden">
                 <div className="relative w-full h-full">
                   {/* Background image stack - shows next images */}
                   <div className="absolute inset-0 w-full h-full">
@@ -797,7 +797,7 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile overlay - only for image view */}
-            <div className="absolute bottom-20 left-0 right-0 z-10 p-6">
+            <div className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-10 p-4 sm:p-6">
               <div 
                 className="flex items-end space-x-3 cursor-pointer"
                 onClick={() => setShowProfileDetails(!showProfileDetails)}
@@ -975,8 +975,8 @@ export default function PublicViewPage() {
         )}
 
         {/* Footer with all content types */}
-        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
-          <div className="flex items-center justify-around py-2">
+        <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+          <div className="flex items-center justify-around py-2 px-4 sm:px-6 max-w-md mx-auto">
             {/* Images Icon */}
             <button 
               className={`flex flex-col items-center py-2 px-3 transition-colors ${
