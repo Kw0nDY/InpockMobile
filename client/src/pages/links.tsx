@@ -694,7 +694,21 @@ export default function LinksPage() {
                 </div>
                 
                 {/* Display Links with Their Styles */}
-                {links && links.length > 0 ? (
+                {isLoading ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div key={i} className="bg-white rounded-lg border p-3 animate-pulse">
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                          <div className="flex-1">
+                            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : links && links.length > 0 ? (
                   <div className="space-y-3">
                     {links.map((link: any) => (
                       <div key={link.id} className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
