@@ -43,6 +43,10 @@ export default function PublicViewPage() {
   const [dragCurrentY, setDragCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDragging, setIsMouseDragging] = useState(false);
+  const [imageTransition, setImageTransition] = useState(false);
+  const [slideshowPaused, setSlideshowPaused] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchEndX, setTouchEndX] = useState(0);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -147,6 +151,21 @@ export default function PublicViewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentContentType, images.length]);
 
+  // Auto slideshow for multiple images
+  useEffect(() => {
+    if (currentContentType === 'image' && images.length > 1 && !slideshowPaused) {
+      const interval = setInterval(() => {
+        setImageTransition(true);
+        setTimeout(() => {
+          setCurrentImageIndex((prev) => (prev + 1) % images.length);
+          setImageTransition(false);
+        }, 300); // Fade out duration
+      }, 4000); // Change image every 4 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [currentContentType, images.length, slideshowPaused]);
+
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStartY(e.touches[0].clientY);
     setDragCurrentY(e.touches[0].clientY);
@@ -231,6 +250,43 @@ export default function PublicViewPage() {
       document.removeEventListener('mouseup', handleGlobalMouseUp);
     };
   }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
+
+  // Handle image swipe gestures
+  const handleImageTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+  };
+
+  const handleImageTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleImageTouchEnd = () => {
+    if (!touchStartX || !touchEndX) return;
+    
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe && images.length > 1) {
+      // Swipe left - next image
+      setImageTransition(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        setImageTransition(false);
+      }, 150);
+      setSlideshowPaused(true);
+      setTimeout(() => setSlideshowPaused(false), 8000); // Resume after 8 seconds
+    } else if (isRightSwipe && images.length > 1) {
+      // Swipe right - previous image
+      setImageTransition(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        setImageTransition(false);
+      }, 150);
+      setSlideshowPaused(true);
+      setTimeout(() => setSlideshowPaused(false), 8000); // Resume after 8 seconds
+    }
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -658,16 +714,37 @@ export default function PublicViewPage() {
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-20">
                 <img 
-                  src={getImageUrl(images[0])}
+                  src={getImageUrl(images[currentImageIndex])}
                   alt="배경 이미지"
-                  className="w-full h-full object-cover"
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${
+                    imageTransition ? 'opacity-0' : 'opacity-100'
+                  }`}
                   onError={(e) => {
                     const target = e.target as HTMLImageElement;
                     target.src = '/placeholder-image.jpg';
                   }}
+                  onTouchStart={handleImageTouchStart}
+                  onTouchMove={handleImageTouchMove}
+                  onTouchEnd={handleImageTouchEnd}
                 />
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
+                
+                {/* Image indicators for multiple images */}
+                {images.length > 1 && (
+                  <div className="absolute top-4 right-4 flex space-x-1">
+                    {images.map((_, index) => (
+                      <div
+                        key={index}
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                          index === currentImageIndex
+                            ? 'bg-white'
+                            : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               <div 
