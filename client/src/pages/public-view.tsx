@@ -47,6 +47,7 @@ export default function PublicViewPage() {
   // Tinder-style image navigation
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
   
   // Profile panel animation state
   const [isProfileClosing, setIsProfileClosing] = useState(false);
@@ -254,25 +255,45 @@ export default function PublicViewPage() {
   // Tinder-style navigation functions
   const handleLeftTap = () => {
     if (images.length > 1 && !imageTransition) {
+      const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
+      
+      // Store current as previous for animation
+      setPreviousImageIndex(currentImageIndex);
       setSlideDirection('left');
       setImageTransition(true);
+      
+      // Update to next index after brief delay for smooth transition
       setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentImageIndex(nextIndex);
+      }, 50);
+      
+      // Clear animation state after animation completes
+      setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-      }, 250);
+      }, 300);
     }
   };
 
   const handleRightTap = () => {
     if (images.length > 1 && !imageTransition) {
+      const nextIndex = (currentImageIndex + 1) % images.length;
+      
+      // Store current as previous for animation
+      setPreviousImageIndex(currentImageIndex);
       setSlideDirection('right');
       setImageTransition(true);
+      
+      // Update to next index after brief delay for smooth transition
       setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        setCurrentImageIndex(nextIndex);
+      }, 50);
+      
+      // Clear animation state after animation completes
+      setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-      }, 250);
+      }, 300);
     }
   };
 
@@ -704,15 +725,11 @@ export default function PublicViewPage() {
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-16 overflow-hidden">
                 <div className="relative w-full h-full">
-                  {/* Background image stack - shows next images */}
+                  {/* Background image - shows the destination image */}
                   <div className="absolute inset-0 w-full h-full">
                     <img 
-                      src={getImageUrl(images[
-                        slideDirection === 'left' ? (currentImageIndex + 1) % images.length :
-                        slideDirection === 'right' ? (currentImageIndex - 1 + images.length) % images.length :
-                        (currentImageIndex + 1) % images.length
-                      ])}
-                      alt="뒤 이미지"
+                      src={getImageUrl(images[currentImageIndex])}
+                      alt="배경 이미지"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -734,7 +751,7 @@ export default function PublicViewPage() {
                     }}
                   >
                     <img 
-                      src={getImageUrl(images[currentImageIndex])}
+                      src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
                       className="w-full h-full object-cover"
                       onError={(e) => {
