@@ -411,17 +411,20 @@ export default function PublicViewPage() {
         const currentImage = images[currentImageIndex];
         
         return (
-          <div className="h-screen relative overflow-hidden bg-black">
-            {/* Full-screen background image */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-500 ease-in-out"
-              style={{
-                backgroundImage: `url(${getImageUrl(currentImage)})`,
+          <div className="h-screen relative overflow-hidden bg-black flex items-center justify-center">
+            {/* Centered image that fits screen */}
+            <img 
+              src={getImageUrl(currentImage)}
+              alt={currentImage?.title || "갤러리 이미지"}
+              className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder-image.jpg';
               }}
-            >
-              {/* Dark overlay for better text readability */}
-              <div className="absolute inset-0 bg-black/40"></div>
-            </div>
+            />
+            
+            {/* Dark overlay for better text readability */}
+            <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
 
             {/* Content overlay */}
             <div className="relative z-10 h-full flex flex-col justify-between p-6 text-white">
