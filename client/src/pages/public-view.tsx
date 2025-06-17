@@ -44,9 +44,6 @@ export default function PublicViewPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDragging, setIsMouseDragging] = useState(false);
   const [imageTransition, setImageTransition] = useState(false);
-  const [slideshowPaused, setSlideshowPaused] = useState(false);
-  const [touchStartX, setTouchStartX] = useState(0);
-  const [touchEndX, setTouchEndX] = useState(0);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -151,20 +148,7 @@ export default function PublicViewPage() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentContentType, images.length]);
 
-  // Auto slideshow for multiple images
-  useEffect(() => {
-    if (currentContentType === 'image' && images.length > 1 && !slideshowPaused) {
-      const interval = setInterval(() => {
-        setImageTransition(true);
-        setTimeout(() => {
-          setCurrentImageIndex((prev) => (prev + 1) % images.length);
-          setImageTransition(false);
-        }, 300); // Fade out duration
-      }, 4000); // Change image every 4 seconds
 
-      return () => clearInterval(interval);
-    }
-  }, [currentContentType, images.length, slideshowPaused]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragStartY(e.touches[0].clientY);
@@ -251,40 +235,24 @@ export default function PublicViewPage() {
     };
   }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
 
-  // Handle image swipe gestures
-  const handleImageTouchStart = (e: React.TouchEvent) => {
-    setTouchStartX(e.targetTouches[0].clientX);
-  };
-
-  const handleImageTouchMove = (e: React.TouchEvent) => {
-    setTouchEndX(e.targetTouches[0].clientX);
-  };
-
-  const handleImageTouchEnd = () => {
-    if (!touchStartX || !touchEndX) return;
-    
-    const distance = touchStartX - touchEndX;
-    const isLeftSwipe = distance > 50;
-    const isRightSwipe = distance < -50;
-
-    if (isLeftSwipe && images.length > 1) {
-      // Swipe left - next image
-      setImageTransition(true);
-      setTimeout(() => {
-        setCurrentImageIndex((prev) => (prev + 1) % images.length);
-        setImageTransition(false);
-      }, 150);
-      setSlideshowPaused(true);
-      setTimeout(() => setSlideshowPaused(false), 8000); // Resume after 8 seconds
-    } else if (isRightSwipe && images.length > 1) {
-      // Swipe right - previous image
+  // Handle left/right tap navigation
+  const handleLeftTap = () => {
+    if (images.length > 1) {
       setImageTransition(true);
       setTimeout(() => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
         setImageTransition(false);
       }, 150);
-      setSlideshowPaused(true);
-      setTimeout(() => setSlideshowPaused(false), 8000); // Resume after 8 seconds
+    }
+  };
+
+  const handleRightTap = () => {
+    if (images.length > 1) {
+      setImageTransition(true);
+      setTimeout(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
+        setImageTransition(false);
+      }, 150);
     }
   };
 
@@ -723,16 +691,31 @@ export default function PublicViewPage() {
                     const target = e.target as HTMLImageElement;
                     target.src = '/placeholder-image.jpg';
                   }}
-                  onTouchStart={handleImageTouchStart}
-                  onTouchMove={handleImageTouchMove}
-                  onTouchEnd={handleImageTouchEnd}
                 />
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
                 
+                {/* Left and Right tap zones for navigation */}
+                {images.length > 1 && (
+                  <>
+                    {/* Left tap zone */}
+                    <div 
+                      className="absolute left-0 top-0 w-1/3 h-full z-10 cursor-pointer"
+                      onClick={handleLeftTap}
+                      onTouchEnd={handleLeftTap}
+                    />
+                    {/* Right tap zone */}
+                    <div 
+                      className="absolute right-0 top-0 w-1/3 h-full z-10 cursor-pointer"
+                      onClick={handleRightTap}
+                      onTouchEnd={handleRightTap}
+                    />
+                  </>
+                )}
+                
                 {/* Image indicators for multiple images */}
                 {images.length > 1 && (
-                  <div className="absolute top-4 right-4 flex space-x-1">
+                  <div className="absolute top-4 right-4 flex space-x-1 z-20">
                     {images.map((_, index) => (
                       <div
                         key={index}
