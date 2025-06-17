@@ -890,22 +890,10 @@ export default function PublicViewPage() {
 
             {/* Profile overlay - only for image view */}
             <div className="absolute bottom-20 left-0 right-0 z-10 p-4">
-              <div className="flex items-end justify-between">
-                {/* Left navigation button */}
-                {images.length > 1 && (
-                  <button
-                    onClick={handleLeftTapManual}
-                    className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
-                  >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                )}
-
-                {/* Profile section - center */}
+              <div className="flex items-end">
+                {/* Profile section - left side */}
                 <div 
-                  className="flex items-end space-x-3 cursor-pointer flex-1 mx-4"
+                  className="flex items-end space-x-3 cursor-pointer flex-1"
                   onClick={() => setShowProfileDetails(!showProfileDetails)}
                 >
                   {/* Profile Image */}
@@ -937,16 +925,29 @@ export default function PublicViewPage() {
                   </div>
                 </div>
 
-                {/* Right navigation button */}
+                {/* Navigation buttons - right side */}
                 {images.length > 1 && (
-                  <button
-                    onClick={handleRightTapManual}
-                    className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
-                  >
-                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+                  <div className="flex items-center space-x-3 ml-4">
+                    {/* Left navigation button */}
+                    <button
+                      onClick={handleLeftTapManual}
+                      className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                    >
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+
+                    {/* Right navigation button */}
+                    <button
+                      onClick={handleRightTapManual}
+                      className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                    >
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
