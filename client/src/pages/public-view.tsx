@@ -565,27 +565,70 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div 
-      className="h-screen flex flex-col"
-      style={{
-        background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
-      }}
-    >
-      <div className="max-w-md mx-auto w-full flex flex-col h-full">
-{/* Header removed for cleaner design similar to reference image */}
+    <div className="h-screen relative overflow-hidden bg-black">
+      <div className="max-w-md mx-auto w-full h-full relative">
+        {/* Full screen background image - primary content */}
+        {contentType === 'image' && Array.isArray(images) && images.length > 0 ? (
+          <div className="absolute inset-0 pb-20">
+            <img 
+              src={getImageUrl(images[0])}
+              alt="배경 이미지"
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = '/placeholder-image.jpg';
+              }}
+            />
+            {/* Gradient overlay for better text readability */}
+            <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
+          </div>
+        ) : (
+          <div 
+            className="absolute inset-0 pb-20 flex items-center justify-center"
+            style={{
+              background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
+            }}
+          >
+            <div className="p-6 max-w-sm">
+              {renderContent()}
+            </div>
+          </div>
+        )}
 
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto bg-background">
-          <div className="pt-6 px-4 pb-24 max-w-md mx-auto">
-            {/* Bio Section */}
-            {settings?.showBio && user.bio && (
-              <div className="mb-6">
-                <div className="bg-card shadow-sm rounded-lg border border-border p-4">
-                  <p className="text-sm text-foreground leading-relaxed korean-text">{user.bio}</p>
+        {/* Profile overlay - positioned like the reference image */}
+        <div className="absolute bottom-20 left-0 right-0 z-10 p-6">
+          <div className="text-white">
+            {/* User name - large and prominent like Julia in reference */}
+            <h1 className="text-5xl font-bold mb-3 korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
+              {user.name}
+            </h1>
+            
+            {/* User info with profile image */}
+            <div className="flex items-center space-x-3">
+              {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                <img 
+                  src={user.profileImageUrl || user.profileImage} 
+                  alt={user.name}
+                  className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                />
+              ) : (
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                  <span className="text-white font-medium text-lg">
+                    {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                  </span>
                 </div>
+              )}
+              <div>
+                <p className="text-white/90 text-base korean-text font-medium" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                  @{user.username}
+                </p>
+                {settings?.showBio && user.bio && (
+                  <p className="text-white/80 text-sm mt-1 korean-text" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                    {user.bio}
+                  </p>
+                )}
               </div>
-            )}
-            {renderContent()}
+            </div>
           </div>
         </div>
 
