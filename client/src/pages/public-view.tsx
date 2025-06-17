@@ -864,45 +864,45 @@ export default function PublicViewPage() {
                     animation: !isProfileClosing && !isDragging ? 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' : 'none'
                   }}
                 >
-                  <div className="max-w-md mx-auto text-white">
+                  <div className="max-w-md mx-auto text-white px-4 sm:px-6">
                     {/* Drag handle */}
                     <div className="flex justify-center mb-4 py-2">
                       <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
                     </div>
                     
                     {/* Profile Header */}
-                    <div className="flex items-center space-x-4 mb-6">
+                    <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
                       {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
                         <img 
                           src={user.profileImageUrl || user.profileImage} 
                           alt={user.name}
-                          className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
                         />
                       ) : (
-                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
-                          <span className="text-white font-medium text-xl">
+                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                          <span className="text-white font-medium text-lg sm:text-xl">
                             {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
                           </span>
                         </div>
                       )}
                       
                       <div>
-                        <h2 className="text-2xl font-bold korean-text">{user.name}</h2>
-                        <p className="text-white/80 korean-text">@{user.username}</p>
+                        <h2 className="text-xl sm:text-2xl font-bold korean-text">{user.name}</h2>
+                        <p className="text-white/80 korean-text text-sm sm:text-base">@{user.username}</p>
                       </div>
                     </div>
 
                     {/* Fitness Introduction */}
                     {user.fitnessIntro && (
-                      <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2 korean-text">전문 소개</h3>
-                        <p className="text-white/90 leading-relaxed korean-text">{user.fitnessIntro}</p>
+                      <div className="mb-4 sm:mb-6">
+                        <h3 className="text-base sm:text-lg font-semibold mb-2 korean-text">전문 소개</h3>
+                        <p className="text-white/90 leading-relaxed korean-text text-sm sm:text-base">{user.fitnessIntro}</p>
                       </div>
                     )}
 
                     {/* Personal Information */}
-                    <div className="mb-6 space-y-4">
-                      <h3 className="text-lg font-semibold korean-text">개인 정보</h3>
+                    <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
+                      <h3 className="text-base sm:text-lg font-semibold korean-text">개인 정보</h3>
                       {user.birthDate && (
                         <div className="flex justify-between items-center py-2 border-b border-white/20">
                           <span className="text-white/70 korean-text">생년월일</span>

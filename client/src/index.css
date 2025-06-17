@@ -110,6 +110,85 @@
   }
 }
 
+/* Mobile responsive styles */
+@media screen and (max-width: 480px) {
+  html {
+    font-size: 14px;
+  }
+  
+  body {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  
+  .text-sm {
+    font-size: 12px !important;
+  }
+  
+  .text-base {
+    font-size: 14px !important;
+  }
+  
+  .text-lg {
+    font-size: 16px !important;
+  }
+  
+  .text-xl {
+    font-size: 18px !important;
+  }
+  
+  .text-2xl {
+    font-size: 20px !important;
+  }
+  
+  .text-3xl {
+    font-size: 24px !important;
+  }
+
+  /* Mobile spacing adjustments */
+  .p-6 {
+    padding: 1rem !important;
+  }
+  
+  .p-4 {
+    padding: 0.75rem !important;
+  }
+  
+  .mb-6 {
+    margin-bottom: 1rem !important;
+  }
+  
+  .mb-4 {
+    margin-bottom: 0.75rem !important;
+  }
+}
+
+/* Extra small screens */
+@media screen and (max-width: 360px) {
+  html {
+    font-size: 13px;
+  }
+  
+  body {
+    font-size: 13px;
+  }
+  
+  .text-2xl {
+    font-size: 18px !important;
+  }
+  
+  .text-3xl {
+    font-size: 20px !important;
+  }
+}
+
+/* Large screens */
+@media screen and (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
 :root {
   /* Custom brown theme colors */
   --primary-light: 15 25% 60%; /* #B39C8A - Lighter brown */
