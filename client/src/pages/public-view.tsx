@@ -693,48 +693,10 @@ export default function PublicViewPage() {
           <>
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-20 overflow-hidden">
-                <div 
-                  className="relative w-full h-full"
-                  style={{
-                    transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%)' :
-                               imageTransition && slideDirection === 'right' ? 'translateX(100%)' :
-                               'translateX(0)',
-                    transition: 'transform 300ms ease-out',
-                    display: 'flex',
-                    width: imageTransition && nextImageIndex !== null ? '200%' : '100%'
-                  }}
-                >
-                  {/* Previous image (for right slide) */}
-                  {imageTransition && slideDirection === 'right' && nextImageIndex !== null && (
-                    <div className="w-full h-full flex-shrink-0">
-                      <img 
-                        src={getImageUrl(images[nextImageIndex])}
-                        alt="이전 이미지"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = '/placeholder-image.jpg';
-                        }}
-                      />
-                    </div>
-                  )}
-                  
-                  {/* Current Image */}
-                  <div className="w-full h-full flex-shrink-0">
-                    <img 
-                      src={getImageUrl(images[currentImageIndex])}
-                      alt="현재 이미지"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Next image (for left slide) */}
-                  {imageTransition && slideDirection === 'left' && nextImageIndex !== null && (
-                    <div className="w-full h-full flex-shrink-0">
+                <div className="relative w-full h-full">
+                  {/* Next Image (behind current) */}
+                  {nextImageIndex !== null && (
+                    <div className="absolute inset-0 w-full h-full">
                       <img 
                         src={getImageUrl(images[nextImageIndex])}
                         alt="다음 이미지"
@@ -746,6 +708,27 @@ export default function PublicViewPage() {
                       />
                     </div>
                   )}
+                  
+                  {/* Current Image (slides out) */}
+                  <div 
+                    className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
+                    style={{
+                      transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-10deg)' :
+                                 imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(10deg)' :
+                                 'translateX(0) rotate(0deg)',
+                      transformOrigin: 'center bottom'
+                    }}
+                  >
+                    <img 
+                      src={getImageUrl(images[currentImageIndex])}
+                      alt="현재 이미지"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = '/placeholder-image.jpg';
+                      }}
+                    />
+                  </div>
                 </div>
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
