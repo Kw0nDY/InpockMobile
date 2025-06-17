@@ -717,7 +717,7 @@ export default function PublicViewPage() {
                                  imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(15deg)' :
                                  'translateX(0) rotate(0deg)',
                       opacity: imageTransition ? 0 : 1,
-                      transition: 'transform 300ms ease-out, opacity 300ms ease-out',
+                      transition: imageTransition ? 'transform 250ms ease-out, opacity 250ms ease-out' : 'none',
                       transformOrigin: 'center bottom'
                     }}
                   >
