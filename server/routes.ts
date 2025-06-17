@@ -1384,7 +1384,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         name: user.name,
         bio: user.bio,
         profileImageUrl: user.profileImageUrl,
-        visitCount: user.visitCount
+        visitCount: user.visitCount,
+        // Fitness-related fields
+        birthDate: user.birthDate,
+        fitnessAwards: user.fitnessAwards,
+        fitnessCertifications: user.fitnessCertifications,
+        currentGym: user.currentGym,
+        gymAddress: user.gymAddress,
+        fitnessIntro: user.fitnessIntro
       };
 
       // Increment visit count

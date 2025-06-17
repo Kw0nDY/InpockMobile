@@ -12,18 +12,14 @@ interface UserProfile {
   bio?: string;
   profileImage?: string;
   profileImageUrl?: string;
-  links: Array<{
-    id: number;
-    title: string;
-    originalUrl: string;
-    shortCode: string;
-    style: 'thumbnail' | 'simple' | 'card' | 'background';
-    description?: string;
-    imageUrl?: string;
-    customImageUrl?: string;
-    ownerVisits?: number;
-    externalVisits?: number;
-  }>;
+  visitCount?: number;
+  // Fitness-related fields
+  birthDate?: string;
+  fitnessAwards?: string;
+  fitnessCertifications?: string;
+  currentGym?: string;
+  gymAddress?: string;
+  fitnessIntro?: string;
 }
 
 interface UserSettings {
