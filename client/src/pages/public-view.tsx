@@ -45,7 +45,6 @@ export default function PublicViewPage() {
   const [isMouseDragging, setIsMouseDragging] = useState(false);
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [nextImageIndex, setNextImageIndex] = useState<number | null>(null);
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
@@ -240,31 +239,25 @@ export default function PublicViewPage() {
   // Handle left/right tap navigation
   const handleLeftTap = () => {
     if (images.length > 1 && !imageTransition) {
-      const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
-      setNextImageIndex(nextIndex);
       setSlideDirection('right');
       setImageTransition(true);
       setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
+        setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
         setImageTransition(false);
         setSlideDirection(null);
-        setNextImageIndex(null);
-      }, 300);
+      }, 150);
     }
   };
 
   const handleRightTap = () => {
     if (images.length > 1 && !imageTransition) {
-      const nextIndex = (currentImageIndex + 1) % images.length;
-      setNextImageIndex(nextIndex);
       setSlideDirection('left');
       setImageTransition(true);
       setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
+        setCurrentImageIndex((prev) => (prev + 1) % images.length);
         setImageTransition(false);
         setSlideDirection(null);
-        setNextImageIndex(null);
-      }, 300);
+      }, 150);
     }
   };
 
@@ -693,45 +686,20 @@ export default function PublicViewPage() {
           <>
             {Array.isArray(images) && images.length > 0 ? (
               <div className="absolute inset-0 pb-20 overflow-hidden">
-                {/* Current Image */}
-                <div 
-                  className={`absolute inset-0 w-full h-full transition-transform duration-300 ease-out ${
-                    imageTransition && slideDirection === 'left' ? '-translate-x-full' :
-                    imageTransition && slideDirection === 'right' ? 'translate-x-full' :
-                    'translate-x-0'
+                <img 
+                  key={currentImageIndex} // Force re-render on index change
+                  src={getImageUrl(images[currentImageIndex])}
+                  alt="배경 이미지"
+                  className={`w-full h-full object-cover transition-transform duration-300 ease-out ${
+                    imageTransition && slideDirection === 'left' ? '-translate-x-full opacity-0' :
+                    imageTransition && slideDirection === 'right' ? 'translate-x-full opacity-0' :
+                    'translate-x-0 opacity-100'
                   }`}
-                >
-                  <img 
-                    src={getImageUrl(images[currentImageIndex])}
-                    alt="배경 이미지"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/placeholder-image.jpg';
-                    }}
-                  />
-                </div>
-                
-                {/* Next Image (during transition) */}
-                {imageTransition && nextImageIndex !== null && (
-                  <div 
-                    className="absolute inset-0 w-full h-full transition-transform duration-300 ease-out"
-                    style={{
-                      transform: slideDirection === 'left' ? 'translateX(100%)' : 'translateX(-100%)',
-                      animation: `slideIn${slideDirection === 'left' ? 'Left' : 'Right'} 300ms ease-out forwards`
-                    }}
-                  >
-                    <img 
-                      src={getImageUrl(images[nextImageIndex])}
-                      alt="다음 이미지"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.src = '/placeholder-image.jpg';
-                      }}
-                    />
-                  </div>
-                )}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder-image.jpg';
+                  }}
+                />
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
                 
