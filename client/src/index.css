@@ -91,6 +91,25 @@
   }
 }
 
+/* Image slide animations */
+@keyframes slideInLeft {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 :root {
   /* Custom brown theme colors */
   --primary-light: 15 25% 60%; /* #B39C8A - Lighter brown */
