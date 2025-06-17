@@ -48,6 +48,7 @@ export default function PublicViewPage() {
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
   const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [autoSlideEnabled, setAutoSlideEnabled] = useState(true);
   
   // Profile panel animation state
   const [isProfileClosing, setIsProfileClosing] = useState(false);
@@ -243,6 +244,37 @@ export default function PublicViewPage() {
     };
   }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
 
+  // Auto-slide functionality for images
+  useEffect(() => {
+    if (!autoSlideEnabled || !Array.isArray(images) || images.length <= 1 || contentType !== 'image' || imageTransition || showProfileDetails) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (!imageTransition && !showProfileDetails) {
+        const nextIndex = (currentImageIndex + 1) % images.length;
+        
+        // Store current as previous for animation
+        setPreviousImageIndex(currentImageIndex);
+        setSlideDirection('right');
+        setImageTransition(true);
+        
+        // Update to next index after brief delay for smooth transition
+        setTimeout(() => {
+          setCurrentImageIndex(nextIndex);
+        }, 50);
+        
+        // Clear animation state after animation completes
+        setTimeout(() => {
+          setImageTransition(false);
+          setSlideDirection(null);
+        }, 300);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [autoSlideEnabled, images, contentType, imageTransition, currentImageIndex, showProfileDetails]);
+
   // Helper function to close profile panel with animation
   const closeProfilePanel = () => {
     setIsProfileClosing(true);
@@ -255,6 +287,9 @@ export default function PublicViewPage() {
   // Tinder-style navigation functions
   const handleLeftTap = () => {
     if (images.length > 1 && !imageTransition) {
+      // Disable auto-slide when user manually navigates
+      setAutoSlideEnabled(false);
+      
       const nextIndex = (currentImageIndex - 1 + images.length) % images.length;
       
       // Store current as previous for animation
@@ -271,12 +306,17 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
+        // Re-enable auto-slide after manual interaction
+        setTimeout(() => setAutoSlideEnabled(true), 2000);
       }, 300);
     }
   };
 
   const handleRightTap = () => {
     if (images.length > 1 && !imageTransition) {
+      // Disable auto-slide when user manually navigates
+      setAutoSlideEnabled(false);
+      
       const nextIndex = (currentImageIndex + 1) % images.length;
       
       // Store current as previous for animation
@@ -293,6 +333,8 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
+        // Re-enable auto-slide after manual interaction
+        setTimeout(() => setAutoSlideEnabled(true), 2000);
       }, 300);
     }
   };
@@ -796,6 +838,17 @@ export default function PublicViewPage() {
                         }`}
                       />
                     ))}
+                  </div>
+                )}
+
+                {/* Auto-slide indicator */}
+                {autoSlideEnabled && images.length > 1 && !showProfileDetails && (
+                  <div className="absolute top-4 left-4 z-20">
+                    <div className="bg-black/50 backdrop-blur-sm rounded-full p-1.5 flex items-center justify-center">
+                      <div className="w-3 h-3 border border-white/60 rounded-full flex items-center justify-center">
+                        <div className="w-1 h-1 bg-white rounded-full animate-pulse"></div>
+                      </div>
+                    </div>
                   </div>
                 )}
 
