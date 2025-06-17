@@ -4,13 +4,11 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Mobile-first responsive body and html */
+/* Web app styling */
 html {
   height: 100%;
-  overflow: hidden;
-  /* Disable pull-to-refresh */
-  overscroll-behavior: none;
-  touch-action: manipulation;
+  /* Disable pull-to-refresh only on mobile */
+  overscroll-behavior-y: none;
 }
 
 body {
@@ -18,15 +16,9 @@ body {
   font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Disable pull-to-refresh on mobile */
-  overscroll-behavior: none;
+  /* Mobile web app behavior */
+  overscroll-behavior-y: none;
   -webkit-overflow-scrolling: touch;
-  /* Prevent zoom and fixed viewport */
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  /* Prevent mobile Safari address bar resizing */
   height: 100vh;
   height: -webkit-fill-available;
 }
@@ -34,7 +26,6 @@ body {
 #root {
   height: 100vh;
   height: -webkit-fill-available;
-  overflow: hidden;
   position: relative;
 }
 

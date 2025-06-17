@@ -695,14 +695,14 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className="h-screen w-screen fixed inset-0 overflow-hidden bg-black">
-      <div className="w-full h-full relative" style={{ maxWidth: '100vw' }}>
+    <div className="min-h-screen bg-black">
+      <div className="max-w-md mx-auto min-h-screen relative bg-black">
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
           /* Full screen image view with profile overlay */
           <>
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="absolute inset-0 pb-16 sm:pb-20 overflow-hidden">
+              <div className="absolute inset-0 pb-20 overflow-hidden">
                 <div className="relative w-full h-full">
                   {/* Background image stack - shows next images */}
                   <div className="absolute inset-0 w-full h-full">
@@ -797,7 +797,7 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile overlay - only for image view */}
-            <div className="absolute bottom-16 sm:bottom-20 left-0 right-0 z-10 p-4 sm:p-6">
+            <div className="absolute bottom-20 left-0 right-0 z-10 p-6">
               <div 
                 className="flex items-end space-x-3 cursor-pointer"
                 onClick={() => setShowProfileDetails(!showProfileDetails)}
@@ -844,18 +844,9 @@ export default function PublicViewPage() {
                 <div 
                   className="w-full bg-gradient-to-t from-black/90 via-black/70 to-transparent p-6 pb-24 transform overscroll-none"
                   onClick={(e) => e.stopPropagation()}
-                  onTouchStart={(e) => {
-                    e.preventDefault();
-                    handleTouchStart(e);
-                  }}
-                  onTouchMove={(e) => {
-                    e.preventDefault();
-                    handleTouchMove(e);
-                  }}
-                  onTouchEnd={(e) => {
-                    e.preventDefault();
-                    handleTouchEnd();
-                  }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
                   onMouseDown={handleMouseDown}
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
@@ -873,45 +864,45 @@ export default function PublicViewPage() {
                     animation: !isProfileClosing && !isDragging ? 'slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards' : 'none'
                   }}
                 >
-                  <div className="max-w-md mx-auto text-white px-4 sm:px-6">
+                  <div className="max-w-md mx-auto text-white px-6">
                     {/* Drag handle */}
                     <div className="flex justify-center mb-4 py-2">
                       <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
                     </div>
                     
                     {/* Profile Header */}
-                    <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
+                    <div className="flex items-center space-x-4 mb-6">
                       {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
                         <img 
                           src={user.profileImageUrl || user.profileImage} 
                           alt={user.name}
-                          className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                          className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
                         />
                       ) : (
-                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
-                          <span className="text-white font-medium text-lg sm:text-xl">
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                          <span className="text-white font-medium text-xl">
                             {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
                           </span>
                         </div>
                       )}
                       
                       <div>
-                        <h2 className="text-xl sm:text-2xl font-bold korean-text">{user.name}</h2>
-                        <p className="text-white/80 korean-text text-sm sm:text-base">@{user.username}</p>
+                        <h2 className="text-2xl font-bold korean-text">{user.name}</h2>
+                        <p className="text-white/80 korean-text">@{user.username}</p>
                       </div>
                     </div>
 
                     {/* Fitness Introduction */}
                     {user.fitnessIntro && (
-                      <div className="mb-4 sm:mb-6">
-                        <h3 className="text-base sm:text-lg font-semibold mb-2 korean-text">전문 소개</h3>
-                        <p className="text-white/90 leading-relaxed korean-text text-sm sm:text-base">{user.fitnessIntro}</p>
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2 korean-text">전문 소개</h3>
+                        <p className="text-white/90 leading-relaxed korean-text">{user.fitnessIntro}</p>
                       </div>
                     )}
 
                     {/* Personal Information */}
-                    <div className="mb-4 sm:mb-6 space-y-3 sm:space-y-4">
-                      <h3 className="text-base sm:text-lg font-semibold korean-text">개인 정보</h3>
+                    <div className="mb-6 space-y-4">
+                      <h3 className="text-lg font-semibold korean-text">개인 정보</h3>
                       {user.birthDate && (
                         <div className="flex justify-between items-center py-2 border-b border-white/20">
                           <span className="text-white/70 korean-text">생년월일</span>
@@ -984,8 +975,8 @@ export default function PublicViewPage() {
         )}
 
         {/* Footer with all content types */}
-        <nav className="fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
-          <div className="flex items-center justify-around py-2 px-4 sm:px-6 max-w-md mx-auto">
+        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+          <div className="flex items-center justify-around py-2">
             {/* Images Icon */}
             <button 
               className={`flex flex-col items-center py-2 px-3 transition-colors ${
