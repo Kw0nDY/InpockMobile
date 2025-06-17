@@ -314,10 +314,6 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-        // Re-enable auto-slide after manual interaction (only if disabled manually)
-        if (!fromAutoSlide) {
-          setTimeout(() => setAutoSlideEnabled(true), 2000);
-        }
       }, 300);
     }
   };
@@ -345,10 +341,6 @@ export default function PublicViewPage() {
       setTimeout(() => {
         setImageTransition(false);
         setSlideDirection(null);
-        // Re-enable auto-slide after manual interaction (only if disabled manually)
-        if (!fromAutoSlide) {
-          setTimeout(() => setAutoSlideEnabled(true), 2000);
-        }
       }, 300);
     }
   };
