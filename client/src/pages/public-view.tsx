@@ -888,6 +888,9 @@ export default function PublicViewPage() {
               </div>
             )}
 
+            {/* Bottom overlay with dark semi-transparent background */}
+            <div className="absolute bottom-0 left-0 right-0 h-60 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-5"></div>
+
             {/* Navigation buttons overlay - left bottom position */}
             {images.length > 1 && (
               <div className="absolute bottom-24 left-4 z-10">
