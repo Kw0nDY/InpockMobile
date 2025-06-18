@@ -860,53 +860,7 @@ export default function PublicViewPage() {
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
 
-                {/* Profile overlay - positioned at bottom left */}
-                <div className="absolute bottom-16 left-4 z-10">
-                  <div 
-                    className="flex items-end space-x-3 cursor-pointer"
-                    onClick={() => setShowProfileDetails(!showProfileDetails)}
-                  >
-                    {/* Profile Image */}
-                    {settings?.showProfileImage !== false && (
-                      (user.profileImageUrl || user.profileImage) ? (
-                        <img 
-                          src={user.profileImageUrl || user.profileImage} 
-                          alt={user.name}
-                          className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
-                          <span className="text-white font-medium text-lg">
-                            {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
-                          </span>
-                        </div>
-                      )
-                    )}
-                    
-                    {/* Name and Username - Horizontal Layout */}
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
-                          {user.name}
-                        </h1>
-                        <span className="text-white/60 text-sm">•</span>
-                      </div>
-                      <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                        @{user.username}
-                      </p>
-                      {settings?.showBio !== false && user?.bio && (
-                        <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                          {user.bio}
-                        </p>
-                      )}
-                      {settings?.showVisitCount !== false && user?.visitCount && (
-                        <p className="text-white/70 text-xs korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                          방문 {user.visitCount}회
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
+
               </div>
             </div>
           </>
@@ -1328,6 +1282,45 @@ export default function PublicViewPage() {
         )}
 
 
+
+        {/* Profile Section - Above Navigation for Video/Image Views */}
+        {(contentType === 'image' || contentType === 'video') && (
+          <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-45">
+            <div className="px-4 py-3">
+              <div 
+                className="flex items-center space-x-3 cursor-pointer"
+                onClick={() => setShowProfileDetails(!showProfileDetails)}
+              >
+                {/* Profile Image */}
+                {settings?.showProfileImage !== false && (
+                  (user.profileImageUrl || user.profileImage) ? (
+                    <img 
+                      src={user.profileImageUrl || user.profileImage} 
+                      alt={user.name}
+                      className="w-10 h-10 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
+                      <span className="text-white font-medium text-sm">
+                        {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                      </span>
+                    </div>
+                  )
+                )}
+                
+                {/* Name and Username */}
+                <div className="flex-1">
+                  <h1 className="text-lg font-bold text-white korean-text">
+                    {user.name}
+                  </h1>
+                  <p className="text-white/70 text-sm korean-text">
+                    @{user.username}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Footer with all content types */}
         <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
