@@ -1952,177 +1952,199 @@ export default function PublicViewPage() {
         {/* Video Profile Details Modal */}
         {showVideoProfileDetails && (
           <div
-            className="fixed inset-0 z-[1000] flex items-end"
+            className="fixed inset-0 z-[1000] overflow-hidden"
+            onClick={() => setShowVideoProfileDetails(false)}
             style={{
               background: "rgba(0, 0, 0, 0.5)",
               backdropFilter: "blur(10px)",
-              animation: showVideoProfileDetails
-                ? "slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards"
-                : "none",
             }}
           >
-            <div className="max-w-md mx-auto text-white px-4">
-              {/* Drag handle */}
-              <div className="flex justify-center mb-4 py-2">
-                <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
-              </div>
-
-              {/* Profile Header */}
-              <div className="flex items-center space-x-4 mb-6">
-                {settings?.showProfileImage !== false &&
-                (user?.profileImageUrl || user?.profileImage) ? (
-                  <img
-                    src={user.profileImageUrl || user.profileImage}
-                    alt={user.name}
-                    className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
-                  />
-                ) : (
-                  <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
-                    <span className="text-white font-medium text-xl">
-                      {user?.name?.[0]?.toUpperCase() ||
-                        user?.username?.[0]?.toUpperCase() ||
-                        "사"}
-                    </span>
+            <div
+              className="h-full w-full max-w-md mx-auto flex items-end"
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              onMouseDown={handleMouseDown}
+              onMouseMove={handleMouseMove}
+              onMouseUp={handleMouseUp}
+            >
+              <div
+                className="w-full max-w-md mx-auto p-4 pb-16 transform overscroll-none"
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: `linear-gradient(to top, ${backgroundGradient === "bg-black" ? "rgba(0,0,0,0.9)" : backgroundGradient}, transparent)`,
+                  transform: isProfileClosing
+                    ? "translateY(100%)"
+                    : isDragging && dragCurrentY > dragStartY
+                      ? `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)`
+                      : "translateY(0)",
+                  opacity: isProfileClosing
+                    ? 0
+                    : isDragging && dragCurrentY > dragStartY
+                      ? Math.max(0.3, 1 - (dragCurrentY - dragStartY) / 200)
+                      : 1,
+                  transition: isProfileClosing
+                    ? "all 0.3s ease-out"
+                    : isDragging
+                      ? "none"
+                      : "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                  cursor: isDragging ? "grabbing" : "grab",
+                  animation:
+                    !isProfileClosing && !isDragging
+                      ? "slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards"
+                      : "none",
+                }}
+              >
+                <div className="max-w-md mx-auto text-white px-4">
+                  {/* Drag handle */}
+                  <div className="flex justify-center mb-4 py-2">
+                    <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
                   </div>
-                )}
 
-                <div>
-                  <h2 className="text-2xl font-bold korean-text">
-                    {user?.name}
-                  </h2>
-                  <p className="text-white/80 korean-text">
-                    @{user?.username}
-                  </p>
-                </div>
-              </div>
-
-              {/* Bio Introduction */}
-              {user?.bio && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2 korean-text">
-                    자기소개
-                  </h3>
-                  <p className="text-white/90 leading-relaxed korean-text">
-                    {user.bio}
-                  </p>
-                </div>
-              )}
-
-              {/* Personal Information */}
-              <div className="mb-6 space-y-4">
-                <h3 className="text-lg font-semibold korean-text">
-                  개인 정보
-                </h3>
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">
-                    생년월일
-                  </span>
-                  <span className="text-white korean-text">
-                    {user?.birthDate || "정보 없음"}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">경력</span>
-                  <span className="text-white korean-text">
-                    {user?.experience || "정보 없음"}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">전문 분야</span>
-                  <span className="text-white korean-text">
-                    {user?.specialization || "정보 없음"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Contact Information */}
-              <div className="mb-6 space-y-4">
-                <h3 className="text-lg font-semibold korean-text">
-                  연락처 정보
-                </h3>
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">
-                    이메일
-                  </span>
-                  <span className="text-white korean-text">
-                    {user?.email || "정보 없음"}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">전화번호</span>
-                  <span className="text-white korean-text">
-                    {user?.phoneNumber || "정보 없음"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Fitness Information */}
-              <div className="mb-6 space-y-4">
-                <h3 className="text-lg font-semibold korean-text">
-                  피트니스 정보
-                </h3>
-
-                {/* Certifications Box */}
-                <div>
-                  <h4 className="text-white/70 mb-2 korean-text">자격증</h4>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                    <p className="text-white/90 korean-text">
-                      {user?.fitnessCertifications || "자격증 정보가 없습니다."}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Awards Box */}
-                <div>
-                  <h4 className="text-white/70 mb-2 korean-text">수상 내역</h4>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                    <p className="text-white/90 korean-text">
-                      {user?.fitnessAwards || "수상 내역이 없습니다."}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Current Gym Box */}
-                <div>
-                  <h4 className="text-white/70 mb-2 korean-text">현재 체육관</h4>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
-                    <p className="text-white/90 korean-text">
-                      {user?.currentGym || "체육관 정보가 없습니다."}
-                    </p>
-                    {user?.gymAddress && (
-                      <p className="text-white/70 text-sm mt-1 korean-text">
-                        {user.gymAddress}
-                      </p>
+                  {/* Profile Header */}
+                  <div className="flex items-center space-x-4 mb-6">
+                    {settings?.showProfileImage !== false &&
+                    (user?.profileImageUrl || user?.profileImage) ? (
+                      <img
+                        src={user.profileImageUrl || user.profileImage}
+                        alt={user.name}
+                        className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                      />
+                    ) : (
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                        <span className="text-white font-medium text-xl">
+                          {user?.name?.[0]?.toUpperCase() ||
+                            user?.username?.[0]?.toUpperCase() ||
+                            "사"}
+                        </span>
+                      </div>
                     )}
-                  </div>
-                </div>
-              </div>
 
-              {/* Close instruction and button */}
-              <div className="flex flex-col items-center pb-8">
-                <p className="text-white/60 text-sm mb-4 korean-text">
-                  위로 올려서 드래그하거나 아래 꺼내주세요
-                </p>
-                <div
-                  className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer transition-all hover:bg-white/30"
-                  onClick={() => setShowVideoProfileDetails(false)}
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M7 11l5-5m0 0l5 5m-5-5v12"
-                    />
-                  </svg>
+                    <div>
+                      <h2 className="text-2xl font-bold korean-text">
+                        {user?.name}
+                      </h2>
+                      <p className="text-white/80 korean-text">
+                        @{user?.username}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bio Introduction */}
+                  {user?.bio && (
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-2 korean-text">
+                        자기소개
+                      </h3>
+                      <p className="text-white/90 leading-relaxed korean-text">
+                        {user.bio}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Personal Information */}
+                  <div className="mb-6 space-y-4">
+                    <h3 className="text-lg font-semibold korean-text">
+                      개인 정보
+                    </h3>
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">
+                        생년월일
+                      </span>
+                      <span className="text-white korean-text">
+                        {user?.birthDate || "정보 없음"}
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">근무 헬스장</span>
+                      <span className="text-white korean-text">
+                        정보 없음
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">헬스장 주소</span>
+                      <span className="text-white korean-text">
+                        정보 없음
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Contact Information */}
+                  <div className="mb-6 space-y-4">
+                    <h3 className="text-lg font-semibold korean-text">
+                      연락처 정보
+                    </h3>
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">
+                        이메일
+                      </span>
+                      <span className="text-white korean-text">
+                        정보 없음
+                      </span>
+                    </div>
+
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">전화번호</span>
+                      <span className="text-white korean-text">
+                        정보 없음
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Fitness Information */}
+                  <div className="mb-6 space-y-4">
+                    <h3 className="text-lg font-semibold korean-text">
+                      피트니스 정보
+                    </h3>
+
+                    {/* Certifications Box */}
+                    <div>
+                      <h4 className="text-white/70 mb-2 korean-text">자격증</h4>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                        <p className="text-white/90 korean-text">
+                          자격증 정보가 없습니다.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Awards Box */}
+                    <div>
+                      <h4 className="text-white/70 mb-2 korean-text">수상 내역</h4>
+                      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                        <p className="text-white/90 korean-text">
+                          수상 내역이 없습니다.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Close instruction and button */}
+                  <div className="flex flex-col items-center pb-8">
+                    <p className="text-white/60 text-sm mb-4 korean-text">
+                      위로 올려서 드래그하거나 아래 꺼내주세요
+                    </p>
+                    <div
+                      className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer transition-all hover:bg-white/30"
+                      onClick={() => setShowVideoProfileDetails(false)}
+                    >
+                      <svg
+                        className="w-6 h-6"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 11l5-5m0 0l5 5m-5-5v12"
+                        />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
