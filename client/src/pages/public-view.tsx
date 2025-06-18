@@ -915,7 +915,8 @@ export default function PublicViewPage() {
           <>
             {Array.isArray(images) && images.length > 0 ? (
               <div 
-                className="absolute inset-0 pb-16 overflow-hidden"
+                className="absolute inset-0 overflow-hidden"
+                style={{ paddingBottom: '120px' }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -923,9 +924,9 @@ export default function PublicViewPage() {
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
               >
-                <div className="relative w-full h-full">
+                <div className="relative w-full h-full flex items-center justify-center">
                   {/* Background layer - shows next image during swipe */}
-                  <div className="absolute inset-0 w-full h-full">
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
                     <img 
                       src={getImageUrl(images[
                         isSwipping ? 
@@ -939,7 +940,7 @@ export default function PublicViewPage() {
                           currentImageIndex
                       ])}
                       alt="배경 이미지"
-                      className="w-full h-full object-cover"
+                      className="max-w-full max-h-full object-contain"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder-image.jpg';
@@ -949,7 +950,7 @@ export default function PublicViewPage() {
                   
                   {/* Current image card (Tinder-style swipe) */}
                   <div 
-                    className="absolute inset-0 w-full h-full z-10 shadow-2xl"
+                    className="absolute inset-0 w-full h-full z-10 shadow-2xl flex items-center justify-center"
                     style={{
                       transform: isSwipping ? 
                         `translateX(${swipeOffset}px) rotate(${swipeOffset * 0.05}deg) scale(${Math.max(0.9, 1 - Math.abs(swipeOffset) / 800)})` :
@@ -968,7 +969,7 @@ export default function PublicViewPage() {
                     <img 
                       src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
-                      className="w-full h-full object-contain bg-black"
+                      className="max-w-full max-h-full object-contain"
                       style={{
                         borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px'
                       }}
