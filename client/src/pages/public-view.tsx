@@ -789,9 +789,9 @@ export default function PublicViewPage() {
         const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
         
         return (
-          <div className="h-full pb-16 bg-black">
-            {/* Video Player - Match footer width */}
-            <div className="relative w-full max-w-md mx-auto h-full bg-black">
+          <div className="h-screen bg-black">
+            {/* Video Player - Full screen but contained */}
+            <div className="relative w-full h-full max-w-md mx-auto bg-black">
               {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                 <iframe
                   src={currentVideo.embedUrl}
