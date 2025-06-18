@@ -1251,7 +1251,7 @@ export default function PublicViewPage() {
 
 
         {/* Profile Section - Above Navigation for Video/Image Views */}
-        {(contentType === 'image' || contentType === 'video') && (
+        {(contentType === 'image' || contentType === 'video') && !showProfileDetails && (
           <div className="fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-50">
             <div className="px-4 py-4">
               <div 
