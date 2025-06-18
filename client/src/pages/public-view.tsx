@@ -790,7 +790,7 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="h-screen relative overflow-hidden bg-black flex items-center justify-center">
+          <div className="fixed inset-0 z-40 bg-black flex items-center justify-center">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
@@ -896,6 +896,28 @@ export default function PublicViewPage() {
                           <Share className="w-6 h-6" />
                         </div>
                       </button>
+                    </div>
+
+                    {/* Navigation dots for switching tabs */}
+                    <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
+                      <button 
+                        onClick={() => setLocalContentType('image')}
+                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                          contentType === 'image' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
+                        }`}
+                      />
+                      <button 
+                        onClick={() => setLocalContentType('video')}
+                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                          contentType === 'video' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
+                        }`}
+                      />
+                      <button 
+                        onClick={() => setLocalContentType('links')}
+                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                          contentType === 'links' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
+                        }`}
+                      />
                     </div>
                   </>
                 );
@@ -1306,8 +1328,10 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Footer with all content types */}
-        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+        {/* Footer with all content types - Hidden for video view */}
+        <nav className={`fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50 transition-transform duration-300 ${
+          contentType === 'video' ? 'translate-y-full' : 'translate-y-0'
+        }`} style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
           <div className="flex items-center justify-around py-2">
             {/* Images Icon */}
             <button 
