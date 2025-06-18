@@ -906,6 +906,9 @@ export default function PublicViewPage() {
             {/* Full screen video view - same structure as image view */}
             <div 
               className="absolute inset-0 pb-16 overflow-hidden"
+              style={{
+                background: backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient
+              }}
               onTouchStart={(e) => {
                 setVideoSwipeStart(e.touches[0].clientY);
                 setIsVideoSwiping(true);
@@ -932,7 +935,12 @@ export default function PublicViewPage() {
                 setVideoSwipeStart(0);
               }}
             >
-              <div className="relative w-full h-full">
+              <div 
+                className="relative w-full h-full"
+                style={{
+                  background: backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient
+                }}
+              >
                 {/* Video Player - Fill entire space */}
                 {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                   <iframe
@@ -1009,9 +1017,8 @@ export default function PublicViewPage() {
     <div 
       className="min-h-screen overflow-hidden fixed inset-0 transition-all duration-700 ease-in-out"
       style={{
-        background: contentType === 'image' ? 
+        background: (contentType === 'image' || contentType === 'video') ? 
                    (backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient) : 
-                   contentType === 'video' ? '#000000' : 
                    getBackgroundStyle()
       }}
     >
@@ -1024,7 +1031,14 @@ export default function PublicViewPage() {
         </div>
       </div>
 
-      <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
+      <div 
+        className="max-w-md mx-auto h-screen relative overflow-hidden"
+        style={{
+          background: (contentType === 'image' || contentType === 'video') ? 
+                     (backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient) : 
+                     'black'
+        }}
+      >
 
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
@@ -1043,7 +1057,12 @@ export default function PublicViewPage() {
               >
                 <div className="relative w-full h-full flex items-center justify-center">
                   {/* Background layer - shows next image during swipe */}
-                  <div className="absolute inset-0 w-full h-full flex items-center justify-center bg-black">
+                  <div 
+                    className="absolute inset-0 w-full h-full flex items-center justify-center"
+                    style={{
+                      background: backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient
+                    }}
+                  >
                     <img 
                       src={getImageUrl(images[
                         isSwipping ? 
@@ -1179,7 +1198,9 @@ export default function PublicViewPage() {
               <div 
                 className="absolute inset-0 pb-20 flex items-center justify-center"
                 style={{
-                  background: settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)'
+                  background: backgroundGradient === 'bg-black' ? 
+                    (settings?.backgroundTheme || 'linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)') : 
+                    backgroundGradient
                 }}
               >
                 <div className="p-6 max-w-sm text-center">
