@@ -735,22 +735,22 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden bg-black">
+          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -ml-6 -mr-6">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
                 const currentVideo = filteredVideos[0];
                 
                 return currentVideo ? (
-                  <div className="relative w-full h-full flex items-center justify-center">
+                  <div className="relative w-full h-full bg-black">
                     {/* Video Container */}
-                    <div className="relative w-full h-full max-w-full max-h-full">
+                    <div className="relative w-full h-full bg-black">
                       {currentVideo.type === 'link' && currentVideo.embedUrl ? (
-                        <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-full h-full bg-black flex items-center justify-center">
                           <iframe
                             src={currentVideo.embedUrl}
-                            className="w-full h-full max-w-full max-h-full"
-                            style={{ aspectRatio: '9/16' }}
+                            className="w-full h-full"
+                            style={{ backgroundColor: 'black' }}
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
@@ -758,11 +758,11 @@ export default function PublicViewPage() {
                           />
                         </div>
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
+                        <div className="w-full h-full bg-black flex items-center justify-center">
                           <video
                             src={currentVideo.filePath || currentVideo.mediaUrl}
-                            className="w-full h-full object-contain"
-                            style={{ maxWidth: '100%', maxHeight: '100%' }}
+                            className="w-full h-full object-cover"
+                            style={{ backgroundColor: 'black' }}
                             poster={currentVideo.thumbnailUrl}
                             controls
                             playsInline
