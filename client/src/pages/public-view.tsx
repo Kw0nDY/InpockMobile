@@ -1256,7 +1256,10 @@ export default function PublicViewPage() {
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
-                onClick={() => setShowProfileDetails(!showProfileDetails)}
+                onClick={() => {
+                  console.log('Profile clicked, current state:', showProfileDetails);
+                  setShowProfileDetails(!showProfileDetails);
+                }}
               >
                 {/* Profile Image */}
                 {settings?.showProfileImage !== false && (
