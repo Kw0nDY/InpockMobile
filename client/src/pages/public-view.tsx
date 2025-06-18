@@ -73,6 +73,65 @@ export default function PublicViewPage() {
   const [videoSwipeOffset, setVideoSwipeOffset] = useState(0);
   const [videoSwipeStart, setVideoSwipeStart] = useState(0);
   const [isVideoSwiping, setIsVideoSwiping] = useState(false);
+  
+  // Image Color Extraction State
+  const [dominantColors, setDominantColors] = useState<string[]>([]);
+  const [backgroundGradient, setBackgroundGradient] = useState<string>('bg-black');
+
+  // Extract dominant colors from image
+  const extractColorsFromImage = (imageUrl: string) => {
+    const img = document.createElement('img') as HTMLImageElement;
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const colorCounts: { [key: string]: number } = {};
+
+      // Sample pixels to get color frequency
+      for (let i = 0; i < data.length; i += 160) { // Sample every 40th pixel for performance
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const alpha = data[i + 3];
+        
+        if (alpha > 128) { // Only consider non-transparent pixels
+          // Group similar colors
+          const roundedR = Math.round(r / 32) * 32;
+          const roundedG = Math.round(g / 32) * 32;
+          const roundedB = Math.round(b / 32) * 32;
+          const colorKey = `${roundedR},${roundedG},${roundedB}`;
+          colorCounts[colorKey] = (colorCounts[colorKey] || 0) + 1;
+        }
+      }
+
+      // Sort colors by frequency and get top colors
+      const sortedColors = Object.entries(colorCounts)
+        .sort(([,a], [,b]) => b - a)
+        .slice(0, 3)
+        .map(([color]) => {
+          const [r, g, b] = color.split(',').map(Number);
+          return `rgb(${r}, ${g}, ${b})`;
+        });
+
+      if (sortedColors.length > 0) {
+        setDominantColors(sortedColors);
+        // Create gradient background
+        const gradient = sortedColors.length > 1 
+          ? `linear-gradient(135deg, ${sortedColors[0]} 0%, ${sortedColors[1]} 50%, ${sortedColors[0]} 100%)`
+          : `linear-gradient(135deg, ${sortedColors[0]} 0%, rgba(0,0,0,0.8) 100%)`;
+        setBackgroundGradient(gradient);
+      }
+    };
+    img.src = imageUrl;
+  };
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
@@ -156,6 +215,19 @@ export default function PublicViewPage() {
   useEffect(() => {
     setCurrentImageIndex(0);
   }, [contentType]);
+
+  // Extract colors when current image changes
+  useEffect(() => {
+    if (contentType === 'image' && images && images.length > 0) {
+      const currentImage = images[currentImageIndex];
+      if (currentImage) {
+        extractColorsFromImage(getImageUrl(currentImage));
+      }
+    } else {
+      // Reset to black background for non-image content
+      setBackgroundGradient('bg-black');
+    }
+  }, [currentImageIndex, images, contentType]);
 
 
 
@@ -897,7 +969,15 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div className={`min-h-screen overflow-hidden fixed inset-0 ${contentType === 'image' || contentType === 'video' ? 'bg-black' : getBackgroundStyle()}`}>
+    <div 
+      className="min-h-screen overflow-hidden fixed inset-0"
+      style={{
+        background: contentType === 'image' ? 
+                   (backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient) : 
+                   contentType === 'video' ? '#000000' : 
+                   getBackgroundStyle()
+      }}
+    >
       {/* iPhone-style Toast Notification */}
       <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-out ${
         showToast ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
