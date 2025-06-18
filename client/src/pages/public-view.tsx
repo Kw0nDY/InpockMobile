@@ -66,6 +66,13 @@ export default function PublicViewPage() {
   
   // View Mode State (user view vs business view)
   const [viewMode, setViewMode] = useState<'user' | 'business'>('user');
+  
+  // Video Navigation State
+  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
+  const [videoTransition, setVideoTransition] = useState(false);
+  const [videoSwipeOffset, setVideoSwipeOffset] = useState(0);
+  const [videoSwipeStart, setVideoSwipeStart] = useState(0);
+  const [isVideoSwiping, setIsVideoSwiping] = useState(false);
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
@@ -734,117 +741,152 @@ export default function PublicViewPage() {
           </div>
         );
       case 'video':
+        const filteredVideos = Array.isArray(allVideos) ? allVideos.filter(video => !video.title?.includes('노래1')) : [];
+        
+        if (filteredVideos.length === 0) {
+          return (
+            <div className="h-screen flex flex-col items-center justify-center bg-black text-white">
+              <Video className="w-24 h-24 mb-6 text-white/70" />
+              <h2 className="text-3xl font-bold mb-3">동영상</h2>
+              <p className="text-lg text-white/80 text-center max-w-md">
+                아직 등록된 동영상이 없습니다
+              </p>
+            </div>
+          );
+        }
+
+        const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
+        
         return (
-          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -mx-6">
-            {Array.isArray(allVideos) && allVideos.length > 0 ? (
-              (() => {
-                const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
-                const currentVideo = filteredVideos[0];
-                
-                return currentVideo ? (
-                  <div className="relative w-full h-full flex items-center justify-center">
-                    {/* Video Container */}
-                    <div className="relative w-full h-full max-w-full max-h-full">
-                      {currentVideo.type === 'link' && currentVideo.embedUrl ? (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <iframe
-                            src={currentVideo.embedUrl}
-                            className="w-full h-full max-w-full max-h-full"
-                            style={{ aspectRatio: '9/16' }}
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            title={currentVideo.title || 'Video'}
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <video
-                            src={currentVideo.filePath || currentVideo.mediaUrl}
-                            className="w-full h-full object-contain"
-                            style={{ maxWidth: '100%', maxHeight: '100%' }}
-                            poster={currentVideo.thumbnailUrl}
-                            controls
-                            playsInline
-                            preload="metadata"
-                            onError={(e) => {
-                              console.error('Video loading error:', e);
-                              const target = e.target as HTMLVideoElement;
-                              target.style.display = 'none';
-                            }}
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Right Side Actions */}
-                      <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
-                        {/* Like Button */}
-                        <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <Heart className="w-6 h-6 text-white" />
-                          </button>
-                          <span className="text-white text-xs mt-1">43</span>
-                        </div>
-                        
-                        {/* Comment Button */}
-                        <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <MessageCircle className="w-6 h-6 text-white" />
-                          </button>
-                          <span className="text-white text-xs mt-1">62</span>
-                        </div>
-                        
-                        {/* Share Button */}
-                        <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <Share className="w-6 h-6 text-white" />
-                          </button>
-                        </div>
-                      </div>
-                      
-                      {/* Bottom Content */}
-                      <div className="absolute bottom-6 left-4 right-20 z-50">
-                        {/* Profile Info */}
-                        <div className="flex items-center space-x-3 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                            {user?.profileImageUrl ? (
-                              <img 
-                                src={user.profileImageUrl} 
-                                alt={user.name || '프로필'}
-                                className="w-8 h-8 rounded-full object-cover"
-                              />
-                            ) : (
-                              <User className="w-5 h-5 text-white" />
-                            )}
-                          </div>
-                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
-                          <button className="text-white text-sm font-medium hover:text-yellow-400 transition-colors">팔로우</button>
-                        </div>
-                        
-                        {/* Product Info */}
-                        <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-white text-lg font-bold">피트니스 프로그램</div>
-                              <div className="text-white/80 text-sm">전문 트레이너 {user?.name}</div>
-                            </div>
-                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium hover:bg-yellow-500 transition-colors">
-                              문의하기
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ) : null;
-              })()
-            ) : (
-              <div className="flex items-center justify-center h-full bg-black">
-                <div className="text-center p-8">
-                  <Video className="w-16 h-16 text-white/50 mx-auto mb-4" />
-                  <p className="text-white text-lg font-medium mb-2">동영상 없음</p>
-                  <p className="text-white/70 text-sm">업로드된 동영상이나 링크가 없습니다.</p>
+          <div 
+            className="relative w-screen h-screen overflow-hidden bg-black -mx-6"
+            onTouchStart={(e) => {
+              setVideoSwipeStart(e.touches[0].clientY);
+              setIsVideoSwiping(true);
+            }}
+            onTouchMove={(e) => {
+              if (!isVideoSwiping) return;
+              const deltaY = e.touches[0].clientY - videoSwipeStart;
+              setVideoSwipeOffset(deltaY);
+            }}
+            onTouchEnd={() => {
+              if (!isVideoSwiping) return;
+              const threshold = 100;
+              
+              if (Math.abs(videoSwipeOffset) > threshold) {
+                if (videoSwipeOffset > 0 && currentVideoIndex > 0) {
+                  setCurrentVideoIndex(currentVideoIndex - 1);
+                } else if (videoSwipeOffset < 0 && currentVideoIndex < filteredVideos.length - 1) {
+                  setCurrentVideoIndex(currentVideoIndex + 1);
+                }
+              }
+              
+              setIsVideoSwiping(false);
+              setVideoSwipeOffset(0);
+              setVideoSwipeStart(0);
+            }}
+          >
+            {/* Video Container */}
+            <div 
+              className="relative w-full h-full transition-transform duration-300 ease-out"
+              style={{
+                transform: `translateY(${videoSwipeOffset * 0.5}px)`
+              }}
+            >
+              {currentVideo.type === 'link' && currentVideo.embedUrl ? (
+                <div className="w-full h-full flex items-center justify-center">
+                  <iframe
+                    src={currentVideo.embedUrl}
+                    className="w-full h-full"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    title={currentVideo.title || 'Video'}
+                  />
                 </div>
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <video
+                    key={currentVideo.id}
+                    src={currentVideo.filePath || currentVideo.mediaUrl}
+                    className="w-full h-full object-cover"
+                    poster={currentVideo.thumbnailUrl}
+                    controls={false}
+                    playsInline
+                    autoPlay
+                    muted
+                    loop
+                    preload="metadata"
+                    onError={(e) => {
+                      console.error('Video loading error:', e);
+                    }}
+                  />
+                </div>
+              )}
+              
+              {/* Video Info Overlay - Bottom Left */}
+              <div className="absolute bottom-20 left-4 right-20 z-40">
+                <div className="flex items-center mb-4">
+                  {user?.profileImageUrl && (
+                    <img 
+                      src={user.profileImageUrl} 
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full border-2 border-white mr-3 object-cover"
+                    />
+                  )}
+                  <div>
+                    <p className="text-white font-semibold text-lg">{user?.name || user?.username}</p>
+                    <p className="text-white/80 text-sm">팔로우</p>
+                  </div>
+                </div>
+                
+                {currentVideo.title && (
+                  <h3 className="text-white font-medium text-lg mb-2 leading-tight">
+                    {currentVideo.title}
+                  </h3>
+                )}
+                {currentVideo.description && (
+                  <p className="text-white/90 text-sm leading-relaxed mb-3 line-clamp-3">
+                    {currentVideo.description}
+                  </p>
+                )}
+              </div>
+              
+              {/* Right Side Actions */}
+              <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
+                <div className="flex flex-col items-center">
+                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+                    <Heart className="w-6 h-6 text-white" />
+                  </button>
+                  <span className="text-white text-xs mt-1 font-medium">좋아요</span>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </button>
+                  <span className="text-white text-xs mt-1 font-medium">댓글</span>
+                </div>
+                
+                <div className="flex flex-col items-center">
+                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
+                    <Share className="w-6 h-6 text-white" />
+                  </button>
+                  <span className="text-white text-xs mt-1 font-medium">공유</span>
+                </div>
+              </div>
+            </div>
+            
+            {filteredVideos.length > 1 && (
+              <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 z-30">
+                {filteredVideos.map((_, index) => (
+                  <div
+                    key={index}
+                    className={`w-1 h-8 rounded-full transition-colors duration-200 ${
+                      index === currentVideoIndex ? 'bg-white' : 'bg-white/30'
+                    }`}
+                  />
+                ))}
               </div>
             )}
           </div>
