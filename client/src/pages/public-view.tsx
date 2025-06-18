@@ -1237,11 +1237,11 @@ export default function PublicViewPage() {
 
 
 
-                    {/* Fitness Introduction */}
-                    {user.fitnessIntro && (
+                    {/* Professional Introduction */}
+                    {user.bio && (
                       <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2 korean-text">전문 소개</h3>
-                        <p className="text-white/90 leading-relaxed korean-text">{user.fitnessIntro}</p>
+                        <p className="text-white/90 leading-relaxed korean-text">{user.bio}</p>
                       </div>
                     )}
 
