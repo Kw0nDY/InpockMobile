@@ -1250,25 +1250,18 @@ export default function PublicViewPage() {
                     {/* Personal Information */}
                     <div className="mb-6 space-y-4">
                       <h3 className="text-lg font-semibold korean-text">개인 정보</h3>
-                      {user.birthDate && (
-                        <div className="flex justify-between items-center py-2 border-b border-white/20">
-                          <span className="text-white/70 korean-text">생년월일</span>
-                          <span className="text-white korean-text">{user.birthDate}</span>
-                        </div>
-                      )}
-                      {user.currentGym && (
-                        <div className="flex justify-between items-center py-2 border-b border-white/20">
-                          <span className="text-white/70 korean-text">근무 헬스장</span>
-                          <span className="text-white korean-text">{user.currentGym}</span>
-                        </div>
-                      )}
-                      {user.gymAddress && (
-                        <div className="flex justify-between items-center py-2 border-b border-white/20">
-                          <span className="text-white/70 korean-text">헬스장 주소</span>
-                          <span className="text-white korean-text">{user.gymAddress}</span>
-                        </div>
-                      )}
-
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">생년월일</span>
+                        <span className="text-white korean-text">{user.birthDate || "정보 없음"}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">근무 헬스장</span>
+                        <span className="text-white korean-text">{user.currentGym || "정보 없음"}</span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">헬스장 주소</span>
+                        <span className="text-white korean-text">{user.gymAddress || "정보 없음"}</span>
+                      </div>
                     </div>
 
                     {/* Fitness Information */}
