@@ -44,6 +44,12 @@ export default function PublicViewPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDragging, setIsMouseDragging] = useState(false);
   
+  // Swipe navigation states
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  const [swipeCurrentX, setSwipeCurrentX] = useState(0);
+  const [isSwipping, setIsSwipping] = useState(false);
+  const [swipeOffset, setSwipeOffset] = useState(0);
+  
   // Tinder-style image navigation
   const [imageTransition, setImageTransition] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
@@ -162,28 +168,65 @@ export default function PublicViewPage() {
 
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    setDragStartY(e.touches[0].clientY);
-    setDragCurrentY(e.touches[0].clientY);
+    const touch = e.touches[0];
+    setDragStartY(touch.clientY);
+    setDragCurrentY(touch.clientY);
     setIsDragging(true);
+    
+    // Also handle swipe for image navigation
+    if (contentType === 'image' && images.length > 1) {
+      setSwipeStartX(touch.clientX);
+      setSwipeCurrentX(touch.clientX);
+      setIsSwipping(true);
+      setSwipeOffset(0);
+    }
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-    setDragCurrentY(e.touches[0].clientY);
+    const touch = e.touches[0];
+    
+    if (isDragging) {
+      setDragCurrentY(touch.clientY);
+    }
+    
+    // Handle swipe movement for image navigation
+    if (isSwipping && contentType === 'image' && images.length > 1) {
+      const deltaX = touch.clientX - swipeStartX;
+      setSwipeCurrentX(touch.clientX);
+      setSwipeOffset(deltaX);
+    }
   };
 
   const handleTouchEnd = () => {
-    if (!isDragging) return;
-    
-    const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 30px, close the modal
-    if (dragDistance > 30) {
-      closeProfilePanel();
+    // Handle profile panel drag
+    if (isDragging) {
+      const dragDistance = dragCurrentY - dragStartY;
+      if (dragDistance > 30) {
+        closeProfilePanel();
+      }
+      setIsDragging(false);
+      setDragStartY(0);
+      setDragCurrentY(0);
     }
     
-    setIsDragging(false);
-    setDragStartY(0);
-    setDragCurrentY(0);
+    // Handle swipe for image navigation
+    if (isSwipping && contentType === 'image' && images.length > 1) {
+      const deltaX = swipeCurrentX - swipeStartX;
+      const threshold = 50;
+      
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX > 0) {
+          handleLeftTap(false);
+        } else {
+          handleRightTap(false);
+        }
+      }
+      
+      setIsSwipping(false);
+      setSwipeStartX(0);
+      setSwipeCurrentX(0);
+      setSwipeOffset(0);
+    }
   };
 
   // Mouse drag handlers
@@ -289,6 +332,47 @@ export default function PublicViewPage() {
       setIsProfileClosing(false);
     }, 300);
   };
+
+  // Swipe event handlers
+  const handleSwipeStart = (clientX: number) => {
+    setSwipeStartX(clientX);
+    setSwipeCurrentX(clientX);
+    setIsSwipping(true);
+    setSwipeOffset(0);
+  };
+
+  const handleSwipeMove = (clientX: number) => {
+    if (!isSwipping) return;
+    
+    const deltaX = clientX - swipeStartX;
+    setSwipeCurrentX(clientX);
+    setSwipeOffset(deltaX);
+  };
+
+  const handleSwipeEnd = () => {
+    if (!isSwipping) return;
+    
+    const deltaX = swipeCurrentX - swipeStartX;
+    const threshold = 50; // Minimum swipe distance
+    
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        // Swiped right - go to previous image
+        handleLeftTap(false);
+      } else {
+        // Swiped left - go to next image
+        handleRightTap(false);
+      }
+    }
+    
+    // Reset swipe state
+    setIsSwipping(false);
+    setSwipeStartX(0);
+    setSwipeCurrentX(0);
+    setSwipeOffset(0);
+  };
+
+
 
   // Tinder-style navigation functions
   const handleLeftTap = (fromAutoSlide = false) => {
