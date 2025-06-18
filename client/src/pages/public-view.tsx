@@ -950,7 +950,12 @@ export default function PublicViewPage() {
                 )}
                 
                 {/* Gradient overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
+                <div 
+                  className="absolute inset-0 transition-all duration-700 ease-in-out"
+                  style={{
+                    background: `linear-gradient(to bottom, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.1)' : backgroundGradient.replace(/0\.\d+\)/g, '0.1)')} 0%, transparent 40%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.7)' : backgroundGradient.replace(/0\.\d+\)/g, '0.7)')} 100%)`
+                  }}
+                ></div>
 
 
               </div>
@@ -1098,7 +1103,12 @@ export default function PublicViewPage() {
                 </div>
                 
                 {/* Gradient overlay for better text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
+                <div 
+                  className="absolute inset-0 transition-all duration-700 ease-in-out"
+                  style={{
+                    background: `linear-gradient(to bottom, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.1)' : backgroundGradient.replace(/0\.\d+\)/g, '0.1)')} 0%, transparent 40%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.7)' : backgroundGradient.replace(/0\.\d+\)/g, '0.7)')} 100%)`
+                  }}
+                ></div>
                 
                 {/* Left and Right tap zones for navigation */}
                 {images.length > 1 && (
@@ -1167,7 +1177,12 @@ export default function PublicViewPage() {
             )}
 
             {/* Bottom overlay with dark semi-transparent background */}
-            <div className="absolute bottom-0 left-0 right-0 h-60 bg-gradient-to-t from-black/60 via-black/30 to-transparent z-5"></div>
+            <div 
+              className="absolute bottom-0 left-0 right-0 h-60 z-5 transition-all duration-700 ease-in-out"
+              style={{
+                background: `linear-gradient(to top, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.6)' : backgroundGradient.replace(/0\.\d+\)/g, '0.6)')} 0%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.3)' : backgroundGradient.replace(/0\.\d+\)/g, '0.3)')} 50%, transparent 100%)`
+              }}
+            ></div>
 
             {/* Navigation buttons overlay - left bottom position */}
             {images.length > 1 && (
@@ -1217,7 +1232,7 @@ export default function PublicViewPage() {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   style={{
-                    background: `linear-gradient(to top, ${profileSectionBg}, transparent)`,
+                    background: `linear-gradient(to top, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.9)' : backgroundGradient}, transparent)`,
                     transform: isProfileClosing ? 'translateY(100%)' :
                               isDragging && dragCurrentY > dragStartY ? 
                               `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
@@ -1357,9 +1372,6 @@ export default function PublicViewPage() {
             className={`fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
-            style={{
-              background: profileSectionBg
-            }}
           >
             <div className="px-4 py-4">
               <div 
