@@ -933,17 +933,16 @@ export default function PublicViewPage() {
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
-                style={{ 
-                  transform: isSwipping ? `translateX(${swipeOffset * 0.3}px)` : 'translateX(0)',
-                  transition: isSwipping ? 'none' : 'transform 0.3s ease-out'
-                }}
               >
                 <div className="relative w-full h-full">
-                  {/* Background image - shows the destination image */}
+                  {/* Background layer - next image to be shown */}
                   <div className="absolute inset-0 w-full h-full">
                     <img 
-                      src={getImageUrl(images[currentImageIndex])}
-                      alt="배경 이미지"
+                      src={getImageUrl(images[swipeOffset > 0 ? 
+                        (currentImageIndex - 1 + images.length) % images.length : 
+                        (currentImageIndex + 1) % images.length
+                      ])}
+                      alt="다음 이미지"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
@@ -952,27 +951,52 @@ export default function PublicViewPage() {
                     />
                   </div>
                   
-                  {/* Current image card (slides out like Tinder) */}
+                  {/* Current image card (Tinder-style swipe) */}
                   <div 
-                    className="absolute inset-0 w-full h-full z-10"
+                    className="absolute inset-0 w-full h-full z-10 shadow-2xl"
                     style={{
-                      transform: imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-15deg)' :
-                                 imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(15deg)' :
-                                 'translateX(0) rotate(0deg)',
-                      opacity: imageTransition ? 0 : 1,
-                      transition: imageTransition ? 'transform 250ms ease-out, opacity 250ms ease-out' : 'none',
-                      transformOrigin: 'center bottom'
+                      transform: isSwipping ? 
+                        `translateX(${swipeOffset}px) rotate(${swipeOffset * 0.05}deg) scale(${Math.max(0.9, 1 - Math.abs(swipeOffset) / 800)})` :
+                        imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-15deg) scale(0.8)' :
+                        imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(15deg) scale(0.8)' :
+                        'translateX(0) rotate(0deg) scale(1)',
+                      opacity: isSwipping ? Math.max(0.4, 1 - Math.abs(swipeOffset) / 150) :
+                               imageTransition ? 0 : 1,
+                      transition: isSwipping ? 'none' : 
+                                  imageTransition ? 'all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
+                      transformOrigin: 'center bottom',
+                      borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px',
+                      filter: isSwipping ? `brightness(${Math.max(0.7, 1 - Math.abs(swipeOffset) / 300)})` : 'brightness(1)'
                     }}
                   >
                     <img 
                       src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
                       className="w-full h-full object-cover"
+                      style={{
+                        borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px'
+                      }}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder-image.jpg';
                       }}
                     />
+                    
+                    {/* Swipe direction indicator */}
+                    {isSwipping && Math.abs(swipeOffset) > 30 && (
+                      <div 
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                        style={{
+                          background: swipeOffset > 0 ? 
+                            'linear-gradient(45deg, rgba(34, 197, 94, 0.2), rgba(34, 197, 94, 0.4))' :
+                            'linear-gradient(45deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.4))'
+                        }}
+                      >
+                        <div className={`text-6xl font-bold ${swipeOffset > 0 ? 'text-green-500' : 'text-red-500'} animate-pulse`}>
+                          {swipeOffset > 0 ? '←' : '→'}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
                 
