@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { User, Link as LinkIcon, Copy, Check, Image, Video, Home, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, Link as LinkIcon, Copy, Check, Image, Video, Home, RefreshCw, ChevronLeft, ChevronRight, Heart, MessageCircle, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { queryClient } from "@/lib/queryClient";
 
@@ -790,14 +790,14 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full h-[calc(100vh-240px)] overflow-hidden">
+          <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden bg-black">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
                 const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
                 
                 return currentVideo ? (
-                  <div className="relative w-full h-[140%] bg-black mx-auto">
+                  <div className="relative w-full h-full">
                     {/* Video Container */}
                     <div className="relative w-full h-full">
                       {currentVideo.type === 'link' && currentVideo.embedUrl ? (
@@ -830,36 +830,64 @@ export default function PublicViewPage() {
                         />
                       )}
                       
-                      {/* Profile Info - Bottom Left */}
-                      <div className="absolute bottom-4 left-4 flex items-center space-x-3 pointer-events-auto z-50">
-                        <button 
-                          className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors border border-white/20"
-                          onClick={() => setShowProfileDetails(true)}
-                        >
-                          {user?.profileImageUrl ? (
-                            <img 
-                              src={user.profileImageUrl} 
-                              alt={user.name || '프로필'}
-                              className="w-10 h-10 rounded-full object-cover"
-                            />
-                          ) : (
-                            <User className="w-6 h-6 text-white" />
-                          )}
-                        </button>
-                        <div 
-                          className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 cursor-pointer border border-white/20"
-                          onClick={() => setShowProfileDetails(true)}
-                        >
-                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
+                      {/* Right Side Actions */}
+                      <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
+                        {/* Like Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <Heart className="w-6 h-6 text-white" />
+                          </button>
+                          <span className="text-white text-xs mt-1">43</span>
+                        </div>
+                        
+                        {/* Comment Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <MessageCircle className="w-6 h-6 text-white" />
+                          </button>
+                          <span className="text-white text-xs mt-1">62</span>
+                        </div>
+                        
+                        {/* Share Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <Share className="w-6 h-6 text-white" />
+                          </button>
                         </div>
                       </div>
                       
-                      {/* Video Progress Indicator */}
-                      {currentVideo.type === 'upload' && (
-                        <div className="absolute top-4 left-4 right-16 h-1 bg-white/30 rounded-full overflow-hidden">
-                          <div className="h-full bg-white rounded-full w-0 transition-all duration-100"></div>
+                      {/* Bottom Content */}
+                      <div className="absolute bottom-6 left-4 right-20 z-50">
+                        {/* Profile Info */}
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            {user?.profileImageUrl ? (
+                              <img 
+                                src={user.profileImageUrl} 
+                                alt={user.name || '프로필'}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                            ) : (
+                              <User className="w-5 h-5 text-white" />
+                            )}
+                          </div>
+                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
+                          <button className="text-white text-sm font-medium">팔로우</button>
                         </div>
-                      )}
+                        
+                        {/* Product Info */}
+                        <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-white text-lg font-bold">280</div>
+                              <div className="text-white/80 text-sm">Men's Tracksuit</div>
+                            </div>
+                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium">
+                              BUY
+                            </button>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 ) : null;
