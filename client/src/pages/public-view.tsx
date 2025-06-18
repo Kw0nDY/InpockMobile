@@ -789,13 +789,13 @@ export default function PublicViewPage() {
         const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
         
         return (
-          <div className="h-full pb-32">
-            {/* Video Player - Shorts Style within webapp */}
-            <div className="relative w-full h-full">
+          <div className="h-full pb-32 pt-0">
+            {/* Video Player - Full height with proper aspect ratio */}
+            <div className="relative w-full" style={{ height: 'calc(100vh - 8rem)' }}>
               {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                 <iframe
                   src={currentVideo.embedUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-lg"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -805,7 +805,7 @@ export default function PublicViewPage() {
                 <video
                   key={currentVideo.id}
                   src={currentVideo.filePath || currentVideo.mediaUrl}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-lg"
                   poster={currentVideo.thumbnailUrl}
                   controls={false}
                   playsInline
@@ -821,63 +821,63 @@ export default function PublicViewPage() {
               
               {/* Video Title Overlay - Center */}
               <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                <div className="text-center text-white">
-                  <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-wider">
+                <div className="text-center text-white drop-shadow-2xl">
+                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-wider">
                     STEPHEN SANCHEZ
                   </h1>
-                  <h2 className="text-2xl md:text-4xl font-bold mt-2 tracking-wider">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mt-2 tracking-wider">
                     UNTIL I FOUND YOU
                   </h2>
-                  <h3 className="text-xl md:text-2xl font-medium mt-2 tracking-wider">
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-medium mt-2 tracking-wider">
                     ACOUSTIC
                   </h3>
                 </div>
               </div>
 
               {/* Right Side Actions - YouTube Shorts Style */}
-              <div className="absolute right-3 bottom-32 z-50">
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 z-50">
                 <div className="flex flex-col space-y-6">
                   {/* Like Button */}
                   <div className="flex flex-col items-center">
                     <button className="w-12 h-12 flex items-center justify-center">
-                      <Heart className="w-8 h-8 text-white" />
+                      <Heart className="w-8 h-8 text-white drop-shadow-lg" />
                     </button>
-                    <span className="text-white text-xs font-semibold mt-1">1.1만</span>
+                    <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">1.1만</span>
                   </div>
 
                   {/* Comment Button */}
                   <div className="flex flex-col items-center">
                     <button className="w-12 h-12 flex items-center justify-center">
-                      <MessageCircle className="w-8 h-8 text-white" />
+                      <MessageCircle className="w-8 h-8 text-white drop-shadow-lg" />
                     </button>
-                    <span className="text-white text-xs font-semibold mt-1">심어요</span>
+                    <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">심어요</span>
                   </div>
 
                   {/* Save Button */}
                   <div className="flex flex-col items-center">
                     <button className="w-12 h-12 flex items-center justify-center">
-                      <div className="w-6 h-6 border-2 border-white rounded"></div>
+                      <div className="w-6 h-6 border-2 border-white rounded drop-shadow-lg"></div>
                     </button>
-                    <span className="text-white text-xs font-semibold mt-1">251</span>
+                    <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">251</span>
                   </div>
 
                   {/* Share Button */}
                   <div className="flex flex-col items-center">
                     <button className="w-12 h-12 flex items-center justify-center">
-                      <Share className="w-8 h-8 text-white" />
+                      <Share className="w-8 h-8 text-white drop-shadow-lg" />
                     </button>
-                    <span className="text-white text-xs font-semibold mt-1">공유</span>
+                    <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">공유</span>
                   </div>
                 </div>
               </div>
 
               {/* Bottom Overlay - User Info and Description */}
-              <div className="absolute bottom-20 left-0 right-16 z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
+              <div className="absolute bottom-4 left-4 right-20 z-50">
                 <div className="space-y-3">
                   {/* Username and Follow */}
                   <div className="flex items-center space-x-3">
-                    <span className="text-white font-semibold text-lg">@{user?.username}</span>
-                    <button className="px-4 py-1 bg-white rounded-md">
+                    <span className="text-white font-semibold text-lg drop-shadow-lg">@{user?.username}</span>
+                    <button className="px-4 py-1.5 bg-white rounded-md">
                       <span className="text-black text-sm font-medium">팔로우</span>
                     </button>
                   </div>
@@ -885,7 +885,7 @@ export default function PublicViewPage() {
                   {/* Video Description */}
                   <div className="space-y-2">
                     {currentVideo.title && (
-                      <p className="text-white font-medium text-base leading-tight">
+                      <p className="text-white font-medium text-base leading-tight drop-shadow-lg">
                         {currentVideo.title}
                       </p>
                     )}
