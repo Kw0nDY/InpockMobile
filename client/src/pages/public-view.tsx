@@ -1631,8 +1631,8 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Profile Section - Above Navigation for Video/Image Views */}
-        {(contentType === "image" || contentType === "video") && (
+        {/* Profile Section - Image View */}
+        {contentType === "image" && (
           <div
             className={`fixed bottom-40 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails
@@ -1661,36 +1661,118 @@ export default function PublicViewPage() {
                 >
                   {/* Profile Image */}
                   {settings?.showProfileImage !== false &&
-                    (user?.profileImageUrl || user?.profileImage ? (
-                      <img
-                        src={user.profileImageUrl || user.profileImage}
-                        alt={user.name}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
-                        <span className="text-white font-medium text-sm">
-                          {user?.name?.[0]?.toUpperCase() ||
-                            user?.username?.[0]?.toUpperCase() ||
-                            "사"}
-                        </span>
-                      </div>
-                    ))}
+                  (user?.profileImageUrl || user?.profileImage) ? (
+                    <img
+                      src={user.profileImageUrl || user.profileImage}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                      <span className="text-white font-medium text-lg">
+                        {user?.name?.[0]?.toUpperCase() ||
+                          user?.username?.[0]?.toUpperCase() ||
+                          "사"}
+                      </span>
+                    </div>
+                  )}
 
-                  {/* Name and Username */}
-                  <div className="flex-1">
-                    <h1 className="text-lg font-bold text-white korean-text">
-                      {user?.name}
-                    </h1>
-                    <p className="text-white/70 text-sm korean-text">
+                  {/* Profile Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-white font-semibold text-lg korean-text truncate">
+                        {user?.name}
+                      </h3>
+                    </div>
+                    <p className="text-white/80 text-sm korean-text">
                       @{user?.username}
                     </p>
                   </div>
 
-                  {/* Expand Icon */}
-                  <div className="flex items-center">
+                  {/* Up arrow indicator */}
+                  <div className="text-white/70">
                     <svg
-                      className="w-5 h-5 text-white/70"
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M7 11l5-5m0 0l5 5m-5-5v12"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Profile Section - Video View */}
+        {contentType === "video" && (
+          <div
+            className={`fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
+              showProfileDetails
+                ? "opacity-0 translate-y-4 pointer-events-none"
+                : "opacity-100 translate-y-0"
+            }`}
+          >
+            <div
+              className="mx-4 backdrop-blur-sm rounded-2xl"
+              style={{
+                background: "rgba(0, 0, 0, 0.2)",
+              }}
+            >
+              <div className="px-4 py-4">
+                <div
+                  className="flex items-center space-x-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    console.log(
+                      "Profile clicked, current state:",
+                      showProfileDetails,
+                    );
+                    setShowProfileDetails(!showProfileDetails);
+                  }}
+                >
+                  {/* Profile Image */}
+                  {settings?.showProfileImage !== false &&
+                  (user?.profileImageUrl || user?.profileImage) ? (
+                    <img
+                      src={user.profileImageUrl || user.profileImage}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                      <span className="text-white font-medium text-lg">
+                        {user?.name?.[0]?.toUpperCase() ||
+                          user?.username?.[0]?.toUpperCase() ||
+                          "사"}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Profile Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center space-x-2">
+                      <h3 className="text-white font-semibold text-lg korean-text truncate">
+                        {user?.name}
+                      </h3>
+                    </div>
+                    <p className="text-white/80 text-sm korean-text">
+                      @{user?.username}
+                    </p>
+                  </div>
+
+                  {/* Up arrow indicator */}
+                  <div className="text-white/70">
+                    <svg
+                      className="w-5 h-5"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
