@@ -77,6 +77,7 @@ export default function PublicViewPage() {
   // Image Color Extraction State
   const [dominantColors, setDominantColors] = useState<string[]>([]);
   const [backgroundGradient, setBackgroundGradient] = useState<string>('bg-black');
+  const [profileSectionBg, setProfileSectionBg] = useState<string>('rgba(0,0,0,0.9)');
 
   // Extract dominant colors from image
   const extractColorsFromImage = (imageUrl: string) => {
@@ -131,10 +132,20 @@ export default function PublicViewPage() {
           const color3 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.15)');
           const gradient = `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
           setBackgroundGradient(gradient);
+          
+          // Set profile section background with stronger opacity
+          const profileColor1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.85)');
+          const profileColor2 = sortedColors[1].replace('rgb(', 'rgba(').replace(')', ', 0.75)');
+          const profileGradient = `linear-gradient(135deg, ${profileColor1} 0%, ${profileColor2} 100%)`;
+          setProfileSectionBg(profileGradient);
         } else {
           const color1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.3)');
           const gradient = `linear-gradient(135deg, ${color1} 0%, rgba(0,0,0,0.9) 100%)`;
           setBackgroundGradient(gradient);
+          
+          // Set profile section background
+          const profileColor = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.9)');
+          setProfileSectionBg(`linear-gradient(135deg, ${profileColor} 0%, rgba(0,0,0,0.85) 100%)`);
         }
       }
     };
@@ -234,6 +245,7 @@ export default function PublicViewPage() {
     } else {
       // Reset to black background for non-image content
       setBackgroundGradient('bg-black');
+      setProfileSectionBg('rgba(0,0,0,0.9)');
     }
   }, [currentImageIndex, images, contentType]);
 
@@ -1196,7 +1208,7 @@ export default function PublicViewPage() {
                 }}
               >
                 <div 
-                  className="w-full max-w-md mx-auto bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4 pb-16 transform overscroll-none"
+                  className="w-full max-w-md mx-auto p-4 pb-16 transform overscroll-none"
                   onClick={(e) => e.stopPropagation()}
                   onTouchStart={handleTouchStart}
                   onTouchMove={handleTouchMove}
@@ -1205,6 +1217,7 @@ export default function PublicViewPage() {
                   onMouseMove={handleMouseMove}
                   onMouseUp={handleMouseUp}
                   style={{
+                    background: `linear-gradient(to top, ${profileSectionBg}, transparent)`,
                     transform: isProfileClosing ? 'translateY(100%)' :
                               isDragging && dragCurrentY > dragStartY ? 
                               `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)` : 
@@ -1341,9 +1354,12 @@ export default function PublicViewPage() {
         {/* Profile Section - Above Navigation for Video/Image Views */}
         {(contentType === 'image' || contentType === 'video') && (
           <div 
-            className={`fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
+            className={`fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
+            style={{
+              background: profileSectionBg
+            }}
           >
             <div className="px-4 py-4">
               <div 
