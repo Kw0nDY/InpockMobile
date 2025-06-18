@@ -749,8 +749,8 @@ export default function PublicViewPage() {
                         <div className="w-full h-full bg-black flex items-center justify-center">
                           <iframe
                             src={currentVideo.embedUrl}
-                            className="w-full h-full"
-                            style={{ backgroundColor: 'black' }}
+                            className="w-full h-full rounded-lg"
+                            style={{ backgroundColor: 'black', maxWidth: '390px', aspectRatio: '9/16' }}
                             frameBorder="0"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
@@ -761,8 +761,14 @@ export default function PublicViewPage() {
                         <div className="w-full h-full bg-black flex items-center justify-center">
                           <video
                             src={currentVideo.filePath || currentVideo.mediaUrl}
-                            className="w-full h-full object-cover"
-                            style={{ backgroundColor: 'black' }}
+                            className="rounded-lg shadow-2xl"
+                            style={{ 
+                              backgroundColor: 'black',
+                              maxWidth: '390px',
+                              maxHeight: '80vh',
+                              width: '100%',
+                              aspectRatio: '9/16'
+                            }}
                             poster={currentVideo.thumbnailUrl}
                             controls
                             playsInline
@@ -776,95 +782,99 @@ export default function PublicViewPage() {
                         </div>
                       )}
                       
-                      {/* Top Navigation */}
-                      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
-                        <button 
-                          onClick={() => setLocalContentType('image')}
-                          className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white hover:bg-black/50 transition-colors"
-                        >
-                          <ChevronLeft className="w-5 h-5" />
-                          <span className="text-sm">이미지</span>
-                        </button>
-                        
-                        <div className="flex space-x-3">
+                      {/* Top Status Bar */}
+                      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-black/50 to-transparent z-50">
+                        <div className="flex items-center justify-between px-4 pt-2">
+                          <div className="text-white text-sm font-medium">
+                            {user?.name} 님의 동영상
+                          </div>
                           <button 
                             onClick={() => setLocalContentType('image')}
-                            className={`px-3 py-1 rounded-full text-xs transition-colors ${
-                              contentType === 'image' ? 'bg-white text-black' : 'bg-black/30 text-white'
-                            }`}
+                            className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
                           >
-                            이미지
-                          </button>
-                          <button 
-                            className="px-3 py-1 rounded-full text-xs bg-white text-black"
-                          >
-                            동영상
-                          </button>
-                          <button 
-                            onClick={() => setLocalContentType('links')}
-                            className={`px-3 py-1 rounded-full text-xs transition-colors ${
-                              contentType === 'links' ? 'bg-white text-black' : 'bg-black/30 text-white'
-                            }`}
-                          >
-                            링크
+                            <ChevronLeft className="w-5 h-5 text-white" />
                           </button>
                         </div>
                       </div>
                       
-                      {/* Right Side Actions */}
-                      <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
+                      {/* Right Side Actions - Mobile App Style */}
+                      <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col space-y-4 z-50">
                         {/* Like Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <Heart className="w-6 h-6 text-white" />
+                          <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all duration-200 border border-white/20 shadow-lg">
+                            <Heart className="w-7 h-7 text-white" />
                           </button>
-                          <span className="text-white text-xs mt-1">43</span>
+                          <span className="text-white text-sm mt-2 font-medium">좋아요</span>
                         </div>
                         
                         {/* Comment Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <MessageCircle className="w-6 h-6 text-white" />
+                          <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all duration-200 border border-white/20 shadow-lg">
+                            <MessageCircle className="w-7 h-7 text-white" />
                           </button>
-                          <span className="text-white text-xs mt-1">62</span>
+                          <span className="text-white text-sm mt-2 font-medium">댓글</span>
                         </div>
                         
                         {/* Share Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                            <Share className="w-6 h-6 text-white" />
+                          <button className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center hover:bg-white/20 transition-all duration-200 border border-white/20 shadow-lg">
+                            <Share className="w-7 h-7 text-white" />
                           </button>
+                          <span className="text-white text-sm mt-2 font-medium">공유</span>
                         </div>
                       </div>
                       
-                      {/* Bottom Content */}
-                      <div className="absolute bottom-6 left-4 right-20 z-50">
-                        {/* Profile Info */}
-                        <div className="flex items-center space-x-3 mb-4">
-                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                            {user?.profileImageUrl ? (
-                              <img 
-                                src={user.profileImageUrl} 
-                                alt={user.name || '프로필'}
-                                className="w-8 h-8 rounded-full object-cover"
-                              />
-                            ) : (
-                              <User className="w-5 h-5 text-white" />
-                            )}
-                          </div>
-                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
-                          <button className="text-white text-sm font-medium hover:text-yellow-400 transition-colors">팔로우</button>
-                        </div>
-                        
-                        {/* Product Info */}
-                        <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <div className="text-white text-lg font-bold">피트니스 프로그램</div>
-                              <div className="text-white/80 text-sm">전문 트레이너 {user?.name}</div>
+                      {/* Bottom App Navigation */}
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent z-50">
+                        <div className="px-4 pb-6 pt-8">
+                          {/* Profile Info */}
+                          <div className="flex items-center space-x-3 mb-4">
+                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/30">
+                              {user?.profileImageUrl ? (
+                                <img 
+                                  src={user.profileImageUrl} 
+                                  alt={user.name || '프로필'}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <User className="w-6 h-6 text-white" />
+                              )}
                             </div>
-                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium hover:bg-yellow-500 transition-colors">
-                              문의하기
+                            <div className="flex-1">
+                              <div className="text-white text-lg font-bold">{user?.name || '사용자'}</div>
+                              <div className="text-white/80 text-sm">전문 피트니스 트레이너</div>
+                            </div>
+                            <button className="bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-white/30 transition-colors border border-white/30">
+                              팔로우
+                            </button>
+                          </div>
+                          
+                          {/* App Navigation */}
+                          <div className="flex items-center justify-around bg-black/60 backdrop-blur-sm rounded-2xl py-3 border border-white/20">
+                            <button 
+                              onClick={() => setLocalContentType('image')}
+                              className="flex flex-col items-center space-y-1 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors"
+                            >
+                              <Image className="w-6 h-6 text-white" />
+                              <span className="text-white text-xs">이미지</span>
+                            </button>
+                            
+                            <button className="flex flex-col items-center space-y-1 px-4 py-2 rounded-xl bg-white/20">
+                              <Video className="w-6 h-6 text-white" />
+                              <span className="text-white text-xs font-medium">동영상</span>
+                            </button>
+                            
+                            <button 
+                              onClick={() => setLocalContentType('links')}
+                              className="flex flex-col items-center space-y-1 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors"
+                            >
+                              <LinkIcon className="w-6 h-6 text-white" />
+                              <span className="text-white text-xs">링크</span>
+                            </button>
+                            
+                            <button className="flex flex-col items-center space-y-1 px-4 py-2 rounded-xl hover:bg-white/10 transition-colors">
+                              <MessageCircle className="w-6 h-6 text-white" />
+                              <span className="text-white text-xs">채팅</span>
                             </button>
                           </div>
                         </div>
