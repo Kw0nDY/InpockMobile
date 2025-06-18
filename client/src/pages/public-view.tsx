@@ -2065,48 +2065,47 @@ export default function PublicViewPage() {
                   피트니스 정보
                 </h3>
 
-                {user?.fitnessIntro && (
-                  <div className="mb-4">
-                    <h4 className="text-white/70 mb-1 korean-text">소개</h4>
+                {/* Certifications Box */}
+                <div>
+                  <h4 className="text-white/70 mb-2 korean-text">자격증</h4>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
                     <p className="text-white/90 korean-text">
-                      {user.fitnessIntro}
+                      {user?.fitnessCertifications || "자격증 정보가 없습니다."}
                     </p>
                   </div>
-                )}
-
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">자격증</span>
-                  <span className="text-white korean-text">
-                    {user?.fitnessCertifications || "정보 없음"}
-                  </span>
                 </div>
 
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">수상 경력</span>
-                  <span className="text-white korean-text">
-                    {user?.fitnessAwards || "정보 없음"}
-                  </span>
-                </div>
-
-                <div className="flex justify-between items-center py-2 border-b border-white/20">
-                  <span className="text-white/70 korean-text">현재 체육관</span>
-                  <span className="text-white korean-text">
-                    {user?.currentGym || "정보 없음"}
-                  </span>
-                </div>
-
-                {user?.gymAddress && (
-                  <div className="flex justify-between items-center py-2 border-b border-white/20">
-                    <span className="text-white/70 korean-text">체육관 주소</span>
-                    <span className="text-white korean-text text-sm">
-                      {user.gymAddress}
-                    </span>
+                {/* Awards Box */}
+                <div>
+                  <h4 className="text-white/70 mb-2 korean-text">수상 내역</h4>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                    <p className="text-white/90 korean-text">
+                      {user?.fitnessAwards || "수상 내역이 없습니다."}
+                    </p>
                   </div>
-                )}
+                </div>
+
+                {/* Current Gym Box */}
+                <div>
+                  <h4 className="text-white/70 mb-2 korean-text">현재 체육관</h4>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20">
+                    <p className="text-white/90 korean-text">
+                      {user?.currentGym || "체육관 정보가 없습니다."}
+                    </p>
+                    {user?.gymAddress && (
+                      <p className="text-white/70 text-sm mt-1 korean-text">
+                        {user.gymAddress}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
 
-              {/* Close button area */}
-              <div className="flex justify-center pb-8">
+              {/* Close instruction and button */}
+              <div className="flex flex-col items-center pb-8">
+                <p className="text-white/60 text-sm mb-4 korean-text">
+                  위로 올려서 드래그하거나 아래 꺼내주세요
+                </p>
                 <div
                   className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer transition-all hover:bg-white/30"
                   onClick={() => setShowVideoProfileDetails(false)}
