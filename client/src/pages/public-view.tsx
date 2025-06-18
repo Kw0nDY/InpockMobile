@@ -1371,7 +1371,7 @@ export default function PublicViewPage() {
                   {/* Left navigation button */}
                   <button
                     onClick={handleLeftTapManual}
-                    className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                    className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
                   >
                     <svg
                       className="w-6 h-6 text-white"
@@ -1391,7 +1391,7 @@ export default function PublicViewPage() {
                   {/* Right navigation button */}
                   <button
                     onClick={handleRightTapManual}
-                    className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
+                    className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg transition-all duration-200 hover:bg-white/30 active:scale-95"
                   >
                     <svg
                       className="w-6 h-6 text-white"
