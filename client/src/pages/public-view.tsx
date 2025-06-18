@@ -450,11 +450,9 @@ export default function PublicViewPage() {
       setSlideDirection('left');
       setImageTransition(true);
       
-      // Update to next index immediately - background already shows correct image
-      setCurrentImageIndex(nextIndex);
-      
-      // Clear animation state after animation completes
+      // Clear animation state and update index after animation completes
       setTimeout(() => {
+        setCurrentImageIndex(nextIndex);
         setImageTransition(false);
         setSlideDirection(null);
       }, 300);
@@ -475,11 +473,9 @@ export default function PublicViewPage() {
       setSlideDirection('right');
       setImageTransition(true);
       
-      // Update to next index immediately - background already shows correct image
-      setCurrentImageIndex(nextIndex);
-      
-      // Clear animation state after animation completes
+      // Clear animation state and update index after animation completes
       setTimeout(() => {
+        setCurrentImageIndex(nextIndex);
         setImageTransition(false);
         setSlideDirection(null);
       }, 300);
@@ -935,11 +931,14 @@ export default function PublicViewPage() {
                   <div className="absolute inset-0 w-full h-full">
                     <img 
                       src={getImageUrl(images[
-                        imageTransition ? currentImageIndex :
                         isSwipping ? 
                           (swipeOffset > 0 ? 
                             (currentImageIndex - 1 + images.length) % images.length : 
                             (currentImageIndex + 1) % images.length) :
+                        imageTransition && slideDirection === 'left' ?
+                          (currentImageIndex - 1 + images.length) % images.length :
+                        imageTransition && slideDirection === 'right' ?
+                          (currentImageIndex + 1) % images.length :
                           currentImageIndex
                       ])}
                       alt="배경 이미지"
