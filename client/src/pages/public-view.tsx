@@ -60,6 +60,9 @@ export default function PublicViewPage() {
   // Toast Notification State
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  
+  // Content Type State (local override)
+  const [localContentType, setLocalContentType] = useState<'links' | 'image' | 'video' | 'media' | 'both'>('image');
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
@@ -122,7 +125,7 @@ export default function PublicViewPage() {
     return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
   };
 
-  const contentType = settings?.contentType || 'links';
+  const contentType = localContentType;
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -1243,7 +1246,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => {}}
+              onClick={() => setLocalContentType('image')}
             >
               <Image className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">이미지</span>
@@ -1256,7 +1259,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => {}}
+              onClick={() => setLocalContentType('video')}
             >
               <Video className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">동영상</span>
@@ -1269,7 +1272,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => {}}
+              onClick={() => setLocalContentType('links')}
             >
               <LinkIcon className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">링크</span>
