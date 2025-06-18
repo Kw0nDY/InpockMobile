@@ -745,7 +745,7 @@ export default function PublicViewPage() {
         
         if (filteredVideos.length === 0) {
           return (
-            <div className="h-screen flex flex-col items-center justify-center bg-black text-white">
+            <div className="h-full flex flex-col items-center justify-center text-white pt-20 pb-32">
               <Video className="w-24 h-24 mb-6 text-white/70" />
               <h2 className="text-3xl font-bold mb-3">동영상</h2>
               <p className="text-lg text-white/80 text-center max-w-md">
@@ -758,54 +758,48 @@ export default function PublicViewPage() {
         const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
         
         return (
-          <div 
-            className="relative w-screen h-screen overflow-hidden bg-black -mx-6"
-            onTouchStart={(e) => {
-              setVideoSwipeStart(e.touches[0].clientY);
-              setIsVideoSwiping(true);
-            }}
-            onTouchMove={(e) => {
-              if (!isVideoSwiping) return;
-              const deltaY = e.touches[0].clientY - videoSwipeStart;
-              setVideoSwipeOffset(deltaY);
-            }}
-            onTouchEnd={() => {
-              if (!isVideoSwiping) return;
-              const threshold = 100;
-              
-              if (Math.abs(videoSwipeOffset) > threshold) {
-                if (videoSwipeOffset > 0 && currentVideoIndex > 0) {
-                  setCurrentVideoIndex(currentVideoIndex - 1);
-                } else if (videoSwipeOffset < 0 && currentVideoIndex < filteredVideos.length - 1) {
-                  setCurrentVideoIndex(currentVideoIndex + 1);
-                }
-              }
-              
-              setIsVideoSwiping(false);
-              setVideoSwipeOffset(0);
-              setVideoSwipeStart(0);
-            }}
-          >
+          <div className="h-full pb-32">
             {/* Video Container */}
             <div 
-              className="relative w-full h-full transition-transform duration-300 ease-out"
-              style={{
-                transform: `translateY(${videoSwipeOffset * 0.5}px)`
+              className="relative w-full h-full"
+              onTouchStart={(e) => {
+                setVideoSwipeStart(e.touches[0].clientY);
+                setIsVideoSwiping(true);
+              }}
+              onTouchMove={(e) => {
+                if (!isVideoSwiping) return;
+                const deltaY = e.touches[0].clientY - videoSwipeStart;
+                setVideoSwipeOffset(deltaY);
+              }}
+              onTouchEnd={() => {
+                if (!isVideoSwiping) return;
+                const threshold = 100;
+                
+                if (Math.abs(videoSwipeOffset) > threshold) {
+                  if (videoSwipeOffset > 0 && currentVideoIndex > 0) {
+                    setCurrentVideoIndex(currentVideoIndex - 1);
+                  } else if (videoSwipeOffset < 0 && currentVideoIndex < filteredVideos.length - 1) {
+                    setCurrentVideoIndex(currentVideoIndex + 1);
+                  }
+                }
+                
+                setIsVideoSwiping(false);
+                setVideoSwipeOffset(0);
+                setVideoSwipeStart(0);
               }}
             >
-              {currentVideo.type === 'link' && currentVideo.embedUrl ? (
-                <div className="w-full h-full flex items-center justify-center">
+              {/* Video Player */}
+              <div className="relative w-full h-full">
+                {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                   <iframe
                     src={currentVideo.embedUrl}
-                    className="w-full h-full"
+                    className="w-full h-full object-cover"
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                     title={currentVideo.title || 'Video'}
                   />
-                </div>
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
+                ) : (
                   <video
                     key={currentVideo.id}
                     src={currentVideo.filePath || currentVideo.mediaUrl}
@@ -821,74 +815,85 @@ export default function PublicViewPage() {
                       console.error('Video loading error:', e);
                     }}
                   />
-                </div>
-              )}
-              
-              {/* Video Info Overlay - Bottom Left */}
-              <div className="absolute bottom-20 left-4 right-20 z-40">
-                <div className="flex items-center mb-4">
-                  {user?.profileImageUrl && (
-                    <img 
-                      src={user.profileImageUrl} 
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full border-2 border-white mr-3 object-cover"
-                    />
-                  )}
-                  <div>
-                    <p className="text-white font-semibold text-lg">{user?.name || user?.username}</p>
-                    <p className="text-white/80 text-sm">팔로우</p>
+                )}
+                
+                {/* Right Side Actions */}
+                <div className="absolute right-3 bottom-20 z-50">
+                  <div className="flex flex-col space-y-6">
+                    {/* Profile Picture */}
+                    <div className="relative">
+                      <div className="w-12 h-12 rounded-full border-2 border-white overflow-hidden">
+                        {user?.profileImageUrl ? (
+                          <img 
+                            src={user.profileImageUrl} 
+                            alt={user.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-400 flex items-center justify-center">
+                            <User className="w-6 h-6 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">+</span>
+                      </div>
+                    </div>
+
+                    {/* Like Button */}
+                    <div className="flex flex-col items-center">
+                      <button className="w-12 h-12 flex items-center justify-center">
+                        <Heart className="w-8 h-8 text-white" />
+                      </button>
+                      <span className="text-white text-xs font-semibold mt-1">43</span>
+                    </div>
+
+                    {/* Comment Button */}
+                    <div className="flex flex-col items-center">
+                      <button className="w-12 h-12 flex items-center justify-center">
+                        <MessageCircle className="w-8 h-8 text-white" />
+                      </button>
+                      <span className="text-white text-xs font-semibold mt-1">62</span>
+                    </div>
+
+                    {/* Share Button */}
+                    <div className="flex flex-col items-center">
+                      <button className="w-12 h-12 flex items-center justify-center">
+                        <Share className="w-8 h-8 text-white" />
+                      </button>
+                      <span className="text-white text-xs font-semibold mt-1">공유</span>
+                    </div>
                   </div>
                 </div>
-                
-                {currentVideo.title && (
-                  <h3 className="text-white font-medium text-lg mb-2 leading-tight">
-                    {currentVideo.title}
-                  </h3>
-                )}
-                {currentVideo.description && (
-                  <p className="text-white/90 text-sm leading-relaxed mb-3 line-clamp-3">
-                    {currentVideo.description}
-                  </p>
-                )}
-              </div>
-              
-              {/* Right Side Actions */}
-              <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
-                <div className="flex flex-col items-center">
-                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                    <Heart className="w-6 h-6 text-white" />
-                  </button>
-                  <span className="text-white text-xs mt-1 font-medium">좋아요</span>
-                </div>
-                
-                <div className="flex flex-col items-center">
-                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                    <MessageCircle className="w-6 h-6 text-white" />
-                  </button>
-                  <span className="text-white text-xs mt-1 font-medium">댓글</span>
-                </div>
-                
-                <div className="flex flex-col items-center">
-                  <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
-                    <Share className="w-6 h-6 text-white" />
-                  </button>
-                  <span className="text-white text-xs mt-1 font-medium">공유</span>
+
+                {/* Bottom Overlay - User Info and Description */}
+                <div className="absolute bottom-0 left-0 right-16 z-50 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <div className="space-y-3">
+                    {/* Username */}
+                    <div className="flex items-center space-x-3">
+                      <span className="text-white font-semibold text-lg">@{user?.username}</span>
+                      <button className="px-4 py-1 border border-white rounded-md">
+                        <span className="text-white text-sm font-medium">팔로우</span>
+                      </button>
+                    </div>
+
+                    {/* Video Description */}
+                    <div className="space-y-2">
+                      {currentVideo.title && (
+                        <p className="text-white font-medium text-base leading-tight">
+                          {currentVideo.title}
+                        </p>
+                      )}
+                      {currentVideo.description && (
+                        <p className="text-white/90 text-sm leading-relaxed">
+                          {currentVideo.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-            
-            {filteredVideos.length > 1 && (
-              <div className="absolute right-8 top-1/2 transform -translate-y-1/2 flex flex-col space-y-2 z-30">
-                {filteredVideos.map((_, index) => (
-                  <div
-                    key={index}
-                    className={`w-1 h-8 rounded-full transition-colors duration-200 ${
-                      index === currentVideoIndex ? 'bg-white' : 'bg-white/30'
-                    }`}
-                  />
-                ))}
-              </div>
-            )}
           </div>
         );
       case 'media':
@@ -918,6 +923,29 @@ export default function PublicViewPage() {
       </div>
 
       <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
+        {/* Profile Header */}
+        {contentType !== 'video' && (
+          <div className="absolute top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/50 to-transparent p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                {user?.profileImageUrl && (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt={user.name}
+                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
+                  />
+                )}
+                <div>
+                  <p className="text-white font-semibold">{user?.name}</p>
+                  <p className="text-white/80 text-sm">팔로우</p>
+                </div>
+              </div>
+              <button className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </button>
+            </div>
+          </div>
+        )}
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
           /* Full screen image view with profile overlay */
@@ -1284,6 +1312,28 @@ export default function PublicViewPage() {
               </div>
             </div>
           </>
+        )}
+
+        {/* Product Info Card - Only show when not in video mode */}
+        {contentType !== 'video' && (
+          <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4 z-40">
+            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
+                    <span className="text-black font-bold text-sm">M</span>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">피트니스 프로그램</p>
+                    <p className="text-white/70 text-xs">전문 트레이너 김철수</p>
+                  </div>
+                </div>
+                <button className="bg-yellow-400 text-black px-4 py-2 rounded-full font-medium text-sm">
+                  문의
+                </button>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Footer with all content types */}
