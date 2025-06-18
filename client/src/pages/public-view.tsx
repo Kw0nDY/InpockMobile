@@ -954,29 +954,7 @@ export default function PublicViewPage() {
       </div>
 
       <div className="max-w-md mx-auto h-screen relative bg-black overflow-hidden">
-        {/* Profile Header */}
-        {contentType !== 'video' && (
-          <div className="absolute top-0 left-0 right-0 z-40 bg-gradient-to-b from-black/50 to-transparent p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                {user?.profileImageUrl && (
-                  <img 
-                    src={user.profileImageUrl} 
-                    alt={user.name}
-                    className="w-10 h-10 rounded-full border-2 border-white object-cover"
-                  />
-                )}
-                <div>
-                  <p className="text-white font-semibold">{user?.name}</p>
-                  <p className="text-white/80 text-sm">팔로우</p>
-                </div>
-              </div>
-              <button className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </button>
-            </div>
-          </div>
-        )}
+
         {/* Content based on selected tab */}
         {contentType === 'image' ? (
           /* Full screen image view with profile overlay */
