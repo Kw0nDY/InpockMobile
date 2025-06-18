@@ -555,30 +555,7 @@ export default function PublicViewPage() {
                             {link.description && (
                               <div className="text-xs text-muted-foreground mt-1 line-clamp-1">{link.description}</div>
                             )}
-                            <div className="flex items-center gap-2 mt-1">
-                              <div 
-                                className="text-xs text-muted-foreground cursor-pointer hover:underline flex-1"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.open(`/l/${link.shortCode}`, '_blank');
-                                }}
-                              >
-                                클릭수: {link.clicks || 0} | 단축링크: amusefit.co.kr/l/{link.shortCode}
-                              </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  copyToClipboard(`${window.location.origin}/l/${link.shortCode}`, link.shortCode);
-                                }}
-                                className="h-5 w-5 p-0 text-muted-foreground hover:text-foreground"
-                              >
-                                <Copy className="w-3 h-3" />
-                              </button>
-                            </div>
-                            <div className="text-xs text-muted-foreground mt-1 flex gap-3">
-                              <span>내 방문: {link.ownerVisits || 0}</span>
-                              <span>외부 방문: {link.externalVisits || 0}</span>
-                            </div>
+
                           </div>
                         </div>
                       </div>
@@ -603,19 +580,7 @@ export default function PublicViewPage() {
                           )}
                           <div className="relative z-10 bg-black/80 text-white p-2 rounded">
                             <div className="text-sm font-medium truncate">{link.title}</div>
-                            <div 
-                              className="text-xs text-gray-200 mt-1 cursor-pointer hover:underline"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(`/l/${link.shortCode}`, '_blank');
-                              }}
-                            >
-                              amusefit.co.kr/l/{link.shortCode} | 클릭: {link.clicks || 0}
-                            </div>
-                            <div className="text-xs text-gray-300 mt-1 flex gap-3">
-                              <span>내 방문: {link.ownerVisits || 0}</span>
-                              <span>외부 방문: {link.externalVisits || 0}</span>
-                            </div>
+
                           </div>
                           <div className="absolute bottom-2 right-2 w-6 h-6 bg-black/80 rounded-full flex items-center justify-center">
                             <div className="w-3 h-3 border-2 border-white rounded-full"></div>
@@ -645,19 +610,7 @@ export default function PublicViewPage() {
                           {link.description && (
                             <div className="text-xs text-muted-foreground mb-2 line-clamp-2">{link.description}</div>
                           )}
-                          <div 
-                            className="text-xs text-muted-foreground mb-2 cursor-pointer hover:underline"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              window.open(`/l/${link.shortCode}`, '_blank');
-                            }}
-                          >
-                            단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
-                          </div>
-                          <div className="text-xs text-muted-foreground mb-2 flex gap-3">
-                            <span>내 방문: {link.ownerVisits || 0}</span>
-                            <span>외부 방문: {link.externalVisits || 0}</span>
-                          </div>
+
                           <div className="w-full h-2 bg-muted rounded"></div>
                         </div>
                       </div>
@@ -685,19 +638,8 @@ export default function PublicViewPage() {
                           
                           <div className="relative z-10 text-white">
                             <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
-                            <div 
-                              className="text-xs text-gray-200 mb-2 cursor-pointer hover:underline drop-shadow-lg"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                window.open(`/l/${link.shortCode}`, '_blank');
-                              }}
-                            >
-                              단축링크: amusefit.co.kr/l/{link.shortCode} | 클릭수: {link.clicks || 0}
-                            </div>
-                            <div className="text-xs text-gray-300 mb-2 flex gap-3 drop-shadow-lg">
-                              <span>내 방문: {link.ownerVisits || 0}</span>
-                              <span>외부 방문: {link.externalVisits || 0}</span>
-                            </div>
+
+
                           </div>
                         </div>
                       </div>
