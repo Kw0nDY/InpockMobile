@@ -1948,6 +1948,108 @@ export default function PublicViewPage() {
           </div>
         )}
 
+        {/* Video Profile Details Modal */}
+        {showVideoProfileDetails && (
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[1000] flex items-end"
+            onClick={() => setShowVideoProfileDetails(false)}
+          >
+            <div
+              className="w-full max-w-md mx-auto bg-white rounded-t-3xl p-6 animate-slide-up"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold korean-text">프로필 정보</h2>
+                <button
+                  onClick={() => setShowVideoProfileDetails(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Profile Header */}
+              <div className="flex items-center space-x-4 mb-6">
+                {settings?.showProfileImage !== false &&
+                (user?.profileImageUrl || user?.profileImage) ? (
+                  <img
+                    src={user.profileImageUrl || user.profileImage}
+                    alt={user.name}
+                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-200"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                    <User className="w-8 h-8 text-gray-500" />
+                  </div>
+                )}
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold korean-text">
+                    {user?.name}
+                  </h3>
+                  <p className="text-gray-600 korean-text">@{user?.username}</p>
+                  {settings?.showVisitCount !== false && user?.visitCount && (
+                    <p className="text-sm text-gray-500 korean-text">
+                      방문 수: {user.visitCount.toLocaleString()}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Bio */}
+              {settings?.showBio !== false && user?.bio && (
+                <div className="mb-6">
+                  <h4 className="font-semibold mb-2 korean-text">소개</h4>
+                  <p className="text-gray-700 korean-text">{user.bio}</p>
+                </div>
+              )}
+
+              {/* Fitness Information */}
+              <div className="space-y-4">
+                {user?.fitnessIntro && (
+                  <div>
+                    <h4 className="font-semibold mb-2 korean-text">
+                      피트니스 소개
+                    </h4>
+                    <p className="text-gray-700 korean-text">
+                      {user.fitnessIntro}
+                    </p>
+                  </div>
+                )}
+
+                {user?.currentGym && (
+                  <div>
+                    <h4 className="font-semibold mb-2 korean-text">현재 체육관</h4>
+                    <p className="text-gray-700 korean-text">{user.currentGym}</p>
+                    {user?.gymAddress && (
+                      <p className="text-sm text-gray-600 korean-text">
+                        {user.gymAddress}
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {user?.fitnessCertifications && (
+                  <div>
+                    <h4 className="font-semibold mb-2 korean-text">자격증</h4>
+                    <p className="text-gray-700 korean-text">
+                      {user.fitnessCertifications}
+                    </p>
+                  </div>
+                )}
+
+                {user?.fitnessAwards && (
+                  <div>
+                    <h4 className="font-semibold mb-2 korean-text">수상 경력</h4>
+                    <p className="text-gray-700 korean-text">
+                      {user.fitnessAwards}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Footer with all content types */}
         <nav
           className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50"
