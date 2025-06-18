@@ -1875,7 +1875,9 @@ export default function PublicViewPage() {
                       "Video Profile clicked, current state:",
                       showVideoProfileDetails,
                       "contentType:",
-                      contentType
+                      contentType,
+                      "Will set to:",
+                      !showVideoProfileDetails
                     );
                     setShowVideoProfileDetails(!showVideoProfileDetails);
                   }}
