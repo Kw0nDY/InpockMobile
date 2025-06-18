@@ -1345,8 +1345,8 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Product Info Card - Only show when not in video mode */}
-        {contentType !== 'video' && (
+        {/* Product Info Card - Only show when in video mode */}
+        {contentType === 'video' && (
           <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4 z-40">
             <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
               <div className="flex items-center justify-between">
