@@ -797,7 +797,7 @@ export default function PublicViewPage() {
                 const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
                 
                 return currentVideo ? (
-                  <div className="relative w-full h-[calc(95%+80px)] bg-black mx-auto">
+                  <div className="relative w-full h-full bg-black mx-auto">
                     {/* Video Container */}
                     <div className="relative w-full h-full">
                       {currentVideo.type === 'link' && currentVideo.embedUrl ? (
