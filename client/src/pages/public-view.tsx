@@ -735,7 +735,7 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -ml-6 -mr-6">
+          <div className="fixed inset-0 top-0 bg-black w-screen h-screen overflow-hidden z-40">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
@@ -775,6 +775,41 @@ export default function PublicViewPage() {
                           />
                         </div>
                       )}
+                      
+                      {/* Top Navigation */}
+                      <div className="absolute top-4 left-4 right-4 flex justify-between items-center z-50">
+                        <button 
+                          onClick={() => setLocalContentType('image')}
+                          className="flex items-center space-x-2 bg-black/30 backdrop-blur-sm px-4 py-2 rounded-full text-white hover:bg-black/50 transition-colors"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                          <span className="text-sm">이미지</span>
+                        </button>
+                        
+                        <div className="flex space-x-3">
+                          <button 
+                            onClick={() => setLocalContentType('image')}
+                            className={`px-3 py-1 rounded-full text-xs transition-colors ${
+                              contentType === 'image' ? 'bg-white text-black' : 'bg-black/30 text-white'
+                            }`}
+                          >
+                            이미지
+                          </button>
+                          <button 
+                            className="px-3 py-1 rounded-full text-xs bg-white text-black"
+                          >
+                            동영상
+                          </button>
+                          <button 
+                            onClick={() => setLocalContentType('links')}
+                            className={`px-3 py-1 rounded-full text-xs transition-colors ${
+                              contentType === 'links' ? 'bg-white text-black' : 'bg-black/30 text-white'
+                            }`}
+                          >
+                            링크
+                          </button>
+                        </div>
+                      </div>
                       
                       {/* Right Side Actions */}
                       <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
@@ -1244,49 +1279,51 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Footer with all content types */}
-        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
-          <div className="flex items-center justify-around py-2">
-            {/* Images Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'image' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setLocalContentType('image')}
-            >
-              <Image className="w-6 h-6 mb-1" />
-              <span className="text-xs korean-text">이미지</span>
-            </button>
+        {/* Footer with all content types - Hidden in video mode */}
+        {contentType !== 'video' && (
+          <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+            <div className="flex items-center justify-around py-2">
+              {/* Images Icon */}
+              <button 
+                className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                  contentType === 'image' 
+                    ? 'text-primary' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                onClick={() => setLocalContentType('image')}
+              >
+                <Image className="w-6 h-6 mb-1" />
+                <span className="text-xs korean-text">이미지</span>
+              </button>
 
-            {/* Videos Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'video' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setLocalContentType('video')}
-            >
-              <Video className="w-6 h-6 mb-1" />
-              <span className="text-xs korean-text">동영상</span>
-            </button>
+              {/* Videos Icon */}
+              <button 
+                className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                  contentType === 'video' 
+                    ? 'text-primary' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                onClick={() => setLocalContentType('video')}
+              >
+                <Video className="w-6 h-6 mb-1" />
+                <span className="text-xs korean-text">동영상</span>
+              </button>
 
-            {/* Links Icon */}
-            <button 
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                contentType === 'links' 
-                  ? 'text-primary' 
-                  : 'text-gray-400 hover:text-gray-600'
-              }`}
-              onClick={() => setLocalContentType('links')}
-            >
-              <LinkIcon className="w-6 h-6 mb-1" />
-              <span className="text-xs korean-text">링크</span>
-            </button>
-          </div>
-        </nav>
+              {/* Links Icon */}
+              <button 
+                className={`flex flex-col items-center py-2 px-3 transition-colors ${
+                  contentType === 'links' 
+                    ? 'text-primary' 
+                    : 'text-gray-400 hover:text-gray-600'
+                }`}
+                onClick={() => setLocalContentType('links')}
+              >
+                <LinkIcon className="w-6 h-6 mb-1" />
+                <span className="text-xs korean-text">링크</span>
+              </button>
+            </div>
+          </nav>
+        )}
       </div>
     </div>
   );
