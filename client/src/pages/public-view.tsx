@@ -952,22 +952,26 @@ export default function PublicViewPage() {
                     className="absolute inset-0 w-full h-full z-10 shadow-2xl"
                     style={{
                       transform: isSwipping ? 
-                        `translateX(${swipeOffset}px)` :
-                        imageTransition && slideDirection === 'left' ? 'translateX(-100%)' :
-                        imageTransition && slideDirection === 'right' ? 'translateX(100%)' :
-                        'translateX(0)',
-                      opacity: isSwipping ? Math.max(0.7, 1 - Math.abs(swipeOffset) / 200) :
+                        `translateX(${swipeOffset}px) rotate(${swipeOffset * 0.05}deg) scale(${Math.max(0.9, 1 - Math.abs(swipeOffset) / 800)})` :
+                        imageTransition && slideDirection === 'left' ? 'translateX(-100%) rotate(-15deg) scale(0.8)' :
+                        imageTransition && slideDirection === 'right' ? 'translateX(100%) rotate(15deg) scale(0.8)' :
+                        'translateX(0) rotate(0deg) scale(1)',
+                      opacity: isSwipping ? Math.max(0.4, 1 - Math.abs(swipeOffset) / 150) :
                                imageTransition ? 0 : 1,
                       transition: isSwipping ? 'none' : 
                                   imageTransition ? 'all 300ms cubic-bezier(0.25, 0.46, 0.45, 0.94)' : 'none',
-                      transformOrigin: 'center center'
+                      transformOrigin: 'center bottom',
+                      borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px',
+                      filter: isSwipping ? `brightness(${Math.max(0.7, 1 - Math.abs(swipeOffset) / 300)})` : 'brightness(1)'
                     }}
                   >
                     <img 
                       src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
                       className="w-full h-full object-contain bg-black"
-
+                      style={{
+                        borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px'
+                      }}
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder-image.jpg';
