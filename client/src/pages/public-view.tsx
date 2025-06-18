@@ -792,7 +792,7 @@ export default function PublicViewPage() {
         return (
           <div className="relative w-full h-[calc(100vh-140px)] overflow-hidden">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
-              <div className="snap-y snap-mandatory overflow-y-auto h-full">
+              <div className="snap-y snap-mandatory overflow-y-auto h-full scrollbar-hide">
                 {allVideos
                   .filter(video => !video.title?.includes('노래1')) // 노래1 제외
                   .map((video: any, index: number) => (

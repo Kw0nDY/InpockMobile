@@ -191,6 +191,16 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Hide scrollbar for video reels */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
 /* Extra small screens */
 @media screen and (max-width: 360px) {
   html {
