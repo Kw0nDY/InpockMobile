@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
@@ -525,214 +526,147 @@ export default function SettingsPage() {
       </header>
 
       <div className="p-4 space-y-6">
-        {/* Profile Section */}
-        <Card className="bg-card shadow-sm border-border">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">프로필</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Avatar */}
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {(userData as any)?.profileImageUrl ? (
-                  <img
-                    src={(userData as any).profileImageUrl}
-                    alt="프로필 이미지"
-                    className="w-20 h-20 rounded-full object-cover border-2 border-border"
-                  />
-                ) : (
-                  <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
-                    <span className="text-primary-foreground font-medium text-xl">
-                      {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
-                    </span>
+        {/* Tabs for Profile and Fitness Info */}
+        <Tabs defaultValue="profile" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="profile">프로필</TabsTrigger>
+            <TabsTrigger value="fitness">피트니스 정보</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="profile" className="space-y-4 mt-4">
+            <Card className="bg-card shadow-sm border-border">
+              <CardContent className="space-y-4 pt-6">
+                {/* Avatar */}
+                <div className="flex items-center space-x-4">
+                  <div className="relative">
+                    {(userData as any)?.profileImageUrl ? (
+                      <img
+                        src={(userData as any).profileImageUrl}
+                        alt="프로필 이미지"
+                        className="w-20 h-20 rounded-full object-cover border-2 border-border"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 bg-primary rounded-full flex items-center justify-center">
+                        <span className="text-primary-foreground font-medium text-xl">
+                          {profileData.name ? getInitials(profileData.name) : getInitials(user?.name || '사용자')}
+                        </span>
+                      </div>
+                    )}
+                    <Button
+                      size="sm"
+                      onClick={handleProfileImageUpload}
+                      disabled={isUploadingProfile}
+                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-border text-muted-foreground hover:text-foreground disabled:opacity-50"
+                    >
+                      {isUploadingProfile ? (
+                        <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Camera className="w-4 h-4" />
+                      )}
+                    </Button>
+                    {(userData as any)?.profileImageUrl && (
+                      <Button
+                        size="sm"
+                        onClick={handleDeleteProfileImage}
+                        className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    )}
                   </div>
-                )}
-                <Button
-                  size="sm"
-                  onClick={handleProfileImageUpload}
-                  disabled={isUploadingProfile}
-                  className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-border text-muted-foreground hover:text-foreground disabled:opacity-50"
-                >
-                  {isUploadingProfile ? (
-                    <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
-                  ) : (
-                    <Camera className="w-4 h-4" />
-                  )}
-                </Button>
-                {(userData as any)?.profileImageUrl && (
-                  <Button
-                    size="sm"
-                    onClick={handleDeleteProfileImage}
-                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-red-500 border-2 border-white text-white hover:bg-red-600"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </Button>
-                )}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-1">프로필 사진</p>
-                <p className="text-xs text-gray-500">클릭하여 이미지를 변경하세요</p>
-                {(userData as any)?.profileImageUrl && (
-                  <p className="text-xs text-red-500 mt-1">빨간 버튼을 클릭하여 삭제할 수 있습니다</p>
-                )}
-              </div>
-            </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-gray-600 mb-1">프로필 사진</p>
+                    <p className="text-xs text-gray-500">클릭하여 이미지를 변경하세요</p>
+                    {(userData as any)?.profileImageUrl && (
+                      <p className="text-xs text-red-500 mt-1">빨간 버튼을 클릭하여 삭제할 수 있습니다</p>
+                    )}
+                  </div>
+                </div>
 
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium text-foreground">이름</Label>
-              <Input
-                id="name"
-                value={profileData.name}
-                onChange={(e) => updateProfileData('name', e.target.value)}
-                placeholder="이름을 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
+                {/* Name */}
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-sm font-medium text-foreground">이름</Label>
+                  <Input
+                    id="name"
+                    value={profileData.name}
+                    onChange={(e) => updateProfileData('name', e.target.value)}
+                    placeholder="이름을 입력하세요"
+                    className="border-border focus:border-primary bg-background"
+                  />
+                </div>
 
-            {/* Email */}
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-sm font-medium text-foreground">이메일</Label>
-              <Input
-                id="email"
-                type="email"
-                value={profileData.email}
-                onChange={(e) => updateProfileData('email', e.target.value)}
-                placeholder="이메일을 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
+                {/* Birth Date */}
+                <div className="space-y-2">
+                  <Label htmlFor="birthDate" className="text-sm font-medium text-foreground">생년월일</Label>
+                  <Input
+                    id="birthDate"
+                    type="date"
+                    value={profileData.birthDate}
+                    onChange={(e) => updateProfileData('birthDate', e.target.value)}
+                    className="border-border focus:border-primary bg-background"
+                  />
+                </div>
 
-            {/* Bio */}
-            <div className="space-y-2">
-              <Label htmlFor="bio" className="text-sm font-medium text-foreground">소개</Label>
-              <Textarea
-                id="bio"
-                value={profileData.bio}
-                onChange={(e) => updateProfileData('bio', e.target.value)}
-                placeholder="자신을 소개해보세요"
-                className="border-border focus:border-primary resize-none bg-background"
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
+                {/* Bio */}
+                <div className="space-y-2">
+                  <Label htmlFor="bio" className="text-sm font-medium text-foreground">자기소개</Label>
+                  <Textarea
+                    id="bio"
+                    value={profileData.bio}
+                    onChange={(e) => updateProfileData('bio', e.target.value)}
+                    placeholder="자신을 소개해보세요"
+                    className="border-border focus:border-primary resize-none bg-background"
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-        {/* 피트니스 정보 섹션 */}
-        <Card className="bg-card shadow-sm border-border">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">피트니스 정보</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 생년월일 */}
-            <div className="space-y-2">
-              <Label htmlFor="birthDate" className="text-sm font-medium text-foreground">생년월일</Label>
-              <Input
-                id="birthDate"
-                type="date"
-                value={profileData.birthDate}
-                onChange={(e) => updateProfileData('birthDate', e.target.value)}
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
+          <TabsContent value="fitness" className="space-y-4 mt-4">
+            <Card className="bg-card shadow-sm border-border">
+              <CardContent className="space-y-4 pt-6">
+                {/* 피트니스 자격증 */}
+                <div className="space-y-2">
+                  <Label htmlFor="fitnessCertifications" className="text-sm font-medium text-foreground">자격증</Label>
+                  <Textarea
+                    id="fitnessCertifications"
+                    value={profileData.fitnessCertifications}
+                    onChange={(e) => updateProfileData('fitnessCertifications', e.target.value)}
+                    placeholder="보유한 피트니스 자격증을 입력하세요 (예: NSCA-CPT, ACSM-EP)"
+                    className="border-border focus:border-primary resize-none bg-background"
+                    rows={2}
+                  />
+                </div>
 
-            {/* 피트니스 자격증 */}
-            <div className="space-y-2">
-              <Label htmlFor="fitnessCertifications" className="text-sm font-medium text-foreground">피트니스 자격증</Label>
-              <Textarea
-                id="fitnessCertifications"
-                value={profileData.fitnessCertifications}
-                onChange={(e) => updateProfileData('fitnessCertifications', e.target.value)}
-                placeholder="보유한 피트니스 자격증을 입력하세요 (예: NSCA-CPT, ACSM-EP)"
-                className="border-border focus:border-primary resize-none bg-background"
-                rows={2}
-              />
-            </div>
+                {/* 현재 소속 체육관 */}
+                <div className="space-y-2">
+                  <Label htmlFor="currentGym" className="text-sm font-medium text-foreground">현 소속 체육관</Label>
+                  <Input
+                    id="currentGym"
+                    value={profileData.currentGym}
+                    onChange={(e) => updateProfileData('currentGym', e.target.value)}
+                    placeholder="현재 근무하는 체육관명을 입력하세요"
+                    className="border-border focus:border-primary bg-background"
+                  />
+                </div>
 
-            {/* 피트니스 수상경력 */}
-            <div className="space-y-2">
-              <Label htmlFor="fitnessAwards" className="text-sm font-medium text-foreground">피트니스 수상경력</Label>
-              <Textarea
-                id="fitnessAwards"
-                value={profileData.fitnessAwards}
-                onChange={(e) => updateProfileData('fitnessAwards', e.target.value)}
-                placeholder="피트니스 관련 수상경력을 입력하세요"
-                className="border-border focus:border-primary resize-none bg-background"
-                rows={2}
-              />
-            </div>
-
-            {/* 현재 소속 체육관 */}
-            <div className="space-y-2">
-              <Label htmlFor="currentGym" className="text-sm font-medium text-foreground">현재 소속 체육관</Label>
-              <Input
-                id="currentGym"
-                value={profileData.currentGym}
-                onChange={(e) => updateProfileData('currentGym', e.target.value)}
-                placeholder="현재 근무하는 체육관명을 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
-
-            {/* 체육관 주소 */}
-            <div className="space-y-2">
-              <Label htmlFor="gymAddress" className="text-sm font-medium text-foreground">체육관 주소</Label>
-              <Input
-                id="gymAddress"
-                value={profileData.gymAddress}
-                onChange={(e) => updateProfileData('gymAddress', e.target.value)}
-                placeholder="체육관 주소를 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
-
-            {/* 피트니스 소개 */}
-            <div className="space-y-2">
-              <Label htmlFor="fitnessIntro" className="text-sm font-medium text-foreground">피트니스 소개</Label>
-              <Textarea
-                id="fitnessIntro"
-                value={profileData.fitnessIntro}
-                onChange={(e) => updateProfileData('fitnessIntro', e.target.value)}
-                placeholder="피트니스 경험과 전문 분야를 소개하세요"
-                className="border-border focus:border-primary resize-none bg-background"
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 회원 정보 섹션 */}
-        <Card className="bg-card shadow-sm border-border">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-foreground">회원 정보</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* 전화번호 */}
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium text-foreground">전화번호</Label>
-              <Input
-                id="phone"
-                type="tel"
-                value={profileData.phone}
-                onChange={(e) => updateProfileData('phone', e.target.value)}
-                placeholder="전화번호를 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
-
-            {/* 회사/소속 */}
-            <div className="space-y-2">
-              <Label htmlFor="company" className="text-sm font-medium text-foreground">회사/소속</Label>
-              <Input
-                id="company"
-                value={profileData.company}
-                onChange={(e) => updateProfileData('company', e.target.value)}
-                placeholder="회사명 또는 소속을 입력하세요"
-                className="border-border focus:border-primary bg-background"
-              />
-            </div>
-          </CardContent>
-        </Card>
+                {/* 피트니스 수상경력 */}
+                <div className="space-y-2">
+                  <Label htmlFor="fitnessAwards" className="text-sm font-medium text-foreground">수상 내역</Label>
+                  <Textarea
+                    id="fitnessAwards"
+                    value={profileData.fitnessAwards}
+                    onChange={(e) => updateProfileData('fitnessAwards', e.target.value)}
+                    placeholder="피트니스 관련 수상경력을 입력하세요"
+                    className="border-border focus:border-primary resize-none bg-background"
+                    rows={2}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
 
         {/* Short URL Settings */}
         <Card className="bg-card shadow-sm border-border">
