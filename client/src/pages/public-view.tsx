@@ -2056,16 +2056,26 @@ export default function PublicViewPage() {
                         {user?.birthDate || "정보 없음"}
                       </span>
                     </div>
-
                     <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">근무 헬스장</span>
+                      <span className="text-white/70 korean-text">
+                        근무 헬스장
+                      </span>
+                      <span className="text-white korean-text">
+                        {user?.currentGym || "정보 없음"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-white/20">
+                      <span className="text-white/70 korean-text">
+                        경력
+                      </span>
                       <span className="text-white korean-text">
                         정보 없음
                       </span>
                     </div>
-
                     <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">헬스장 주소</span>
+                      <span className="text-white/70 korean-text">
+                        전문 분야
+                      </span>
                       <span className="text-white korean-text">
                         정보 없음
                       </span>
@@ -2085,9 +2095,10 @@ export default function PublicViewPage() {
                         정보 없음
                       </span>
                     </div>
-
                     <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">전화번호</span>
+                      <span className="text-white/70 korean-text">
+                        전화번호
+                      </span>
                       <span className="text-white korean-text">
                         정보 없음
                       </span>
@@ -2121,29 +2132,11 @@ export default function PublicViewPage() {
                     </div>
                   </div>
 
-                  {/* Close instruction and button */}
-                  <div className="flex flex-col items-center pb-8">
-                    <p className="text-white/60 text-sm mb-4 korean-text">
-                      위로 올려서 드래그하거나 아래 꺼내주세요
+                  {/* Close Guide */}
+                  <div className="mt-8 text-center">
+                    <p className="text-white/60 text-sm korean-text">
+                      위의 핸들을 드래그하거나 아무 곳이나 터치하세요
                     </p>
-                    <div
-                      className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center cursor-pointer transition-all hover:bg-white/30"
-                      onClick={() => setShowVideoProfileDetails(false)}
-                    >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M7 11l5-5m0 0l5 5m-5-5v12"
-                        />
-                      </svg>
-                    </div>
                   </div>
                 </div>
               </div>
