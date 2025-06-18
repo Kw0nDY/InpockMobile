@@ -30,7 +30,17 @@ export default function SettingsPage() {
     contentType: 'links',
     linkTitle: '',
     linkDescription: '',
-    linkUrl: ''
+    linkUrl: '',
+    // 피트니스 정보
+    birthDate: (user as any)?.birthDate || '',
+    fitnessAwards: (user as any)?.fitnessAwards || '',
+    fitnessCertifications: (user as any)?.fitnessCertifications || '',
+    currentGym: (user as any)?.currentGym || '',
+    gymAddress: (user as any)?.gymAddress || '',
+    fitnessIntro: (user as any)?.fitnessIntro || '',
+    // 회원 정보
+    phone: (user as any)?.phone || '',
+    company: (user as any)?.company || ''
   });
 
 
@@ -361,6 +371,16 @@ export default function SettingsPage() {
           email: profileData.email,
           bio: profileData.bio,
           introVideoUrl: profileData.introVideoUrl,
+          // 피트니스 정보
+          birthDate: profileData.birthDate,
+          fitnessAwards: profileData.fitnessAwards,
+          fitnessCertifications: profileData.fitnessCertifications,
+          currentGym: profileData.currentGym,
+          gymAddress: profileData.gymAddress,
+          fitnessIntro: profileData.fitnessIntro,
+          // 회원 정보
+          phone: profileData.phone,
+          company: profileData.company,
         };
         console.log('User update data:', userUpdateData);
         const userResult = await updateUserMutation.mutateAsync(userUpdateData);
@@ -598,11 +618,121 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
+        {/* 피트니스 정보 섹션 */}
+        <Card className="bg-card shadow-sm border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground">피트니스 정보</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* 생년월일 */}
+            <div className="space-y-2">
+              <Label htmlFor="birthDate" className="text-sm font-medium text-foreground">생년월일</Label>
+              <Input
+                id="birthDate"
+                type="date"
+                value={profileData.birthDate}
+                onChange={(e) => updateProfileData('birthDate', e.target.value)}
+                className="border-border focus:border-primary bg-background"
+              />
+            </div>
 
+            {/* 피트니스 자격증 */}
+            <div className="space-y-2">
+              <Label htmlFor="fitnessCertifications" className="text-sm font-medium text-foreground">피트니스 자격증</Label>
+              <Textarea
+                id="fitnessCertifications"
+                value={profileData.fitnessCertifications}
+                onChange={(e) => updateProfileData('fitnessCertifications', e.target.value)}
+                placeholder="보유한 피트니스 자격증을 입력하세요 (예: NSCA-CPT, ACSM-EP)"
+                className="border-border focus:border-primary resize-none bg-background"
+                rows={2}
+              />
+            </div>
 
+            {/* 피트니스 수상경력 */}
+            <div className="space-y-2">
+              <Label htmlFor="fitnessAwards" className="text-sm font-medium text-foreground">피트니스 수상경력</Label>
+              <Textarea
+                id="fitnessAwards"
+                value={profileData.fitnessAwards}
+                onChange={(e) => updateProfileData('fitnessAwards', e.target.value)}
+                placeholder="피트니스 관련 수상경력을 입력하세요"
+                className="border-border focus:border-primary resize-none bg-background"
+                rows={2}
+              />
+            </div>
 
+            {/* 현재 소속 체육관 */}
+            <div className="space-y-2">
+              <Label htmlFor="currentGym" className="text-sm font-medium text-foreground">현재 소속 체육관</Label>
+              <Input
+                id="currentGym"
+                value={profileData.currentGym}
+                onChange={(e) => updateProfileData('currentGym', e.target.value)}
+                placeholder="현재 근무하는 체육관명을 입력하세요"
+                className="border-border focus:border-primary bg-background"
+              />
+            </div>
 
+            {/* 체육관 주소 */}
+            <div className="space-y-2">
+              <Label htmlFor="gymAddress" className="text-sm font-medium text-foreground">체육관 주소</Label>
+              <Input
+                id="gymAddress"
+                value={profileData.gymAddress}
+                onChange={(e) => updateProfileData('gymAddress', e.target.value)}
+                placeholder="체육관 주소를 입력하세요"
+                className="border-border focus:border-primary bg-background"
+              />
+            </div>
 
+            {/* 피트니스 소개 */}
+            <div className="space-y-2">
+              <Label htmlFor="fitnessIntro" className="text-sm font-medium text-foreground">피트니스 소개</Label>
+              <Textarea
+                id="fitnessIntro"
+                value={profileData.fitnessIntro}
+                onChange={(e) => updateProfileData('fitnessIntro', e.target.value)}
+                placeholder="피트니스 경험과 전문 분야를 소개하세요"
+                className="border-border focus:border-primary resize-none bg-background"
+                rows={3}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* 회원 정보 섹션 */}
+        <Card className="bg-card shadow-sm border-border">
+          <CardHeader>
+            <CardTitle className="text-lg font-semibold text-foreground">회원 정보</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* 전화번호 */}
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-sm font-medium text-foreground">전화번호</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={profileData.phone}
+                onChange={(e) => updateProfileData('phone', e.target.value)}
+                placeholder="전화번호를 입력하세요"
+                className="border-border focus:border-primary bg-background"
+              />
+            </div>
+
+            {/* 회사/소속 */}
+            <div className="space-y-2">
+              <Label htmlFor="company" className="text-sm font-medium text-foreground">회사/소속</Label>
+              <Input
+                id="company"
+                value={profileData.company}
+                onChange={(e) => updateProfileData('company', e.target.value)}
+                placeholder="회사명 또는 소속을 입력하세요"
+                className="border-border focus:border-primary bg-background"
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Short URL Settings */}
         <Card className="bg-card shadow-sm border-border">
