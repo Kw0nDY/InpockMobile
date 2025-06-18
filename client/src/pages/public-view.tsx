@@ -1256,7 +1256,9 @@ export default function PublicViewPage() {
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
                   console.log('Profile clicked, current state:', showProfileDetails);
                   setShowProfileDetails(!showProfileDetails);
                 }}
