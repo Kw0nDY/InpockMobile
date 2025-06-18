@@ -1641,7 +1641,7 @@ export default function PublicViewPage() {
             <div
               className="mx-4 backdrop-blur-sm rounded-2xl"
               style={{
-                background: "rgba(0, 0, 0, 0.4)",
+                background: "rgba(0, 0, 0, 0.2)",
               }}
             >
               <div className="px-4 py-4">
