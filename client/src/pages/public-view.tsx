@@ -851,8 +851,8 @@ export default function PublicViewPage() {
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
 
-                {/* Profile overlay - positioned above navigation buttons */}
-                <div className="absolute bottom-40 left-4 z-10">
+                {/* Profile overlay - positioned at bottom left */}
+                <div className="absolute bottom-20 left-4 z-10">
                   <div 
                     className="flex items-end space-x-3 cursor-pointer"
                     onClick={() => setShowProfileDetails(!showProfileDetails)}
