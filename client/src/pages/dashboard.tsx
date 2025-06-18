@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Plus,
   Trash2,
+  Settings,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -249,7 +250,17 @@ export default function DashboardPage() {
             </p>
           </div>
         </div>
-        <NotificationDropdown />
+        <div className="flex items-center space-x-2">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => setLocation('/profile-settings')}
+            className="p-2"
+          >
+            <Settings className="w-5 h-5" />
+          </Button>
+          <NotificationDropdown />
+        </div>
       </header>
 
       <div className="p-4 pb-24 max-w-md mx-auto">

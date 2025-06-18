@@ -717,22 +717,29 @@ export default function PublicViewPage() {
               <div className="space-y-4">
                 {/* Profile Info */}
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
-                    {user?.profileImageUrl ? (
-                      <img 
-                        src={user.profileImageUrl} 
-                        alt={user.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-white font-semibold text-lg">
-                        {user?.name?.charAt(0) || 'U'}
-                      </span>
-                    )}
-                  </div>
+                  {settings?.showProfileImage !== false && (
+                    <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full border-2 border-white flex items-center justify-center overflow-hidden">
+                      {user?.profileImageUrl ? (
+                        <img 
+                          src={user.profileImageUrl} 
+                          alt={user.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white font-semibold text-lg">
+                          {user?.name?.charAt(0) || 'U'}
+                        </span>
+                      )}
+                    </div>
+                  )}
                   <div>
                     <p className="text-white font-semibold text-lg">{user?.name}</p>
-                    <p className="text-white/80 text-sm">팔로우</p>
+                    {settings?.showBio !== false && user?.bio && (
+                      <p className="text-white/80 text-sm">{user.bio}</p>
+                    )}
+                    {settings?.showVisitCount !== false && user?.visitCount && (
+                      <p className="text-white/70 text-xs">방문 {user.visitCount}회</p>
+                    )}
                   </div>
                 </div>
                 
@@ -858,18 +865,20 @@ export default function PublicViewPage() {
                     onClick={() => setShowProfileDetails(!showProfileDetails)}
                   >
                     {/* Profile Image */}
-                    {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
-                      <img 
-                        src={user.profileImageUrl || user.profileImage} 
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
-                        <span className="text-white font-medium text-lg">
-                          {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
-                        </span>
-                      </div>
+                    {settings?.showProfileImage !== false && (
+                      (user.profileImageUrl || user.profileImage) ? (
+                        <img 
+                          src={user.profileImageUrl || user.profileImage} 
+                          alt={user.name}
+                          className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
+                          <span className="text-white font-medium text-lg">
+                            {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                          </span>
+                        </div>
+                      )
                     )}
                     
                     {/* Name and Username - Horizontal Layout */}
@@ -883,6 +892,16 @@ export default function PublicViewPage() {
                       <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
                         @{user.username}
                       </p>
+                      {settings?.showBio !== false && user?.bio && (
+                        <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                          {user.bio}
+                        </p>
+                      )}
+                      {settings?.showVisitCount !== false && user?.visitCount && (
+                        <p className="text-white/70 text-xs korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                          방문 {user.visitCount}회
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -905,8 +924,24 @@ export default function PublicViewPage() {
     }
   };
 
+  // Apply background theme based on settings
+  const getBackgroundStyle = () => {
+    const theme = settings?.backgroundTheme || 'beige';
+    switch (theme) {
+      case 'white':
+        return 'bg-white';
+      case 'dark':
+        return 'bg-gray-900';
+      case 'gradient':
+        return 'bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500';
+      case 'beige':
+      default:
+        return 'bg-amber-50';
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-black overflow-hidden fixed inset-0">
+    <div className={`min-h-screen overflow-hidden fixed inset-0 ${contentType === 'image' || contentType === 'video' ? 'bg-black' : getBackgroundStyle()}`}>
       {/* iPhone-style Toast Notification */}
       <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-out ${
         showToast ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
