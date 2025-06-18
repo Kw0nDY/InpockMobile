@@ -1853,21 +1853,26 @@ export default function PublicViewPage() {
         {/* Profile Section - Video View */}
         {contentType === "video" && (
           <div
-            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-[60] transition-all duration-300 ease-in-out ${
+            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-[999] transition-all duration-300 ease-in-out ${
               showVideoProfileDetails
                 ? "opacity-0 translate-y-4 pointer-events-none"
                 : "opacity-100 translate-y-0"
             }`}
+            style={{ pointerEvents: 'auto' }}
           >
             <div
               className="mx-4 backdrop-blur-sm rounded-2xl"
               style={{
                 background: "rgba(0, 0, 0, 0.2)",
+                pointerEvents: 'auto',
+                position: 'relative',
+                zIndex: 9999
               }}
             >
-              <div className="px-4 py-4">
+              <div className="px-4 py-4" style={{ pointerEvents: 'auto' }}>
                 <div
                   className="flex items-center space-x-3 cursor-pointer"
+                  style={{ pointerEvents: 'auto' }}
                   onClick={(e) => {
                     e.stopPropagation();
                     e.preventDefault();
@@ -1878,6 +1883,15 @@ export default function PublicViewPage() {
                       contentType,
                       "Will set to:",
                       !showVideoProfileDetails
+                    );
+                    setShowVideoProfileDetails(!showVideoProfileDetails);
+                  }}
+                  onTouchEnd={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    console.log(
+                      "Video Profile touched, current state:",
+                      showVideoProfileDetails
                     );
                     setShowVideoProfileDetails(!showVideoProfileDetails);
                   }}
