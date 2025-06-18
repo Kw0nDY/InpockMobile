@@ -1032,34 +1032,6 @@ export default function PublicViewPage() {
                     ? "#000000"
                     : backgroundGradient,
               }}
-              onTouchStart={(e) => {
-                setVideoSwipeStart(e.touches[0].clientY);
-                setIsVideoSwiping(true);
-              }}
-              onTouchMove={(e) => {
-                if (!isVideoSwiping) return;
-                const deltaY = e.touches[0].clientY - videoSwipeStart;
-                setVideoSwipeOffset(deltaY);
-              }}
-              onTouchEnd={() => {
-                if (!isVideoSwiping) return;
-                const threshold = 100;
-
-                if (Math.abs(videoSwipeOffset) > threshold) {
-                  if (videoSwipeOffset > 0 && currentVideoIndex > 0) {
-                    setCurrentVideoIndex(currentVideoIndex - 1);
-                  } else if (
-                    videoSwipeOffset < 0 &&
-                    currentVideoIndex < filteredVideos.length - 1
-                  ) {
-                    setCurrentVideoIndex(currentVideoIndex + 1);
-                  }
-                }
-
-                setIsVideoSwiping(false);
-                setVideoSwipeOffset(0);
-                setVideoSwipeStart(0);
-              }}
             >
               <div
                 className="relative w-full h-full"
