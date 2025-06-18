@@ -34,32 +34,32 @@ interface UserSettings {
 export default function PublicViewPage() {
   const params = useParams<{ username?: string; customUrl?: string }>();
   const identifier = params.username || params.customUrl || '';
+  // UI State
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
-  const [currentContentType, setCurrentContentType] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [showProfileDetails, setShowProfileDetails] = useState(false);
+  const [isProfileClosing, setIsProfileClosing] = useState(false);
+  
+  // Image Navigation State
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [imageTransition, setImageTransition] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [previousImageIndex, setPreviousImageIndex] = useState(0);
+  const [autoSlideEnabled, setAutoSlideEnabled] = useState(true);
+  
+  // Interaction State (Drag & Swipe)
   const [dragStartY, setDragStartY] = useState(0);
   const [dragCurrentY, setDragCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isMouseDragging, setIsMouseDragging] = useState(false);
-  
-  // Swipe navigation states
   const [swipeStartX, setSwipeStartX] = useState(0);
   const [swipeCurrentX, setSwipeCurrentX] = useState(0);
   const [isSwipping, setIsSwipping] = useState(false);
   const [swipeOffset, setSwipeOffset] = useState(0);
   
-  // Tinder-style image navigation
-  const [imageTransition, setImageTransition] = useState(false);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
-  const [previousImageIndex, setPreviousImageIndex] = useState(0);
-  const [autoSlideEnabled, setAutoSlideEnabled] = useState(true);
+  // Toast Notification State
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
-  
-  // Profile panel animation state
-  const [isProfileClosing, setIsProfileClosing] = useState(false);
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
@@ -134,7 +134,7 @@ export default function PublicViewPage() {
     return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
   };
 
-  const contentType = currentContentType || settings?.contentType || 'links';
+  const contentType = settings?.contentType || 'links';
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -152,7 +152,7 @@ export default function PublicViewPage() {
   // Keyboard navigation for images
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (currentContentType === 'image' && images.length > 0) {
+      if (contentType === 'image' && images.length > 0) {
         if (event.key === 'ArrowLeft') {
           prevImage();
         } else if (event.key === 'ArrowRight') {
@@ -163,7 +163,7 @@ export default function PublicViewPage() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentContentType, images.length]);
+  }, [contentType, images.length]);
 
 
 
