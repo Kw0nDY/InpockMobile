@@ -1681,53 +1681,6 @@ export default function PublicViewPage() {
                           {user?.birthDate || "정보 없음"}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          근무 헬스장
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.currentGym || "정보 없음"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          경력
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.experience || "정보 없음"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          전문 분야
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.specialization || "정보 없음"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Contact Information */}
-                    <div className="mb-6 space-y-4">
-                      <h3 className="text-lg font-semibold korean-text">
-                        연락처 정보
-                      </h3>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          이메일
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.email || "정보 없음"}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          전화번호
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.phoneNumber || "정보 없음"}
-                        </span>
-                      </div>
                     </div>
 
                     {/* Close Guide */}
@@ -2062,45 +2015,6 @@ export default function PublicViewPage() {
                       </span>
                       <span className="text-white korean-text">
                         {user?.currentGym || "정보 없음"}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">
-                        경력
-                      </span>
-                      <span className="text-white korean-text">
-                        정보 없음
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">
-                        전문 분야
-                      </span>
-                      <span className="text-white korean-text">
-                        정보 없음
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Contact Information */}
-                  <div className="mb-6 space-y-4">
-                    <h3 className="text-lg font-semibold korean-text">
-                      연락처 정보
-                    </h3>
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">
-                        이메일
-                      </span>
-                      <span className="text-white korean-text">
-                        정보 없음
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center py-2 border-b border-white/20">
-                      <span className="text-white/70 korean-text">
-                        전화번호
-                      </span>
-                      <span className="text-white korean-text">
-                        정보 없음
                       </span>
                     </div>
                   </div>
