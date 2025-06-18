@@ -216,9 +216,9 @@ export default function PublicViewPage() {
       
       if (Math.abs(deltaX) > threshold) {
         if (deltaX > 0) {
-          handleLeftTap(false);
-        } else {
           handleRightTap(false);
+        } else {
+          handleLeftTap(false);
         }
       }
       
