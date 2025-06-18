@@ -931,10 +931,16 @@ export default function PublicViewPage() {
                 onMouseUp={handleMouseUp}
               >
                 <div className="relative w-full h-full">
-                  {/* Background layer - shows current image (destination) */}
+                  {/* Background layer - shows next image during swipe */}
                   <div className="absolute inset-0 w-full h-full">
                     <img 
-                      src={getImageUrl(images[currentImageIndex])}
+                      src={getImageUrl(images[
+                        isSwipping ? 
+                          (swipeOffset > 0 ? 
+                            (currentImageIndex - 1 + images.length) % images.length : 
+                            (currentImageIndex + 1) % images.length) :
+                          currentImageIndex
+                      ])}
                       alt="배경 이미지"
                       className="w-full h-full object-cover"
                       onError={(e) => {
