@@ -790,7 +790,7 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden bg-black">
+          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -ml-6 -mr-6">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
