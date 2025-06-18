@@ -82,7 +82,8 @@ export default function ProfileSettings() {
   // Update profile mutation
   const updateProfileMutation = useMutation({
     mutationFn: async (data: typeof profileData) => {
-      return await apiRequest(`/api/user/${user?.id}`, "PUT", data);
+      if (!user?.id) throw new Error("User ID not available");
+      return await apiRequest(`/api/user/${user.id}`, "PUT", data);
     },
     onSuccess: () => {
       toast({
@@ -103,7 +104,8 @@ export default function ProfileSettings() {
   // Update settings mutation
   const updateSettingsMutation = useMutation({
     mutationFn: async (data: typeof settingsData) => {
-      return await apiRequest(`/api/settings/${user?.id}`, "PUT", data);
+      if (!user?.id) throw new Error("User ID not available");
+      return await apiRequest(`/api/settings/${user.id}`, "PUT", data);
     },
     onSuccess: () => {
       toast({
@@ -122,10 +124,26 @@ export default function ProfileSettings() {
   });
 
   const handleProfileSave = () => {
+    if (!user?.id) {
+      toast({
+        title: "오류",
+        description: "사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
     updateProfileMutation.mutate(profileData);
   };
 
   const handleSettingsSave = () => {
+    if (!user?.id) {
+      toast({
+        title: "오류",
+        description: "사용자 정보를 불러오는 중입니다. 잠시 후 다시 시도해주세요.",
+        variant: "destructive",
+      });
+      return;
+    }
     updateSettingsMutation.mutate(settingsData);
   };
 
@@ -285,7 +303,7 @@ export default function ProfileSettings() {
           <div className="flex justify-end">
             <Button 
               onClick={handleProfileSave} 
-              disabled={updateProfileMutation.isPending}
+              disabled={updateProfileMutation.isPending || !user?.id}
               className="flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
@@ -389,7 +407,7 @@ export default function ProfileSettings() {
           <div className="flex justify-end">
             <Button 
               onClick={handleSettingsSave} 
-              disabled={updateSettingsMutation.isPending}
+              disabled={updateSettingsMutation.isPending || !user?.id}
               className="flex items-center gap-2"
             >
               <Save className="w-4 h-4" />
