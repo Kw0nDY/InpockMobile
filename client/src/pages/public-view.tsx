@@ -776,7 +776,7 @@ export default function PublicViewPage() {
         
         if (filteredVideos.length === 0) {
           return (
-            <div className="h-screen flex flex-col items-center justify-center bg-black text-white">
+            <div className="h-full flex flex-col items-center justify-center text-white pt-20 pb-32">
               <Video className="w-24 h-24 mb-6 text-white/70" />
               <h2 className="text-3xl font-bold mb-3">동영상</h2>
               <p className="text-lg text-white/80 text-center max-w-md">
@@ -789,8 +789,8 @@ export default function PublicViewPage() {
         const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
         
         return (
-          <div className="fixed inset-0 bg-black z-40">
-            {/* Full Screen Video Player */}
+          <div className="h-full pb-32">
+            {/* Video Player - Shorts Style within webapp */}
             <div className="relative w-full h-full">
               {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                 <iframe
@@ -819,15 +819,23 @@ export default function PublicViewPage() {
                 />
               )}
               
-              {/* Top Controls */}
-              <div className="absolute top-4 right-4 z-50">
-                <button className="w-10 h-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center">
-                  <User className="w-5 h-5 text-white" />
-                </button>
+              {/* Video Title Overlay - Center */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
+                <div className="text-center text-white">
+                  <h1 className="text-4xl md:text-6xl font-bold leading-tight tracking-wider">
+                    STEPHEN SANCHEZ
+                  </h1>
+                  <h2 className="text-2xl md:text-4xl font-bold mt-2 tracking-wider">
+                    UNTIL I FOUND YOU
+                  </h2>
+                  <h3 className="text-xl md:text-2xl font-medium mt-2 tracking-wider">
+                    ACOUSTIC
+                  </h3>
+                </div>
               </div>
 
               {/* Right Side Actions - YouTube Shorts Style */}
-              <div className="absolute right-3 bottom-20 z-50">
+              <div className="absolute right-3 bottom-32 z-50">
                 <div className="flex flex-col space-y-6">
                   {/* Like Button */}
                   <div className="flex flex-col items-center">
@@ -864,26 +872,21 @@ export default function PublicViewPage() {
               </div>
 
               {/* Bottom Overlay - User Info and Description */}
-              <div className="absolute bottom-0 left-0 right-16 z-50 bg-gradient-to-t from-black/70 to-transparent p-4">
+              <div className="absolute bottom-20 left-0 right-16 z-50 bg-gradient-to-t from-black/80 to-transparent p-4">
                 <div className="space-y-3">
                   {/* Username and Follow */}
                   <div className="flex items-center space-x-3">
                     <span className="text-white font-semibold text-lg">@{user?.username}</span>
-                    <button className="px-4 py-1 border border-white rounded-md">
-                      <span className="text-white text-sm font-medium">팔로우</span>
+                    <button className="px-4 py-1 bg-white rounded-md">
+                      <span className="text-black text-sm font-medium">팔로우</span>
                     </button>
                   </div>
 
-                  {/* Video Title & Description */}
+                  {/* Video Description */}
                   <div className="space-y-2">
                     {currentVideo.title && (
                       <p className="text-white font-medium text-base leading-tight">
                         {currentVideo.title}
-                      </p>
-                    )}
-                    {currentVideo.description && (
-                      <p className="text-white/90 text-sm leading-relaxed">
-                        {currentVideo.description}
                       </p>
                     )}
                   </div>
@@ -919,22 +922,6 @@ export default function PublicViewPage() {
                   setVideoSwipeStart(0);
                 }}
               />
-
-              {/* Video Progress Indicators */}
-              {filteredVideos.length > 1 && (
-                <div className="absolute right-1 top-1/2 transform -translate-y-1/2 z-40">
-                  <div className="flex flex-col space-y-1">
-                    {filteredVideos.map((_, index) => (
-                      <div
-                        key={index}
-                        className={`w-0.5 h-6 rounded-full transition-colors duration-200 ${
-                          index === currentVideoIndex ? 'bg-white' : 'bg-white/30'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         );
