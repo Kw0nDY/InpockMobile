@@ -1251,8 +1251,12 @@ export default function PublicViewPage() {
 
 
         {/* Profile Section - Above Navigation for Video/Image Views */}
-        {(contentType === 'image' || contentType === 'video') && !showProfileDetails && (
-          <div className="fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-50">
+        {(contentType === 'image' || contentType === 'video') && (
+          <div 
+            className={`fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
+              showProfileDetails ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
+            }`}
+          >
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
