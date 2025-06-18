@@ -78,6 +78,8 @@ export default function PublicViewPage() {
   const [dominantColors, setDominantColors] = useState<string[]>([]);
   const [backgroundGradient, setBackgroundGradient] = useState<string>('bg-black');
   const [profileSectionBg, setProfileSectionBg] = useState<string>('rgba(0,0,0,0.9)');
+  const [topOverlayColor, setTopOverlayColor] = useState<string>('rgba(0,0,0,0.1)');
+  const [bottomOverlayColor, setBottomOverlayColor] = useState<string>('rgba(0,0,0,0.7)');
 
   // Extract dominant colors from image
   const extractColorsFromImage = (imageUrl: string) => {
@@ -133,6 +135,10 @@ export default function PublicViewPage() {
           const gradient = `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
           setBackgroundGradient(gradient);
           
+          // Set overlay colors for gradients
+          setTopOverlayColor(sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.1)'));
+          setBottomOverlayColor(sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.7)'));
+          
           // Set profile section background with stronger opacity
           const profileColor1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.85)');
           const profileColor2 = sortedColors[1].replace('rgb(', 'rgba(').replace(')', ', 0.75)');
@@ -142,6 +148,10 @@ export default function PublicViewPage() {
           const color1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.3)');
           const gradient = `linear-gradient(135deg, ${color1} 0%, rgba(0,0,0,0.9) 100%)`;
           setBackgroundGradient(gradient);
+          
+          // Set overlay colors
+          setTopOverlayColor(sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.1)'));
+          setBottomOverlayColor(sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.7)'));
           
           // Set profile section background
           const profileColor = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.9)');
@@ -246,6 +256,8 @@ export default function PublicViewPage() {
       // Reset to black background for non-image content
       setBackgroundGradient('bg-black');
       setProfileSectionBg('rgba(0,0,0,0.9)');
+      setTopOverlayColor('rgba(0,0,0,0.1)');
+      setBottomOverlayColor('rgba(0,0,0,0.7)');
     }
   }, [currentImageIndex, images, contentType]);
 
@@ -953,7 +965,7 @@ export default function PublicViewPage() {
                 <div 
                   className="absolute inset-0 transition-all duration-700 ease-in-out"
                   style={{
-                    background: `linear-gradient(to bottom, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.1)' : backgroundGradient.replace(/0\.\d+\)/g, '0.1)')} 0%, transparent 40%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.7)' : backgroundGradient.replace(/0\.\d+\)/g, '0.7)')} 100%)`
+                    background: `linear-gradient(to bottom, ${topOverlayColor} 0%, transparent 40%, ${bottomOverlayColor} 100%)`
                   }}
                 ></div>
 
@@ -1106,7 +1118,7 @@ export default function PublicViewPage() {
                 <div 
                   className="absolute inset-0 transition-all duration-700 ease-in-out"
                   style={{
-                    background: `linear-gradient(to bottom, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.1)' : backgroundGradient.replace(/0\.\d+\)/g, '0.1)')} 0%, transparent 40%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.7)' : backgroundGradient.replace(/0\.\d+\)/g, '0.7)')} 100%)`
+                    background: `linear-gradient(to bottom, ${topOverlayColor} 0%, transparent 40%, ${bottomOverlayColor} 100%)`
                   }}
                 ></div>
                 
@@ -1180,7 +1192,7 @@ export default function PublicViewPage() {
             <div 
               className="absolute bottom-0 left-0 right-0 h-60 z-5 transition-all duration-700 ease-in-out"
               style={{
-                background: `linear-gradient(to top, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.6)' : backgroundGradient.replace(/0\.\d+\)/g, '0.6)')} 0%, ${backgroundGradient === 'bg-black' ? 'rgba(0,0,0,0.3)' : backgroundGradient.replace(/0\.\d+\)/g, '0.3)')} 50%, transparent 100%)`
+                background: `linear-gradient(to top, ${bottomOverlayColor.replace('0.7)', '0.6)')} 0%, ${topOverlayColor.replace('0.1)', '0.3)')} 50%, transparent 100%)`
               }}
             ></div>
 
