@@ -1733,8 +1733,10 @@ export default function PublicViewPage() {
                     e.stopPropagation();
                     e.preventDefault();
                     console.log(
-                      "Profile clicked, current state:",
+                      "Video Profile clicked, current state:",
                       showProfileDetails,
+                      "contentType:",
+                      contentType
                     );
                     setShowProfileDetails(!showProfileDetails);
                   }}
