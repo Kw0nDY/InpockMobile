@@ -78,6 +78,8 @@ export default function PublicViewPage() {
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
     queryKey: [`/api/public/${identifier}`],
     enabled: !!identifier,
+    staleTime: 0, // Force refresh
+    cacheTime: 0, // Don't cache
   });
 
   const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
@@ -1237,10 +1239,10 @@ export default function PublicViewPage() {
 
 
 
-                    {/* Professional Introduction */}
+                    {/* Bio Introduction */}
                     {user.bio && (
                       <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-2 korean-text">전문 소개</h3>
+                        <h3 className="text-lg font-semibold mb-2 korean-text">자기소개</h3>
                         <p className="text-white/90 leading-relaxed korean-text">{user.bio}</p>
                       </div>
                     )}
