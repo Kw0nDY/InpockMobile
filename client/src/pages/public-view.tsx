@@ -1138,7 +1138,7 @@ export default function PublicViewPage() {
                     
                     {/* Profile Header */}
                     <div className="flex items-center space-x-4 mb-6">
-                      {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                      {(settings?.showProfileImage !== false) && (user?.profileImageUrl || user?.profileImage) ? (
                         <img 
                           src={user.profileImageUrl || user.profileImage} 
                           alt={user.name}
@@ -1147,21 +1147,21 @@ export default function PublicViewPage() {
                       ) : (
                         <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
                           <span className="text-white font-medium text-xl">
-                            {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                            {user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || "사"}
                           </span>
                         </div>
                       )}
                       
                       <div>
-                        <h2 className="text-2xl font-bold korean-text">{user.name}</h2>
-                        <p className="text-white/80 korean-text">@{user.username}</p>
+                        <h2 className="text-2xl font-bold korean-text">{user?.name}</h2>
+                        <p className="text-white/80 korean-text">@{user?.username}</p>
                       </div>
                     </div>
 
 
 
                     {/* Bio Introduction */}
-                    {user.bio && (
+                    {user?.bio && (
                       <div className="mb-6">
                         <h3 className="text-lg font-semibold mb-2 korean-text">자기소개</h3>
                         <p className="text-white/90 leading-relaxed korean-text">{user.bio}</p>
@@ -1173,15 +1173,15 @@ export default function PublicViewPage() {
                       <h3 className="text-lg font-semibold korean-text">개인 정보</h3>
                       <div className="flex justify-between items-center py-2 border-b border-white/20">
                         <span className="text-white/70 korean-text">생년월일</span>
-                        <span className="text-white korean-text">{user.birthDate || "정보 없음"}</span>
+                        <span className="text-white korean-text">{user?.birthDate || "정보 없음"}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-white/20">
                         <span className="text-white/70 korean-text">근무 헬스장</span>
-                        <span className="text-white korean-text">{user.currentGym || "정보 없음"}</span>
+                        <span className="text-white korean-text">{user?.currentGym || "정보 없음"}</span>
                       </div>
                       <div className="flex justify-between items-center py-2 border-b border-white/20">
                         <span className="text-white/70 korean-text">헬스장 주소</span>
-                        <span className="text-white korean-text">{user.gymAddress || "정보 없음"}</span>
+                        <span className="text-white korean-text">{user?.gymAddress || "정보 없음"}</span>
                       </div>
                     </div>
 
@@ -1194,7 +1194,7 @@ export default function PublicViewPage() {
                         <h4 className="text-md font-medium mb-2 korean-text text-white/80">자격증</h4>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                           <p className="text-white/90 leading-relaxed korean-text">
-                            {user.fitnessCertifications || "자격증 정보가 없습니다."}
+                            {user?.fitnessCertifications || "자격증 정보가 없습니다."}
                           </p>
                         </div>
                       </div>
@@ -1204,7 +1204,7 @@ export default function PublicViewPage() {
                         <h4 className="text-md font-medium mb-2 korean-text text-white/80">수상 내역</h4>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
                           <p className="text-white/90 leading-relaxed korean-text">
-                            {user.fitnessAwards || "수상 내역이 없습니다."}
+                            {user?.fitnessAwards || "수상 내역이 없습니다."}
                           </p>
                         </div>
                       </div>
@@ -1234,7 +1234,7 @@ export default function PublicViewPage() {
               <div className="h-full overflow-y-auto bg-background pt-4">
                 <div className="px-4 pb-24 max-w-md mx-auto">
                   {/* Bio Section */}
-                  {settings?.showBio && user.bio && (
+                  {settings?.showBio && user?.bio && (
                     <div className="mb-6">
                       <div className="bg-card shadow-sm rounded-lg border border-border p-4">
                         <p className="text-sm text-foreground leading-relaxed korean-text">{user.bio}</p>
@@ -1252,7 +1252,7 @@ export default function PublicViewPage() {
 
         {/* Profile Section - Above Navigation for Video/Image Views */}
         {(contentType === 'image' || contentType === 'video') && (
-          <div className="fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-45">
+          <div className="fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-45">
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
@@ -1260,7 +1260,7 @@ export default function PublicViewPage() {
               >
                 {/* Profile Image */}
                 {settings?.showProfileImage !== false && (
-                  (user.profileImageUrl || user.profileImage) ? (
+                  (user?.profileImageUrl || user?.profileImage) ? (
                     <img 
                       src={user.profileImageUrl || user.profileImage} 
                       alt={user.name}
@@ -1269,7 +1269,7 @@ export default function PublicViewPage() {
                   ) : (
                     <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
                       <span className="text-white font-medium text-sm">
-                        {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                        {user?.name?.[0]?.toUpperCase() || user?.username?.[0]?.toUpperCase() || "사"}
                       </span>
                     </div>
                   )
@@ -1278,11 +1278,23 @@ export default function PublicViewPage() {
                 {/* Name and Username */}
                 <div className="flex-1">
                   <h1 className="text-lg font-bold text-white korean-text">
-                    {user.name}
+                    {user?.name}
                   </h1>
                   <p className="text-white/70 text-sm korean-text">
-                    @{user.username}
+                    @{user?.username}
                   </p>
+                </div>
+                
+                {/* Expand Icon */}
+                <div className="flex items-center">
+                  <svg 
+                    className="w-5 h-5 text-white/70" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 11l5-5m0 0l5 5m-5-5v12" />
+                  </svg>
                 </div>
               </div>
             </div>
