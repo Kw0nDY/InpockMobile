@@ -123,11 +123,19 @@ export default function PublicViewPage() {
 
       if (sortedColors.length > 0) {
         setDominantColors(sortedColors);
-        // Create gradient background
-        const gradient = sortedColors.length > 1 
-          ? `linear-gradient(135deg, ${sortedColors[0]} 0%, ${sortedColors[1]} 50%, ${sortedColors[0]} 100%)`
-          : `linear-gradient(135deg, ${sortedColors[0]} 0%, rgba(0,0,0,0.8) 100%)`;
-        setBackgroundGradient(gradient);
+        // Create gradient background with better color mixing and transparency
+        if (sortedColors.length > 1) {
+          // Convert RGB to RGBA for transparency control
+          const color1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.25)');
+          const color2 = sortedColors[1].replace('rgb(', 'rgba(').replace(')', ', 0.35)');
+          const color3 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.15)');
+          const gradient = `linear-gradient(135deg, ${color1} 0%, ${color2} 50%, ${color3} 100%)`;
+          setBackgroundGradient(gradient);
+        } else {
+          const color1 = sortedColors[0].replace('rgb(', 'rgba(').replace(')', ', 0.3)');
+          const gradient = `linear-gradient(135deg, ${color1} 0%, rgba(0,0,0,0.9) 100%)`;
+          setBackgroundGradient(gradient);
+        }
       }
     };
     img.src = imageUrl;
@@ -970,7 +978,7 @@ export default function PublicViewPage() {
 
   return (
     <div 
-      className="min-h-screen overflow-hidden fixed inset-0"
+      className="min-h-screen overflow-hidden fixed inset-0 transition-all duration-700 ease-in-out"
       style={{
         background: contentType === 'image' ? 
                    (backgroundGradient === 'bg-black' ? '#000000' : backgroundGradient) : 
