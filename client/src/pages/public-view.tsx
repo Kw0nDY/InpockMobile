@@ -1037,7 +1037,7 @@ export default function PublicViewPage() {
               }}
             >
               <div
-                className="relative w-full h-full"
+                className="relative w-full h-full flex items-center justify-center"
                 style={{
                   background:
                     backgroundGradient === "bg-black"
@@ -1045,34 +1045,36 @@ export default function PublicViewPage() {
                       : backgroundGradient,
                 }}
               >
-                {/* Video Player - Fill entire space */}
-                {currentVideo.type === "link" && currentVideo.embedUrl ? (
-                  <iframe
-                    src={currentVideo.embedUrl}
-                    className="w-full h-full object-cover"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                    title={currentVideo.title || "Video"}
-                  />
-                ) : (
-                  <video
-                    key={currentVideo.id}
-                    src={currentVideo.filePath || currentVideo.mediaUrl}
-                    className="w-full h-full object-cover"
-                    poster={currentVideo.thumbnailUrl}
-                    controls={false}
-                    playsInline
-                    autoPlay
-                    muted
-                    loop
-                    preload="metadata"
-                    style={{ pointerEvents: 'none' }}
-                    onError={(e) => {
-                      console.error("Video loading error:", e);
-                    }}
-                  />
-                )}
+                {/* Video Player Container - 9:16 aspect ratio */}
+                <div className="relative w-full max-w-md" style={{ aspectRatio: '9/16' }}>
+                  {currentVideo.type === "link" && currentVideo.embedUrl ? (
+                    <iframe
+                      src={currentVideo.embedUrl}
+                      className="w-full h-full object-cover rounded-lg"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={currentVideo.title || "Video"}
+                    />
+                  ) : (
+                    <video
+                      key={currentVideo.id}
+                      src={currentVideo.filePath || currentVideo.mediaUrl}
+                      className="w-full h-full object-cover rounded-lg"
+                      poster={currentVideo.thumbnailUrl}
+                      controls={false}
+                      playsInline
+                      autoPlay
+                      muted
+                      loop
+                      preload="metadata"
+                      style={{ pointerEvents: 'none' }}
+                      onError={(e) => {
+                        console.error("Video loading error:", e);
+                      }}
+                    />
+                  )}
+                </div>
 
                 {/* Gradient overlay for better text readability */}
                 <div
