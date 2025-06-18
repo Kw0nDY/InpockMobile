@@ -935,6 +935,7 @@ export default function PublicViewPage() {
                   <div className="absolute inset-0 w-full h-full">
                     <img 
                       src={getImageUrl(images[
+                        imageTransition ? currentImageIndex :
                         isSwipping ? 
                           (swipeOffset > 0 ? 
                             (currentImageIndex - 1 + images.length) % images.length : 
