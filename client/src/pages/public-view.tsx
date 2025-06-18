@@ -1714,7 +1714,7 @@ export default function PublicViewPage() {
         {/* Profile Section - Video View */}
         {contentType === "video" && (
           <div
-            className={`fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
+            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails
                 ? "opacity-0 translate-y-4 pointer-events-none"
                 : "opacity-100 translate-y-0"
