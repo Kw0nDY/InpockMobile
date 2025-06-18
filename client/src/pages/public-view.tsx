@@ -1092,6 +1092,7 @@ export default function PublicViewPage() {
                     muted
                     loop
                     preload="metadata"
+                    style={{ pointerEvents: 'none' }}
                     onError={(e) => {
                       console.error("Video loading error:", e);
                     }}
@@ -1440,7 +1441,7 @@ export default function PublicViewPage() {
             {/* Profile Details Panel - Fade Up */}
             {showProfileDetails && (contentType === "image" || contentType === "video") && (
               <div
-                className="fixed inset-0 z-20 flex items-end"
+                className="fixed inset-0 z-[100] flex items-end"
                 onClick={() => setShowProfileDetails(false)}
                 style={{
                   animation: "fadeIn 0.5s ease-out",
@@ -1714,7 +1715,7 @@ export default function PublicViewPage() {
         {/* Profile Section - Video View */}
         {contentType === "video" && (
           <div
-            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
+            className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-[60] transition-all duration-300 ease-in-out ${
               showProfileDetails
                 ? "opacity-0 translate-y-4 pointer-events-none"
                 : "opacity-100 translate-y-0"
