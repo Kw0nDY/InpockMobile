@@ -450,10 +450,8 @@ export default function PublicViewPage() {
       setSlideDirection('left');
       setImageTransition(true);
       
-      // Update to next index after brief delay for smooth transition
-      setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
-      }, 50);
+      // Update to next index immediately - background already shows correct image
+      setCurrentImageIndex(nextIndex);
       
       // Clear animation state after animation completes
       setTimeout(() => {
@@ -477,10 +475,8 @@ export default function PublicViewPage() {
       setSlideDirection('right');
       setImageTransition(true);
       
-      // Update to next index after brief delay for smooth transition
-      setTimeout(() => {
-        setCurrentImageIndex(nextIndex);
-      }, 50);
+      // Update to next index immediately - background already shows correct image
+      setCurrentImageIndex(nextIndex);
       
       // Clear animation state after animation completes
       setTimeout(() => {
@@ -938,7 +934,8 @@ export default function PublicViewPage() {
                   {/* Background layer - next image to be shown */}
                   <div className="absolute inset-0 w-full h-full">
                     <img 
-                      src={getImageUrl(images[swipeOffset > 0 ? 
+                      src={getImageUrl(images[imageTransition ? currentImageIndex : 
+                        swipeOffset > 0 ? 
                         (currentImageIndex - 1 + images.length) % images.length : 
                         (currentImageIndex + 1) % images.length
                       ])}
