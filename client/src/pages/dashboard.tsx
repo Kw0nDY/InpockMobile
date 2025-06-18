@@ -251,14 +251,6 @@ export default function DashboardPage() {
           </div>
         </div>
         <div className="flex items-center space-x-2">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setLocation('/profile-settings')}
-            className="p-2"
-          >
-            <Settings className="w-5 h-5" />
-          </Button>
           <NotificationDropdown />
         </div>
       </header>
