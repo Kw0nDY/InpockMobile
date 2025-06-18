@@ -933,8 +933,8 @@ export default function PublicViewPage() {
                       src={getImageUrl(images[
                         isSwipping ? 
                           (swipeOffset > 0 ? 
-                            (currentImageIndex - 1 + images.length) % images.length : 
-                            (currentImageIndex + 1) % images.length) :
+                            (currentImageIndex + 1) % images.length : 
+                            (currentImageIndex - 1 + images.length) % images.length) :
                         imageTransition && slideDirection === 'left' ?
                           (currentImageIndex - 1 + images.length) % images.length :
                         imageTransition && slideDirection === 'right' ?
