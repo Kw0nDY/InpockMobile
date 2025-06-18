@@ -51,7 +51,8 @@ export default function PublicViewPage() {
   // UI State
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
-  const [showProfileDetails, setShowProfileDetails] = useState(false);
+  const [showImageProfileDetails, setShowImageProfileDetails] = useState(false);
+  const [showVideoProfileDetails, setShowVideoProfileDetails] = useState(false);
   const [isProfileClosing, setIsProfileClosing] = useState(false);
 
   // Image Navigation State
@@ -1410,11 +1411,11 @@ export default function PublicViewPage() {
 
             {/* Profile overlay removed - will only show in bottom section */}
 
-            {/* Profile Details Panel - Fade Up */}
-            {showProfileDetails && (contentType === "image" || contentType === "video") && (
+            {/* Profile Details Panel - Image View */}
+            {showImageProfileDetails && contentType === "image" && (
               <div
                 className="fixed inset-0 z-[100] flex items-end"
-                onClick={() => setShowProfileDetails(false)}
+                onClick={() => setShowImageProfileDetails(false)}
                 style={{
                   animation: "fadeIn 0.5s ease-out",
                   backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -1573,6 +1574,170 @@ export default function PublicViewPage() {
                 </div>
               </div>
             )}
+
+            {/* Profile Details Panel - Video View */}
+            {showVideoProfileDetails && contentType === "video" && (
+              <div
+                className="fixed inset-0 z-[100] flex items-end"
+                onClick={() => setShowVideoProfileDetails(false)}
+                style={{
+                  animation: "fadeIn 0.5s ease-out",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  backdropFilter: "blur(4px)",
+                }}
+              >
+                <div
+                  className="w-full max-w-md mx-auto p-4 pb-16 transform overscroll-none"
+                  onClick={(e) => e.stopPropagation()}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  style={{
+                    background: `linear-gradient(to top, ${backgroundGradient === "bg-black" ? "rgba(0,0,0,0.9)" : backgroundGradient}, transparent)`,
+                    transform: isProfileClosing
+                      ? "translateY(100%)"
+                      : isDragging && dragCurrentY > dragStartY
+                        ? `translateY(${Math.max(0, dragCurrentY - dragStartY)}px)`
+                        : "translateY(0)",
+                    opacity: isProfileClosing
+                      ? 0
+                      : isDragging && dragCurrentY > dragStartY
+                        ? Math.max(0.3, 1 - (dragCurrentY - dragStartY) / 200)
+                        : 1,
+                    transition: isProfileClosing
+                      ? "all 0.3s ease-out"
+                      : isDragging
+                        ? "none"
+                        : "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                    cursor: isDragging ? "grabbing" : "grab",
+                    animation:
+                      !isProfileClosing && !isDragging
+                        ? "slideUpSlow 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards"
+                        : "none",
+                  }}
+                >
+                  <div className="max-w-md mx-auto text-white px-4">
+                    {/* Drag handle */}
+                    <div className="flex justify-center mb-4 py-2">
+                      <div className="w-12 h-1.5 bg-white/60 rounded-full shadow-sm"></div>
+                    </div>
+
+                    {/* Profile Header */}
+                    <div className="flex items-center space-x-4 mb-6">
+                      {settings?.showProfileImage !== false &&
+                      (user?.profileImageUrl || user?.profileImage) ? (
+                        <img
+                          src={user.profileImageUrl || user.profileImage}
+                          alt={user.name}
+                          className="w-16 h-16 rounded-full object-cover border-2 border-white/70 shadow-lg"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg">
+                          <span className="text-white font-medium text-xl">
+                            {user?.name?.[0]?.toUpperCase() ||
+                              user?.username?.[0]?.toUpperCase() ||
+                              "사"}
+                          </span>
+                        </div>
+                      )}
+
+                      <div>
+                        <h2 className="text-2xl font-bold korean-text">
+                          {user?.name}
+                        </h2>
+                        <p className="text-white/80 korean-text">
+                          @{user?.username}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Bio Introduction */}
+                    {user?.bio && (
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold mb-2 korean-text">
+                          자기소개
+                        </h3>
+                        <p className="text-white/90 leading-relaxed korean-text">
+                          {user.bio}
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Personal Information */}
+                    <div className="mb-6 space-y-4">
+                      <h3 className="text-lg font-semibold korean-text">
+                        개인 정보
+                      </h3>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          생년월일
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.birthDate || "정보 없음"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          근무 헬스장
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.currentGym || "정보 없음"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          경력
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.experience || "정보 없음"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          전문 분야
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.specialization || "정보 없음"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Contact Information */}
+                    <div className="mb-6 space-y-4">
+                      <h3 className="text-lg font-semibold korean-text">
+                        연락처 정보
+                      </h3>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          이메일
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.email || "정보 없음"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center py-2 border-b border-white/20">
+                        <span className="text-white/70 korean-text">
+                          전화번호
+                        </span>
+                        <span className="text-white korean-text">
+                          {user?.phoneNumber || "정보 없음"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Close Guide */}
+                    <div className="mt-8 text-center">
+                      <p className="text-white/60 text-sm korean-text">
+                        위의 핸들을 드래그하거나 아무 곳이나 터치하세요
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           /* Regular view for videos and links */
@@ -1608,7 +1773,7 @@ export default function PublicViewPage() {
         {contentType === "image" && (
           <div
             className={`fixed bottom-40 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
-              showProfileDetails
+              showImageProfileDetails
                 ? "opacity-0 translate-y-4 pointer-events-none"
                 : "opacity-100 translate-y-0"
             }`}
@@ -1626,10 +1791,10 @@ export default function PublicViewPage() {
                     e.stopPropagation();
                     e.preventDefault();
                     console.log(
-                      "Profile clicked, current state:",
-                      showProfileDetails,
+                      "Image Profile clicked, current state:",
+                      showImageProfileDetails,
                     );
-                    setShowProfileDetails(!showProfileDetails);
+                    setShowImageProfileDetails(!showImageProfileDetails);
                   }}
                 >
                   {/* Profile Image */}
@@ -1688,7 +1853,7 @@ export default function PublicViewPage() {
         {contentType === "video" && (
           <div
             className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-[60] transition-all duration-300 ease-in-out ${
-              showProfileDetails
+              showVideoProfileDetails
                 ? "opacity-0 translate-y-4 pointer-events-none"
                 : "opacity-100 translate-y-0"
             }`}
@@ -1707,11 +1872,11 @@ export default function PublicViewPage() {
                     e.preventDefault();
                     console.log(
                       "Video Profile clicked, current state:",
-                      showProfileDetails,
+                      showVideoProfileDetails,
                       "contentType:",
                       contentType
                     );
-                    setShowProfileDetails(!showProfileDetails);
+                    setShowVideoProfileDetails(!showVideoProfileDetails);
                   }}
                 >
                   {/* Profile Image */}
