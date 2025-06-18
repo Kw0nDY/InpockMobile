@@ -1260,6 +1260,12 @@ export default function PublicViewPage() {
                           <span className="text-white korean-text">{user.currentGym}</span>
                         </div>
                       )}
+                      {user.gymAddress && (
+                        <div className="flex justify-between items-center py-2 border-b border-white/20">
+                          <span className="text-white/70 korean-text">헬스장 주소</span>
+                          <span className="text-white korean-text">{user.gymAddress}</span>
+                        </div>
+                      )}
 
                     </div>
 
