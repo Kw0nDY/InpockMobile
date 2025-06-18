@@ -831,9 +831,9 @@ export default function PublicViewPage() {
                       )}
                       
                       {/* Profile Info - Bottom Left */}
-                      <div className="absolute bottom-4 left-4 flex items-center space-x-3 pointer-events-auto">
+                      <div className="absolute bottom-4 left-4 flex items-center space-x-3 pointer-events-auto z-50">
                         <button 
-                          className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                          className="w-12 h-12 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors border border-white/20"
                           onClick={() => setShowProfileDetails(true)}
                         >
                           {user?.profileImageUrl ? (
@@ -847,7 +847,7 @@ export default function PublicViewPage() {
                           )}
                         </button>
                         <div 
-                          className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 cursor-pointer"
+                          className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 cursor-pointer border border-white/20"
                           onClick={() => setShowProfileDetails(true)}
                         >
                           <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
