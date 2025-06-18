@@ -1402,13 +1402,16 @@ export default function PublicViewPage() {
         {/* Profile Section - Above Navigation for Video/Image Views */}
         {(contentType === 'image' || contentType === 'video') && (
           <div 
-            className={`fixed bottom-44 left-1/2 transform -translate-x-1/2 w-full max-w-md backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
+            className={`fixed bottom-32 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
-            style={{
-              background: 'rgba(0, 0, 0, 0.4)'
-            }}
           >
+            <div 
+              className="mx-4 backdrop-blur-sm rounded-2xl"
+              style={{
+                background: 'rgba(0, 0, 0, 0.4)'
+              }}
+            >
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
@@ -1458,6 +1461,7 @@ export default function PublicViewPage() {
                   </svg>
                 </div>
               </div>
+            </div>
             </div>
           </div>
         )}
