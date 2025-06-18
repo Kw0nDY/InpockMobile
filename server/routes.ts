@@ -902,12 +902,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
         bio: user.bio,
         profileImageUrl: user.profileImageUrl,
         introVideoUrl: user.introVideoUrl,
-        contentType: user.contentType
+        contentType: user.contentType,
+        visitCount: user.visitCount,
+        birthDate: user.birthDate,
+        fitnessAwards: user.fitnessAwards,
+        fitnessCertifications: user.fitnessCertifications,
+        currentGym: user.currentGym,
+        gymAddress: user.gymAddress,
+        fitnessIntro: user.fitnessIntro
       };
 
       res.json(publicUserData);
     } catch (error) {
       console.error('Profile fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Public API routes (matching frontend expectations)
+  app.get("/api/public/:identifier", async (req, res) => {
+    try {
+      const { identifier } = req.params;
+      console.log(`[PUBLIC-API] Looking for identifier: ${identifier}`);
+      
+      // Get all users for debugging
+      const allUsers = await storage.getAllUsers();
+      console.log(`[PUBLIC-API] Total users in storage: ${allUsers.length}`);
+      console.log(`[PUBLIC-API] Available usernames: ${allUsers.map(u => u.username).join(', ')}`);
+      
+      // Try to find user by custom URL first, then by username
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
+      
+      if (!user) {
+        console.log(`[PUBLIC-API] User not found for identifier: ${identifier}`);
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      console.log(`[PUBLIC-API] Found user: ${JSON.stringify({id: user.id, username: user.username, name: user.name})}`);
+
+      // Return public user data including fitness information
+      const publicUserData = {
+        id: user.id,
+        username: user.username,
+        name: user.name,
+        bio: user.bio,
+        profileImageUrl: user.profileImageUrl,
+        introVideoUrl: user.introVideoUrl,
+        contentType: user.contentType,
+        visitCount: user.visitCount,
+        birthDate: user.birthDate,
+        fitnessAwards: user.fitnessAwards,
+        fitnessCertifications: user.fitnessCertifications,
+        currentGym: user.currentGym,
+        gymAddress: user.gymAddress,
+        fitnessIntro: user.fitnessIntro
+      };
+
+      res.json(publicUserData);
+    } catch (error) {
+      console.error('Public profile fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/public/:identifier/settings", async (req, res) => {
+    try {
+      const { identifier } = req.params;
+      
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const settings = await storage.getUserSettings(user.id);
+      
+      // Return public settings data including display preferences
+      const publicSettings = {
+        contentType: settings?.contentType || 'links',
+        customUrl: settings?.customUrl || user.username,
+        showProfileImage: settings?.showProfileImage !== false,
+        showBio: settings?.showBio !== false,
+        showVisitCount: settings?.showVisitCount !== false,
+        backgroundTheme: settings?.backgroundTheme || 'beige',
+        layoutStyle: settings?.layoutStyle || 'centered'
+      };
+
+      res.json(publicSettings);
+    } catch (error) {
+      console.error('Public settings fetch error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/public/:identifier/links", async (req, res) => {
+    try {
+      const { identifier } = req.params;
+      
+      let user = await storage.getUserByCustomUrl(identifier);
+      if (!user) {
+        user = await storage.getUserByUsername(identifier);
+      }
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const links = await storage.getLinks(user.id);
+      res.json(links);
+    } catch (error) {
+      console.error('Public links fetch error:', error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
@@ -946,12 +1056,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "User not found" });
       }
 
-      const settings = await storage.getSettings(user.id);
+      const settings = await storage.getUserSettings(user.id);
       
-      // Return only public settings data
+      // Return public settings data including display preferences
       const publicSettings = {
         contentType: settings?.contentType || 'links',
-        customUrl: settings?.customUrl || user.username
+        customUrl: settings?.customUrl || user.username,
+        showProfileImage: settings?.showProfileImage !== false,
+        showBio: settings?.showBio !== false,
+        showVisitCount: settings?.showVisitCount !== false,
+        backgroundTheme: settings?.backgroundTheme || 'beige',
+        layoutStyle: settings?.layoutStyle || 'centered'
       };
 
       res.json(publicSettings);
