@@ -851,52 +851,38 @@ export default function PublicViewPage() {
                 {/* Gradient overlay for better text readability */}
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/70"></div>
 
-                {/* Right Side Actions - YouTube Shorts Style */}
-                <div className="absolute right-3 bottom-24 z-50">
-                  <div className="flex flex-col space-y-6">
-                    {/* Like Button */}
-                    <div className="flex flex-col items-center">
-                      <button className="w-12 h-12 flex items-center justify-center">
-                        <Heart className="w-8 h-8 text-white drop-shadow-lg" />
-                      </button>
-                      <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">1.1만</span>
-                    </div>
-
-                    {/* Comment Button */}
-                    <div className="flex flex-col items-center">
-                      <button className="w-12 h-12 flex items-center justify-center">
-                        <MessageCircle className="w-8 h-8 text-white drop-shadow-lg" />
-                      </button>
-                      <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">심어요</span>
-                    </div>
-
-                    {/* Save Button */}
-                    <div className="flex flex-col items-center">
-                      <button className="w-12 h-12 flex items-center justify-center">
-                        <div className="w-6 h-6 border-2 border-white rounded drop-shadow-lg"></div>
-                      </button>
-                      <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">251</span>
-                    </div>
-
-                    {/* Share Button */}
-                    <div className="flex flex-col items-center">
-                      <button className="w-12 h-12 flex items-center justify-center">
-                        <Share className="w-8 h-8 text-white drop-shadow-lg" />
-                      </button>
-                      <span className="text-white text-xs font-semibold mt-1 drop-shadow-lg">공유</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Bottom Overlay - User Info */}
-                <div className="absolute bottom-4 left-4 right-20 z-50">
-                  <div className="space-y-3">
-                    {/* Username and Follow */}
-                    <div className="flex items-center space-x-3">
-                      <span className="text-white font-semibold text-lg drop-shadow-lg">@{user?.username}</span>
-                      <button className="px-4 py-1.5 bg-white rounded-md">
-                        <span className="text-black text-sm font-medium">팔로우</span>
-                      </button>
+                {/* Profile overlay - positioned above navigation buttons */}
+                <div className="absolute bottom-40 left-4 z-10">
+                  <div 
+                    className="flex items-end space-x-3 cursor-pointer"
+                    onClick={() => setShowProfileDetails(!showProfileDetails)}
+                  >
+                    {/* Profile Image */}
+                    {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
+                      <img 
+                        src={user.profileImageUrl || user.profileImage} 
+                        alt={user.name}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
+                        <span className="text-white font-medium text-lg">
+                          {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Name and Username - Horizontal Layout */}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
+                          {user.name}
+                        </h1>
+                        <span className="text-white/60 text-sm">•</span>
+                      </div>
+                      <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
+                        @{user.username}
+                      </p>
                     </div>
                   </div>
                 </div>
