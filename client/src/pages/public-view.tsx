@@ -735,51 +735,52 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -ml-6 -mr-6">
+          <div className="relative w-full h-[calc(100vh-80px)] overflow-hidden bg-black">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
-                const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
+                const currentVideo = filteredVideos[0];
                 
                 return currentVideo ? (
-                  <div className="relative w-full h-full">
+                  <div className="relative w-full h-full flex items-center justify-center">
                     {/* Video Container */}
-                    <div className="relative w-full h-full">
+                    <div className="relative w-full h-full max-w-full max-h-full">
                       {currentVideo.type === 'link' && currentVideo.embedUrl ? (
-                        <iframe
-                          src={currentVideo.embedUrl}
-                          className="w-full h-full object-cover"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          title={currentVideo.title || 'Video'}
-                        />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <iframe
+                            src={currentVideo.embedUrl}
+                            className="w-full h-full max-w-full max-h-full"
+                            style={{ aspectRatio: '9/16' }}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title={currentVideo.title || 'Video'}
+                          />
+                        </div>
                       ) : (
-                        <video
-                          src={currentVideo.filePath || currentVideo.mediaUrl}
-                          className="w-full h-full object-cover"
-                          poster={currentVideo.thumbnailUrl}
-                          loop
-                          muted
-                          playsInline
-                          autoPlay
-                          preload="metadata"
-                          onClick={(e) => {
-                            const videoElement = e.target as HTMLVideoElement;
-                            if (videoElement.paused) {
-                              videoElement.play();
-                            } else {
-                              videoElement.pause();
-                            }
-                          }}
-                        />
+                        <div className="w-full h-full flex items-center justify-center">
+                          <video
+                            src={currentVideo.filePath || currentVideo.mediaUrl}
+                            className="w-full h-full object-contain"
+                            style={{ maxWidth: '100%', maxHeight: '100%' }}
+                            poster={currentVideo.thumbnailUrl}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            onError={(e) => {
+                              console.error('Video loading error:', e);
+                              const target = e.target as HTMLVideoElement;
+                              target.style.display = 'none';
+                            }}
+                          />
+                        </div>
                       )}
                       
                       {/* Right Side Actions */}
                       <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
                         {/* Like Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
                             <Heart className="w-6 h-6 text-white" />
                           </button>
                           <span className="text-white text-xs mt-1">43</span>
@@ -787,7 +788,7 @@ export default function PublicViewPage() {
                         
                         {/* Comment Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
                             <MessageCircle className="w-6 h-6 text-white" />
                           </button>
                           <span className="text-white text-xs mt-1">62</span>
@@ -795,7 +796,7 @@ export default function PublicViewPage() {
                         
                         {/* Share Button */}
                         <div className="flex flex-col items-center">
-                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                          <button className="w-12 h-12 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors">
                             <Share className="w-6 h-6 text-white" />
                           </button>
                         </div>
@@ -817,18 +818,18 @@ export default function PublicViewPage() {
                             )}
                           </div>
                           <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
-                          <button className="text-white text-sm font-medium">팔로우</button>
+                          <button className="text-white text-sm font-medium hover:text-yellow-400 transition-colors">팔로우</button>
                         </div>
                         
                         {/* Product Info */}
                         <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3">
                           <div className="flex items-center justify-between">
                             <div>
-                              <div className="text-white text-lg font-bold">280</div>
-                              <div className="text-white/80 text-sm">Men's Tracksuit</div>
+                              <div className="text-white text-lg font-bold">피트니스 프로그램</div>
+                              <div className="text-white/80 text-sm">전문 트레이너 {user?.name}</div>
                             </div>
-                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium">
-                              BUY
+                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium hover:bg-yellow-500 transition-colors">
+                              문의하기
                             </button>
                           </div>
                         </div>
@@ -839,10 +840,10 @@ export default function PublicViewPage() {
               })()
             ) : (
               <div className="flex items-center justify-center h-full bg-black">
-                <div className="text-center">
+                <div className="text-center p-8">
                   <Video className="w-16 h-16 text-white/50 mx-auto mb-4" />
-                  <p className="text-white text-lg font-medium">동영상 없음</p>
-                  <p className="text-white/70 text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
+                  <p className="text-white text-lg font-medium mb-2">동영상 없음</p>
+                  <p className="text-white/70 text-sm">업로드된 동영상이나 링크가 없습니다.</p>
                 </div>
               </div>
             )}
