@@ -235,50 +235,111 @@ export default function PublicViewPage() {
     setDragCurrentY(e.clientY);
     setIsMouseDragging(true);
     setIsDragging(true);
+    
+    // Also handle swipe for image navigation
+    if (contentType === 'image' && images.length > 1) {
+      setSwipeStartX(e.clientX);
+      setSwipeCurrentX(e.clientX);
+      setIsSwipping(true);
+      setSwipeOffset(0);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isMouseDragging || !isDragging) return;
-    setDragCurrentY(e.clientY);
+    if (isMouseDragging && isDragging) {
+      setDragCurrentY(e.clientY);
+    }
+    
+    // Handle swipe movement for image navigation
+    if (isSwipping && contentType === 'image' && images.length > 1) {
+      const deltaX = e.clientX - swipeStartX;
+      setSwipeCurrentX(e.clientX);
+      setSwipeOffset(deltaX);
+    }
   };
 
   const handleMouseUp = () => {
-    if (!isMouseDragging || !isDragging) return;
-    
-    const dragDistance = dragCurrentY - dragStartY;
-    // If dragged down more than 30px, close the modal
-    if (dragDistance > 30) {
-      closeProfilePanel();
+    // Handle profile panel drag
+    if (isMouseDragging && isDragging) {
+      const dragDistance = dragCurrentY - dragStartY;
+      if (dragDistance > 30) {
+        closeProfilePanel();
+      }
+      setIsMouseDragging(false);
+      setIsDragging(false);
+      setDragStartY(0);
+      setDragCurrentY(0);
     }
     
-    setIsMouseDragging(false);
-    setIsDragging(false);
-    setDragStartY(0);
-    setDragCurrentY(0);
+    // Handle swipe for image navigation
+    if (isSwipping && contentType === 'image' && images.length > 1) {
+      const deltaX = swipeCurrentX - swipeStartX;
+      const threshold = 50;
+      
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX > 0) {
+          handleLeftTap(false);
+        } else {
+          handleRightTap(false);
+        }
+      }
+      
+      setIsSwipping(false);
+      setSwipeStartX(0);
+      setSwipeCurrentX(0);
+      setSwipeOffset(0);
+    }
   };
 
   // Global mouse events for drag outside component
   useEffect(() => {
     const handleGlobalMouseMove = (e: MouseEvent) => {
-      if (!isMouseDragging || !isDragging) return;
-      setDragCurrentY(e.clientY);
+      if (isMouseDragging && isDragging) {
+        setDragCurrentY(e.clientY);
+      }
+      
+      // Handle swipe movement for image navigation
+      if (isSwipping && contentType === 'image' && images.length > 1) {
+        const deltaX = e.clientX - swipeStartX;
+        setSwipeCurrentX(e.clientX);
+        setSwipeOffset(deltaX);
+      }
     };
 
     const handleGlobalMouseUp = () => {
-      if (!isMouseDragging || !isDragging) return;
-      
-      const dragDistance = dragCurrentY - dragStartY;
-      if (dragDistance > 30) {
-        closeProfilePanel();
+      // Handle profile panel drag
+      if (isMouseDragging && isDragging) {
+        const dragDistance = dragCurrentY - dragStartY;
+        if (dragDistance > 30) {
+          closeProfilePanel();
+        }
+        setIsMouseDragging(false);
+        setIsDragging(false);
+        setDragStartY(0);
+        setDragCurrentY(0);
       }
       
-      setIsMouseDragging(false);
-      setIsDragging(false);
-      setDragStartY(0);
-      setDragCurrentY(0);
+      // Handle swipe for image navigation
+      if (isSwipping && contentType === 'image' && images.length > 1) {
+        const deltaX = swipeCurrentX - swipeStartX;
+        const threshold = 50;
+        
+        if (Math.abs(deltaX) > threshold) {
+          if (deltaX > 0) {
+            handleLeftTap(false);
+          } else {
+            handleRightTap(false);
+          }
+        }
+        
+        setIsSwipping(false);
+        setSwipeStartX(0);
+        setSwipeCurrentX(0);
+        setSwipeOffset(0);
+      }
     };
 
-    if (isMouseDragging) {
+    if (isMouseDragging || isSwipping) {
       document.addEventListener('mousemove', handleGlobalMouseMove);
       document.addEventListener('mouseup', handleGlobalMouseUp);
     }
@@ -287,7 +348,7 @@ export default function PublicViewPage() {
       document.removeEventListener('mousemove', handleGlobalMouseMove);
       document.removeEventListener('mouseup', handleGlobalMouseUp);
     };
-  }, [isMouseDragging, isDragging, dragCurrentY, dragStartY]);
+  }, [isMouseDragging, isDragging, dragCurrentY, dragStartY, isSwipping, swipeCurrentX, swipeStartX, contentType, images.length]);
 
   // Auto-slide functionality for images
   useEffect(() => {
@@ -864,7 +925,19 @@ export default function PublicViewPage() {
           /* Full screen image view with profile overlay */
           <>
             {Array.isArray(images) && images.length > 0 ? (
-              <div className="absolute inset-0 pb-16 overflow-hidden">
+              <div 
+                className="absolute inset-0 pb-16 overflow-hidden"
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                style={{ 
+                  transform: isSwipping ? `translateX(${swipeOffset * 0.3}px)` : 'translateX(0)',
+                  transition: isSwipping ? 'none' : 'transform 0.3s ease-out'
+                }}
+              >
                 <div className="relative w-full h-full">
                   {/* Background image - shows the destination image */}
                   <div className="absolute inset-0 w-full h-full">
