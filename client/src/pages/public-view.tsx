@@ -790,33 +790,34 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full h-[calc(100vh-140px)] overflow-hidden">
+          <div className="relative w-full h-[calc(100vh-70px)] overflow-hidden">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
-              <div className="snap-y snap-mandatory overflow-y-auto h-full scrollbar-hide">
-                {allVideos
-                  .filter(video => !video.title?.includes('노래1')) // 노래1 제외
-                  .map((video: any, index: number) => (
-                  <div key={video.id || `link-${index}`} className="snap-start relative w-full h-full bg-black flex items-center justify-center">
+              (() => {
+                const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
+                const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
+                
+                return currentVideo ? (
+                  <div className="relative w-full h-full bg-black">
                     {/* Video Container */}
                     <div className="relative w-full h-full">
-                      {video.type === 'link' && video.embedUrl ? (
+                      {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                         <iframe
-                          src={video.embedUrl}
+                          src={currentVideo.embedUrl}
                           className="w-full h-full object-cover"
                           frameBorder="0"
                           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                           allowFullScreen
-                          title={video.title || 'Video'}
+                          title={currentVideo.title || 'Video'}
                         />
                       ) : (
                         <video
-                          src={video.filePath || video.mediaUrl}
+                          src={currentVideo.filePath || currentVideo.mediaUrl}
                           className="w-full h-full object-cover"
-                          poster={video.thumbnailUrl}
+                          poster={currentVideo.thumbnailUrl}
                           loop
                           muted
                           playsInline
-                          autoPlay={index === 0}
+                          autoPlay
                           preload="metadata"
                           onClick={(e) => {
                             const videoElement = e.target as HTMLVideoElement;
@@ -854,15 +855,15 @@ export default function PublicViewPage() {
                       </div>
                       
                       {/* Video Progress Indicator */}
-                      {video.type === 'upload' && (
+                      {currentVideo.type === 'upload' && (
                         <div className="absolute top-4 left-4 right-16 h-1 bg-white/30 rounded-full overflow-hidden">
                           <div className="h-full bg-white rounded-full w-0 transition-all duration-100"></div>
                         </div>
                       )}
                     </div>
                   </div>
-                ))}
-              </div>
+                ) : null;
+              })()
             ) : (
               <div className="flex items-center justify-center h-full bg-black">
                 <div className="text-center">
