@@ -1444,6 +1444,8 @@ export default function PublicViewPage() {
                 onClick={() => setShowProfileDetails(false)}
                 style={{
                   animation: "fadeIn 0.5s ease-out",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  backdropFilter: "blur(4px)",
                 }}
               >
                 <div
