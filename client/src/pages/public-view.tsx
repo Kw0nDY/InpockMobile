@@ -1321,27 +1321,7 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Product Info Card - Only show when in video mode */}
-        {contentType === 'video' && (
-          <div className="fixed bottom-16 left-1/2 transform -translate-x-1/2 w-full max-w-md px-4 z-40">
-            <div className="bg-black/80 backdrop-blur-sm rounded-lg p-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center">
-                    <span className="text-black font-bold text-sm">M</span>
-                  </div>
-                  <div>
-                    <p className="text-white font-medium text-sm">피트니스 프로그램</p>
-                    <p className="text-white/70 text-xs">전문 트레이너 김철수</p>
-                  </div>
-                </div>
-                <button className="bg-yellow-400 text-black px-4 py-2 rounded-full font-medium text-sm">
-                  문의
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+
 
         {/* Footer with all content types */}
         <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
