@@ -766,21 +766,8 @@ export default function PublicViewPage() {
                 </div>
               </div>
 
-              {/* Bottom navigation */}
-              <div className="flex justify-center items-center gap-6">
-                
-                {/* Previous button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
-                  onClick={prevImage}
-                  disabled={images.length <= 1}
-                >
-                  <ChevronLeft className="w-6 h-6" />
-                </Button>
-
-                {/* Image indicators */}
+              {/* Image indicators */}
+              <div className="flex justify-center">
                 <div className="flex gap-2">
                   {images.map((_, index) => (
                     <button
@@ -794,17 +781,6 @@ export default function PublicViewPage() {
                     />
                   ))}
                 </div>
-
-                {/* Next button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-30"
-                  onClick={nextImage}
-                  disabled={images.length <= 1}
-                >
-                  <ChevronRight className="w-6 h-6" />
-                </Button>
               </div>
             </div>
           </div>
