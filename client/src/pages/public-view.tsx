@@ -916,7 +916,7 @@ export default function PublicViewPage() {
             {Array.isArray(images) && images.length > 0 ? (
               <div 
                 className="absolute inset-0 overflow-hidden"
-                style={{ paddingBottom: '120px' }}
+                style={{ paddingBottom: '160px' }}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
@@ -1252,7 +1252,7 @@ export default function PublicViewPage() {
 
         {/* Profile Section - Above Navigation for Video/Image Views */}
         {(contentType === 'image' || contentType === 'video') && (
-          <div className="fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-45">
+          <div className="fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-black/90 backdrop-blur-sm z-50">
             <div className="px-4 py-4">
               <div 
                 className="flex items-center space-x-3 cursor-pointer"
