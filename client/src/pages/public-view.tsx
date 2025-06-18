@@ -790,14 +790,14 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full h-[calc(100vh-60px)] overflow-hidden">
+          <div className="relative w-full h-[calc(100vh-50px)] overflow-hidden">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
                 const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
                 
                 return currentVideo ? (
-                  <div className="relative w-full h-full bg-black">
+                  <div className="relative w-full h-[95%] bg-black mx-auto">
                     {/* Video Container */}
                     <div className="relative w-full h-full">
                       {currentVideo.type === 'link' && currentVideo.embedUrl ? (
