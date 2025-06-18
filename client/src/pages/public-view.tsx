@@ -523,13 +523,13 @@ export default function PublicViewPage() {
       images.length <= 1 ||
       contentType !== "image" ||
       imageTransition ||
-      showProfileDetails
+      showImageProfileDetails
     ) {
       return;
     }
 
     const interval = setInterval(() => {
-      if (!imageTransition && !showProfileDetails) {
+      if (!imageTransition && !showImageProfileDetails) {
         handleRightTap(true); // Pass true to indicate this is from auto-slide
       }
     }, 5000);
@@ -541,7 +541,7 @@ export default function PublicViewPage() {
     contentType,
     imageTransition,
     currentImageIndex,
-    showProfileDetails,
+    showImageProfileDetails,
   ]);
 
   // Toast notification helper
@@ -568,7 +568,8 @@ export default function PublicViewPage() {
   const closeProfilePanel = () => {
     setIsProfileClosing(true);
     setTimeout(() => {
-      setShowProfileDetails(false);
+      setShowImageProfileDetails(false);
+      setShowVideoProfileDetails(false);
       setIsProfileClosing(false);
     }, 300);
   };
@@ -1318,7 +1319,7 @@ export default function PublicViewPage() {
                 )}
 
                 {/* Auto-slide toggle button */}
-                {images.length > 1 && !showProfileDetails && (
+                {images.length > 1 && !showImageProfileDetails && (
                   <button
                     className="absolute top-4 left-4 z-20 transition-all duration-200 hover:scale-110 active:scale-95"
                     onClick={toggleAutoSlide}
