@@ -1438,7 +1438,7 @@ export default function PublicViewPage() {
             {/* Profile overlay removed - will only show in bottom section */}
 
             {/* Profile Details Panel - Fade Up */}
-            {showProfileDetails && (
+            {showProfileDetails && (contentType === "image" || contentType === "video") && (
               <div
                 className="fixed inset-0 z-20 flex items-end"
                 onClick={() => setShowProfileDetails(false)}
