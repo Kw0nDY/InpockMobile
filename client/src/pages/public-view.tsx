@@ -648,10 +648,14 @@ export default function PublicViewPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <LinkIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-foreground text-lg">링크 없음</p>
-                <p className="text-muted-foreground text-sm mt-2">아직 등록된 링크가 없습니다.</p>
+              <div className="h-[calc(100vh-80px)] bg-[#F5F5F5] flex flex-col items-center justify-center px-6">
+                <div className="w-20 h-20 rounded-full bg-[#B8A393] flex items-center justify-center mb-6">
+                  <LinkIcon className="w-10 h-10 text-white" />
+                </div>
+                <h2 className="text-xl font-bold text-[#4E342E] mb-3 korean-text">링크 없음</h2>
+                <p className="text-[#8D6E63] text-center korean-text">
+                  아직 등록된 링크가 없습니다.
+                </p>
               </div>
             )}
           </div>
