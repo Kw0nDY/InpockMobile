@@ -1405,6 +1405,9 @@ export default function PublicViewPage() {
             className={`fixed bottom-36 left-1/2 transform -translate-x-1/2 w-full max-w-md backdrop-blur-sm z-50 transition-all duration-300 ease-in-out ${
               showProfileDetails ? 'opacity-0 translate-y-4 pointer-events-none' : 'opacity-100 translate-y-0'
             }`}
+            style={{
+              background: 'rgba(0, 0, 0, 0.4)'
+            }}
           >
             <div className="px-4 py-4">
               <div 
