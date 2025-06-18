@@ -790,11 +790,13 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="relative w-full">
+          <div className="relative w-full h-[calc(100vh-140px)] overflow-hidden">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
-              <div className="snap-y snap-mandatory overflow-y-auto h-[calc(100vh-200px)]">
-                {allVideos.map((video: any, index: number) => (
-                  <div key={video.id || `link-${index}`} className="snap-start relative w-full h-[calc(100vh-200px)] bg-black flex items-center justify-center">
+              <div className="snap-y snap-mandatory overflow-y-auto h-full">
+                {allVideos
+                  .filter(video => !video.title?.includes('노래1')) // 노래1 제외
+                  .map((video: any, index: number) => (
+                  <div key={video.id || `link-${index}`} className="snap-start relative w-full h-full bg-black flex items-center justify-center">
                     {/* Video Container */}
                     <div className="relative w-full h-full">
                       {video.type === 'link' && video.embedUrl ? (
@@ -829,9 +831,12 @@ export default function PublicViewPage() {
                       
                       {/* Overlay Content - Instagram Reels Style */}
                       <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
-                        {/* Top Section */}
+                        {/* Top Section - Profile Info */}
                         <div className="flex justify-between items-start">
-                          <div className="bg-black/20 rounded-full px-3 py-1">
+                          <div 
+                            className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 pointer-events-auto cursor-pointer"
+                            onClick={() => setShowProfileDetails(true)}
+                          >
                             <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
                           </div>
                         </div>
@@ -864,7 +869,10 @@ export default function PublicViewPage() {
                           {/* Right: Action Buttons */}
                           <div className="flex flex-col items-center space-y-4 pointer-events-auto">
                             {/* Profile Avatar */}
-                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <button 
+                              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                              onClick={() => setShowProfileDetails(true)}
+                            >
                               {user?.profileImageUrl ? (
                                 <img 
                                   src={user.profileImageUrl} 
@@ -874,7 +882,7 @@ export default function PublicViewPage() {
                               ) : (
                                 <User className="w-6 h-6 text-white" />
                               )}
-                            </div>
+                            </button>
                             
                             {/* Like Button */}
                             <button className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
@@ -926,7 +934,7 @@ export default function PublicViewPage() {
                 ))}
               </div>
             ) : (
-              <div className="flex items-center justify-center h-[calc(100vh-200px)] bg-black">
+              <div className="flex items-center justify-center h-full bg-black">
                 <div className="text-center">
                   <Video className="w-16 h-16 text-white/50 mx-auto mb-4" />
                   <p className="text-white text-lg font-medium">동영상 없음</p>
