@@ -117,19 +117,7 @@ export default function PublicViewPage() {
     ...videoLinks.map((link: any) => ({ ...link, type: 'link', embedUrl: getVideoEmbedUrl(link.originalUrl) }))
   ];
 
-  // Image navigation functions
-  const nextImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev + 1) % images.length);
-    }
-  };
-
-  const prevImage = () => {
-    if (images.length > 0) {
-      setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
-    }
-  };
-
+  // Utility functions
   const getImageUrl = (image: any) => {
     return image.filePath || image.mediaUrl || '/placeholder-image.jpg';
   };
@@ -149,21 +137,10 @@ export default function PublicViewPage() {
     return () => clearInterval(interval);
   }, [identifier, user?.id]);
 
-  // Keyboard navigation for images
+  // Reset image index when content type changes
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (contentType === 'image' && images.length > 0) {
-        if (event.key === 'ArrowLeft') {
-          prevImage();
-        } else if (event.key === 'ArrowRight') {
-          nextImage();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [contentType, images.length]);
+    setCurrentImageIndex(0);
+  }, [contentType]);
 
 
 
@@ -1290,7 +1267,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => setCurrentContentType('image')}
+              onClick={() => {}}
             >
               <Image className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">이미지</span>
@@ -1303,7 +1280,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => setCurrentContentType('video')}
+              onClick={() => {}}
             >
               <Video className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">동영상</span>
@@ -1316,7 +1293,7 @@ export default function PublicViewPage() {
                   ? 'text-primary' 
                   : 'text-gray-400 hover:text-gray-600'
               }`}
-              onClick={() => setCurrentContentType('links')}
+              onClick={() => {}}
             >
               <LinkIcon className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">링크</span>
