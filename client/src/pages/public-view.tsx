@@ -790,145 +790,115 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="fixed inset-0 z-40 bg-black flex items-center justify-center">
+          <div className="relative w-screen h-[calc(100vh-80px)] overflow-hidden bg-black -ml-6 -mr-6">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
               (() => {
                 const filteredVideos = allVideos.filter(video => !video.title?.includes('노래1'));
-                const currentVideo = filteredVideos[0];
+                const currentVideo = filteredVideos[0]; // Show only the first video to avoid scrolling
                 
-                if (!currentVideo) {
-                  return (
-                    <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#4E342E] to-[#3E2723] text-white">
-                      <Video className="w-24 h-24 mb-6 text-white/70" />
-                      <h2 className="text-3xl font-bold mb-3">동영상</h2>
-                      <p className="text-lg text-white/80 text-center max-w-md">
-                        아직 등록된 동영상이 없습니다
-                      </p>
-                    </div>
-                  );
-                }
-                
-                return (
-                  <>
-                    {/* Centered video that fits screen */}
-                    {currentVideo.type === 'link' && currentVideo.embedUrl ? (
-                      <iframe
-                        src={currentVideo.embedUrl}
-                        className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out"
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        title={currentVideo.title || 'Video'}
-                      />
-                    ) : (
-                      <video
-                        src={currentVideo.filePath || currentVideo.mediaUrl}
-                        className="max-w-full max-h-full object-contain transition-all duration-500 ease-in-out"
-                        poster={currentVideo.thumbnailUrl}
-                        controls
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
-                    )}
-                    
-                    {/* Dark overlay for better text readability */}
-                    <div className="absolute inset-0 bg-black/40 pointer-events-none"></div>
-
-                    {/* Content overlay */}
-                    <div className="relative z-10 h-full flex flex-col justify-between p-6 text-white">
+                return currentVideo ? (
+                  <div className="relative w-full h-full">
+                    {/* Video Container */}
+                    <div className="relative w-full h-full">
+                      {currentVideo.type === 'link' && currentVideo.embedUrl ? (
+                        <iframe
+                          src={currentVideo.embedUrl}
+                          className="w-full h-full object-cover"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={currentVideo.title || 'Video'}
+                        />
+                      ) : (
+                        <video
+                          src={currentVideo.filePath || currentVideo.mediaUrl}
+                          className="w-full h-full object-cover"
+                          poster={currentVideo.thumbnailUrl}
+                          loop
+                          muted
+                          playsInline
+                          autoPlay
+                          preload="metadata"
+                          onClick={(e) => {
+                            const videoElement = e.target as HTMLVideoElement;
+                            if (videoElement.paused) {
+                              videoElement.play();
+                            } else {
+                              videoElement.pause();
+                            }
+                          }}
+                        />
+                      )}
                       
-                      {/* Top bar */}
-                      <div className="flex justify-between items-start">
-                        <div className="flex items-center gap-2">
-                          <div className="bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-sm font-medium">
-                            Video
+                      {/* Right Side Actions */}
+                      <div className="absolute right-4 bottom-32 flex flex-col space-y-6 z-50">
+                        {/* Like Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <Heart className="w-6 h-6 text-white" />
+                          </button>
+                          <span className="text-white text-xs mt-1">43</span>
+                        </div>
+                        
+                        {/* Comment Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <MessageCircle className="w-6 h-6 text-white" />
+                          </button>
+                          <span className="text-white text-xs mt-1">62</span>
+                        </div>
+                        
+                        {/* Share Button */}
+                        <div className="flex flex-col items-center">
+                          <button className="w-12 h-12 rounded-full bg-black/20 backdrop-blur-sm flex items-center justify-center">
+                            <Share className="w-6 h-6 text-white" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Bottom Content */}
+                      <div className="absolute bottom-6 left-4 right-20 z-50">
+                        {/* Profile Info */}
+                        <div className="flex items-center space-x-3 mb-4">
+                          <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            {user?.profileImageUrl ? (
+                              <img 
+                                src={user.profileImageUrl} 
+                                alt={user.name || '프로필'}
+                                className="w-8 h-8 rounded-full object-cover"
+                              />
+                            ) : (
+                              <User className="w-5 h-5 text-white" />
+                            )}
+                          </div>
+                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
+                          <button className="text-white text-sm font-medium">팔로우</button>
+                        </div>
+                        
+                        {/* Product Info */}
+                        <div className="bg-black/40 backdrop-blur-sm rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <div className="text-white text-lg font-bold">280</div>
+                              <div className="text-white/80 text-sm">Men's Tracksuit</div>
+                            </div>
+                            <button className="bg-yellow-400 text-black px-6 py-2 rounded-full font-medium">
+                              BUY
+                            </button>
                           </div>
                         </div>
                       </div>
-
-                      {/* Center content */}
-                      <div className="flex-1 flex items-end pb-20">
-                        <div className="max-w-2xl">
-                          <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight drop-shadow-lg">
-                            {currentVideo?.title || "동영상 작품"}
-                          </h1>
-                          
-                          {currentVideo?.description && (
-                            <p className="text-lg md:text-xl text-white/90 leading-relaxed drop-shadow-md">
-                              {currentVideo.description}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Bottom product info */}
-                      <div className="flex items-center justify-between">
-                        <div className="text-white">
-                          <div className="text-2xl font-bold">280</div>
-                          <div className="text-sm opacity-90">Men's Tracksuit</div>
-                        </div>
-                        <button className="bg-yellow-500 text-black px-6 py-2 rounded-full font-bold hover:bg-yellow-400 transition-colors">
-                          BUY
-                        </button>
-                      </div>
                     </div>
-
-                    {/* Right side action buttons */}
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex flex-col items-center gap-6 z-20">
-                      <button className="flex flex-col items-center gap-1 text-white">
-                        <div className="w-12 h-12 bg-black/30 rounded-full flex items-center justify-center">
-                          <Heart className="w-6 h-6" />
-                        </div>
-                        <span className="text-xs font-medium">43</span>
-                      </button>
-                      
-                      <button className="flex flex-col items-center gap-1 text-white">
-                        <div className="w-12 h-12 bg-black/30 rounded-full flex items-center justify-center">
-                          <MessageCircle className="w-6 h-6" />
-                        </div>
-                        <span className="text-xs font-medium">62</span>
-                      </button>
-                      
-                      <button className="flex flex-col items-center gap-1 text-white">
-                        <div className="w-12 h-12 bg-black/30 rounded-full flex items-center justify-center">
-                          <Share className="w-6 h-6" />
-                        </div>
-                      </button>
-                    </div>
-
-                    {/* Navigation dots for switching tabs */}
-                    <div className="absolute bottom-24 left-1/2 transform -translate-x-1/2 flex gap-2 z-20">
-                      <button 
-                        onClick={() => setLocalContentType('image')}
-                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                          contentType === 'image' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
-                        }`}
-                      />
-                      <button 
-                        onClick={() => setLocalContentType('video')}
-                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                          contentType === 'video' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
-                        }`}
-                      />
-                      <button 
-                        onClick={() => setLocalContentType('links')}
-                        className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                          contentType === 'links' ? 'bg-white' : 'bg-white/30 hover:bg-white/50'
-                        }`}
-                      />
-                    </div>
-                  </>
-                );
+                  </div>
+                ) : null;
               })()
             ) : (
-              <div className="h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#4E342E] to-[#3E2723] text-white">
-                <Video className="w-24 h-24 mb-6 text-white/70" />
-                <h2 className="text-3xl font-bold mb-3">동영상</h2>
-                <p className="text-lg text-white/80 text-center max-w-md">
-                  아직 등록된 동영상이 없습니다
-                </p>
+              <div className="flex items-center justify-center h-full bg-black">
+                <div className="text-center">
+                  <Video className="w-16 h-16 text-white/50 mx-auto mb-4" />
+                  <p className="text-white text-lg font-medium">동영상 없음</p>
+                  <p className="text-white/70 text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
+                </div>
               </div>
             )}
           </div>
@@ -1328,10 +1298,8 @@ export default function PublicViewPage() {
           </>
         )}
 
-        {/* Footer with all content types - Hidden for video view */}
-        <nav className={`fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50 transition-transform duration-300 ${
-          contentType === 'video' ? 'translate-y-full' : 'translate-y-0'
-        }`} style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
+        {/* Footer with all content types */}
+        <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50" style={{ boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.1)' }}>
           <div className="flex items-center justify-around py-2">
             {/* Images Icon */}
             <button 
