@@ -940,7 +940,7 @@ export default function PublicViewPage() {
                           currentImageIndex
                       ])}
                       alt="배경 이미지"
-                      className="max-w-full max-h-full object-contain"
+                      className="w-full max-h-full object-contain"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
                         target.src = '/placeholder-image.jpg';
@@ -969,7 +969,7 @@ export default function PublicViewPage() {
                     <img 
                       src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
-                      className="max-w-full max-h-full object-contain"
+                      className="w-full max-h-full object-contain"
                       style={{
                         borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px'
                       }}
@@ -1096,41 +1096,7 @@ export default function PublicViewPage() {
               </div>
             )}
 
-            {/* Profile overlay - positioned above navigation buttons */}
-            <div className="absolute bottom-40 left-4 z-10">
-              <div 
-                className="flex items-end space-x-3 cursor-pointer"
-                onClick={() => setShowProfileDetails(!showProfileDetails)}
-              >
-                {/* Profile Image */}
-                {(settings?.showProfileImage !== false) && (user.profileImageUrl || user.profileImage) ? (
-                  <img 
-                    src={user.profileImageUrl || user.profileImage} 
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-white/70 shadow-lg flex-shrink-0"
-                  />
-                ) : (
-                  <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-2 border-white/70 shadow-lg flex-shrink-0">
-                    <span className="text-white font-medium text-lg">
-                      {user.name?.[0]?.toUpperCase() || user.username?.[0]?.toUpperCase() || "사"}
-                    </span>
-                  </div>
-                )}
-                
-                {/* Name and Username - Horizontal Layout */}
-                <div className="flex-1">
-                  <div className="flex items-center space-x-2">
-                    <h1 className="text-2xl font-bold text-white korean-text" style={{ textShadow: '2px 2px 4px rgba(0, 0, 0, 0.8)' }}>
-                      {user.name}
-                    </h1>
-                    <span className="text-white/60 text-sm">•</span>
-                  </div>
-                  <p className="text-white/80 text-sm korean-text mt-1" style={{ textShadow: '1px 1px 2px rgba(0, 0, 0, 0.8)' }}>
-                    @{user.username}
-                  </p>
-                </div>
-              </div>
-            </div>
+            {/* Profile overlay removed - will only show in bottom section */}
 
             {/* Profile Details Panel - Fade Up */}
             {showProfileDetails && (
