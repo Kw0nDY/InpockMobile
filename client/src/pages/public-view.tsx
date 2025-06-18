@@ -63,6 +63,9 @@ export default function PublicViewPage() {
   
   // Content Type State (local override)
   const [localContentType, setLocalContentType] = useState<'links' | 'image' | 'video' | 'media' | 'both'>('image');
+  
+  // View Mode State (user view vs business view)
+  const [viewMode, setViewMode] = useState<'user' | 'business'>('user');
 
 
   const { data: user, isLoading: userLoading } = useQuery<UserProfile>({
