@@ -829,97 +829,27 @@ export default function PublicViewPage() {
                         />
                       )}
                       
-                      {/* Overlay Content - Instagram Reels Style */}
-                      <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
-                        {/* Top Section - Profile Info */}
-                        <div className="flex justify-between items-start">
-                          <div 
-                            className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 pointer-events-auto cursor-pointer"
-                            onClick={() => setShowProfileDetails(true)}
-                          >
-                            <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
-                          </div>
-                        </div>
-                        
-                        {/* Bottom Section */}
-                        <div className="flex justify-between items-end">
-                          {/* Left: Video Info */}
-                          <div className="flex-1 mr-4">
-                            {video.title && (
-                              <div className="mb-2">
-                                <h3 className="text-white font-semibold text-base leading-tight">
-                                  {video.title}
-                                </h3>
-                              </div>
-                            )}
-                            {video.description && (
-                              <p className="text-white/90 text-sm leading-relaxed line-clamp-3">
-                                {video.description}
-                              </p>
-                            )}
-                            {video.type === 'link' && video.originalUrl && (
-                              <div className="mt-2">
-                                <span className="text-white/80 text-xs bg-black/30 px-2 py-1 rounded">
-                                  외부 링크
-                                </span>
-                              </div>
-                            )}
-                          </div>
-                          
-                          {/* Right: Action Buttons */}
-                          <div className="flex flex-col items-center space-y-4 pointer-events-auto">
-                            {/* Profile Avatar */}
-                            <button 
-                              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
-                              onClick={() => setShowProfileDetails(true)}
-                            >
-                              {user?.profileImageUrl ? (
-                                <img 
-                                  src={user.profileImageUrl} 
-                                  alt={user.name || '프로필'}
-                                  className="w-10 h-10 rounded-full object-cover"
-                                />
-                              ) : (
-                                <User className="w-6 h-6 text-white" />
-                              )}
-                            </button>
-                            
-                            {/* Like Button */}
-                            <button className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                              </svg>
-                            </button>
-                            
-                            {/* Comment Button */}
-                            <button className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.418 8-9.75 8a9.75 9.75 0 01-6.072-2.072l-3.678.728.728-3.678A9.75 9.75 0 013 12C3 7.582 7.582 3 12 3s9 4.582 9 9z" />
-                              </svg>
-                            </button>
-                            
-                            {/* Share Button */}
-                            <button 
-                              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
-                              onClick={() => {
-                                if (navigator.share) {
-                                  navigator.share({
-                                    title: video.title || '동영상',
-                                    url: window.location.href
-                                  });
-                                } else {
-                                  navigator.clipboard.writeText(window.location.href);
-                                  setToastMessage('링크가 복사되었습니다');
-                                  setShowToast(true);
-                                  setTimeout(() => setShowToast(false), 2000);
-                                }
-                              }}
-                            >
-                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
-                              </svg>
-                            </button>
-                          </div>
+                      {/* Profile Info - Bottom Left */}
+                      <div className="absolute bottom-4 left-4 flex items-center space-x-3 pointer-events-auto">
+                        <button 
+                          className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                          onClick={() => setShowProfileDetails(true)}
+                        >
+                          {user?.profileImageUrl ? (
+                            <img 
+                              src={user.profileImageUrl} 
+                              alt={user.name || '프로필'}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <User className="w-6 h-6 text-white" />
+                          )}
+                        </button>
+                        <div 
+                          className="bg-black/20 backdrop-blur-sm rounded-full px-3 py-1 cursor-pointer"
+                          onClick={() => setShowProfileDetails(true)}
+                        >
+                          <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
                         </div>
                       </div>
                       
