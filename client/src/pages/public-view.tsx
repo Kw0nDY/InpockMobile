@@ -968,7 +968,7 @@ export default function PublicViewPage() {
                     <img 
                       src={getImageUrl(images[imageTransition ? previousImageIndex : currentImageIndex])}
                       alt="현재 이미지"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain bg-black"
                       style={{
                         borderRadius: isSwipping ? `${Math.abs(swipeOffset) * 0.1}px` : '0px'
                       }}
