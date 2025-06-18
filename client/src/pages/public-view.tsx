@@ -79,7 +79,7 @@ export default function PublicViewPage() {
     queryKey: [`/api/public/${identifier}`],
     enabled: !!identifier,
     staleTime: 0, // Force refresh
-    cacheTime: 0, // Don't cache
+    gcTime: 0, // Don't cache
   });
 
   const { data: settings, isLoading: settingsLoading } = useQuery<UserSettings>({
@@ -1271,25 +1271,30 @@ export default function PublicViewPage() {
 
                     </div>
 
-                    {/* Certifications */}
-                    {user.fitnessCertifications && (
-                      <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-3 korean-text">자격증</h3>
+                    {/* Fitness Information */}
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-3 korean-text">피트니스 정보</h3>
+                      
+                      {/* Certifications */}
+                      <div className="mb-4">
+                        <h4 className="text-md font-medium mb-2 korean-text text-white/80">자격증</h4>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                          <p className="text-white/90 leading-relaxed korean-text">{user.fitnessCertifications}</p>
+                          <p className="text-white/90 leading-relaxed korean-text">
+                            {user.fitnessCertifications || "자격증 정보가 없습니다."}
+                          </p>
                         </div>
                       </div>
-                    )}
 
-                    {/* Awards */}
-                    {user.fitnessAwards && (
-                      <div className="mb-6">
-                        <h3 className="text-lg font-semibold mb-3 korean-text">수상 내역</h3>
+                      {/* Awards */}
+                      <div className="mb-4">
+                        <h4 className="text-md font-medium mb-2 korean-text text-white/80">수상 내역</h4>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4">
-                          <p className="text-white/90 leading-relaxed korean-text">{user.fitnessAwards}</p>
+                          <p className="text-white/90 leading-relaxed korean-text">
+                            {user.fitnessAwards || "수상 내역이 없습니다."}
+                          </p>
                         </div>
                       </div>
-                    )}
+                    </div>
 
 
 
