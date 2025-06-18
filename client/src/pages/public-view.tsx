@@ -789,13 +789,13 @@ export default function PublicViewPage() {
         const currentVideo = filteredVideos[currentVideoIndex] || filteredVideos[0];
         
         return (
-          <div className="h-full pb-32 pt-0">
-            {/* Video Player - Full height with proper aspect ratio */}
-            <div className="relative w-full" style={{ height: 'calc(100vh - 8rem)' }}>
+          <div className="fixed inset-0 bg-black">
+            {/* Video Player - Full screen */}
+            <div className="relative w-full h-full">
               {currentVideo.type === 'link' && currentVideo.embedUrl ? (
                 <iframe
                   src={currentVideo.embedUrl}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   allowFullScreen
@@ -805,7 +805,7 @@ export default function PublicViewPage() {
                 <video
                   key={currentVideo.id}
                   src={currentVideo.filePath || currentVideo.mediaUrl}
-                  className="w-full h-full object-cover rounded-lg"
+                  className="w-full h-full object-cover"
                   poster={currentVideo.thumbnailUrl}
                   controls={false}
                   playsInline
@@ -818,24 +818,9 @@ export default function PublicViewPage() {
                   }}
                 />
               )}
-              
-              {/* Video Title Overlay - Center */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                <div className="text-center text-white drop-shadow-2xl">
-                  <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-wider">
-                    STEPHEN SANCHEZ
-                  </h1>
-                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mt-2 tracking-wider">
-                    UNTIL I FOUND YOU
-                  </h2>
-                  <h3 className="text-lg sm:text-xl md:text-2xl font-medium mt-2 tracking-wider">
-                    ACOUSTIC
-                  </h3>
-                </div>
-              </div>
 
               {/* Right Side Actions - YouTube Shorts Style */}
-              <div className="absolute right-3 top-1/2 transform -translate-y-1/2 z-50">
+              <div className="absolute right-3 bottom-20 z-50">
                 <div className="flex flex-col space-y-6">
                   {/* Like Button */}
                   <div className="flex flex-col items-center">
@@ -871,8 +856,8 @@ export default function PublicViewPage() {
                 </div>
               </div>
 
-              {/* Bottom Overlay - User Info and Description */}
-              <div className="absolute bottom-4 left-4 right-20 z-50">
+              {/* Bottom Overlay - User Info only */}
+              <div className="absolute bottom-16 left-4 right-20 z-50">
                 <div className="space-y-3">
                   {/* Username and Follow */}
                   <div className="flex items-center space-x-3">
@@ -880,15 +865,6 @@ export default function PublicViewPage() {
                     <button className="px-4 py-1.5 bg-white rounded-md">
                       <span className="text-black text-sm font-medium">팔로우</span>
                     </button>
-                  </div>
-
-                  {/* Video Description */}
-                  <div className="space-y-2">
-                    {currentVideo.title && (
-                      <p className="text-white font-medium text-base leading-tight drop-shadow-lg">
-                        {currentVideo.title}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
