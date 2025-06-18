@@ -790,53 +790,148 @@ export default function PublicViewPage() {
         );
       case 'video':
         return (
-          <div className="space-y-4">
+          <div className="relative w-full">
             {Array.isArray(allVideos) && allVideos.length > 0 ? (
-              <div className="space-y-4">
+              <div className="snap-y snap-mandatory overflow-y-auto h-[calc(100vh-200px)]">
                 {allVideos.map((video: any, index: number) => (
-                  <div key={video.id || `link-${index}`} className="relative">
-                    <div className="bg-card shadow-sm rounded-lg border border-border overflow-hidden">
-                      <div className="relative aspect-[16/10] bg-muted">
-                        {video.type === 'link' && video.embedUrl ? (
-                          <iframe
-                            src={video.embedUrl}
-                            className="w-full h-full"
-                            frameBorder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                            title={video.title || 'Video'}
-                          />
-                        ) : (
-                          <video
-                            src={video.filePath || video.mediaUrl}
-                            className="w-full h-full object-cover"
-                            poster={video.thumbnailUrl}
-                            controls
-                            preload="metadata"
-                          />
-                        )}
-                        {video.title && video.type === 'upload' && (
-                          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent text-white text-sm p-3">
-                            {video.title}
+                  <div key={video.id || `link-${index}`} className="snap-start relative w-full h-[calc(100vh-200px)] bg-black flex items-center justify-center">
+                    {/* Video Container */}
+                    <div className="relative w-full h-full">
+                      {video.type === 'link' && video.embedUrl ? (
+                        <iframe
+                          src={video.embedUrl}
+                          className="w-full h-full object-cover"
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          title={video.title || 'Video'}
+                        />
+                      ) : (
+                        <video
+                          src={video.filePath || video.mediaUrl}
+                          className="w-full h-full object-cover"
+                          poster={video.thumbnailUrl}
+                          loop
+                          muted
+                          playsInline
+                          autoPlay={index === 0}
+                          preload="metadata"
+                          onClick={(e) => {
+                            const videoElement = e.target as HTMLVideoElement;
+                            if (videoElement.paused) {
+                              videoElement.play();
+                            } else {
+                              videoElement.pause();
+                            }
+                          }}
+                        />
+                      )}
+                      
+                      {/* Overlay Content - Instagram Reels Style */}
+                      <div className="absolute inset-0 flex flex-col justify-between p-4 pointer-events-none">
+                        {/* Top Section */}
+                        <div className="flex justify-between items-start">
+                          <div className="bg-black/20 rounded-full px-3 py-1">
+                            <span className="text-white text-sm font-medium">{user?.name || '사용자'}</span>
                           </div>
-                        )}
+                        </div>
+                        
+                        {/* Bottom Section */}
+                        <div className="flex justify-between items-end">
+                          {/* Left: Video Info */}
+                          <div className="flex-1 mr-4">
+                            {video.title && (
+                              <div className="mb-2">
+                                <h3 className="text-white font-semibold text-base leading-tight">
+                                  {video.title}
+                                </h3>
+                              </div>
+                            )}
+                            {video.description && (
+                              <p className="text-white/90 text-sm leading-relaxed line-clamp-3">
+                                {video.description}
+                              </p>
+                            )}
+                            {video.type === 'link' && video.originalUrl && (
+                              <div className="mt-2">
+                                <span className="text-white/80 text-xs bg-black/30 px-2 py-1 rounded">
+                                  외부 링크
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* Right: Action Buttons */}
+                          <div className="flex flex-col items-center space-y-4 pointer-events-auto">
+                            {/* Profile Avatar */}
+                            <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                              {user?.profileImageUrl ? (
+                                <img 
+                                  src={user.profileImageUrl} 
+                                  alt={user.name || '프로필'}
+                                  className="w-10 h-10 rounded-full object-cover"
+                                />
+                              ) : (
+                                <User className="w-6 h-6 text-white" />
+                              )}
+                            </div>
+                            
+                            {/* Like Button */}
+                            <button className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                              </svg>
+                            </button>
+                            
+                            {/* Comment Button */}
+                            <button className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors">
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.418 8-9.75 8a9.75 9.75 0 01-6.072-2.072l-3.678.728.728-3.678A9.75 9.75 0 013 12C3 7.582 7.582 3 12 3s9 4.582 9 9z" />
+                              </svg>
+                            </button>
+                            
+                            {/* Share Button */}
+                            <button 
+                              className="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center hover:bg-white/30 transition-colors"
+                              onClick={() => {
+                                if (navigator.share) {
+                                  navigator.share({
+                                    title: video.title || '동영상',
+                                    url: window.location.href
+                                  });
+                                } else {
+                                  navigator.clipboard.writeText(window.location.href);
+                                  setToastMessage('링크가 복사되었습니다');
+                                  setShowToast(true);
+                                  setTimeout(() => setShowToast(false), 2000);
+                                }
+                              }}
+                            >
+                              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
                       </div>
+                      
+                      {/* Video Progress Indicator */}
+                      {video.type === 'upload' && (
+                        <div className="absolute top-4 left-4 right-16 h-1 bg-white/30 rounded-full overflow-hidden">
+                          <div className="h-full bg-white rounded-full w-0 transition-all duration-100"></div>
+                        </div>
+                      )}
                     </div>
-                    {video.type === 'link' && video.title && (
-                      <div className="mt-2 px-1">
-                        <h3 className="text-sm font-medium text-foreground">{video.title}</h3>
-                        {video.description && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{video.description}</p>
-                        )}
-                      </div>
-                    )}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <p className="text-foreground text-lg">동영상 없음</p>
-                <p className="text-muted-foreground text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
+              <div className="flex items-center justify-center h-[calc(100vh-200px)] bg-black">
+                <div className="text-center">
+                  <Video className="w-16 h-16 text-white/50 mx-auto mb-4" />
+                  <p className="text-white text-lg font-medium">동영상 없음</p>
+                  <p className="text-white/70 text-sm mt-2">업로드된 동영상이나 링크가 없습니다.</p>
+                </div>
               </div>
             )}
           </div>
