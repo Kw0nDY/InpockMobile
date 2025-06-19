@@ -478,10 +478,10 @@ export default function LinksPage() {
 
   // 메인 링크 페이지
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F5F5DC' }}>
+    <div className="min-h-screen" style={{ backgroundColor: 'transparent' }}>
       <div className="max-w-md mx-auto min-h-screen">
         {/* Header */}
-        <div className="p-4 border-b flex-shrink-0" style={{ borderColor: '#8D6E63', backgroundColor: '#EFE5DC' }}>
+        <div className="p-4 border-b flex-shrink-0" style={{ borderColor: 'rgba(141, 110, 99, 0.3)', backgroundColor: 'rgba(239, 229, 220, 0.4)', backdropFilter: 'blur(10px)' }}>
           <div>
             <h1 className="text-xl font-bold" style={{ color: '#4E342E' }}>링크 관리</h1>
             <p className="text-sm" style={{ color: '#A1887F' }}>
@@ -551,44 +551,87 @@ export default function LinksPage() {
                 ))}
               </div>
             ) : links && links.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {links.map((link: any) => (
                   <div 
                     key={link.id} 
-                    className="rounded-xl p-3 border shadow-sm hover:shadow-md transition-all duration-200"
+                    className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 relative"
                     style={{ 
                       backgroundColor: 'rgba(239, 229, 220, 0.6)',
                       backdropFilter: 'blur(10px)',
-                      borderColor: '#8D6E63'
+                      borderColor: 'rgba(141, 110, 99, 0.3)'
                     }}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-sm mb-1" style={{ color: '#4E342E' }}>
-                          {link.title}
-                        </h3>
-                        <p className="text-xs mb-2" style={{ color: '#A1887F' }}>
+                    {/* 방문수 뱃지 */}
+                    <div 
+                      className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium"
+                      style={{ 
+                        backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                        color: '#4E342E'
+                      }}
+                    >
+                      0회 방문
+                    </div>
+
+                    <div className="pr-16">
+                      <h3 className="font-bold text-lg mb-2" style={{ color: '#4E342E' }}>
+                        {link.title}
+                      </h3>
+                      <div className="text-sm mb-3" style={{ color: '#8D6E63' }}>
+                        amusefit.co.kr/l/{link.shortCode}
+                      </div>
+                      {link.description && (
+                        <p className="text-sm mb-3" style={{ color: '#A1887F' }}>
                           {link.description}
                         </p>
-                        <div className="text-xs font-medium" style={{ color: '#8D6E63' }}>
-                          amusefit.co.kr/l/{link.shortCode}
-                        </div>
-                      </div>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
-                            toast({ title: "링크가 복사되었습니다!" });
-                          }}
-                          className="p-2 rounded-lg hover:shadow-md transition-all duration-200"
-                          style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)' }}
-                        >
-                          <Copy className="w-4 h-4" style={{ color: '#4E342E' }} />
-                        </button>
-                      </div>
+                      )}
+                    </div>
+
+                    {/* 하단 액션 버튼들 */}
+                    <div className="flex gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'rgba(141, 110, 99, 0.2)' }}>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                          toast({ title: "링크가 복사되었습니다!" });
+                        }}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium"
+                        style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)', color: '#4E342E' }}
+                      >
+                        <Copy className="w-4 h-4" />
+                        복사
+                      </button>
+                      <button 
+                        onClick={() => window.open(`${window.location.origin}/l/${link.shortCode}`, '_blank')}
+                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium"
+                        style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)', color: '#4E342E' }}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        열기
+                      </button>
                     </div>
                   </div>
                 ))}
+
+                {/* 전체 분석 보기 버튼 */}
+                <div 
+                  className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 text-center cursor-pointer"
+                  style={{ 
+                    backgroundColor: 'rgba(239, 229, 220, 0.4)',
+                    backdropFilter: 'blur(10px)',
+                    borderColor: 'rgba(141, 110, 99, 0.3)'
+                  }}
+                  onClick={() => {
+                    // Navigate to analytics page
+                    window.location.href = '/analytics';
+                  }}
+                >
+                  <div className="flex items-center justify-center gap-2" style={{ color: '#4E342E' }}>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    <span className="font-medium">전체 분석 보기</span>
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="text-center py-12">
