@@ -34,6 +34,7 @@ export default function LinksPage() {
   const [crop, setCrop] = useState<any>({ unit: '%', width: 90, aspect: 16 / 9 });
   const [completedCrop, setCompletedCrop] = useState<any>(null);
   const [isLoadingMetadata, setIsLoadingMetadata] = useState(false);
+  const [urlMetadata, setUrlMetadata] = useState<any>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -103,6 +104,30 @@ export default function LinksPage() {
     },
   });
 
+  // URL 메타데이터 가져오기 함수
+  const fetchUrlMetadata = async (urlToFetch: string) => {
+    if (!urlToFetch.trim() || !urlToFetch.startsWith('http')) return;
+    
+    setIsLoadingMetadata(true);
+    try {
+      const response = await fetch(`/api/url-metadata?url=${encodeURIComponent(urlToFetch)}`);
+      if (response.ok) {
+        const metadata = await response.json();
+        setUrlMetadata(metadata);
+        if (metadata.title && !title.trim()) {
+          setTitle(metadata.title);
+        }
+        if (metadata.description && !description.trim()) {
+          setDescription(metadata.description);
+        }
+      }
+    } catch (error) {
+      console.error('메타데이터 가져오기 실패:', error);
+    } finally {
+      setIsLoadingMetadata(false);
+    }
+  };
+
   const resetForm = () => {
     setTitle("");
     setUrl("");
@@ -114,6 +139,7 @@ export default function LinksPage() {
     setShowImageCrop(false);
     setCrop({ unit: '%', width: 90, aspect: 16 / 9 });
     setCompletedCrop(null);
+    setUrlMetadata(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -171,11 +197,23 @@ export default function LinksPage() {
               <label className="block text-sm font-medium mb-2">URL *</label>
               <Input
                 value={url}
-                onChange={(e) => setUrl(e.target.value)}
+                onChange={(e) => {
+                  setUrl(e.target.value);
+                  // URL이 변경되면 잠시 후 메타데이터 가져오기
+                  const timeoutId = setTimeout(() => {
+                    fetchUrlMetadata(e.target.value);
+                  }, 1000);
+                  return () => clearTimeout(timeoutId);
+                }}
                 placeholder="https://example.com"
                 type="url"
                 required
               />
+              {isLoadingMetadata && (
+                <div className="mt-2 text-sm text-gray-500">
+                  URL 정보를 가져오는 중...
+                </div>
+              )}
             </div>
 
             <div>
@@ -186,6 +224,82 @@ export default function LinksPage() {
                 placeholder="링크에 대한 설명을 입력하세요"
                 rows={3}
               />
+            </div>
+
+            {/* URL 미리보기 */}
+            {urlMetadata && (
+              <div className="bg-gray-50 rounded-lg p-4 border">
+                <h4 className="text-sm font-medium mb-2">미리보기</h4>
+                <div className="space-y-2">
+                  {urlMetadata.image && (
+                    <img 
+                      src={urlMetadata.image} 
+                      alt="미리보기" 
+                      className="w-full h-32 object-cover rounded"
+                    />
+                  )}
+                  <div>
+                    <h5 className="font-medium text-sm">{urlMetadata.title}</h5>
+                    <p className="text-xs text-gray-600 mt-1">{urlMetadata.description}</p>
+                    <p className="text-xs text-blue-600 mt-1">{urlMetadata.url}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* 카드 스타일 선택 */}
+            <div>
+              <label className="block text-sm font-medium mb-3">카드 스타일</label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  className={`p-3 border rounded-lg text-left ${
+                    selectedStyle === THUMBNAIL
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(THUMBNAIL)}
+                >
+                  <div className="text-sm font-medium">썸네일</div>
+                  <div className="text-xs text-gray-500 mt-1">이미지와 텍스트</div>
+                </button>
+                <button
+                  type="button"
+                  className={`p-3 border rounded-lg text-left ${
+                    selectedStyle === SIMPLE
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(SIMPLE)}
+                >
+                  <div className="text-sm font-medium">심플</div>
+                  <div className="text-xs text-gray-500 mt-1">텍스트만</div>
+                </button>
+                <button
+                  type="button"
+                  className={`p-3 border rounded-lg text-left ${
+                    selectedStyle === CARD
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(CARD)}
+                >
+                  <div className="text-sm font-medium">카드</div>
+                  <div className="text-xs text-gray-500 mt-1">카드 형태</div>
+                </button>
+                <button
+                  type="button"
+                  className={`p-3 border rounded-lg text-left ${
+                    selectedStyle === BACKGROUND
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(BACKGROUND)}
+                >
+                  <div className="text-sm font-medium">배경</div>
+                  <div className="text-xs text-gray-500 mt-1">그라데이션 배경</div>
+                </button>
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4 border-t">
