@@ -1281,24 +1281,8 @@ export default function PublicViewPage() {
         return (
           <>
             {/* Full screen video view - same structure as image view */}
-            <div
-              className="absolute inset-0 pb-16 overflow-hidden"
-              style={{
-                background:
-                  backgroundGradient === "bg-black"
-                    ? "#000000"
-                    : backgroundGradient,
-              }}
-            >
-              <div
-                className="relative w-full h-full flex items-center justify-center"
-                style={{
-                  background:
-                    backgroundGradient === "bg-black"
-                      ? "#000000"
-                      : backgroundGradient,
-                }}
-              >
+            <div className="absolute inset-0 pb-16 overflow-hidden">
+              <div className="relative w-full h-full flex items-center justify-center">
                 {/* Video Player Container - 9:16 aspect ratio */}
                 <div className="relative w-full max-w-md" style={{ aspectRatio: '9/16' }}>
                   {currentVideo.type === "link" && currentVideo.embedUrl ? (
@@ -2284,7 +2268,10 @@ export default function PublicViewPage() {
         {/* Footer with all content types */}
         <nav
           className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 z-50"
-          style={{ boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)" }}
+          style={{ 
+            boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "white" 
+          }}
         >
           <div className="flex items-center justify-around py-2">
             {/* Images Icon */}
