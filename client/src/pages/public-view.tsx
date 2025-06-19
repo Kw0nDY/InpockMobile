@@ -1373,17 +1373,19 @@ export default function PublicViewPage() {
   };
 
   return (
-    <div
-      className="min-h-screen overflow-hidden fixed inset-0 transition-all duration-700 ease-in-out"
-      style={{
-        background:
-          contentType === "image" || contentType === "video"
-            ? backgroundGradient === "bg-black"
-              ? "#000000"
-              : backgroundGradient
-            : getBackgroundStyle(),
-      }}
-    >
+    <div className="min-h-screen overflow-hidden fixed inset-0">
+      {/* Background layer only for content area, not footer */}
+      <div 
+        className="absolute inset-0 pb-16 transition-all duration-700 ease-in-out"
+        style={{
+          background:
+            contentType === "image" || contentType === "video"
+              ? backgroundGradient === "bg-black"
+                ? "#000000"
+                : backgroundGradient
+              : getBackgroundStyle(),
+        }}
+      />
       {/* iPhone-style Toast Notification */}
       <div
         className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-300 ease-out ${
@@ -1399,17 +1401,7 @@ export default function PublicViewPage() {
         </div>
       </div>
 
-      <div
-        className="max-w-md mx-auto h-screen relative overflow-hidden"
-        style={{
-          background:
-            contentType === "image" || contentType === "video"
-              ? backgroundGradient === "bg-black"
-                ? "#000000"
-                : backgroundGradient
-              : "black",
-        }}
-      >
+      <div className="max-w-md mx-auto h-screen relative overflow-hidden">
         {/* Content based on selected tab */}
         {contentType === "image" ? (
           /* Full screen image view with profile overlay */
@@ -1427,15 +1419,7 @@ export default function PublicViewPage() {
               >
                 <div className="relative w-full h-full flex items-center justify-center">
                   {/* Background layer - shows next image during swipe */}
-                  <div
-                    className="absolute inset-0 w-full h-full flex items-center justify-center"
-                    style={{
-                      background:
-                        backgroundGradient === "bg-black"
-                          ? "#000000"
-                          : backgroundGradient,
-                    }}
-                  >
+                  <div className="absolute inset-0 w-full h-full flex items-center justify-center">
                     <img
                       src={getImageUrl(
                         images[
