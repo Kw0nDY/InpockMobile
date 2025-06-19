@@ -218,180 +218,293 @@ export default function LinksPage() {
     );
   }
 
+  // 메인 링크 페이지 - 이전 디자인 유지하면서 링크 목록만 스크롤 가능하게
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* Fixed Header */}
-      <div className="p-4 border-b border-border bg-card flex-shrink-0">
-        <div>
-          <h1 className="text-xl font-bold text-foreground">링크 관리</h1>
-          <p className="text-sm text-muted-foreground">
-            링크를 추가하고 방문 통계를 확인하세요
-          </p>
+    <div className="min-h-screen bg-[#F5F3F0] pb-20">
+      <div className="max-w-md mx-auto bg-[#F5F3F0] min-h-screen">
+        {/* Fixed Header */}
+        <div className="p-4 border-b border-border bg-card flex-shrink-0">
+          <div>
+            <h1 className="text-xl font-bold text-foreground">링크 관리</h1>
+            <p className="text-sm text-muted-foreground">
+              링크를 추가하고 방문 통계를 확인하세요
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Real-time Visit Tracking Stats */}
-      <div className="flex-shrink-0 p-4 bg-card">
-        <Card className="bg-card shadow-sm">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-card-foreground korean-text">
-                링크 통계
-              </h2>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-green-600 font-medium">Live</span>
+        {/* Content */}
+        <div className="p-4 space-y-4 pb-28">
+          {/* Real-time Visit Tracking - 홈화면과 동일한 디자인 */}
+          <Card className="bg-card shadow-sm">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-card-foreground korean-text">
+                  링크
+                </h2>
+                <div className="flex items-center gap-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-green-600 font-medium">Live</span>
+                </div>
               </div>
-            </div>
 
-            <div className="grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {(userStats as any)?.totalVisits || 0}
+              {/* Visit Stats - 총방문자, 일방문자, 월방문자 */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">
+                    {(userStats as any)?.totalVisits || 0}
+                  </div>
+                  <div className="text-xs text-muted-foreground">총방문자</div>
                 </div>
-                <div className="text-xs text-muted-foreground">총방문자</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {(userStats as any)?.dailyVisits || 0}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">
+                    {(userStats as any)?.dailyVisits || 0}
+                  </div>
+                  <div className="text-xs text-muted-foreground">일방문자</div>
                 </div>
-                <div className="text-xs text-muted-foreground">일방문자</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-primary mb-1">
-                  {(userStats as any)?.monthlyVisits || 0}
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-primary mb-1">
+                    {(userStats as any)?.monthlyVisits || 0}
+                  </div>
+                  <div className="text-xs text-muted-foreground">월방문자</div>
                 </div>
-                <div className="text-xs text-muted-foreground">월방문자</div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
-      {/* Scrollable Link Cards */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="p-4">
-          {isLoading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Card key={i} className="animate-pulse">
-                  <CardContent className="p-4">
-                    <div className="h-32 bg-muted rounded mb-3"></div>
-                    <div className="h-4 bg-muted rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-muted rounded w-1/2"></div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : links && links.length > 0 ? (
-            <div className="space-y-4">
-              {links.map((link: any) => (
-                <Card key={link.id} className="overflow-hidden shadow-lg border-0 bg-white">
-                  <CardContent className="p-0">
-                    <div className="relative cursor-pointer group">
-                      {/* Image section for thumbnail style */}
-                      {link.style === 'thumbnail' && (link.customImageUrl || link.imageUrl) && (
-                        <div className="relative">
-                          <img 
-                            src={link.customImageUrl || link.imageUrl} 
-                            alt={link.title}
-                            className="w-full h-40 object-cover"
-                          />
-                        </div>
-                      )}
-                      
-                      {/* Default image for thumbnail without custom image */}
-                      {link.style === 'thumbnail' && !(link.customImageUrl || link.imageUrl) && (
-                        <div className="w-full h-40 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-                          <ExternalLink className="w-12 h-12 text-gray-400" />
-                        </div>
-                      )}
-                      
-                      {/* Action buttons */}
-                      <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button 
-                          className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
-                            toast({ title: "단축링크가 복사되었습니다!" });
-                          }}
-                        >
-                          <Copy className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button 
-                          className="bg-red-500/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            deleteLinkMutation.mutate(link.id);
-                          }}
-                        >
-                          <Trash2 className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                      
-                      {/* Content section */}
-                      <div 
-                        className="p-5 cursor-pointer"
-                        onClick={() => window.open(link.originalUrl, '_blank')}
-                      >
-                        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2 leading-tight">
-                          {link.title}
-                        </h3>
-                        {link.description && (
-                          <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
-                            {link.description}
-                          </p>
-                        )}
-                        
-                        {/* Short link */}
-                        <div 
-                          className="text-xs text-blue-600 font-medium mb-3 truncate cursor-pointer hover:underline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            window.open(`/l/${link.shortCode}`, '_blank');
-                          }}
-                        >
-                          amusefit.co.kr/l/{link.shortCode}
-                        </div>
-                        
-                        {/* Stats */}
-                        <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                          <div className="flex items-center space-x-4 text-xs text-gray-500">
-                            <div className="flex items-center space-x-1">
-                              <TrendingUp className="w-3 h-3" />
-                              <span>{link.clicks || 0}</span>
+              {/* Refresh Stats Button */}
+              <div className="mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
+                    queryClient.invalidateQueries({ queryKey: [`/api/user/${user?.id}/link-stats`] });
+                    toast({ title: "통계가 새로고침되었습니다!" });
+                  }}
+                  className="text-xs"
+                >
+                  통계 새로고침
+                </Button>
+              </div>
+
+              {/* 빠른 추적 URL 섹션 */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-medium text-foreground">빠른 추적 URL</h3>
+                </div>
+                
+                {/* Scrollable Links Section */}
+                <div className="max-h-96 overflow-y-auto">
+                  {/* Display Links with Their Styles */}
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3, 4].map((i) => (
+                        <div key={i} className="bg-white rounded-lg border p-3 animate-pulse">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 bg-gray-200 rounded"></div>
+                            <div className="flex-1">
+                              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                             </div>
-                            <LinkStatsDisplay linkId={link.id} />
                           </div>
                         </div>
-                      </div>
+                      ))}
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <ExternalLink className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-foreground mb-2">링크가 없습니다</h3>
-              <p className="text-muted-foreground mb-4">
-                첫 번째 링크를 추가하여 시작하세요
-              </p>
-            </div>
-          )}
+                  ) : links && links.length > 0 ? (
+                    <div className="space-y-3">
+                      {links.map((link: any) => (
+                        <div key={link.id} className="border border-[#8D6E63]/20 rounded-lg p-3 bg-white/70">
+                          {/* Thumbnail Style - 개선된 디자인 */}
+                          {link.style === 'thumbnail' && (
+                            <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                              <div className="relative cursor-pointer group">
+                                {/* 이미지 섹션 */}
+                                <div className="relative">
+                                  {(link.customImageUrl || link.imageUrl) ? (
+                                    <img 
+                                      src={link.customImageUrl || link.imageUrl} 
+                                      alt={link.title}
+                                      className="w-full h-40 object-cover"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-40 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                                      <ExternalLink className="w-12 h-12 text-gray-400" />
+                                    </div>
+                                  )}
+                                  
+                                  {/* 액션 버튼들 */}
+                                  <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button 
+                                      className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                                        toast({ title: "단축링크가 복사되었습니다!" });
+                                      }}
+                                    >
+                                      <Copy className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                    <button 
+                                      className="bg-red-500/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteLinkMutation.mutate(link.id);
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-white" />
+                                    </button>
+                                  </div>
+                                </div>
+                                
+                                {/* 텍스트 정보 섹션 */}
+                                <div 
+                                  className="p-5 cursor-pointer"
+                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                >
+                                  <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2 leading-tight">
+                                    {link.title}
+                                  </h3>
+                                  {link.description && (
+                                    <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                                      {link.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* 단축링크 */}
+                                  <div 
+                                    className="text-xs text-blue-600 font-medium mb-3 truncate cursor-pointer hover:underline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`/l/${link.shortCode}`, '_blank');
+                                    }}
+                                  >
+                                    amusefit.co.kr/l/{link.shortCode}
+                                  </div>
+                                  
+                                  {/* 통계 정보 */}
+                                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                      <div className="flex items-center space-x-1">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>{link.clicks || 0}</span>
+                                      </div>
+                                      <LinkStatsDisplay linkId={link.id} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Simple Style - 개선된 디자인 */}
+                          {link.style === 'simple' && (
+                            <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                              <div className="relative cursor-pointer group">
+                                {/* 텍스트 정보 섹션 */}
+                                <div 
+                                  className="p-5 cursor-pointer"
+                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                >
+                                  {/* 액션 버튼들 */}
+                                  <div className="absolute top-3 right-3 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button 
+                                      className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                                        toast({ title: "단축링크가 복사되었습니다!" });
+                                      }}
+                                    >
+                                      <Copy className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                    <button 
+                                      className="bg-red-500/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteLinkMutation.mutate(link.id);
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-white" />
+                                    </button>
+                                  </div>
+                                  
+                                  <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2 leading-tight">
+                                    {link.title}
+                                  </h3>
+                                  {link.description && (
+                                    <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                                      {link.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* 단축링크 */}
+                                  <div 
+                                    className="text-xs text-blue-600 font-medium mb-3 truncate cursor-pointer hover:underline"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`/l/${link.shortCode}`, '_blank');
+                                    }}
+                                  >
+                                    amusefit.co.kr/l/{link.shortCode}
+                                  </div>
+                                  
+                                  {/* 통계 정보 */}
+                                  <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                      <div className="flex items-center space-x-1">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>{link.clicks || 0}</span>
+                                      </div>
+                                      <LinkStatsDisplay linkId={link.id} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Other styles can be added here */}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-6">
+                      <div className="text-sm text-gray-500 mb-2">추적 기능이 켜진 URL 없음</div>
+                      <div className="text-xs text-gray-400 mb-4">URL을 추가하여 방문 추적을 시작하세요</div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* URL 추가하기 Button or Confirmation */}
+                {!showConfirmDialog ? (
+                  <Button
+                    onClick={() => setShowConfirmDialog(true)}
+                    className="w-full bg-white/70 hover:bg-white/90 text-[#4E342E] py-3 rounded-lg font-medium flex items-center justify-center gap-2 border-2 border-dashed border-[#8D6E63]"
+                  >
+                    <Plus className="w-5 h-5" />
+                    URL 추가하기
+                  </Button>
+                ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                    <Button
+                      onClick={() => {
+                        setShowConfirmDialog(false);
+                        setShowAddForm(true);
+                      }}
+                      className="bg-[#4E342E] hover:bg-[#8D6E63] text-white py-3 rounded-lg font-medium"
+                    >
+                      추가
+                    </Button>
+                    <Button
+                      onClick={() => setShowConfirmDialog(false)}
+                      className="bg-white/70 hover:bg-white/90 text-[#4E342E] py-3 rounded-lg font-medium border border-[#8D6E63]"
+                    >
+                      취소
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
-
-      {/* Fixed Add Button */}
-      <div className="flex-shrink-0 p-4 border-t border-border bg-card">
-        <Button
-          onClick={() => setShowAddForm(true)}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-lg font-medium flex items-center justify-center gap-2"
-        >
-          <Plus className="w-5 h-5" />
-          새 링크 추가
-        </Button>
       </div>
     </div>
   );
