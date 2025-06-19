@@ -1,7 +1,24 @@
-# AmuseFit 코드 구조 및 주석 문서
+# AmuseFit 코드 구조 및 한국어 주석 문서
 
 ## 개요
 이 문서는 AmuseFit 프로젝트의 주요 코드 파일들과 그 기능을 설명합니다. 모든 주석은 한국어로 작성되어 있으며, 개발자가 쉽게 이해할 수 있도록 구성되었습니다.
+
+## 완료된 한국어 주석 작업
+
+### ✅ 완료된 파일들
+1. **`client/src/App.tsx`** - 메인 앱 라우팅 및 네비게이션 관리
+2. **`client/src/pages/login.tsx`** - 로그인 페이지 (브라우저 패스워드 제안 방지 시스템)
+3. **`client/src/pages/settings.tsx`** - 설정 페이지 (프로필 관리 시스템)
+4. **`client/src/hooks/use-auth.tsx`** - 인증 상태 관리 훅
+5. **`server/routes.ts`** - 백엔드 API 라우트 (인증, 사용자 관리)
+6. **`server/username-utils.ts`** - 닉네임 유틸리티 함수들
+7. **`server/username-matcher.ts`** - 플렉시블 닉네임 매칭 시스템
+8. **`SCREEN_DOCUMENTATION.md`** - 화면 플로우 문서
+9. **`CODE_DOCUMENTATION.md`** - 코드 구조 문서
+
+### 🔄 진행중인 작업
+- 남은 컴포넌트 파일들의 주석 한국어 변환
+- 데이터베이스 관련 파일 주석 업데이트
 
 ---
 

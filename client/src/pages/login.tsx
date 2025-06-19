@@ -18,10 +18,10 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Prevent browser password suggestions
+  // 브라우저 비밀번호 제안 방지
   useEffect(() => {
     const disablePasswordSuggestions = () => {
-      // Disable all forms of browser password management
+      // 모든 형태의 브라우저 패스워드 관리 비활성화
       const forms = document.querySelectorAll('form');
       forms.forEach(form => {
         form.setAttribute('autocomplete', 'off');
@@ -38,7 +38,7 @@ export default function LoginPage() {
 
     disablePasswordSuggestions();
     
-    // Re-run after a delay to catch dynamically added elements
+    // 동적으로 추가된 요소들을 위해 지연 후 재실행
     const timer = setTimeout(disablePasswordSuggestions, 100);
     
     return () => clearTimeout(timer);
