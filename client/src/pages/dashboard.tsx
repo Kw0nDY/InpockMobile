@@ -369,128 +369,168 @@ export default function DashboardPage() {
                 </div>
               </div>
 
-              {/* Content Preview Based on Type */}
+              {/* Public View Preview */}
               <div className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-3 korean-text">콘텐츠 미리보기</p>
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm text-gray-600 korean-text">이용자 화면 미리보기</p>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => window.open(`/${(userData as any)?.username}`, '_blank')}
+                    className="text-xs korean-text"
+                  >
+                    전체 화면으로 보기
+                  </Button>
+                </div>
                 
-                {/* Image Content */}
-                {currentContentType === 'image' && (() => {
-                  if (Array.isArray(images) && images.length > 0) {
-                    const firstImage = images[0] as any;
-                    const imageUrl = firstImage.filePath || firstImage.mediaUrl;
-                    
-                    return (
-                      <div className="mb-4">
-                        <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100">
-                          <img 
-                            src={imageUrl} 
-                            alt={firstImage.title || '이미지'} 
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLImageElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          />
-                          <div className="hidden w-full h-full flex items-center justify-center absolute inset-0">
-                            <div className="text-center">
-                              <Image className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                              <p className="text-sm text-gray-500">이미지를 불러올 수 없습니다</p>
-                            </div>
-                          </div>
-                          
-                          {/* Count badge */}
-                          {images.length > 1 && (
-                            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                              +{images.length - 1} 더보기
-                            </div>
-                          )}
-                          
-                          {/* Text overlay at bottom */}
-                          {firstImage.title && (
-                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                              <p className="text-white text-sm font-medium" style={{textShadow: '0 1px 2px rgba(0,0,0,0.7)'}}>
-                                {firstImage.title}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                        <div className="mt-2 text-center">
-                          <p className="text-xs text-gray-600">총 {images.length}개의 이미지</p>
-                        </div>
+                {/* Mobile-Style Preview Frame */}
+                <div className="mx-auto max-w-xs">
+                  <div className="relative bg-black rounded-3xl p-2 shadow-2xl">
+                    {/* Phone frame */}
+                    <div className="bg-gray-900 rounded-2xl overflow-hidden">
+                      {/* Status bar */}
+                      <div className="bg-black h-8 flex items-center justify-center">
+                        <div className="w-16 h-4 bg-gray-800 rounded-full"></div>
                       </div>
-                    );
-                  }
-                  
-                  return (
-                    <div className="text-center py-8 text-gray-500">
-                      <Image className="w-16 h-16 mx-auto mb-2 text-gray-400" />
-                      <p className="korean-text">아직 이미지가 없습니다</p>
-                      <p className="text-sm korean-text">이미지 페이지에서 업로드하세요</p>
-                    </div>
-                  );
-                })()}
+                      
+                      {/* Content area */}
+                      <div className="h-96 relative overflow-hidden"
+                           style={{
+                             background: (settingsData as any)?.backgroundTheme || 
+                                       "linear-gradient(135deg, #F5F5DC 0%, #EFE5DC 50%, #F5F5DC 100%)"
+                           }}>
+                        
+                        {/* Image Content */}
+                        {currentContentType === 'image' && (() => {
+                          if (Array.isArray(images) && images.length > 0) {
+                            const firstImage = images[0] as any;
+                            const imageUrl = firstImage.filePath || firstImage.mediaUrl;
+                            
+                            return (
+                              <div className="h-full flex items-center justify-center">
+                                <img 
+                                  src={imageUrl} 
+                                  alt={firstImage.title || '이미지'} 
+                                  className="max-w-full max-h-full object-contain"
+                                />
+                                {/* Image indicator dots */}
+                                {images.length > 1 && (
+                                  <div className="absolute top-4 right-4 flex space-x-1">
+                                    {images.slice(0, 3).map((_, index) => (
+                                      <div
+                                        key={index}
+                                        className={`w-2 h-2 rounded-full ${
+                                          index === 0 ? "bg-white" : "bg-white/50"
+                                        }`}
+                                      />
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div className="h-full flex items-center justify-center text-white/70">
+                              <div className="text-center">
+                                <Image className="w-12 h-12 mx-auto mb-2" />
+                                <p className="text-xs korean-text">이미지 없음</p>
+                              </div>
+                            </div>
+                          );
+                        })()}
 
-                {/* Video Content */}
-                {currentContentType === 'video' && (() => {
-                  if (Array.isArray(videos) && videos.length > 0) {
-                    const firstVideo = videos[0] as any;
-                    const videoUrl = firstVideo.filePath || firstVideo.mediaUrl;
-                    
-                    return (
-                      <div className="mb-4">
-                        <div className="relative w-full h-64 rounded-lg overflow-hidden bg-gray-100">
-                          <video 
-                            src={videoUrl} 
-                            controls 
-                            preload="metadata"
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              const target = e.target as HTMLVideoElement;
-                              target.style.display = 'none';
-                              target.nextElementSibling?.classList.remove('hidden');
-                            }}
-                          >
-                            동영상을 재생할 수 없습니다.
-                          </video>
-                          <div className="hidden w-full h-full flex items-center justify-center absolute inset-0">
-                            <div className="text-center">
-                              <Video className="w-16 h-16 text-gray-400 mx-auto mb-2" />
-                              <p className="text-sm text-gray-500">동영상을 불러올 수 없습니다</p>
-                            </div>
-                          </div>
+                        {/* Video Content */}
+                        {currentContentType === 'video' && (() => {
+                          if (Array.isArray(videos) && videos.length > 0) {
+                            const firstVideo = videos[0] as any;
+                            const videoUrl = firstVideo.filePath || firstVideo.mediaUrl;
+                            
+                            return (
+                              <div className="h-full flex items-center justify-center">
+                                <video 
+                                  src={videoUrl} 
+                                  className="max-w-full max-h-full object-contain"
+                                  controls={false}
+                                  muted
+                                  loop
+                                />
+                              </div>
+                            );
+                          }
                           
-                          {/* Count badge */}
-                          {videos.length > 1 && (
-                            <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                              +{videos.length - 1} 더보기
+                          return (
+                            <div className="h-full flex items-center justify-center text-white/70">
+                              <div className="text-center">
+                                <Video className="w-12 h-12 mx-auto mb-2" />
+                                <p className="text-xs korean-text">동영상 없음</p>
+                              </div>
                             </div>
-                          )}
+                          );
+                        })()}
+
+                        {/* Links Content */}
+                        {currentContentType === 'link' && (() => {
+                          if (Array.isArray(linksData) && linksData.length > 0) {
+                            return (
+                              <div className="h-full p-4 overflow-y-auto">
+                                <div className="space-y-3">
+                                  {linksData.slice(0, 3).map((link: any, index: number) => (
+                                    <div key={index} className="bg-white/90 backdrop-blur-sm rounded-xl p-3 shadow-sm">
+                                      <h3 className="font-medium text-sm text-gray-800 mb-1 truncate">
+                                        {link.title || "링크"}
+                                      </h3>
+                                      <p className="text-xs text-gray-600 truncate">
+                                        {link.originalUrl || link.shortUrl}
+                                      </p>
+                                    </div>
+                                  ))}
+                                  {linksData.length > 3 && (
+                                    <div className="text-center">
+                                      <p className="text-xs text-white/70">+{linksData.length - 3} 더보기</p>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
                           
-                          {/* Text overlay at bottom */}
-                          {firstVideo.title && (
-                            <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/60 to-transparent">
-                              <p className="text-white text-sm font-medium" style={{textShadow: '0 1px 2px rgba(0,0,0,0.7)'}}>
-                                {firstVideo.title}
-                              </p>
+                          return (
+                            <div className="h-full flex items-center justify-center text-white/70">
+                              <div className="text-center">
+                                <Link className="w-12 h-12 mx-auto mb-2" />
+                                <p className="text-xs korean-text">링크 없음</p>
+                              </div>
                             </div>
-                          )}
-                        </div>
-                        <div className="mt-2 text-center">
-                          <p className="text-xs text-gray-600">총 {videos.length}개의 동영상</p>
+                          );
+                        })()}
+                        
+                      </div>
+                      
+                      {/* Bottom navigation */}
+                      <div className="bg-white/10 backdrop-blur-sm h-16 flex items-center justify-center">
+                        <div className="flex space-x-8">
+                          {[
+                            { type: 'link', icon: Link, label: '링크' },
+                            { type: 'image', icon: Image, label: '이미지' },
+                            { type: 'video', icon: Video, label: '동영상' }
+                          ].map(({ type, icon: Icon, label }) => (
+                            <div key={type} className="flex flex-col items-center">
+                              <Icon className={`w-4 h-4 ${
+                                currentContentType === type ? 'text-white' : 'text-white/50'
+                              }`} />
+                              <span className={`text-xs mt-1 ${
+                                currentContentType === type ? 'text-white' : 'text-white/50'
+                              }`}>
+                                {label}
+                              </span>
+                            </div>
+                          ))}
                         </div>
                       </div>
-                    );
-                  }
-                  
-                  return (
-                    <div className="text-center py-8 text-gray-500">
-                      <Video className="w-16 h-16 mx-auto mb-2 text-gray-400" />
-                      <p className="korean-text">아직 동영상이 없습니다</p>
-                      <p className="text-sm korean-text">동영상 페이지에서 업로드하세요</p>
                     </div>
-                  );
-                })()}
+                  </div>
+              </div>
 
                 {/* Links Content - Display with actual configured styles */}
                 {currentContentType === 'links' && (
