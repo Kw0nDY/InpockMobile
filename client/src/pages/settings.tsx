@@ -49,10 +49,68 @@ export default function SettingsPage() {
   const [isEditingUsername, setIsEditingUsername] = useState(false);
   const [newUsername, setNewUsername] = useState(user?.username || '');
   const [usernameError, setUsernameError] = useState('');
+  
+  // 닉네임 변경 뮤테이션
+  const updateUsernameMutation = useMutation({
+    mutationFn: async (username: string) => {
+      const response = await fetch(`/api/user/${user?.id}/username`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username }),
+      });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || '닉네임 변경에 실패했습니다');
+      }
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setUser(data.user);
+      setIsEditingUsername(false);
+      setUsernameError('');
+      toast({
+        title: "닉네임 변경 완료",
+        description: "닉네임이 성공적으로 변경되었습니다.",
+      });
+    },
+    onError: (error: Error) => {
+      setUsernameError(error.message);
+      toast({
+        title: "닉네임 변경 실패",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
 
 
 
 
+
+  // 닉네임 변경 핸들러
+  const handleUsernameEdit = () => {
+    setNewUsername(user?.username || '');
+    setUsernameError('');
+    setIsEditingUsername(true);
+  };
+
+  const handleUsernameCancel = () => {
+    setNewUsername(user?.username || '');
+    setUsernameError('');
+    setIsEditingUsername(false);
+  };
+
+  const handleUsernameSubmit = () => {
+    if (!newUsername.trim()) {
+      setUsernameError('닉네임을 입력해주세요');
+      return;
+    }
+    if (newUsername === user?.username) {
+      setIsEditingUsername(false);
+      return;
+    }
+    updateUsernameMutation.mutate(newUsername.trim());
+  };
 
   const [copied, setCopied] = useState(false);
   const [isUploadingProfile, setIsUploadingProfile] = useState(false);
@@ -589,25 +647,61 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
-                {/* Username */}
+                {/* Username with inline editing */}
                 <div className="space-y-2">
                   <Label htmlFor="username" className="text-sm font-medium text-foreground">닉네임</Label>
-                  <div className="flex items-center gap-2">
-                    <Input
-                      id="username"
-                      value={user?.username || ''}
-                      className="border-border bg-gray-50 text-gray-600"
-                      disabled
-                    />
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setLocation('/profile-settings')}
-                      className="text-primary border-primary hover:bg-primary hover:text-white whitespace-nowrap"
-                    >
-                      변경하기
-                    </Button>
-                  </div>
+                  {isEditingUsername ? (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Input
+                          value={newUsername}
+                          onChange={(e) => {
+                            setNewUsername(e.target.value);
+                            setUsernameError('');
+                          }}
+                          placeholder="새 닉네임을 입력하세요"
+                          className="border-border"
+                          disabled={updateUsernameMutation.isPending}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={handleUsernameSubmit}
+                          disabled={updateUsernameMutation.isPending || !newUsername.trim()}
+                          className="bg-primary text-primary-foreground hover:bg-primary/90 whitespace-nowrap"
+                        >
+                          {updateUsernameMutation.isPending ? '변경 중...' : '변경'}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleUsernameCancel}
+                          disabled={updateUsernameMutation.isPending}
+                          className="whitespace-nowrap"
+                        >
+                          취소
+                        </Button>
+                      </div>
+                      {usernameError && (
+                        <p className="text-xs text-red-500">{usernameError}</p>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={user?.username || ''}
+                        className="border-border bg-gray-50 text-gray-600"
+                        disabled
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleUsernameEdit}
+                        className="text-primary border-primary hover:bg-primary hover:text-white whitespace-nowrap"
+                      >
+                        변경하기
+                      </Button>
+                    </div>
+                  )}
                   {user?.username && /_\d+$/.test(user.username) && (
                     <p className="text-xs text-amber-600">
                       자동 생성된 닉네임입니다. 원하는 닉네임으로 변경해보세요.

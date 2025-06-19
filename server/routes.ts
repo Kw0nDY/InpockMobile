@@ -1413,7 +1413,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const mediaId = parseInt(req.params.mediaId);
       const { userId, newOrder } = req.body;
 
-      const updatedMedia = await storage.updateMediaOrder(userId, mediaId, newOrder);
+      await storage.updateMediaOrder(userId, [mediaId]);
+      const updatedMedia = await storage.getMedia(mediaId);
       if (!updatedMedia) {
         return res.status(404).json({ message: "Media not found or unauthorized" });
       }
