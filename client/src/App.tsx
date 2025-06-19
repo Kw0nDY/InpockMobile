@@ -49,7 +49,7 @@ function Router() {
   
   // Check if current location is a public profile view (custom URL or /users/username)
   const isPublicProfileView = location.startsWith("/users/") || 
-    (location.match(/^\/[a-zA-Z0-9_-]+$/) && 
+    (location.match(/^\/[^\/]+$/) && location !== "/" &&
      !["dashboard", "links", "images", "videos", "settings", "chat", "analytics", "contacts", "marketplace", "manager", "profile", "profile-settings"].includes(location.slice(1)));
   
   const shouldShowBottomNav = !hideNavPages.includes(location) && 
