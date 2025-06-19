@@ -67,6 +67,7 @@ export interface IStorage {
 
   // Media Uploads
   getMediaByUserAndType(userId: number, type: string): Promise<MediaUpload[]>;
+  getMediaById(id: number): Promise<MediaUpload | undefined>;
   createMedia(media: InsertMediaUpload): Promise<MediaUpload>;
   updateMedia(id: number, updates: Partial<MediaUpload>): Promise<MediaUpload | undefined>;
   createMediaUpload(media: InsertMediaUpload): Promise<MediaUpload>;
@@ -287,6 +288,11 @@ export class DatabaseStorage implements IStorage {
 
   async createMediaUpload(media: InsertMediaUpload): Promise<MediaUpload> {
     return this.createMedia(media);
+  }
+
+  async getMediaById(id: number): Promise<MediaUpload | undefined> {
+    const [media] = await db.select().from(mediaUploads).where(eq(mediaUploads.id, id));
+    return media || undefined;
   }
 
   async getUserMediaUploads(userId: number): Promise<MediaUpload[]> {

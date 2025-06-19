@@ -1414,7 +1414,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { userId, newOrder } = req.body;
 
       await storage.updateMediaOrder(userId, [mediaId]);
-      const updatedMedia = await storage.getMedia(mediaId);
+      const updatedMedia = await storage.getMediaById(mediaId);
       if (!updatedMedia) {
         return res.status(404).json({ message: "Media not found or unauthorized" });
       }

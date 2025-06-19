@@ -35,7 +35,7 @@ export default function NotificationDropdown() {
     refetchInterval: 5000, // Poll every 5 seconds for real-time updates
   });
 
-  const unreadCount = parseInt(unreadData?.count || "0");
+  const unreadCount = typeof unreadData?.count === 'string' ? parseInt(unreadData.count) : Number(unreadData?.count || 0);
   const queryClient = useQueryClient();
 
   const markAsReadMutation = useMutation({
