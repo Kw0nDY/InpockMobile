@@ -40,9 +40,7 @@ export default function NotificationDropdown() {
 
   const markAsReadMutation = useMutation({
     mutationFn: async (notificationId: number) => {
-      await apiRequest(`/api/notifications/${notificationId}/read`, {
-        method: 'POST'
-      });
+      await apiRequest('POST', `/api/notifications/${notificationId}/read`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
