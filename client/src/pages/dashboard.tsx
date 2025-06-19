@@ -309,7 +309,7 @@ export default function DashboardPage() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="p-1 h-auto text-muted-foreground hover:text-foreground"
+                    className="p-1 h-auto text-muted-foreground hover:bg-amber-800 hover:text-white group"
                     onClick={() => {
                       const username = (userData as any)?.username || 'demo_user';
                       const url = (settingsData as any)?.customUrl ? 
@@ -322,7 +322,7 @@ export default function DashboardPage() {
                       });
                     }}
                   >
-                    <Copy className="w-4 h-4" />
+                    <Copy className="w-4 h-4 group-hover:text-white" />
                   </Button>
                 </div>
                 <div className="text-sm text-muted-foreground font-mono">
