@@ -1781,14 +1781,7 @@ export default function PublicViewPage() {
                           {user?.currentGym || "정보 없음"}
                         </span>
                       </div>
-                      <div className="flex justify-between items-center py-2 border-b border-white/20">
-                        <span className="text-white/70 korean-text">
-                          헬스장 주소
-                        </span>
-                        <span className="text-white korean-text">
-                          {user?.gymAddress || "정보 없음"}
-                        </span>
-                      </div>
+
                     </div>
 
                     {/* Fitness Information */}
