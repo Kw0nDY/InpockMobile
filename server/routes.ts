@@ -216,13 +216,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
           role: newUser.role,
         },
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Signup error:", error);
-      console.error("Error stack:", error.stack);
+      console.error("Error stack:", error?.stack);
       console.error("Request body:", req.body);
       res.status(500).json({ 
         error: "Failed to create user",
-        details: error.message || "Unknown error"
+        details: error?.message || "Unknown error"
       });
     }
   });

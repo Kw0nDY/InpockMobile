@@ -62,9 +62,27 @@ export default function SignupStep2() {
       setLocation("/login");
     },
     onError: (error: any) => {
+      console.error("Signup error:", error);
+      let errorMessage = "회원가입 중 오류가 발생했습니다.";
+      
+      if (error.message) {
+        // Parse error message to extract JSON if present
+        try {
+          const match = error.message.match(/400: (.+)/);
+          if (match && match[1]) {
+            const errorData = JSON.parse(match[1]);
+            errorMessage = errorData.error || errorMessage;
+          } else {
+            errorMessage = error.message;
+          }
+        } catch (e) {
+          errorMessage = error.message;
+        }
+      }
+      
       toast({
         title: "회원가입 실패",
-        description: error.message || "회원가입 중 오류가 발생했습니다.",
+        description: errorMessage,
         variant: "destructive",
       });
     },
