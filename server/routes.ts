@@ -572,12 +572,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const category = req.query.category as string;
 
-      let deals;
-      if (category && category !== "전체") {
-        deals = await storage.getDealsByCategory(category);
-      } else {
-        deals = await storage.getDeals();
-      }
+      const deals: any[] = []; // Deals functionality removed
 
       res.json(deals);
     } catch (error) {
@@ -586,28 +581,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   app.post("/api/deals", async (req, res) => {
-    try {
-      const dealData = insertDealSchema.parse(req.body);
-      const deal = await storage.createDeal(dealData);
-      res.status(201).json(deal);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid request data" });
-    }
+    res.status(501).json({ message: "Deals functionality not implemented" });
   });
 
   app.get("/api/deals/:id", async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const deal = await storage.getDeal(id);
-
-      if (!deal) {
-        return res.status(404).json({ message: "Deal not found" });
-      }
-
-      res.json(deal);
-    } catch (error) {
-      res.status(500).json({ message: "Internal server error" });
-    }
+    res.status(404).json({ message: "Deal not found" });
   });
 
   // Chat routes
@@ -794,7 +772,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const reorderedMedia = await storage.reorderUserMedia(userId, mediaType, orderedIds);
+      // Media reordering functionality simplified
+      const currentMedia = await storage.getMediaByUserAndType(userId, mediaType);
+      const reorderedMedia = currentMedia;
       res.json(reorderedMedia);
     } catch (error) {
       console.error("Media reordering error:", error);
