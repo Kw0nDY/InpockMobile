@@ -229,7 +229,7 @@ export default function SignupStep2() {
         {/* Signup Form */}
         <Card className="bg-white shadow-lg mb-6">
           <CardContent className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
               {/* Username */}
               <UsernameInput
                 value={formData.username}

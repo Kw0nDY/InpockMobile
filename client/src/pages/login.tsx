@@ -64,7 +64,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleLogin} className="space-y-6" autoComplete="off">
           <div>
             <Label htmlFor="username" className="block text-sm font-medium mb-2 text-gray-700">
               닉네임
@@ -76,6 +76,7 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="트레이너닉네임"
+              autoComplete="username"
               required
             />
           </div>
@@ -94,6 +95,7 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="••••••••"
+              autoComplete="current-password"
               required
             />
           </div>
