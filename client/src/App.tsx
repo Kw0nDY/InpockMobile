@@ -8,7 +8,7 @@ import { useAnalytics } from "./hooks/use-analytics";
 import { useEffect } from "react";
 import { initGA } from "./lib/analytics";
 
-// Pages
+// 페이지 컴포넌트들
 import LandingPage from "./pages/landing";
 import LoginPage from "./pages/login";
 import SignupPage from "./pages/signup";
@@ -35,19 +35,19 @@ import PublicImageView from "./pages/public-image-view";
 import ResetPasswordPage from "./pages/reset-password";
 import NotFound from "./pages/not-found";
 
-// Layout
+// 레이아웃 컴포넌트
 import BottomNav from "./components/layout/bottom-nav";
 
 function Router() {
   const [location] = useLocation();
   
-  // Initialize analytics tracking for all page navigation
+  // 모든 페이지 내비게이션에 대한 분석 추적 초기화
   useAnalytics();
   
-  // Pages that should not show bottom navigation
+  // 하단 네비게이션을 표시하지 않을 페이지들
   const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
   
-  // Check if current location is a public profile view (custom URL or /users/username)
+  // 현재 위치가 공개 프로필 뷰인지 확인 (커스텀 URL 또는 /users/username)
   const isPublicProfileView = location.startsWith("/users/") || 
     (location.match(/^\/[^\/]+$/) && location !== "/" &&
      !["dashboard", "links", "images", "videos", "settings", "chat", "analytics", "contacts", "marketplace", "manager", "profile", "profile-settings"].includes(location.slice(1)));

@@ -22,10 +22,10 @@ const loginSchema = z.object({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Setup Kakao OAuth authentication
+  // Kakao OAuth 인증 설정
   setupKakaoAuth(app);
 
-  // OAuth test endpoint for debugging
+  // 디버깅용 OAuth 테스트 엔드포인트
   app.get("/test/oauth/config", (req, res) => {
     const config = {
       hasClientId: !!process.env.KAKAO_CLIENT_ID,
@@ -38,13 +38,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(config);
   });
 
-  // Debug endpoint to check and recreate demo user if needed
+  // 데모 사용자 확인 및 재생성용 디버그 엔드포인트
   app.get("/api/debug/users", async (req, res) => {
     try {
       let demoUser = await storage.getUserByEmail("demo@amusefit.com");
       
       if (!demoUser) {
-        // Recreate demo user if it doesn't exist
+        // 데모 사용자가 존재하지 않으면 재생성
         console.log("Recreating demo user...");
         demoUser = await storage.createUser({
           username: "demo_user",
@@ -140,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Auth routes
+  // 인증 라우트
   app.post("/api/auth/login", async (req, res) => {
     try {
       console.log("Login attempt:", {
