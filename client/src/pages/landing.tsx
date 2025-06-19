@@ -257,7 +257,7 @@ export default function LandingPage() {
           
           <div className="space-y-4 flex flex-col items-center">
             <Button 
-              className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full text-lg hover:bg-primary/90 text-center"
+              className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full text-base hover:bg-primary/90 text-center"
               onClick={() => setLocation("/signup-step1")}
             >
               무료로 시작하기
