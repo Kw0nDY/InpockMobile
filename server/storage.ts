@@ -1,12 +1,13 @@
 import { 
-  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, passwordResetTokens,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit,
-  type Notification, type InsertNotification
+  type Notification, type InsertNotification,
+  type PasswordResetToken, type InsertPasswordResetToken
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
@@ -80,6 +81,15 @@ export interface IStorage {
   getUserNotifications(userId: number): Promise<Notification[]>;
   markNotificationAsRead(id: number): Promise<void>;
   getUnreadNotificationCount(userId: number): Promise<number>;
+
+  // Password Reset Tokens
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  markTokenAsUsed(token: string): Promise<void>;
+
+  // Media Order Management
+  updateMediaOrder(userId: number, mediaIds: number[]): Promise<void>;
+  reorderUserMedia(userId: number, fromIndex: number, toIndex: number): Promise<MediaUpload[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -156,7 +166,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteLink(id: number): Promise<boolean> {
     const result = await db.delete(links).where(eq(links.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async incrementLinkClicks(id: number): Promise<void> {
@@ -289,7 +299,7 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMediaUpload(id: number): Promise<boolean> {
     const result = await db.delete(mediaUploads).where(eq(mediaUploads.id, id));
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getUserSettings(userId: number): Promise<UserSettings | undefined> {

@@ -117,6 +117,15 @@ export const linkVisits = pgTable("link_visits", {
   visitedAt: timestamp("visited_at").defaultNow(),
 });
 
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
@@ -136,6 +145,11 @@ export const insertMediaSchema = createInsertSchema(mediaUploads).omit({
 export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   id: true,
   visitedAt: true,
+});
+
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
 });
 
 // Removed deal and activity schemas as tables were deleted
@@ -233,3 +247,5 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
