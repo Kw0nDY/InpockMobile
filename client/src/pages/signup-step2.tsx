@@ -252,6 +252,7 @@ export default function SignupStep2() {
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   placeholder="example@email.com"
+                  autoComplete="email"
                   className={`w-full ${errors.email ? 'border-red-500' : ''}`}
                 />
                 {errors.email && (
@@ -270,6 +271,7 @@ export default function SignupStep2() {
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
                   placeholder="8자 이상 입력하세요"
+                  autoComplete="new-password"
                   className={`w-full ${errors.password ? 'border-red-500' : ''}`}
                 />
                 {errors.password && (
@@ -288,6 +290,7 @@ export default function SignupStep2() {
                   value={formData.confirmPassword}
                   onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
                   placeholder="비밀번호를 다시 입력하세요"
+                  autoComplete="new-password"
                   className={`w-full ${errors.confirmPassword ? 'border-red-500' : ''}`}
                 />
                 {errors.confirmPassword && (
