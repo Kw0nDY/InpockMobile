@@ -13,6 +13,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { randomBytes } from "crypto";
+import { generateUniqueUsername, validateUsername } from "./username-utils";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -68,6 +69,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Debug users error:", error);
       res.status(500).json({ error: "Failed to fetch users" });
+    }
+  });
+
+  // Username validation routes
+  app.post("/api/auth/check-username", async (req, res) => {
+    try {
+      const { username } = z.object({ username: z.string() }).parse(req.body);
+      
+      // Validate username format
+      const validation = validateUsername(username);
+      if (!validation.valid) {
+        return res.json({ available: false, message: validation.message });
+      }
+
+      // Check if username exists
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser) {
+        return res.json({ available: false, message: "이미 사용중인 닉네임입니다" });
+      }
+
+      res.json({ available: true, message: "사용 가능한 닉네임입니다" });
+    } catch (error) {
+      console.error("Username check error:", error);
+      res.status(400).json({ available: false, message: "잘못된 요청입니다" });
     }
   });
 

@@ -1,5 +1,6 @@
 import type { Express, Request, Response } from "express";
 import { storage } from "./storage";
+import { generateUniqueUsername } from "./username-utils";
 
 // Extend Request type to include session
 declare module 'express-serve-static-core' {
@@ -184,9 +185,9 @@ export function setupKakaoAuth(app: Express) {
       const nickname = userData.properties?.nickname || userData.kakao_account?.profile?.nickname || 'Kakao User';
       const profileImage = userData.kakao_account?.profile?.profile_image_url || userData.properties?.profile_image;
       
-      // Create username from nickname (sanitized for database)
-      const sanitizedUsername = nickname.replace(/[^a-zA-Z0-9가-힣]/g, '').toLowerCase() || `kakao_${userData.id}`;
-      const uniqueUsername = `${sanitizedUsername}_${userData.id}`;
+      // Create username from nickname using improved logic
+      const baseUsername = nickname.replace(/[^a-zA-Z0-9가-힣]/g, '').toLowerCase() || `kakao_user`;
+      const uniqueUsername = await generateUniqueUsername(storage, baseUsername);
 
       const existingUser = await storage.getUserByEmail(email);
       let user;
