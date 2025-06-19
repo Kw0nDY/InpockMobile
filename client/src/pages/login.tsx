@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,32 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Prevent browser password suggestions
+  useEffect(() => {
+    const disablePasswordSuggestions = () => {
+      // Disable all forms of browser password management
+      const forms = document.querySelectorAll('form');
+      forms.forEach(form => {
+        form.setAttribute('autocomplete', 'off');
+        form.setAttribute('data-lpignore', 'true');
+      });
+
+      const inputs = document.querySelectorAll('input[type="password"], input[type="text"]');
+      inputs.forEach(input => {
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('data-lpignore', 'true');
+        input.setAttribute('data-form-type', 'other');
+      });
+    };
+
+    disablePasswordSuggestions();
+    
+    // Re-run after a delay to catch dynamically added elements
+    const timer = setTimeout(disablePasswordSuggestions, 100);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,7 +90,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-6" autoComplete="off">
+        <form onSubmit={handleLogin} className="space-y-6" autoComplete="off" data-form-type="other">
           <div>
             <Label htmlFor="username" className="block text-sm font-medium mb-2 text-gray-700">
               닉네임
@@ -76,7 +102,9 @@ export default function LoginPage() {
               onChange={(e) => setUsername(e.target.value)}
               className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="트레이너닉네임"
-              autoComplete="username"
+              autoComplete="off"
+              data-lpignore="true"
+              data-form-type="other"
               required
             />
           </div>
@@ -95,7 +123,9 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
               placeholder="••••••••"
-              autoComplete="current-password"
+              autoComplete="off"
+              data-lpignore="true"
+              data-form-type="other"
               required
             />
           </div>

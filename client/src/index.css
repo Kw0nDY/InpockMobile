@@ -49,6 +49,43 @@ body {
   --radius: 0.75rem;
 }
 
+/* Disable browser password suggestions completely */
+input[type="password"] {
+  -webkit-text-security: disc !important;
+}
+
+input[type="password"]::-webkit-textfield-decoration-container {
+  visibility: hidden !important;
+}
+
+input[type="password"]::-webkit-password-toggle {
+  display: none !important;
+}
+
+input[type="password"]::-webkit-credentials-auto-fill-button {
+  visibility: hidden !important;
+  display: none !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Hide browser autofill suggestions */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px white inset !important;
+  -webkit-text-fill-color: black !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Prevent password manager popups */
+form[data-form-type="other"] {
+  -webkit-user-modify: read-write-plaintext-only;
+}
+
 /* Toast slide animations */
 @keyframes toast-slide-in-bottom {
   from {
