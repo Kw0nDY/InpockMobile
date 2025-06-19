@@ -218,7 +218,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       console.error("Signup error:", error);
-      res.status(500).json({ error: "Failed to create user" });
+      console.error("Error stack:", error.stack);
+      console.error("Request body:", req.body);
+      res.status(500).json({ 
+        error: "Failed to create user",
+        details: error.message || "Unknown error"
+      });
     }
   });
 
