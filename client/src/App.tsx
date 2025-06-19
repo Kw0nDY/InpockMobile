@@ -15,7 +15,7 @@ import SignupPage from "./pages/signup";
 import SignupStep1 from "./pages/signup-step1";
 import SignupStep2 from "./pages/signup-step2";
 import DashboardPage from "./pages/dashboard";
-import LinksPage from "./pages/links-new-brown";
+import LinksPage from "./pages/links";
 import ImagesPage from "./pages/images";
 import VideosPage from "./pages/videos";
 import MarketplacePage from "./pages/marketplace";

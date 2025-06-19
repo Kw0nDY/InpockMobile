@@ -488,9 +488,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // URL metadata fetching endpoint
-  app.get("/api/url-metadata", async (req, res) => {
+  app.post("/api/url-metadata", async (req, res) => {
     try {
-      const url = req.query.url as string;
+      const { url } = req.body;
       if (!url) {
         return res.status(400).json({ message: "URL is required" });
       }
@@ -499,33 +499,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const response = await fetch(url, {
         headers: {
-          'User-Agent': 'Mozilla/5.0 (compatible; LinkBot/1.0)',
-        },
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        }
       });
-
+      
       if (!response.ok) {
-        return res.status(400).json({ message: "Failed to fetch URL" });
+        throw new Error(`HTTP ${response.status}`);
       }
-
+      
       const html = await response.text();
       
-      // Extract basic metadata using regex
+      // Extract metadata using regex patterns
       const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-      const descMatch = html.match(/<meta[^>]*name=['"](description|og:description)['"'][^>]*content=['"]([^'"]+)['"]/i);
-      const imageMatch = html.match(/<meta[^>]*property=['"]og:image['"][^>]*content=['"]([^'"]+)['"]/i);
+      const descriptionMatch = html.match(/<meta[^>]*name="description"[^>]*content="([^"]+)"/i) ||
+                              html.match(/<meta[^>]*property="og:description"[^>]*content="([^"]+)"/i);
+      const imageMatch = html.match(/<meta[^>]*property="og:image"[^>]*content="([^"]+)"/i) ||
+                        html.match(/<meta[^>]*name="twitter:image"[^>]*content="([^"]+)"/i);
       
       const metadata = {
-        title: titleMatch ? titleMatch[1].trim() : '',
-        description: descMatch ? descMatch[2].trim() : '',
-        image: imageMatch ? imageMatch[1] : null,
-        url: url,
+        title: titleMatch ? titleMatch[1].trim() : null,
+        description: descriptionMatch ? descriptionMatch[1].trim() : null,
+        image: imageMatch ? imageMatch[1].trim() : null,
+        url: url
       };
-
+      
       console.log(`[URL-METADATA] Extracted metadata:`, metadata);
       res.json(metadata);
     } catch (error) {
       console.error("[URL-METADATA] Error:", error);
-      res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Failed to fetch metadata" });
     }
   });
 
