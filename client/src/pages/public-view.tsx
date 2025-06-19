@@ -1265,10 +1265,10 @@ export default function PublicViewPage() {
 
         if (filteredVideos.length === 0) {
           return (
-            <div className="h-full flex flex-col items-center justify-center pt-20 pb-32">
-              <Video className="w-24 h-24 mb-6 text-gray-400" />
-              <h2 className="text-3xl font-bold mb-3 text-gray-600">동영상</h2>
-              <p className="text-lg text-gray-500 text-center max-w-md">
+            <div className="h-full flex flex-col items-center justify-center pt-20 pb-32 bg-black">
+              <Video className="w-24 h-24 mb-6 text-white" />
+              <h2 className="text-3xl font-bold mb-3 text-white">동영상</h2>
+              <p className="text-lg text-white/80 text-center max-w-md">
                 아직 등록된 동영상이 없습니다
               </p>
             </div>
@@ -1281,10 +1281,10 @@ export default function PublicViewPage() {
         return (
           <>
             {/* Full screen video view - same structure as image view */}
-            <div className="absolute inset-0 pb-16 overflow-hidden">
-              <div className="relative w-full h-full flex items-center justify-center">
+            <div className="absolute inset-0 pb-16 overflow-hidden bg-black">
+              <div className="relative w-full h-full flex items-center justify-center bg-black">
                 {/* Video Player Container - 9:16 aspect ratio */}
-                <div className="relative w-full max-w-md" style={{ aspectRatio: '9/16' }}>
+                <div className="relative w-full max-w-md bg-black" style={{ aspectRatio: '9/16' }}>
                   {currentVideo.type === "link" && currentVideo.embedUrl ? (
                     <iframe
                       src={currentVideo.embedUrl}
@@ -1363,11 +1363,13 @@ export default function PublicViewPage() {
         className="absolute inset-0 pb-16 transition-all duration-700 ease-in-out"
         style={{
           background:
-            contentType === "image" || contentType === "video"
-              ? backgroundGradient === "bg-black"
-                ? "#000000"
-                : backgroundGradient
-              : getBackgroundStyle(),
+            contentType === "video"
+              ? "#000000"
+              : contentType === "image"
+                ? backgroundGradient === "bg-black"
+                  ? "#000000"
+                  : backgroundGradient
+                : getBackgroundStyle(),
         }}
       />
       {/* iPhone-style Toast Notification */}
