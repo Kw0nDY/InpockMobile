@@ -179,37 +179,24 @@ export class DatabaseStorage implements IStorage {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [totalVisits] = await db
-      .select({ count: sql<number>`count(*)` })
+    // Single optimized query to get all statistics at once
+    const [stats] = await db
+      .select({
+        totalVisits: sql<number>`count(*)`,
+        dailyVisits: sql<number>`count(*) filter (where visited_at >= ${todayStart})`,
+        monthlyVisits: sql<number>`count(*) filter (where visited_at >= ${monthStart})`,
+        ownerVisits: sql<number>`count(*) filter (where is_owner = true)`,
+        externalVisits: sql<number>`count(*) filter (where is_owner = false)`
+      })
       .from(linkVisits)
       .where(eq(linkVisits.linkId, linkId));
 
-    const [dailyVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(eq(linkVisits.linkId, linkId), gte(linkVisits.visitedAt, todayStart)));
-
-    const [monthlyVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(eq(linkVisits.linkId, linkId), gte(linkVisits.visitedAt, monthStart)));
-
-    const [ownerVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(eq(linkVisits.linkId, linkId), eq(linkVisits.isOwner, true)));
-
-    const [externalVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(eq(linkVisits.linkId, linkId), eq(linkVisits.isOwner, false)));
-
     return {
-      totalVisits: totalVisits.count,
-      dailyVisits: dailyVisits.count,
-      monthlyVisits: monthlyVisits.count,
-      ownerVisits: ownerVisits.count,
-      externalVisits: externalVisits.count,
+      totalVisits: Number(stats.totalVisits),
+      dailyVisits: Number(stats.dailyVisits),
+      monthlyVisits: Number(stats.monthlyVisits),
+      ownerVisits: Number(stats.ownerVisits),
+      externalVisits: Number(stats.externalVisits),
     };
   }
 
@@ -231,49 +218,24 @@ export class DatabaseStorage implements IStorage {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const [totalVisits] = await db
-      .select({ count: sql<number>`count(*)` })
+    // Single optimized query to get all statistics at once
+    const [stats] = await db
+      .select({
+        totalVisits: sql<number>`count(*)`,
+        dailyVisits: sql<number>`count(*) filter (where visited_at >= ${todayStart})`,
+        monthlyVisits: sql<number>`count(*) filter (where visited_at >= ${monthStart})`,
+        ownerVisits: sql<number>`count(*) filter (where is_owner = true)`,
+        externalVisits: sql<number>`count(*) filter (where is_owner = false)`
+      })
       .from(linkVisits)
       .where(inArray(linkVisits.linkId, linkIds));
 
-    const [dailyVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(
-        inArray(linkVisits.linkId, linkIds),
-        gte(linkVisits.visitedAt, todayStart)
-      ));
-
-    const [monthlyVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(
-        inArray(linkVisits.linkId, linkIds),
-        gte(linkVisits.visitedAt, monthStart)
-      ));
-
-    const [ownerVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(
-        inArray(linkVisits.linkId, linkIds),
-        eq(linkVisits.isOwner, true)
-      ));
-
-    const [externalVisits] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(linkVisits)
-      .where(and(
-        inArray(linkVisits.linkId, linkIds),
-        eq(linkVisits.isOwner, false)
-      ));
-
     return {
-      totalVisits: totalVisits.count,
-      dailyVisits: dailyVisits.count,
-      monthlyVisits: monthlyVisits.count,
-      ownerVisits: ownerVisits.count,
-      externalVisits: externalVisits.count,
+      totalVisits: Number(stats.totalVisits),
+      dailyVisits: Number(stats.dailyVisits),
+      monthlyVisits: Number(stats.monthlyVisits),
+      ownerVisits: Number(stats.ownerVisits),
+      externalVisits: Number(stats.externalVisits),
     };
   }
 

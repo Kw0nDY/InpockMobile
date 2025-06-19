@@ -459,13 +459,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Individual link statistics
+  // Cache for statistics (expires after 30 seconds)
+  const statsCache = new Map<string, { data: any; timestamp: number }>();
+  const CACHE_DURATION = 30000; // 30 seconds
+
+  // Individual link statistics with caching
   app.get("/api/links/:id/stats", async (req, res) => {
     try {
       const id = parseInt(req.params.id);
-      console.log(`[LINK-STATS] Getting individual stats for link ${id}`);
+      const cacheKey = `link-stats-${id}`;
+      const now = Date.now();
+      
+      // Check cache first
+      const cached = statsCache.get(cacheKey);
+      if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+        res.json(cached.data);
+        return;
+      }
+      
       const stats = await storage.getLinkVisitStats(id);
-      console.log(`[LINK-STATS] Individual stats result:`, stats);
+      
+      // Store in cache
+      statsCache.set(cacheKey, { data: stats, timestamp: now });
+      
       res.json(stats);
     } catch (error) {
       console.error("[LINK-STATS] Individual stats error:", error);
@@ -473,13 +489,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // User's overall link visit statistics
+  // User's overall link visit statistics with caching
   app.get("/api/user/:userId/link-stats", async (req, res) => {
     try {
       const userId = parseInt(req.params.userId);
-      console.log(`[LINK-STATS] Getting stats for user ${userId}`);
+      const cacheKey = `user-stats-${userId}`;
+      const now = Date.now();
+      
+      // Check cache first
+      const cached = statsCache.get(cacheKey);
+      if (cached && (now - cached.timestamp) < CACHE_DURATION) {
+        res.json(cached.data);
+        return;
+      }
+      
       const stats = await storage.getUserLinkStats(userId);
-      console.log(`[LINK-STATS] Stats result:`, stats);
+      
+      // Store in cache
+      statsCache.set(cacheKey, { data: stats, timestamp: now });
+      
       res.json(stats);
     } catch (error) {
       console.error("[LINK-STATS] Error:", error);
