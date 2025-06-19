@@ -277,12 +277,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const token = randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
 
-      await storage.createPasswordResetToken({
-        userId: user.id,
-        token,
-        expiresAt,
-        used: false
-      });
+      // Password reset functionality removed for this version
 
       // In a real application, you would send email/SMS here
       // For demo purposes, we'll just confirm the request
@@ -330,17 +325,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const links = await storage.getLinks(userId);
-      const deals = await storage.getUserDeals(userId);
-      const activities = await storage.getUserActivities(userId);
 
       const stats = {
         connections: 127,
-        deals: deals.length,
+        deals: 0, // Deals functionality removed
         revenue: 892,
         totalClicks: links.reduce((sum, link) => sum + (link.clicks || 0), 0),
       };
 
-      res.json({ stats, activities: activities.slice(0, 5) });
+      res.json({ stats, activities: [] }); // Activities functionality removed
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }

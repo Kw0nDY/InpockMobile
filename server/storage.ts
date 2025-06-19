@@ -268,7 +268,7 @@ export class DatabaseStorage implements IStorage {
   async incrementUserVisitCount(userId: number): Promise<void> {
     await db
       .update(users)
-      .set({ totalVisits: sql`${users.totalVisits} + 1` })
+      .set({ visitCount: sql`${users.visitCount} + 1` })
       .where(eq(users.id, userId));
   }
 
