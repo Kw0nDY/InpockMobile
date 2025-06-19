@@ -211,3 +211,25 @@ export const mediaUploadsRelations = relations(mediaUploads, ({ one }) => ({
     references: [users.id],
   }),
 }));
+
+// Notifications table for real-time alerts
+export const notifications = pgTable("notifications", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // 'profile_visit', 'link_click', 'new_connection'
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  data: text("data"), // JSON string for additional data like visitor IP, link clicked, etc.
+  isRead: boolean("is_read").default(false).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const notificationsRelations = relations(notifications, ({ one }) => ({
+  user: one(users, {
+    fields: [notifications.userId],
+    references: [users.id],
+  }),
+}));
+
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = typeof notifications.$inferInsert;

@@ -1,11 +1,12 @@
 import { 
-  users, links, userSettings, subscriptions, mediaUploads, linkVisits,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
   type MediaUpload, type InsertMediaUpload,
-  type LinkVisit, type InsertLinkVisit
+  type LinkVisit, type InsertLinkVisit,
+  type Notification, type InsertNotification
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
@@ -73,6 +74,12 @@ export interface IStorage {
 
   // Additional methods
   getAllLinks(): Promise<Link[]>;
+  
+  // Notifications
+  createNotification(notification: InsertNotification): Promise<Notification>;
+  getUserNotifications(userId: number): Promise<Notification[]>;
+  markNotificationAsRead(id: number): Promise<void>;
+  getUnreadNotificationCount(userId: number): Promise<number>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -329,6 +336,39 @@ export class DatabaseStorage implements IStorage {
 
   async getAllLinks(): Promise<Link[]> {
     return await db.select().from(links).orderBy(desc(links.createdAt));
+  }
+
+  // Notifications
+  async createNotification(notification: InsertNotification): Promise<Notification> {
+    const [newNotification] = await db
+      .insert(notifications)
+      .values(notification)
+      .returning();
+    return newNotification;
+  }
+
+  async getUserNotifications(userId: number): Promise<Notification[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .where(eq(notifications.userId, userId))
+      .orderBy(desc(notifications.createdAt))
+      .limit(50); // Limit to last 50 notifications
+  }
+
+  async markNotificationAsRead(id: number): Promise<void> {
+    await db
+      .update(notifications)
+      .set({ isRead: true })
+      .where(eq(notifications.id, id));
+  }
+
+  async getUnreadNotificationCount(userId: number): Promise<number> {
+    const [result] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(notifications)
+      .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
+    return result.count;
   }
 }
 
