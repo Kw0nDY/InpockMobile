@@ -110,21 +110,20 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="px-6 py-8 text-center">
-        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">비즈니스를 즐겁게</h2>
+        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">피트니스를 더 즐겁게</h2>
         <h2 className="text-2xl font-bold text-primary mb-4 korean-text">AmuseFit과 함께</h2>
-        <p className="text-gray-600 text-sm mb-2 korean-text">스마트한 비즈니스 관리</p>
-        <p className="text-gray-600 text-sm mb-2 korean-text">네트워킹의 새로운 패러다임</p>
-        <p className="text-gray-600 text-sm mb-8 korean-text">전문적이고 신뢰할 수 있는 비즈니스 연결</p>
+        <p className="text-gray-600 text-sm mb-2 korean-text">전문 트레이너의 포트폴리오</p>
+        <p className="text-gray-600 text-sm mb-2 korean-text">콘텐츠 공유의 새로운 방식</p>
+        <p className="text-gray-600 text-sm mb-8 korean-text">전문성과 신뢰를 바탕으로 한 연결</p>
 
-        {/* Feature Card 1 - 통계 관리 */}
+        {/* Feature Card 1 - 포트폴리오 관리 */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 max-w-sm mx-auto">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm text-gray-500">통계 관리</span>
-            <button className="w-4 h-4 text-gray-400">✕</button>
+          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white text-2xl">📱</span>
           </div>
           <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">보편적 데이터 통계</p>
-            <p className="text-sm text-gray-600 mb-3 korean-text">직관 비즈니스 통계</p>
+            <p className="text-sm font-medium mb-1 korean-text">모바일 포트폴리오</p>
+            <p className="text-sm text-gray-600 mb-3 korean-text">영상, 이미지, 링크를 한곳에</p>
             <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
               시작하기
             </Button>
@@ -132,35 +131,41 @@ export default function LandingPage() {
         </div>
 
         <div className="text-center mb-6">
-          <h3 className="font-bold text-dark mb-1 korean-text">퀄리티 높은 비즈니스 매칭</h3>
-          <p className="text-sm text-gray-600 korean-text">검증된 비즈니스 파트너와의 안전한 거래</p>
-          <p className="text-sm text-gray-600 korean-text">전문성과 신뢰성을 바탕으로 한 네트워킹</p>
+          <h3 className="font-bold text-dark mb-1 korean-text">전문 트레이너를 위한 플랫폼</h3>
+          <p className="text-sm text-gray-600 korean-text">9:16 모바일 최적화 콘텐츠 뷰어</p>
+          <p className="text-sm text-gray-600 korean-text">Instagram Reels, YouTube Shorts 스타일</p>
         </div>
 
-        {/* Feature Card 2 - 전문 컨설턴트 */}
+        {/* Feature Card 2 - 콘텐츠 공유 */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 max-w-sm mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white text-2xl">🎥</span>
+          </div>
           <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">전문 컨설턴트</p>
-            <p className="text-sm text-gray-600 mb-3 korean-text">직관 비즈니스 솔루션 제공</p>
+            <p className="text-sm font-medium mb-1 korean-text">몰입형 콘텐츠 뷰어</p>
+            <p className="text-sm text-gray-600 mb-3 korean-text">수직형 영상과 이미지 전용</p>
             <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
-              상담하기
+              체험하기
             </Button>
           </div>
         </div>
 
         <div className="text-center mb-6">
-          <h3 className="font-bold text-dark mb-1 korean-text">전문가와 함께하는 비즈니스 성장</h3>
-          <p className="text-sm text-gray-600 korean-text">다양한 분야의 전문가 네트워크</p>
-          <p className="text-sm text-gray-600 korean-text">맞춤형 컨설팅 서비스</p>
+          <h3 className="font-bold text-dark mb-1 korean-text">개인화된 프로필 페이지</h3>
+          <p className="text-sm text-gray-600 korean-text">트레이너 전용 포트폴리오 관리</p>
+          <p className="text-sm text-gray-600 korean-text">고객과의 직접적인 연결</p>
         </div>
 
-        {/* Feature Card 3 - 스마트 매칭 시스템 */}
+        {/* Feature Card 3 - 프로필 관리 */}
         <div className="bg-white rounded-2xl p-6 shadow-sm mb-8 max-w-sm mx-auto">
+          <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white text-2xl">👤</span>
+          </div>
           <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">스마트 매칭 시스템</p>
-            <p className="text-xs text-gray-600 mb-2">AI 기반 추천</p>
-            <p className="text-xs text-gray-600 mb-2">빅데이터 분석</p>
-            <p className="text-xs text-gray-600 mb-3">맞춤형 솔루션</p>
+            <p className="text-sm font-medium mb-1 korean-text">개인 브랜딩 툴</p>
+            <p className="text-xs text-gray-600 mb-2">자격증 및 수상 내역</p>
+            <p className="text-xs text-gray-600 mb-2">피트니스 전문성 어필</p>
+            <p className="text-xs text-gray-600 mb-3">맞춤형 프로필 URL</p>
             <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
               지금 체험해보기
             </Button>
@@ -168,19 +173,49 @@ export default function LandingPage() {
         </div>
 
         <div className="text-center mb-8">
-          <h3 className="font-bold text-dark mb-1 korean-text">AI 기반 스마트 매칭</h3>
-          <p className="text-sm text-gray-600 korean-text">최적의 비즈니스 파트너 추천</p>
-          <p className="text-sm text-gray-600 korean-text">데이터 기반 정확한 매칭</p>
-          <p className="text-sm text-gray-600 korean-text">효율적인 비즈니스 연결</p>
+          <h3 className="font-bold text-dark mb-1 korean-text">트레이너 전용 디지털 명함</h3>
+          <p className="text-sm text-gray-600 korean-text">QR 코드로 간편한 프로필 공유</p>
+          <p className="text-sm text-gray-600 korean-text">소셜미디어 연동 기능</p>
+          <p className="text-sm text-gray-600 korean-text">방문자 수 추적 및 분석</p>
         </div>
 
-        {/* CTA Button */}
-        <Button 
-          className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full hover:bg-primary/90"
-          onClick={() => setLocation("/login")}
-        >
-          지금 시작하기
-        </Button>
+        {/* CTA Buttons */}
+        <div className="space-y-3">
+          <Button 
+            className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full hover:bg-primary/90"
+            onClick={() => setLocation("/login")}
+          >
+            로그인
+          </Button>
+          <Button 
+            variant="outline"
+            className="border-primary text-primary font-medium py-4 px-8 rounded-xl w-full hover:bg-primary/5"
+            onClick={() => setLocation("/signup-step1")}
+          >
+            회원가입
+          </Button>
+          
+          {/* Demo Link */}
+          <div className="text-center mt-6">
+            <p className="text-sm text-gray-600 mb-2 korean-text">데모 프로필 보기</p>
+            <div className="flex justify-center space-x-4">
+              <Button 
+                variant="link"
+                className="text-primary text-sm underline p-0"
+                onClick={() => window.open("/demo_user", "_blank")}
+              >
+                김철수 트레이너
+              </Button>
+              <Button 
+                variant="link"
+                className="text-primary text-sm underline p-0"
+                onClick={() => window.open("/미라지", "_blank")}
+              >
+                권동영 트레이너
+              </Button>
+            </div>
+          </div>
+        </div>
       </section>
     </div>
   );
