@@ -493,7 +493,7 @@ export default function LinksPage() {
         {/* Content */}
         <div className="p-4 space-y-4 pb-28">
           {/* Visit Stats */}
-          <div className="rounded-2xl p-4 shadow-sm" style={{ backgroundColor: '#EFE5DC' }}>
+          <div className="rounded-2xl p-4 shadow-sm" style={{ backgroundColor: 'rgba(239, 229, 220, 0.6)', backdropFilter: 'blur(10px)' }}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold" style={{ color: '#4E342E' }}>링크</h2>
               <div className="flex items-center gap-1">
@@ -539,12 +539,12 @@ export default function LinksPage() {
             {isLoading ? (
               <div className="space-y-3">
                 {[1, 2, 3].map((i) => (
-                  <div key={i} className="rounded-xl p-3 animate-pulse" style={{ backgroundColor: '#EFE5DC' }}>
+                  <div key={i} className="rounded-xl p-3 animate-pulse" style={{ backgroundColor: 'rgba(239, 229, 220, 0.4)', backdropFilter: 'blur(8px)' }}>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded" style={{ backgroundColor: '#D7CCC8' }}></div>
+                      <div className="w-12 h-12 rounded" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
                       <div className="flex-1">
-                        <div className="h-4 rounded w-3/4 mb-2" style={{ backgroundColor: '#D7CCC8' }}></div>
-                        <div className="h-3 rounded w-1/2" style={{ backgroundColor: '#D7CCC8' }}></div>
+                        <div className="h-4 rounded w-3/4 mb-2" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
+                        <div className="h-3 rounded w-1/2" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
                       </div>
                     </div>
                   </div>
@@ -557,7 +557,8 @@ export default function LinksPage() {
                     key={link.id} 
                     className="rounded-xl p-3 border shadow-sm hover:shadow-md transition-all duration-200"
                     style={{ 
-                      backgroundColor: '#EFE5DC',
+                      backgroundColor: 'rgba(239, 229, 220, 0.6)',
+                      backdropFilter: 'blur(10px)',
                       borderColor: '#8D6E63'
                     }}
                   >
@@ -580,7 +581,7 @@ export default function LinksPage() {
                             toast({ title: "링크가 복사되었습니다!" });
                           }}
                           className="p-2 rounded-lg hover:shadow-md transition-all duration-200"
-                          style={{ backgroundColor: '#D7CCC8' }}
+                          style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)' }}
                         >
                           <Copy className="w-4 h-4" style={{ color: '#4E342E' }} />
                         </button>
