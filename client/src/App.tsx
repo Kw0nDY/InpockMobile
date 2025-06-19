@@ -29,7 +29,7 @@ import KakaoCallback from "./pages/kakao-callback";
 import ForgotPasswordPage from "./pages/forgot-password";
 import FindIdPage from "./pages/find-id";
 import ProfilePage from "./pages/profile";
-import ProfileSettings from "./pages/profile-settings";
+
 import PublicViewPage from "./pages/public-view";
 import PublicImageView from "./pages/public-image-view";
 import ResetPasswordPage from "./pages/reset-password";
@@ -71,7 +71,6 @@ function Router() {
           <Route path="/videos" component={VideosPage} />
           <Route path="/service-intro" component={ServiceIntroPage} />
           <Route path="/settings" component={SettingsPage} />
-          <Route path="/profile-settings" component={ProfileSettings} />
           <Route path="/chat" component={ChatPage} />
           <Route path="/analytics" component={AnalyticsPage} />
           <Route path="/contacts" component={ContactsPage} />

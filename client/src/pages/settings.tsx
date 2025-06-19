@@ -45,6 +45,11 @@ export default function SettingsPage() {
     company: (user as any)?.company || ''
   });
 
+  // 닉네임 변경 상태
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [newUsername, setNewUsername] = useState(user?.username || '');
+  const [usernameError, setUsernameError] = useState('');
+
 
 
 

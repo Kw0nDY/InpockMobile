@@ -380,6 +380,55 @@ export class DatabaseStorage implements IStorage {
       .where(and(eq(notifications.userId, userId), eq(notifications.isRead, false)));
     return result.count;
   }
+
+  // Password Reset Tokens
+  async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [newToken] = await db
+      .insert(passwordResetTokens)
+      .values(token)
+      .returning();
+    return newToken;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db
+      .select()
+      .from(passwordResetTokens)
+      .where(eq(passwordResetTokens.token, token));
+    return resetToken || undefined;
+  }
+
+  async markTokenAsUsed(token: string): Promise<void> {
+    await db
+      .update(passwordResetTokens)
+      .set({ used: true })
+      .where(eq(passwordResetTokens.token, token));
+  }
+
+  // Media Order Management
+  async updateMediaOrder(userId: number, mediaIds: number[]): Promise<void> {
+    // Update display order for each media item
+    for (let i = 0; i < mediaIds.length; i++) {
+      await db
+        .update(mediaUploads)
+        .set({ displayOrder: i })
+        .where(and(eq(mediaUploads.id, mediaIds[i]), eq(mediaUploads.userId, userId)));
+    }
+  }
+
+  async reorderUserMedia(userId: number, fromIndex: number, toIndex: number): Promise<MediaUpload[]> {
+    const userMedia = await this.getUserMediaUploads(userId);
+    
+    // Reorder the array
+    const [movedItem] = userMedia.splice(fromIndex, 1);
+    userMedia.splice(toIndex, 0, movedItem);
+    
+    // Update display orders
+    const mediaIds = userMedia.map(media => media.id);
+    await this.updateMediaOrder(userId, mediaIds);
+    
+    return userMedia;
+  }
 }
 
 export const storage = new DatabaseStorage();
