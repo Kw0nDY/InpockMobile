@@ -743,11 +743,11 @@ export default function PublicViewPage() {
               <div className="space-y-4">
                 {links.map((link: any) => (
                   <div key={link.id} className="w-full">
-                    {/* Thumbnail Style */}
+                    {/* Thumbnail Style - 개선된 디자인 */}
                     {link.style === "thumbnail" && (
-                      <div className="bg-card shadow-sm rounded-lg border border-border">
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div
-                          className="flex items-center gap-3 p-4 relative cursor-pointer hover:bg-muted transition-colors"
+                          className="relative cursor-pointer group"
                           onClick={() => {
                             window.open(link.originalUrl, "_blank");
                             fetch(`/api/links/${link.id}/click`, {
@@ -755,65 +755,169 @@ export default function PublicViewPage() {
                             });
                           }}
                         >
-                          {link.customImageUrl || link.imageUrl ? (
-                            <img
-                              src={link.customImageUrl || link.imageUrl}
-                              alt={link.title}
-                              className="w-12 h-12 rounded object-cover flex-shrink-0"
-                            />
-                          ) : (
-                            <div className="w-12 h-12 bg-muted rounded flex-shrink-0"></div>
-                          )}
-                          <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium text-foreground truncate hover:text-primary">
-                              {link.title}
+                          {/* 이미지 섹션 */}
+                          <div className="relative">
+                            {link.customImageUrl || link.imageUrl ? (
+                              <img
+                                src={link.customImageUrl || link.imageUrl}
+                                alt={link.title}
+                                className="w-full h-40 object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-40 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                                <LinkIcon className="w-12 h-12 text-gray-400" />
+                              </div>
+                            )}
+                            {/* 액션 버튼 */}
+                            <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                              <button 
+                                className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  copyToClipboard(link.originalUrl, link.shortCode);
+                                }}
+                              >
+                                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                              </button>
                             </div>
+                          </div>
+                          
+                          {/* 텍스트 정보 섹션 */}
+                          <div className="p-5">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2 leading-tight">
+                              {link.title}
+                            </h3>
                             {link.description && (
-                              <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-2 leading-relaxed">
                                 {link.description}
+                              </p>
+                            )}
+                            {/* URL 표시 */}
+                            <div className="text-xs text-blue-600 font-medium mb-3 truncate">
+                              {new URL(link.originalUrl).hostname}
+                            </div>
+                            
+                            {/* 통계 정보 */}
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                              <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.visitCount || 0}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.clickCount || 0}</span>
+                                </div>
+                              </div>
+                              {copiedLink === link.shortCode && (
+                                <span className="text-xs text-green-600 font-medium">복사됨!</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Card Style - 개선된 디자인 */}
+                    {link.style === "card" && (
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                        <div
+                          className="relative cursor-pointer group h-48"
+                          onClick={() => {
+                            window.open(link.originalUrl, "_blank");
+                            fetch(`/api/links/${link.id}/click`, {
+                              method: "POST",
+                            });
+                          }}
+                        >
+                          {/* 배경 이미지 */}
+                          <div className="absolute inset-0">
+                            {(link.customImageUrl || link.imageUrl) ? (
+                              <img
+                                src={link.customImageUrl || link.imageUrl}
+                                alt={link.title}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-purple-50 to-pink-100 flex items-center justify-center">
+                                <LinkIcon className="w-16 h-16 text-gray-400" />
                               </div>
                             )}
                           </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Card Style */}
-                    {link.style === "card" && (
-                      <div className="bg-card shadow-sm rounded-lg border border-border">
-                        <div
-                          className="bg-muted rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-muted/80 transition-colors"
-                          onClick={() => {
-                            window.open(link.originalUrl, "_blank");
-                            fetch(`/api/links/${link.id}/click`, {
-                              method: "POST",
-                            });
-                          }}
-                        >
-                          {(link.customImageUrl || link.imageUrl) && (
-                            <img
-                              src={link.customImageUrl || link.imageUrl}
-                              alt={link.title}
-                              className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                            />
-                          )}
-                          <div className="relative z-10 bg-black/80 text-white p-2 rounded">
-                            <div className="text-sm font-medium truncate">
-                              {link.title}
+                          
+                          {/* 그라데이션 오버레이 */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+                          
+                          {/* 액션 버튼 */}
+                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <button 
+                              className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(link.originalUrl, link.shortCode);
+                              }}
+                            >
+                              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            </button>
+                          </div>
+                          
+                          {/* 텍스트 정보 - 하단에 배치 */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <div className="bg-white/95 backdrop-blur-sm rounded-lg p-3 shadow-lg">
+                              <h3 className="text-base font-semibold text-gray-800 mb-1 line-clamp-1">
+                                {link.title}
+                              </h3>
+                              {link.description && (
+                                <p className="text-xs text-gray-600 mb-2 line-clamp-1">
+                                  {link.description}
+                                </p>
+                              )}
+                              
+                              {/* 통계 및 URL */}
+                              <div className="flex items-center justify-between">
+                                <div className="text-xs text-blue-600 font-medium truncate flex-1 mr-3">
+                                  {new URL(link.originalUrl).hostname}
+                                </div>
+                                <div className="flex items-center space-x-3 text-xs text-gray-500">
+                                  <div className="flex items-center space-x-1">
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                      <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                    </svg>
+                                    <span>{link.visitCount || 0}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd"/>
+                                    </svg>
+                                    <span>{link.clickCount || 0}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              {copiedLink === link.shortCode && (
+                                <div className="mt-2 text-xs text-green-600 font-medium">복사됨!</div>
+                              )}
                             </div>
                           </div>
-                          <div className="absolute bottom-2 right-2 w-6 h-6 bg-black/80 rounded-full flex items-center justify-center">
-                            <div className="w-3 h-3 border-2 border-white rounded-full"></div>
-                          </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Simple Style */}
+                    {/* Simple Style - 개선된 디자인 */}
                     {link.style === "simple" && (
-                      <div className="bg-card shadow-sm rounded-lg border border-border">
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div
-                          className="p-4 relative cursor-pointer hover:bg-muted transition-colors"
+                          className="relative cursor-pointer group"
                           onClick={() => {
                             window.open(link.originalUrl, "_blank");
                             fetch(`/api/links/${link.id}/click`, {
@@ -821,37 +925,83 @@ export default function PublicViewPage() {
                             });
                           }}
                         >
+                          {/* 이미지 섹션 */}
                           {(link.customImageUrl || link.imageUrl) && (
-                            <img
-                              src={link.customImageUrl || link.imageUrl}
-                              alt={link.title}
-                              className="w-full h-20 object-cover rounded mb-2"
-                            />
-                          )}
-                          <div className="text-sm font-medium text-foreground truncate mb-2 hover:text-primary">
-                            {link.title}
-                          </div>
-                          {link.description && (
-                            <div className="text-xs text-muted-foreground mb-2 line-clamp-2">
-                              {link.description}
+                            <div className="relative">
+                              <img
+                                src={link.customImageUrl || link.imageUrl}
+                                alt={link.title}
+                                className="w-full h-32 object-cover"
+                              />
+                              {/* 액션 버튼 */}
+                              <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <button 
+                                  className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(link.originalUrl, link.shortCode);
+                                  }}
+                                >
+                                  <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                  </svg>
+                                </button>
+                              </div>
                             </div>
                           )}
-
-                          <div className="w-full h-2 bg-muted rounded"></div>
+                          
+                          {/* 텍스트 정보 섹션 */}
+                          <div className="p-5">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2 leading-tight">
+                              {link.title}
+                            </h3>
+                            {link.description && (
+                              <p className="text-sm text-gray-600 mb-3 line-clamp-3 leading-relaxed">
+                                {link.description}
+                              </p>
+                            )}
+                            
+                            {/* URL 표시 */}
+                            <div className="text-xs text-blue-600 font-medium mb-3 truncate">
+                              {new URL(link.originalUrl).hostname}
+                            </div>
+                            
+                            {/* 통계 정보 */}
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                              <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.visitCount || 0}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.clickCount || 0}</span>
+                                </div>
+                              </div>
+                              {copiedLink === link.shortCode && (
+                                <span className="text-xs text-green-600 font-medium">복사됨!</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </div>
                     )}
 
-                    {/* Background Style */}
+                    {/* Background Style - 개선된 디자인 */}
                     {link.style === "background" && (
-                      <div className="bg-card shadow-sm rounded-lg border border-border">
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
                         <div
-                          className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden"
+                          className="relative h-40 cursor-pointer group overflow-hidden"
                           style={{
                             backgroundImage:
                               link.customImageUrl || link.imageUrl
                                 ? `url(${link.customImageUrl || link.imageUrl})`
-                                : "repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)",
+                                : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                             backgroundSize: "cover",
                             backgroundPosition: "center",
                             backgroundRepeat: "no-repeat",
@@ -863,12 +1013,60 @@ export default function PublicViewPage() {
                             });
                           }}
                         >
-                          <div className="absolute inset-0 bg-black/40 rounded-lg"></div>
-
-                          <div className="relative z-10 text-white">
-                            <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">
+                          {/* 그라데이션 오버레이 */}
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10"></div>
+                          
+                          {/* 액션 버튼 */}
+                          <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <button 
+                              className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                copyToClipboard(link.originalUrl, link.shortCode);
+                              }}
+                            >
+                              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            </button>
+                          </div>
+                          
+                          {/* 텍스트 정보 - 하단에 배치 */}
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <h3 className="text-white font-bold text-lg mb-2 drop-shadow-lg line-clamp-2 leading-tight">
                               {link.title}
+                            </h3>
+                            {link.description && (
+                              <p className="text-white/90 text-sm mb-3 drop-shadow line-clamp-2 leading-relaxed">
+                                {link.description}
+                              </p>
+                            )}
+                            
+                            {/* URL 및 통계 */}
+                            <div className="flex items-center justify-between">
+                              <div className="text-xs text-white/80 font-medium truncate flex-1 mr-3">
+                                {new URL(link.originalUrl).hostname}
+                              </div>
+                              <div className="flex items-center space-x-3 text-xs text-white/70">
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                                    <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.visitCount || 0}</span>
+                                </div>
+                                <div className="flex items-center space-x-1">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M6.672 1.911a1 1 0 10-1.932.518l.259.966a1 1 0 001.932-.518l-.26-.966zM2.429 4.74a1 1 0 10-.517 1.932l.966.259a1 1 0 00.517-1.932l-.966-.26zm8.814-.569a1 1 0 00-1.415-1.414l-.707.707a1 1 0 101.415 1.415l.707-.708zm-7.071 7.072l.707-.707A1 1 0 003.465 9.12l-.708.707a1 1 0 001.415 1.415zm3.2-5.171a1 1 0 00-1.3 1.3l4 10a1 1 0 001.823.075l1.38-2.759 3.018 3.02a1 1 0 001.414-1.415l-3.019-3.02 2.76-1.379a1 1 0 00-.076-1.822l-10-4z" clipRule="evenodd"/>
+                                  </svg>
+                                  <span>{link.clickCount || 0}</span>
+                                </div>
+                              </div>
                             </div>
+                            
+                            {copiedLink === link.shortCode && (
+                              <div className="mt-2 text-xs text-green-400 font-medium drop-shadow">복사됨!</div>
+                            )}
                           </div>
                         </div>
                       </div>
