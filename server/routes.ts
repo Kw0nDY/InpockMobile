@@ -1550,6 +1550,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Increment visit count
       await storage.incrementUserVisitCount(user.id);
 
+      // Create notification for profile visit (only if not the owner)
+      const userAgent = req.headers['user-agent'] || 'Unknown';
+      const visitorIP = req.ip || req.connection.remoteAddress || 'Unknown';
+      
+      // Create visit notification
+      try {
+        await storage.createNotification({
+          userId: user.id,
+          type: 'profile_visit',
+          title: '새로운 프로필 방문',
+          message: `누군가 당신의 프로필을 방문했습니다.`,
+          data: JSON.stringify({
+            visitorIP,
+            userAgent,
+            visitedAt: new Date().toISOString(),
+            profileType: 'public'
+          })
+        });
+      } catch (notificationError) {
+        console.error('[NOTIFICATION] Failed to create visit notification:', notificationError);
+      }
+
       res.json(publicUser);
     } catch (error) {
       console.error("Public view fetch error:", error);

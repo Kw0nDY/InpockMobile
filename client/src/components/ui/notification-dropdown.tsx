@@ -3,65 +3,52 @@ import { Bell, X, CheckCircle, AlertCircle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 interface Notification {
-  id: string;
+  id: number;
+  userId: number;
+  type: string;
   title: string;
   message: string;
-  type: "info" | "success" | "warning";
-  timestamp: string;
+  data: string | null;
   isRead: boolean;
+  createdAt: string;
 }
-
-const mockNotifications: Notification[] = [
-  {
-    id: "1",
-    title: "새로운 운동 파트너 요청",
-    message: "김지훈님이 헬스 운동 파트너를 신청했습니다.",
-    type: "info",
-    timestamp: "방금 전",
-    isRead: false,
-  },
-  {
-    id: "2",
-    title: "오늘의 운동 목표 달성!",
-    message: "축하합니다! 오늘 설정한 유산소 30분을 완료했습니다.",
-    type: "success",
-    timestamp: "5분 전",
-    isRead: false,
-  },
-  {
-    id: "3",
-    title: "운동 기록이 공유되었습니다",
-    message: "벤치프레스 80kg 달성 기록이 15명에게 조회되었습니다.",
-    type: "info",
-    timestamp: "1시간 전",
-    isRead: true,
-  },
-  {
-    id: "4",
-    title: "운동 계획 리마인더",
-    message: "오늘 하체 운동 일정이 있습니다. 준비하세요!",
-    type: "warning",
-    timestamp: "2시간 전",
-    isRead: false,
-  },
-  {
-    id: "5",
-    title: "새로운 PT 문의",
-    message: "이서연님이 퍼스널 트레이닝에 대해 문의했습니다.",
-    type: "info",
-    timestamp: "어제",
-    isRead: true,
-  },
-];
 
 export default function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  // Get user ID from auth context
+  const userId = 1; // For now, hardcode to demo user
+
+  const { data: notifications = [], refetch } = useQuery({
+    queryKey: [`/api/notifications/${userId}`],
+    enabled: !!userId,
+  });
+
+  const { data: unreadData } = useQuery({
+    queryKey: [`/api/notifications/${userId}/unread-count`],
+    enabled: !!userId,
+    refetchInterval: 5000, // Poll every 5 seconds for real-time updates
+  });
+
+  const unreadCount = parseInt(unreadData?.count || "0");
+  const queryClient = useQueryClient();
+
+  const markAsReadMutation = useMutation({
+    mutationFn: async (notificationId: number) => {
+      await apiRequest(`/api/notifications/${notificationId}/read`, {
+        method: 'POST'
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}`] });
+      queryClient.invalidateQueries({ queryKey: [`/api/notifications/${userId}/unread-count`] });
+    }
+  });
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -70,117 +57,108 @@ export default function NotificationDropdown() {
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
   }, []);
 
-  const markAsRead = (id: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === id ? { ...notification, isRead: true } : notification
-      )
-    );
+  const markAsRead = (notificationId: number) => {
+    markAsReadMutation.mutate(notificationId);
   };
 
-  const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, isRead: true }))
-    );
+  const formatTimestamp = (timestamp: string) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return "방금 전";
+    if (diffInMinutes < 60) return `${diffInMinutes}분 전`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}시간 전`;
+    return `${Math.floor(diffInMinutes / 1440)}일 전`;
   };
 
-  const getIcon = (type: string) => {
+  const getNotificationIcon = (type: string) => {
     switch (type) {
-      case "success":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "warning":
-        return <AlertCircle className="w-4 h-4 text-orange-500" />;
-      default:
+      case "profile_visit":
         return <Info className="w-4 h-4 text-blue-500" />;
+      case "link_click":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-orange-500" />;
     }
   };
+
+  const notificationList = Array.isArray(notifications) ? notifications : [];
 
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
         variant="ghost"
         size="sm"
+        className="relative p-2"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-gray-100 rounded-full"
       >
-        <Bell className="w-5 h-5 text-primary" />
+        <Bell className="w-5 h-5 text-gray-600" />
         {unreadCount > 0 && (
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-stone-700 text-white text-xs rounded-full p-0">
-            {unreadCount > 9 ? "9+" : unreadCount}
+          <Badge className="absolute -top-1 -right-1 min-w-5 h-5 text-xs bg-red-500 text-white flex items-center justify-center">
+            {unreadCount > 99 ? "99+" : unreadCount}
           </Badge>
         )}
       </Button>
 
       {isOpen && (
-        <Card className={`absolute right-0 top-12 w-80 max-h-96 z-50 shadow-lg border bg-white transform transition-all duration-200 ease-out ${
-          isOpen ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-        }`}>
-          <div className="p-4 border-b">
+        <Card className="absolute right-0 top-full mt-2 w-80 max-h-96 overflow-y-auto z-50 shadow-lg">
+          <div className="p-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-gray-800">알림</h3>
-              <div className="flex items-center space-x-2">
-                {unreadCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={markAllAsRead}
-                    className="text-xs text-stone-700 hover:text-stone-800"
-                  >
-                    모두 읽음
-                  </Button>
-                )}
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-gray-100 rounded"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+              <h3 className="font-medium korean-text">알림</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsOpen(false)}
+              >
+                <X className="w-4 h-4" />
+              </Button>
             </div>
           </div>
 
-          <div className="max-h-80 overflow-y-auto">
-            {notifications.length > 0 ? (
-              notifications.map((notification) => (
+          <div className="max-h-64 overflow-y-auto">
+            {notificationList.length === 0 ? (
+              <div className="p-4 text-center text-gray-500 korean-text">
+                새로운 알림이 없습니다
+              </div>
+            ) : (
+              notificationList.map((notification: Notification) => (
                 <div
                   key={notification.id}
-                  className={`p-4 border-b last:border-b-0 hover:bg-gray-50 cursor-pointer transition-colors ${
-                    !notification.isRead ? "bg-stone-100" : ""
+                  className={`p-4 border-b border-gray-50 hover:bg-gray-50 cursor-pointer ${
+                    !notification.isRead ? "bg-blue-50" : ""
                   }`}
-                  onClick={() => markAsRead(notification.id)}
+                  onClick={() => !notification.isRead && markAsRead(notification.id)}
                 >
                   <div className="flex items-start space-x-3">
-                    {getIcon(notification.type)}
+                    <div className="flex-shrink-0 mt-1">
+                      {getNotificationIcon(notification.type)}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium text-gray-800 truncate">
+                        <h4 className="text-sm font-medium text-gray-900 korean-text">
                           {notification.title}
                         </h4>
                         {!notification.isRead && (
-                          <div className="w-2 h-2 bg-stone-700 rounded-full ml-2"></div>
+                          <div className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></div>
                         )}
                       </div>
-                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                      <p className="text-sm text-gray-600 korean-text mt-1">
                         {notification.message}
                       </p>
                       <p className="text-xs text-gray-400 mt-1">
-                        {notification.timestamp}
+                        {formatTimestamp(notification.createdAt)}
                       </p>
                     </div>
                   </div>
                 </div>
               ))
-            ) : (
-              <div className="p-8 text-center text-gray-500">
-                <Bell className="w-8 h-8 mx-auto mb-2 text-gray-300" />
-                <p className="text-sm">새로운 알림이 없습니다</p>
-              </div>
             )}
           </div>
         </Card>
