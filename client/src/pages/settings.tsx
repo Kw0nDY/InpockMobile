@@ -14,7 +14,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { MediaUpload } from "@/components/profile/media-upload";
 import { ImageCropModal } from '@/components/ui/image-crop-modal';
-import { UsernameUpdateSection } from "@/components/username-update-section";
+
 
 export default function SettingsPage() {
   const { user, setUser, logout } = useAuth();
@@ -535,9 +535,6 @@ export default function SettingsPage() {
           </TabsList>
           
           <TabsContent value="profile" className="space-y-4 mt-4">
-            {/* Username Update Section */}
-            <UsernameUpdateSection />
-            
             <Card className="bg-card shadow-sm border-border">
               <CardContent className="space-y-4 pt-6">
                 {/* Avatar */}
@@ -585,6 +582,32 @@ export default function SettingsPage() {
                       <p className="text-xs text-red-500 mt-1">빨간 버튼을 클릭하여 삭제할 수 있습니다</p>
                     )}
                   </div>
+                </div>
+
+                {/* Username */}
+                <div className="space-y-2">
+                  <Label htmlFor="username" className="text-sm font-medium text-foreground">닉네임</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="username"
+                      value={user?.username || ''}
+                      className="border-border bg-gray-50 text-gray-600"
+                      disabled
+                    />
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setLocation('/profile-settings')}
+                      className="text-primary border-primary hover:bg-primary hover:text-white whitespace-nowrap"
+                    >
+                      변경하기
+                    </Button>
+                  </div>
+                  {user?.username && /_\d+$/.test(user.username) && (
+                    <p className="text-xs text-amber-600">
+                      자동 생성된 닉네임입니다. 원하는 닉네임으로 변경해보세요.
+                    </p>
+                  )}
                 </div>
 
                 {/* Name */}
