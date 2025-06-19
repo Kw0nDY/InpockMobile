@@ -169,8 +169,6 @@ export const LINK_STYLES = ['thumbnail', 'simple', 'card', 'background'] as cons
 // Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   links: many(links),
-  deals: many(deals),
-  activities: many(activities),
   settings: one(userSettings),
   subscription: one(subscriptions),
   mediaUploads: many(mediaUploads),
@@ -179,22 +177,6 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 export const linksRelations = relations(links, ({ one }) => ({
   user: one(users, {
     fields: [links.userId],
-    references: [users.id],
-  }),
-}));
-
-export const dealsRelations = relations(deals, ({ one }) => ({
-  user: one(users, {
-    fields: [deals.userId],
-    references: [users.id],
-  }),
-}));
-
-
-
-export const activitiesRelations = relations(activities, ({ one }) => ({
-  user: one(users, {
-    fields: [activities.userId],
     references: [users.id],
   }),
 }));
