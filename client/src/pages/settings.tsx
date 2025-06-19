@@ -14,6 +14,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { MediaUpload } from "@/components/profile/media-upload";
 import { ImageCropModal } from '@/components/ui/image-crop-modal';
+import { UsernameUpdateSection } from "@/components/username-update-section";
 
 export default function SettingsPage() {
   const { user, setUser, logout } = useAuth();
@@ -534,6 +535,9 @@ export default function SettingsPage() {
           </TabsList>
           
           <TabsContent value="profile" className="space-y-4 mt-4">
+            {/* Username Update Section */}
+            <UsernameUpdateSection />
+            
             <Card className="bg-card shadow-sm border-border">
               <CardContent className="space-y-4 pt-6">
                 {/* Avatar */}

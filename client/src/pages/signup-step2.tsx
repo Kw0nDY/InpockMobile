@@ -231,22 +231,15 @@ export default function SignupStep2() {
           <CardContent className="p-6">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Username */}
-              <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 korean-text mb-2">
-                  사용자명 *
-                </label>
-                <Input
-                  id="username"
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => handleInputChange('username', e.target.value)}
-                  placeholder="사용자명을 입력하세요"
-                  className={`w-full ${errors.username ? 'border-red-500' : ''}`}
-                />
-                {errors.username && (
-                  <p className="text-red-500 text-xs mt-1 korean-text">{errors.username}</p>
-                )}
-              </div>
+              <UsernameInput
+                value={formData.username}
+                onChange={(value) => handleInputChange('username', value)}
+                required
+                className={errors.username ? 'border-red-500' : ''}
+              />
+              {errors.username && (
+                <p className="text-red-500 text-xs mt-1 korean-text">{errors.username}</p>
+              )}
 
               {/* Email */}
               <div>

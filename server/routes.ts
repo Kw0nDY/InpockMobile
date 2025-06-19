@@ -75,7 +75,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Username validation routes
   app.post("/api/auth/check-username", async (req, res) => {
     try {
-      const { username } = z.object({ username: z.string() }).parse(req.body);
+      const { username, currentUserId } = z.object({ 
+        username: z.string(),
+        currentUserId: z.number().optional()
+      }).parse(req.body);
       
       // Validate username format
       const validation = validateUsername(username);
@@ -83,9 +86,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.json({ available: false, message: validation.message });
       }
 
-      // Check if username exists
+      // Check if username exists (excluding current user)
       const existingUser = await storage.getUserByUsername(username);
-      if (existingUser) {
+      if (existingUser && existingUser.id !== currentUserId) {
         return res.json({ available: false, message: "이미 사용중인 닉네임입니다" });
       }
 
@@ -93,6 +96,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Username check error:", error);
       res.status(400).json({ available: false, message: "잘못된 요청입니다" });
+    }
+  });
+
+  // Update username endpoint
+  app.patch("/api/user/:userId/username", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const { username } = z.object({ username: z.string() }).parse(req.body);
+      
+      // Validate username format
+      const validation = validateUsername(username);
+      if (!validation.valid) {
+        return res.status(400).json({ message: validation.message });
+      }
+
+      // Check if username is taken by another user
+      const existingUser = await storage.getUserByUsername(username);
+      if (existingUser && existingUser.id !== parseInt(userId)) {
+        return res.status(409).json({ message: "이미 사용중인 닉네임입니다" });
+      }
+
+      // Update the username
+      const updatedUser = await storage.updateUser(parseInt(userId), { username });
+      
+      if (!updatedUser) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
+      }
+      
+      res.json({ 
+        message: "닉네임이 성공적으로 변경되었습니다",
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          name: updatedUser.name
+        }
+      });
+    } catch (error) {
+      console.error("Username update error:", error);
+      res.status(500).json({ message: "닉네임 변경 중 오류가 발생했습니다" });
     }
   });
 
@@ -154,10 +197,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userData = insertUserSchema.parse(req.body);
 
-      // Check if user exists
-      const existingUser = await storage.getUserByEmail(userData.email);
-      if (existingUser) {
-        return res.status(409).json({ message: "User already exists" });
+      // Validate username format
+      const usernameValidation = validateUsername(userData.username);
+      if (!usernameValidation.valid) {
+        return res.status(400).json({ message: usernameValidation.message });
+      }
+
+      // Check if user exists by email
+      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      if (existingUserByEmail) {
+        return res.status(409).json({ message: "이미 존재하는 이메일입니다" });
+      }
+
+      // Check if username is taken
+      const existingUserByUsername = await storage.getUserByUsername(userData.username);
+      if (existingUserByUsername) {
+        return res.status(409).json({ message: "이미 사용중인 닉네임입니다" });
       }
 
       const user = await storage.createUser(userData);
