@@ -234,27 +234,39 @@ export class DatabaseStorage implements IStorage {
     const [totalVisits] = await db
       .select({ count: sql<number>`count(*)` })
       .from(linkVisits)
-      .where(sql`${linkVisits.linkId} IN (${linkIds.join(',')})`);
+      .where(inArray(linkVisits.linkId, linkIds));
 
     const [dailyVisits] = await db
       .select({ count: sql<number>`count(*)` })
       .from(linkVisits)
-      .where(sql`${linkVisits.linkId} IN (${linkIds.join(',')}) AND ${linkVisits.visitedAt} >= ${todayStart}`);
+      .where(and(
+        inArray(linkVisits.linkId, linkIds),
+        gte(linkVisits.visitedAt, todayStart)
+      ));
 
     const [monthlyVisits] = await db
       .select({ count: sql<number>`count(*)` })
       .from(linkVisits)
-      .where(sql`${linkVisits.linkId} IN (${linkIds.join(',')}) AND ${linkVisits.visitedAt} >= ${monthStart}`);
+      .where(and(
+        inArray(linkVisits.linkId, linkIds),
+        gte(linkVisits.visitedAt, monthStart)
+      ));
 
     const [ownerVisits] = await db
       .select({ count: sql<number>`count(*)` })
       .from(linkVisits)
-      .where(sql`${linkVisits.linkId} IN (${linkIds.join(',')}) AND ${linkVisits.isOwner} = true`);
+      .where(and(
+        inArray(linkVisits.linkId, linkIds),
+        eq(linkVisits.isOwner, true)
+      ));
 
     const [externalVisits] = await db
       .select({ count: sql<number>`count(*)` })
       .from(linkVisits)
-      .where(sql`${linkVisits.linkId} IN (${linkIds.join(',')}) AND ${linkVisits.isOwner} = false`);
+      .where(and(
+        inArray(linkVisits.linkId, linkIds),
+        eq(linkVisits.isOwner, false)
+      ));
 
     return {
       totalVisits: totalVisits.count,
