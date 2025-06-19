@@ -8,7 +8,7 @@ import {
   type LinkVisit, type InsertLinkVisit
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, sql } from "drizzle-orm";
+import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
