@@ -10,6 +10,8 @@ import {
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 export interface IStorage {
   // Users
@@ -827,12 +829,12 @@ export class DatabaseStorage implements IStorage {
   async createActivity(activity: InsertActivity): Promise<Activity> { throw new Error("Not implemented"); }
 
   async getSubscriptions(userId: number): Promise<Subscription[]> {
-    const subscriptions = await db.select().from(subscription).where(eq(subscription.userId, userId));
-    return subscriptions;
+    const userSubscriptions = await db.select().from(subscriptions).where(eq(subscriptions.userId, userId));
+    return userSubscriptions;
   }
   
   async createSubscription(subscriptionData: InsertSubscription): Promise<Subscription> {
-    const [newSubscription] = await db.insert(subscription).values(subscriptionData).returning();
+    const [newSubscription] = await db.insert(subscriptions).values(subscriptionData).returning();
     return newSubscription;
   }
 
