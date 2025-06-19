@@ -69,10 +69,7 @@ export default function LinksPage() {
 
   const addLinkMutation = useMutation({
     mutationFn: async (linkData: any) => {
-      return apiRequest(`/api/links`, {
-        method: 'POST',
-        body: JSON.stringify(linkData),
-      });
+      return apiRequest('POST', '/api/links', linkData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
@@ -91,9 +88,7 @@ export default function LinksPage() {
 
   const deleteLinkMutation = useMutation({
     mutationFn: async (linkId: number) => {
-      return apiRequest(`/api/links/${linkId}`, {
-        method: 'DELETE',
-      });
+      return apiRequest('DELETE', `/api/links/${linkId}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [`/api/links/${user?.id}`] });
