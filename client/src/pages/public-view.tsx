@@ -789,7 +789,7 @@ export default function PublicViewPage() {
     switch (contentType) {
       case "links":
         return (
-          <div className="min-h-screen bg-[#F5F5DC] pt-4 pb-20 px-4">
+          <div className="min-h-screen pt-4 pb-20 px-4">
             {Array.isArray(links) && links.length > 0 ? (
               <div className="space-y-4">
                 {links.map((link: any) => (
