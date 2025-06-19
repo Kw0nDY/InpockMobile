@@ -1011,10 +1011,10 @@ export default function PublicViewPage() {
 
         if (filteredVideos.length === 0) {
           return (
-            <div className="h-full flex flex-col items-center justify-center text-white pt-20 pb-32">
-              <Video className="w-24 h-24 mb-6 text-white/70" />
-              <h2 className="text-3xl font-bold mb-3">동영상</h2>
-              <p className="text-lg text-white/80 text-center max-w-md">
+            <div className="h-full flex flex-col items-center justify-center pt-20 pb-32">
+              <Video className="w-24 h-24 mb-6 text-gray-400" />
+              <h2 className="text-3xl font-bold mb-3 text-gray-600">동영상</h2>
+              <p className="text-lg text-gray-500 text-center max-w-md">
                 아직 등록된 동영상이 없습니다
               </p>
             </div>
@@ -1709,16 +1709,6 @@ export default function PublicViewPage() {
             >
               <div className="h-full overflow-y-auto bg-background pt-4">
                 <div className="px-4 pb-24 max-w-md mx-auto">
-                  {/* Bio Section */}
-                  {settings?.showBio && user?.bio && (
-                    <div className="mb-6">
-                      <div className="bg-card shadow-sm rounded-lg border border-border p-4">
-                        <p className="text-sm text-foreground leading-relaxed korean-text">
-                          {user.bio}
-                        </p>
-                      </div>
-                    </div>
-                  )}
                   {renderContent()}
                 </div>
               </div>
