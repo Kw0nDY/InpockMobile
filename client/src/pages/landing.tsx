@@ -255,19 +255,12 @@ export default function LandingPage() {
           <h3 className="text-2xl font-bold text-dark mb-4 korean-text">당신도 시작해보세요</h3>
           <p className="text-gray-600 mb-8 korean-text">전문 트레이너를 위한 올인원 플랫폼으로 고객과 더 가깝게 연결되세요</p>
           
-          <div className="space-y-4 flex flex-col items-center">
+          <div className="flex flex-col items-center">
             <Button 
               className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full text-base hover:bg-primary/90 text-center"
-              onClick={() => setLocation("/signup-step1")}
-            >
-              무료로 시작하기
-            </Button>
-            <Button 
-              variant="ghost"
-              className="text-gray-600 font-medium py-2 px-4 w-full text-center"
               onClick={() => setLocation("/login")}
             >
-              이미 계정이 있나요? 로그인
+              무료로 시작하기
             </Button>
           </div>
         </div>
