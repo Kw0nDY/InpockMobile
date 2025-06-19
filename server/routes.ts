@@ -1556,7 +1556,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create visit notification
       try {
-        await storage.createNotification({
+        console.log(`[NOTIFICATION] Creating visit notification for user ${user.id}`);
+        const notification = await storage.createNotification({
           userId: user.id,
           type: 'profile_visit',
           title: '새로운 프로필 방문',
@@ -1568,6 +1569,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             profileType: 'public'
           })
         });
+        console.log(`[NOTIFICATION] Successfully created notification:`, notification);
       } catch (notificationError) {
         console.error('[NOTIFICATION] Failed to create visit notification:', notificationError);
       }
