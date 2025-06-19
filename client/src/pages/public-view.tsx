@@ -79,10 +79,10 @@ export default function PublicViewPage() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
-  // Content Type State (local override)
+  // Content Type State (local override) - initialized to null until settings load
   const [localContentType, setLocalContentType] = useState<
-    "links" | "image" | "video" | "media" | "both"
-  >("image");
+    "links" | "image" | "video" | "media" | "both" | null
+  >(null);
 
   // View Mode State (user view vs business view)
   const [viewMode, setViewMode] = useState<"user" | "business">("user");
@@ -287,10 +287,13 @@ export default function PublicViewPage() {
     const hasImages = images && images.length > 0;
     const hasVideos = allVideos && allVideos.length > 0;
     
-    // If the selected content type has content, use it
-    if (localContentType === "links" && hasLinks) return "links";
-    if (localContentType === "image" && hasImages) return "image";
-    if (localContentType === "video" && hasVideos) return "video";
+    // Use user's preferred content type if localContentType is not set and settings are loaded
+    const preferredType = localContentType || settings?.contentType;
+    
+    // If the preferred content type has content, use it
+    if (preferredType === "links" && hasLinks) return "links";
+    if (preferredType === "image" && hasImages) return "image";
+    if (preferredType === "video" && hasVideos) return "video";
     
     // Otherwise, fallback to the first available content type
     if (hasLinks) return "links";
@@ -302,6 +305,13 @@ export default function PublicViewPage() {
   };
 
   const contentType = getEffectiveContentType();
+
+  // Initialize localContentType with user's preferred content type when settings load
+  useEffect(() => {
+    if (settings?.contentType && localContentType === null) {
+      setLocalContentType(settings.contentType);
+    }
+  }, [settings?.contentType, localContentType]);
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
