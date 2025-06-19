@@ -21,6 +21,13 @@ export const users = pgTable("users", {
   visitCount: integer("visit_count").default(0),
   provider: text("provider").default("local"),
   providerId: text("provider_id"),
+  // Fitness-related fields
+  birthDate: text("birth_date"),
+  fitnessAwards: text("fitness_awards"),
+  fitnessCertifications: text("fitness_certifications"),
+  currentGym: text("current_gym"),
+  gymAddress: text("gym_address"),
+  fitnessIntro: text("fitness_intro"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -56,6 +63,9 @@ export const userSettings = pgTable("user_settings", {
   linkDescription: text("link_description"),
   linkUrl: text("link_url"),
   shortUrlType: text("short_url_type").default("default"), // default, custom, link
+  // Content and URL settings
+  contentType: text("content_type").default("links"),
+  customUrl: text("custom_url"),
   // View screen settings
   backgroundTheme: text("background_theme").default("beige"), // beige, white, dark, gradient
   showProfileImage: boolean("show_profile_image").default(true),

@@ -686,7 +686,10 @@ export default function SettingsPage() {
                   <Label htmlFor="default" className="cursor-pointer block">
                     <div className="font-medium text-foreground mb-1">기본값</div>
                     <div className="text-sm text-muted-foreground break-all">
-                      {window.location.host}/{user?.username || 'demo_user'}
+                      https://{window.location.host}/users/{user?.username || 'demo_user'}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1">
+                      또는 단축 URL: https://{window.location.host}/{user?.username || 'demo_user'}
                     </div>
                   </Label>
                 </div>
