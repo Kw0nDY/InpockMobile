@@ -145,10 +145,10 @@ export default function LinksPage() {
 
   if (showAddForm) {
     return (
-      <div className="min-h-screen bg-background p-4">
-        <div className="max-w-md mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-bold">링크 추가</h1>
+      <div className="min-h-screen bg-[#F5F3F0] pb-20">
+        <div className="max-w-md mx-auto bg-[#F5F3F0] min-h-screen">
+          {/* Header */}
+          <div className="p-4 border-b border-border bg-card flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
@@ -157,62 +157,303 @@ export default function LinksPage() {
                 resetForm();
               }}
             >
-              <X className="w-4 h-4" />
+              ←
             </Button>
+            <h1 className="text-lg font-bold text-center">URL 추가하기</h1>
+            <div className="w-8"></div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="p-4 space-y-6">
+            {/* 미리보기 섹션 - 최상단 */}
             <div>
-              <label className="block text-sm font-medium mb-2">제목 *</label>
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="링크 제목을 입력하세요"
-                required
-              />
+              <div className="bg-white rounded-xl border border-gray-200 p-4 min-h-32 flex items-center justify-center">
+                {(title || url || description) ? (
+                  <div className="w-full">
+                    {selectedStyle === THUMBNAIL && (
+                      <div className="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                        <div className="w-full h-24 bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
+                          <Image className="w-6 h-6 text-gray-400" />
+                        </div>
+                        <div className="p-3">
+                          <h3 className="text-sm font-medium text-gray-800 mb-1">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-xs text-gray-600 mb-1">
+                              {description}
+                            </p>
+                          )}
+                          <div className="text-xs text-blue-600">
+                            {url || "https://example.com"}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedStyle === SIMPLE && (
+                      <div className="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                        <div className="p-4">
+                          <h3 className="text-sm font-medium text-gray-800 mb-1">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-xs text-gray-600 mb-2">
+                              {description}
+                            </p>
+                          )}
+                          <div className="text-xs text-blue-600">
+                            {url || "https://example.com"}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedStyle === CARD && (
+                      <div className="bg-white shadow-sm rounded-lg border border-gray-100 overflow-hidden">
+                        <div className="p-4">
+                          <h3 className="text-base font-medium text-gray-800 mb-2">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-sm text-gray-600 mb-3">
+                              {description}
+                            </p>
+                          )}
+                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded inline-block">
+                            {url || "https://example.com"}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {selectedStyle === BACKGROUND && (
+                      <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-lg rounded-lg overflow-hidden">
+                        <div className="p-4 text-white">
+                          <h3 className="text-lg font-bold text-white mb-2">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-sm text-white/80 mb-3">
+                              {description}
+                            </p>
+                          )}
+                          <div className="inline-block bg-white/10 backdrop-blur-sm rounded px-2 py-1">
+                            <div className="text-xs text-white/90">
+                              {url || "https://example.com"}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center text-gray-400">
+                    <div className="text-sm mb-1">카드뷰 미리보기</div>
+                    <div className="text-xs">아래 정보들을 채워보세요</div>
+                  </div>
+                )}
+              </div>
             </div>
 
+            {/* 스타일 선택 */}
             <div>
-              <label className="block text-sm font-medium mb-2">URL *</label>
-              <Input
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://example.com"
-                type="url"
-                required
-              />
+              <label className="block text-sm font-medium mb-3">스타일 *</label>
+              <div className="grid grid-cols-2 gap-3">
+                <div
+                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedStyle === THUMBNAIL 
+                      ? 'border-[#8B4513] bg-[#8B4513]/10' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(THUMBNAIL)}
+                >
+                  <div className="text-center">
+                    <div className="w-full h-12 bg-gradient-to-br from-blue-50 to-indigo-100 rounded mb-2 flex items-center justify-center">
+                      <Image className="w-4 h-4 text-gray-400" />
+                    </div>
+                    <p className="text-xs font-medium">썸네일</p>
+                  </div>
+                </div>
+
+                <div
+                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedStyle === SIMPLE 
+                      ? 'border-[#8B4513] bg-[#8B4513]/10' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(SIMPLE)}
+                >
+                  <div className="text-center">
+                    <div className="w-full h-12 bg-white border rounded mb-2 flex items-center justify-center">
+                      <div className="text-xs text-gray-600">제목</div>
+                    </div>
+                    <p className="text-xs font-medium">심플</p>
+                  </div>
+                </div>
+
+                <div
+                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedStyle === CARD 
+                      ? 'border-[#8B4513] bg-[#8B4513]/10' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(CARD)}
+                >
+                  <div className="text-center">
+                    <div className="w-full h-12 bg-white border rounded mb-2 p-1">
+                      <div className="text-xs text-gray-600 mb-1">제목</div>
+                      <div className="text-xs text-gray-400">설명</div>
+                    </div>
+                    <p className="text-xs font-medium">카드</p>
+                  </div>
+                </div>
+
+                <div
+                  className={`border-2 rounded-lg p-3 cursor-pointer transition-all ${
+                    selectedStyle === BACKGROUND 
+                      ? 'border-[#8B4513] bg-[#8B4513]/10' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={() => setSelectedStyle(BACKGROUND)}
+                >
+                  <div className="text-center">
+                    <div className="w-full h-12 bg-gradient-to-br from-gray-800 to-black rounded mb-2 flex items-center justify-center">
+                      <div className="text-xs text-white">제목</div>
+                    </div>
+                    <p className="text-xs font-medium">배경</p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">설명</label>
-              <Textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="링크에 대한 설명을 입력하세요"
-                rows={3}
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* 연결할 주소 */}
+              <div>
+                <label className="block text-sm font-medium mb-2">연결할 주소 *</label>
+                <Input
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="https://example.com"
+                  type="url"
+                  required
+                  className="w-full"
+                />
+              </div>
 
-            <div className="flex gap-2 pt-4 border-t">
-              <Button
-                type="submit"
-                className="flex-1"
-                disabled={addLinkMutation.isPending}
-              >
-                {addLinkMutation.isPending ? "추가 중..." : "링크 추가"}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  setShowAddForm(false);
-                  resetForm();
-                }}
-              >
-                취소
-              </Button>
-            </div>
-          </form>
+              {/* 타이틀 */}
+              <div>
+                <label className="block text-sm font-medium mb-2">타이틀 *</label>
+                <Input
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="링크 타이틀을 입력하세요"
+                  required
+                  className="w-full"
+                />
+              </div>
+
+              {/* 설명 */}
+              <div>
+                <label className="block text-sm font-medium mb-2">설명</label>
+                <Textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="링크에 대한 설명을 입력하세요"
+                  rows={3}
+                  className="w-full"
+                />
+              </div>
+
+              {/* 이미지 */}
+              <div>
+                <label className="block text-sm font-medium mb-2">이미지</label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setImageFile(file);
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                          setSelectedImage(e.target?.result as string);
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="hidden"
+                  />
+                  {selectedImage ? (
+                    <div className="relative">
+                      <img src={selectedImage} alt="Selected" className="max-h-32 mx-auto rounded" />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        className="mt-2"
+                        onClick={() => {
+                          setSelectedImage(null);
+                          setImageFile(null);
+                          if (fileInputRef.current) {
+                            fileInputRef.current.value = '';
+                          }
+                        }}
+                      >
+                        이미지 제거
+                      </Button>
+                    </div>
+                  ) : (
+                    <div>
+                      <Plus className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <div className="text-sm text-gray-600 mb-1">이미지를 업로드해주세요</div>
+                      <div className="text-xs text-gray-400 mb-3">비율 권장사항: 16:9</div>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        이미지 URL
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Custom Image URL Input */}
+                <div className="mt-3">
+                  <Input
+                    value={customImageUrl}
+                    onChange={(e) => setCustomImageUrl(e.target.value)}
+                    placeholder="https://example.com/image.jpg"
+                    className="w-full"
+                  />
+                </div>
+              </div>
+
+              {/* Submit Buttons */}
+              <div className="flex gap-3 pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    resetForm();
+                  }}
+                >
+                  취소
+                </Button>
+                <Button
+                  type="submit"
+                  className="flex-1 bg-[#8B4513] hover:bg-[#8B4513]/90 text-white"
+                  disabled={addLinkMutation.isPending}
+                >
+                  {addLinkMutation.isPending ? "추가 중..." : "완료"}
+                </Button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     );
@@ -461,7 +702,140 @@ export default function LinksPage() {
                             </div>
                           )}
                           
-                          {/* Other styles can be added here */}
+                          {/* Card Style - 개선된 디자인 */}
+                          {link.style === 'card' && (
+                            <div className="bg-white shadow-lg rounded-xl border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                              <div className="relative cursor-pointer group">
+                                {/* 텍스트 정보 섹션 */}
+                                <div 
+                                  className="p-6 cursor-pointer"
+                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                >
+                                  {/* 액션 버튼들 */}
+                                  <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button 
+                                      className="bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                                        toast({ title: "단축링크가 복사되었습니다!" });
+                                      }}
+                                    >
+                                      <Copy className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                    <button 
+                                      className="bg-red-500/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteLinkMutation.mutate(link.id);
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-white" />
+                                    </button>
+                                  </div>
+                                  
+                                  <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 leading-tight">
+                                    {link.title}
+                                  </h3>
+                                  {link.description && (
+                                    <p className="text-sm text-gray-600 mb-4 line-clamp-3 leading-relaxed">
+                                      {link.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* 단축링크 */}
+                                  <div 
+                                    className="inline-block bg-blue-50 px-3 py-2 rounded-lg mb-4 cursor-pointer hover:bg-blue-100 transition-colors"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`/l/${link.shortCode}`, '_blank');
+                                    }}
+                                  >
+                                    <div className="text-xs text-blue-600 font-medium">
+                                      amusefit.co.kr/l/{link.shortCode}
+                                    </div>
+                                  </div>
+                                  
+                                  {/* 통계 정보 */}
+                                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                                    <div className="flex items-center space-x-4 text-xs text-gray-500">
+                                      <div className="flex items-center space-x-1">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>{link.clicks || 0}</span>
+                                      </div>
+                                      <LinkStatsDisplay linkId={link.id} />
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Background Style - 브랜드 컬러 Background */}
+                          {link.style === 'background' && (
+                            <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2">
+                              <div className="relative cursor-pointer group">
+                                <div 
+                                  className="p-6 cursor-pointer text-white"
+                                  onClick={() => window.open(link.originalUrl, '_blank')}
+                                >
+                                  {/* 액션 버튼들 */}
+                                  <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                    <button 
+                                      className="bg-white/20 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-white/30 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                                        toast({ title: "단축링크가 복사되었습니다!" });
+                                      }}
+                                    >
+                                      <Copy className="w-4 h-4 text-white" />
+                                    </button>
+                                    <button 
+                                      className="bg-red-500/80 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        deleteLinkMutation.mutate(link.id);
+                                      }}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-white" />
+                                    </button>
+                                  </div>
+                                  
+                                  <h3 className="text-xl font-bold text-white mb-3 line-clamp-2 leading-tight">
+                                    {link.title}
+                                  </h3>
+                                  {link.description && (
+                                    <p className="text-sm text-white/80 mb-4 line-clamp-2 leading-relaxed">
+                                      {link.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* 단축링크 */}
+                                  <div 
+                                    className="inline-block bg-white/10 backdrop-blur-sm rounded-lg px-3 py-2 mb-4"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(`/l/${link.shortCode}`, '_blank');
+                                    }}
+                                  >
+                                    <div className="text-xs text-white/90 font-medium truncate cursor-pointer hover:text-white transition-colors">
+                                      amusefit.co.kr/l/{link.shortCode}
+                                    </div>
+                                    <div className="flex items-center space-x-3 text-xs text-white/70 mt-2">
+                                      <div className="flex items-center space-x-1">
+                                        <TrendingUp className="w-3 h-3" />
+                                        <span>{link.clicks || 0}</span>
+                                      </div>
+                                      <div className="text-white/60">
+                                        <LinkStatsDisplay linkId={link.id} />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
