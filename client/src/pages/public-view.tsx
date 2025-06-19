@@ -313,6 +313,14 @@ export default function PublicViewPage() {
     }
   }, [settings?.contentType, localContentType]);
 
+  // Check if current content type has any data
+  const hasCurrentContent = () => {
+    if (contentType === "links") return links && links.length > 0;
+    if (contentType === "image") return images && images.length > 0;
+    if (contentType === "video") return allVideos && allVideos.length > 0;
+    return false;
+  };
+
   // Debug current state
   useEffect(() => {
     console.log("Content type state:", {
@@ -321,7 +329,8 @@ export default function PublicViewPage() {
       effectiveContentType: contentType,
       hasLinks: links?.length > 0,
       hasImages: images?.length > 0,
-      hasVideos: allVideos?.length > 0
+      hasVideos: allVideos?.length > 0,
+      hasCurrentContent: hasCurrentContent()
     });
   }, [localContentType, settings?.contentType, contentType, links, images, allVideos]);
 
@@ -1661,7 +1670,7 @@ export default function PublicViewPage() {
             {/* Profile overlay removed - will only show in bottom section */}
 
             {/* Profile Details Panel - Image View */}
-            {showImageProfileDetails && contentType === "image" && (
+            {showImageProfileDetails && contentType === "image" && hasCurrentContent() && (
               <div
                 className="fixed inset-0 z-[100] flex items-end"
                 onClick={() => setShowImageProfileDetails(false)}
@@ -1825,7 +1834,7 @@ export default function PublicViewPage() {
             )}
 
             {/* Profile Details Panel - Video View */}
-            {showVideoProfileDetails && contentType === "video" && (
+            {showVideoProfileDetails && contentType === "video" && hasCurrentContent() && (
               <div
                 className="fixed inset-0 z-[100] flex items-end"
                 onClick={() => setShowVideoProfileDetails(false)}
@@ -1962,7 +1971,7 @@ export default function PublicViewPage() {
         )}
 
         {/* Profile Section - Image View */}
-        {contentType === "image" && (
+        {contentType === "image" && hasCurrentContent() && (
           <div
             className={`fixed bottom-40 left-1/2 transform -translate-x-1/2 w-full max-w-md z-50 transition-all duration-300 ease-in-out ${
               showImageProfileDetails
@@ -2042,7 +2051,7 @@ export default function PublicViewPage() {
         )}
 
         {/* Profile Section - Video View */}
-        {contentType === "video" && (
+        {contentType === "video" && hasCurrentContent() && (
           <div
             className={`fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md z-[999] transition-all duration-300 ease-in-out ${
               showVideoProfileDetails
@@ -2140,7 +2149,7 @@ export default function PublicViewPage() {
         )}
 
         {/* Video Profile Details Modal */}
-        {showVideoProfileDetails && (
+        {showVideoProfileDetails && hasCurrentContent() && (
           <div
             className="fixed inset-0 z-[1000] overflow-hidden"
             onClick={() => setShowVideoProfileDetails(false)}
