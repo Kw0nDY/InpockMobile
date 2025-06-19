@@ -182,12 +182,6 @@ button:hover path,
 }
 
 /* Comprehensive icon hover styles for all interactive elements */
-button:hover svg,
-button:hover path,
-.btn:hover svg,
-.btn:hover path,
-.button:hover svg,
-.button:hover path,
 nav button:hover svg,
 nav button:hover path,
 .nav-button:hover svg,
@@ -196,45 +190,54 @@ nav button:hover path,
 .settings-item:hover path,
 .interactive-icon:hover svg,
 .interactive-icon:hover path,
-a:hover svg,
-a:hover path,
-[data-testid]:hover svg,
-[data-testid]:hover path,
-.cursor-pointer:hover svg,
-.cursor-pointer:hover path,
-.hover\:bg-gray-100:hover svg,
-.hover\:bg-gray-100:hover path,
-.hover\:bg-gray-200:hover svg,
-.hover\:bg-gray-200:hover path,
-.hover\:bg-white:hover svg,
-.hover\:bg-white:hover path,
 .hover\:bg-sidebar-accent:hover svg,
 .hover\:bg-sidebar-accent:hover path,
 .hover\:text-sidebar-accent-foreground:hover svg,
 .hover\:text-sidebar-accent-foreground:hover path,
 .hover\:text-foreground:hover svg,
-.hover\:text-foreground:hover path,
-.hover\:text-gray-600:hover svg,
-.hover\:text-gray-600:hover path {
+.hover\:text-foreground:hover path {
   color: white !important;
   fill: white !important;
   stroke: white !important;
 }
 
-/* Specific overrides for cards and interactive areas */
-.group:hover svg,
-.group:hover path,
-.card:hover svg,
-.card:hover path,
-.bg-white:hover svg,
-.bg-white:hover path,
-.shadow-md:hover svg,
-.shadow-md:hover path,
-.rounded-full:hover svg,
-.rounded-full:hover path {
+/* Exclude copy buttons and white background buttons from white icon hover */
+button:hover svg:not(.copy-icon):not(.text-gray-600),
+button:hover path:not(.copy-icon):not(.text-gray-600),
+.btn:hover svg:not(.copy-icon):not(.text-gray-600),
+.btn:hover path:not(.copy-icon):not(.text-gray-600),
+.button:hover svg:not(.copy-icon):not(.text-gray-600),
+.button:hover path:not(.copy-icon):not(.text-gray-600) {
   color: white !important;
   fill: white !important;
   stroke: white !important;
+}
+
+/* Preserve original colors for copy buttons and action buttons with white/light backgrounds */
+button.bg-white\/90:hover svg,
+button.bg-white\/90:hover path,
+button.backdrop-blur-sm:hover svg,
+button.backdrop-blur-sm:hover path,
+button.rounded-full.bg-white\/90:hover svg,
+button.rounded-full.bg-white\/90:hover path,
+.bg-white\/90.backdrop-blur-sm:hover svg,
+.bg-white\/90.backdrop-blur-sm:hover path,
+.rounded-full.bg-white\/90.backdrop-blur-sm:hover svg,
+.rounded-full.bg-white\/90.backdrop-blur-sm:hover path,
+.text-gray-600,
+svg.text-gray-600,
+path.text-gray-600 {
+  color: #4B5563 !important;
+  fill: #4B5563 !important;
+  stroke: #4B5563 !important;
+}
+
+/* Ensure copy icons maintain their gray color */
+.copy-icon,
+.copy-icon:hover {
+  color: #4B5563 !important;
+  fill: #4B5563 !important;
+  stroke: #4B5563 !important;
 }
 
 /* Mobile responsive styles */

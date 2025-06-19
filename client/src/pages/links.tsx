@@ -816,7 +816,7 @@ export default function LinksPage() {
                                         toast({ title: "단축링크가 복사되었습니다!" });
                                       }}
                                     >
-                                      <Copy className="w-4 h-4 text-gray-600" />
+                                      <Copy className="w-4 h-4 text-gray-600 copy-icon" />
                                     </button>
                                     <button 
                                       className="bg-red-500/90 backdrop-blur-sm rounded-full p-2 shadow-lg hover:bg-red-500 transition-colors"
