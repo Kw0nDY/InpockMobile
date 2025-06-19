@@ -170,33 +170,30 @@ export default function LinksPage() {
             </div>
           </div>
 
-          {/* 카테고리/폴더 선택 */}
+          {/* 링크 카테고리 선택 */}
           <div className="mb-6">
-            <div className="flex rounded-xl p-1" style={{ backgroundColor: '#EFE5DC' }}>
-              <button 
-                type="button"
-                className="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200"
+            <label className="block text-sm font-semibold mb-3" style={{ color: '#4E342E' }}>
+              페이지 유형
+            </label>
+            <div className="space-y-2">
+              <div 
+                className="flex items-center justify-between p-3 rounded-xl border-2 cursor-pointer transition-all duration-200"
                 style={{ 
-                  backgroundColor: '#4E342E',
-                  color: '#F5F5DC'
+                  backgroundColor: 'rgba(239, 229, 220, 0.8)',
+                  borderColor: '#4E342E'
                 }}
               >
-                기본
-              </button>
-              <button 
-                type="button"
-                className="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/20"
-                style={{ color: '#8D6E63' }}
-              >
-                운동
-              </button>
-              <button 
-                type="button"
-                className="flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-white/20"
-                style={{ color: '#8D6E63' }}
-              >
-                영양
-              </button>
+                <span className="font-medium" style={{ color: '#4E342E' }}>링크</span>
+                <div 
+                  className="px-2 py-1 rounded-full text-xs font-medium"
+                  style={{ 
+                    backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                    color: '#4E342E'
+                  }}
+                >
+                  선택됨
+                </div>
+              </div>
             </div>
           </div>
 
@@ -551,77 +548,62 @@ export default function LinksPage() {
                 ))}
               </div>
             ) : links && links.length > 0 ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {links.map((link: any) => (
                   <div 
                     key={link.id} 
-                    className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 relative"
+                    className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
                     style={{ 
                       backgroundColor: 'rgba(239, 229, 220, 0.6)',
                       backdropFilter: 'blur(10px)',
                       borderColor: 'rgba(141, 110, 99, 0.3)'
                     }}
                   >
-                    {/* 방문수 뱃지 */}
-                    <div 
-                      className="absolute top-3 right-3 px-2 py-1 rounded-full text-xs font-medium"
-                      style={{ 
-                        backgroundColor: 'rgba(215, 204, 200, 0.8)',
-                        color: '#4E342E'
-                      }}
-                    >
-                      0회 방문
-                    </div>
-
-                    <div className="pr-16">
-                      <h3 className="font-bold text-lg mb-2" style={{ color: '#4E342E' }}>
-                        {link.title}
-                      </h3>
-                      <div className="text-sm mb-3" style={{ color: '#8D6E63' }}>
-                        amusefit.co.kr/l/{link.shortCode}
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
+                          {link.title}
+                        </h3>
+                        <div className="text-sm mb-2" style={{ color: '#8D6E63' }}>
+                          /{link.shortCode}
+                        </div>
                       </div>
-                      {link.description && (
-                        <p className="text-sm mb-3" style={{ color: '#A1887F' }}>
-                          {link.description}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* 하단 액션 버튼들 */}
-                    <div className="flex gap-2 mt-4 pt-3 border-t" style={{ borderColor: 'rgba(141, 110, 99, 0.2)' }}>
-                      <button 
-                        onClick={() => {
-                          navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
-                          toast({ title: "링크가 복사되었습니다!" });
-                        }}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium"
-                        style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)', color: '#4E342E' }}
-                      >
-                        <Copy className="w-4 h-4" />
-                        복사
-                      </button>
-                      <button 
-                        onClick={() => window.open(`${window.location.origin}/l/${link.shortCode}`, '_blank')}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg hover:shadow-md transition-all duration-200 text-sm font-medium"
-                        style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)', color: '#4E342E' }}
-                      >
-                        <ExternalLink className="w-4 h-4" />
-                        열기
-                      </button>
+                      
+                      {/* 방문수 뱃지와 복사 아이콘 */}
+                      <div className="flex items-center gap-2">
+                        <div 
+                          className="px-3 py-1 rounded-full text-xs font-medium"
+                          style={{ 
+                            backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                            color: '#4E342E'
+                          }}
+                        >
+                          0회 방문
+                        </div>
+                        <button 
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                            toast({ title: "링크가 복사되었습니다!" });
+                          }}
+                          className="p-2 rounded-lg hover:shadow-md transition-all duration-200"
+                          style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)' }}
+                        >
+                          <ExternalLink className="w-4 h-4" style={{ color: '#4E342E' }} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
 
                 {/* 전체 분석 보기 버튼 */}
                 <div 
-                  className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 text-center cursor-pointer"
+                  className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 text-center cursor-pointer mt-4"
                   style={{ 
                     backgroundColor: 'rgba(239, 229, 220, 0.4)',
                     backdropFilter: 'blur(10px)',
                     borderColor: 'rgba(141, 110, 99, 0.3)'
                   }}
                   onClick={() => {
-                    // Navigate to analytics page
                     window.location.href = '/analytics';
                   }}
                 >
