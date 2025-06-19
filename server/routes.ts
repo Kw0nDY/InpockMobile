@@ -15,7 +15,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  username: z.string().min(1),
   password: z.string().min(1),
 });
 
@@ -76,27 +76,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log("Login attempt:", {
         body: req.body,
-        hasEmail: !!req.body?.email,
+        hasUsername: !!req.body?.username,
         hasPassword: !!req.body?.password,
       });
 
-      const { email, password } = loginSchema.parse(req.body);
-      console.log("Schema validation passed for email:", email);
+      const { username, password } = loginSchema.parse(req.body);
+      console.log("Schema validation passed for username:", username);
 
-      let user = await storage.getUserByEmail(email);
-      console.log("User lookup result:", { found: !!user, email });
+      let user = await storage.getUserByUsername(username);
+      console.log("User lookup result:", { found: !!user, username });
 
       if (!user) {
-        console.log("User not found for email:", email);
+        console.log("User not found for username:", username);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
       if (user.password !== password) {
-        console.log("Password mismatch for user:", email);
+        console.log("Password mismatch for user:", username);
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      console.log("Login successful for user:", email);
+      console.log("Login successful for user:", username);
 
       // Create session (simplified)
       res.json({

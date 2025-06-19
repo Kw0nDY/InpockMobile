@@ -17,7 +17,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  login: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
   isLoading: boolean;
@@ -73,8 +73,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const loginMutation = useMutation({
-    mutationFn: async ({ email, password, rememberMe }: { email: string; password: string; rememberMe?: boolean }) => {
-      const response = await apiRequest("POST", "/api/auth/login", { email, password });
+    mutationFn: async ({ username, password, rememberMe }: { username: string; password: string; rememberMe?: boolean }) => {
+      const response = await apiRequest("POST", "/api/auth/login", { username, password });
       const data = await response.json();
       return { data, rememberMe };
     },
@@ -84,8 +84,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
-  const login = async (email: string, password: string, rememberMe?: boolean) => {
-    await loginMutation.mutateAsync({ email, password, rememberMe });
+  const login = async (username: string, password: string, rememberMe?: boolean) => {
+    await loginMutation.mutateAsync({ username, password, rememberMe });
   };
 
   const logout = () => {

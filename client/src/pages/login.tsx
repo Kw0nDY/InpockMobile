@@ -13,7 +13,7 @@ export default function LoginPage() {
   const [, setLocation] = useLocation();
   const { login } = useAuth();
   const { toast } = useToast();
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,7 +23,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(email, password, rememberMe);
+      await login(username, password, rememberMe);
       toast({
         title: "로그인 성공",
         description: rememberMe 
@@ -34,7 +34,7 @@ export default function LoginPage() {
     } catch (error) {
       toast({
         title: "로그인 실패",
-        description: "이메일 또는 비밀번호를 확인해주세요.",
+        description: "닉네임 또는 비밀번호를 확인해주세요.",
         variant: "destructive",
       });
     } finally {
@@ -66,16 +66,16 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6">
           <div>
-            <Label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-700">
-              이메일
+            <Label htmlFor="username" className="block text-sm font-medium mb-2 text-gray-700">
+              닉네임
             </Label>
             <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="username"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
-              placeholder="example@company.com"
+              placeholder="트레이너닉네임"
               required
             />
           </div>
