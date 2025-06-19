@@ -23,10 +23,12 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      await login(email, password, rememberMe);
       toast({
         title: "로그인 성공",
-        description: "AmuseFit에 오신 것을 환영합니다!",
+        description: rememberMe 
+          ? "AmuseFit에 오신 것을 환영합니다! 로그인 상태가 유지됩니다."
+          : "AmuseFit에 오신 것을 환영합니다!",
       });
       setLocation("/dashboard");
     } catch (error) {

@@ -17,7 +17,7 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => void;
   setUser: (user: User | null) => void;
   isLoading: boolean;
@@ -28,49 +28,69 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   
-  // Initialize with demo user for development
+  // Initialize user from storage
   useEffect(() => {
-    // Set up demo user automatically
-    const demoUser: User = {
-      id: 1,
-      username: 'demo_user',
-      email: 'demo@amusefit.com',
-      name: '김철수',
-      role: 'user',
-      bio: '',
-      profileImageUrl: '',
-      introVideoUrl: '',
-      visitCount: 0
-    };
-    setUser(demoUser);
+    const savedUser = localStorage.getItem('auth_user');
+    const rememberMe = localStorage.getItem('auth_remember_me') === 'true';
+    const sessionUser = sessionStorage.getItem('auth_user_session');
+    
+    if (savedUser && rememberMe) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing saved user:', error);
+        localStorage.removeItem('auth_user');
+        localStorage.removeItem('auth_remember_me');
+      }
+    } else if (sessionUser) {
+      try {
+        const parsedUser = JSON.parse(sessionUser);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error('Error parsing session user:', error);
+        sessionStorage.removeItem('auth_user_session');
+      }
+    }
   }, []);
 
-  // Save user to localStorage whenever user state changes
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('auth_user', JSON.stringify(user));
-    } else {
+  // Save user to localStorage when remember me is enabled
+  const saveUserToStorage = (userData: User | null, remember: boolean = false) => {
+    if (userData && remember) {
+      localStorage.setItem('auth_user', JSON.stringify(userData));
+      localStorage.setItem('auth_remember_me', 'true');
+    } else if (userData && !remember) {
+      // Store user for session only (will be cleared on browser close)
+      sessionStorage.setItem('auth_user_session', JSON.stringify(userData));
       localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_remember_me');
+    } else {
+      // Clear all stored data on logout
+      localStorage.removeItem('auth_user');
+      localStorage.removeItem('auth_remember_me');
+      sessionStorage.removeItem('auth_user_session');
     }
-  }, [user]);
+  };
 
   const loginMutation = useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
+    mutationFn: async ({ email, password, rememberMe }: { email: string; password: string; rememberMe?: boolean }) => {
       const response = await apiRequest("POST", "/api/auth/login", { email, password });
-      return response.json();
+      const data = await response.json();
+      return { data, rememberMe };
     },
-    onSuccess: (data) => {
+    onSuccess: ({ data, rememberMe }) => {
       setUser(data.user);
+      saveUserToStorage(data.user, rememberMe || false);
     },
   });
 
-  const login = async (email: string, password: string) => {
-    await loginMutation.mutateAsync({ email, password });
+  const login = async (email: string, password: string, rememberMe?: boolean) => {
+    await loginMutation.mutateAsync({ email, password, rememberMe });
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('auth_user');
+    saveUserToStorage(null, false);
   };
 
   return (
