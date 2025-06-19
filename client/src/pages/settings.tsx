@@ -573,9 +573,9 @@ export default function SettingsPage() {
               variant="ghost"
               size="sm"
               onClick={() => setLocation('/dashboard')}
-              className="text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-white"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-5 h-5 hover:text-white" />
             </Button>
             <h1 className="text-lg font-semibold text-foreground">프로필 설정</h1>
           </div>
@@ -620,12 +620,12 @@ export default function SettingsPage() {
                       size="sm"
                       onClick={handleProfileImageUpload}
                       disabled={isUploadingProfile}
-                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-border text-muted-foreground hover:text-foreground disabled:opacity-50"
+                      className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-card border-2 border-border text-muted-foreground hover:text-white disabled:opacity-50"
                     >
                       {isUploadingProfile ? (
                         <div className="w-4 h-4 border-2 border-muted-foreground border-t-transparent rounded-full animate-spin" />
                       ) : (
-                        <Camera className="w-4 h-4" />
+                        <Camera className="w-4 h-4 hover:text-white" />
                       )}
                     </Button>
                     {(userData as any)?.profileImageUrl && (

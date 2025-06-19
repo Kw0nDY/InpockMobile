@@ -169,6 +169,74 @@ form[data-form-type="other"] {
   }
 }
 
+/* Icon hover styles - white color on hover */
+.icon-hover:hover svg,
+.icon-hover:hover path,
+button:hover svg,
+button:hover path,
+[role="button"]:hover svg,
+[role="button"]:hover path {
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
+/* Comprehensive icon hover styles for all interactive elements */
+button:hover svg,
+button:hover path,
+.btn:hover svg,
+.btn:hover path,
+.button:hover svg,
+.button:hover path,
+nav button:hover svg,
+nav button:hover path,
+.nav-button:hover svg,
+.nav-button:hover path,
+.settings-item:hover svg,
+.settings-item:hover path,
+.interactive-icon:hover svg,
+.interactive-icon:hover path,
+a:hover svg,
+a:hover path,
+[data-testid]:hover svg,
+[data-testid]:hover path,
+.cursor-pointer:hover svg,
+.cursor-pointer:hover path,
+.hover\:bg-gray-100:hover svg,
+.hover\:bg-gray-100:hover path,
+.hover\:bg-gray-200:hover svg,
+.hover\:bg-gray-200:hover path,
+.hover\:bg-white:hover svg,
+.hover\:bg-white:hover path,
+.hover\:bg-sidebar-accent:hover svg,
+.hover\:bg-sidebar-accent:hover path,
+.hover\:text-sidebar-accent-foreground:hover svg,
+.hover\:text-sidebar-accent-foreground:hover path,
+.hover\:text-foreground:hover svg,
+.hover\:text-foreground:hover path,
+.hover\:text-gray-600:hover svg,
+.hover\:text-gray-600:hover path {
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
+/* Specific overrides for cards and interactive areas */
+.group:hover svg,
+.group:hover path,
+.card:hover svg,
+.card:hover path,
+.bg-white:hover svg,
+.bg-white:hover path,
+.shadow-md:hover svg,
+.shadow-md:hover path,
+.rounded-full:hover svg,
+.rounded-full:hover path {
+  color: white !important;
+  fill: white !important;
+  stroke: white !important;
+}
+
 /* Mobile responsive styles */
 @media screen and (max-width: 480px) {
   html {
