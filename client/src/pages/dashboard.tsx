@@ -4,66 +4,47 @@ import { useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Image, Video, Link, User, Settings, ExternalLink } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function DashboardPage() {
   const [, setLocation] = useLocation();
   const [currentContentType, setCurrentContentType] = useState<'image' | 'video' | 'link'>('image');
+  const { user } = useAuth();
 
   // Fetch user data
   const { data: userData, isLoading: userLoading } = useQuery({
-    queryKey: ['/api/auth/user'],
-    retry: false,
+    queryKey: [`/api/user/${user?.id}`],
+    enabled: !!user?.id,
   });
 
   // Fetch content data
   const { data: images, isLoading: imagesLoading } = useQuery({
-    queryKey: ['/api/media', 'image'],
-    enabled: !!userData,
+    queryKey: [`/api/media/${user?.id}/image`],
+    enabled: !!user?.id,
   });
 
   const { data: videos, isLoading: videosLoading } = useQuery({
-    queryKey: ['/api/media', 'video'],
-    enabled: !!userData,
+    queryKey: [`/api/media/${user?.id}/video`],
+    enabled: !!user?.id,
   });
 
   const { data: linksData, isLoading: linksLoading } = useQuery({
-    queryKey: ['/api/links'],
-    enabled: !!userData,
+    queryKey: [`/api/links/${user?.id}`],
+    enabled: !!user?.id,
   });
 
   const { data: settingsData } = useQuery({
-    queryKey: ['/api/settings'],
-    enabled: !!userData,
+    queryKey: [`/api/settings/${user?.id}`],
+    enabled: !!user?.id,
   });
 
-  if (userLoading) {
+  if (userLoading || !user) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
           <p className="mt-4 text-muted-foreground">로딩 중...</p>
         </div>
-      </div>
-    );
-  }
-
-  if (!userData) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <User className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-              <h2 className="text-xl font-semibold mb-2">로그인이 필요합니다</h2>
-              <p className="text-muted-foreground mb-4">
-                대시보드에 접근하려면 로그인해야 합니다.
-              </p>
-              <Button onClick={() => setLocation('/login')} className="w-full">
-                로그인하기
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     );
   }
