@@ -43,16 +43,28 @@ export default function SignupStep2() {
 
   const signupMutation = useMutation({
     mutationFn: async (data: SignupForm) => {
-      const response = await apiRequest("POST", "/api/auth/signup", {
+      console.log("Attempting signup with data:", {
         username: data.username,
         email: data.email,
-        password: data.password,
         name: data.name,
         phone: data.phone,
         company: data.company,
         role: data.role
       });
-      return response.json();
+      
+      const response = await apiRequest("POST", "/api/auth/signup", {
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        name: data.name,
+        phone: data.phone || "",
+        company: data.company || "",
+        role: data.role
+      });
+      
+      const result = await response.json();
+      console.log("Signup response:", result);
+      return result;
     },
     onSuccess: () => {
       toast({

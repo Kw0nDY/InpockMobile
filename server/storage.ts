@@ -551,9 +551,6 @@ export class MemStorage implements IStorage {
   }
 }
 
-import { db } from "./db";
-import { eq, desc, and, gte, sql } from "drizzle-orm";
-
 export class DatabaseStorage implements IStorage {
   // Users
   async getUser(id: number): Promise<User | undefined> {
