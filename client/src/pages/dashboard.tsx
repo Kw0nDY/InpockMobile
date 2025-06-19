@@ -494,127 +494,333 @@ export default function DashboardPage() {
 
                 {/* Links Content - Display with actual configured styles */}
                 {currentContentType === 'links' && (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {linksData && Array.isArray(linksData) && linksData.length > 0 ? (
                       linksData.map((link: any) => (
                         <div key={link.id}>
-                          {/* Thumbnail Style */}
+                          {/* Thumbnail Style - 개선된 디자인 */}
                           {link.style === 'thumbnail' && (
                             <div 
-                              className="flex items-center gap-3 p-3 bg-white rounded-lg border relative cursor-pointer hover:bg-gray-50 transition-colors"
-                              onClick={() => window.open(link.originalUrl, '_blank')}
+                              className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
                             >
-                              {(link.customImageUrl || link.imageUrl) ? (
-                                <img 
-                                  src={link.customImageUrl || link.imageUrl} 
-                                  alt={link.title}
-                                  className="w-12 h-12 rounded object-cover flex-shrink-0"
-                                />
-                              ) : (
-                                <div className="w-12 h-12 bg-gray-300 rounded flex-shrink-0"></div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-gray-800 truncate hover:text-[#A0825C]">
-                                  {link.title}
+                              <div className="flex items-start gap-4 p-4">
+                                {/* 썸네일 이미지 */}
+                                <div className="relative flex-shrink-0">
+                                  {(link.customImageUrl || link.imageUrl) ? (
+                                    <img 
+                                      src={link.customImageUrl || link.imageUrl} 
+                                      alt={link.title}
+                                      className="w-16 h-16 rounded-lg object-cover ring-1 ring-gray-200"
+                                    />
+                                  ) : (
+                                    <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-gray-200 rounded-lg flex items-center justify-center ring-1 ring-gray-200">
+                                      <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                      </svg>
+                                    </div>
+                                  )}
                                 </div>
-                                {link.description && (
-                                  <div className="text-xs text-gray-600 mt-1 line-clamp-1">{link.description}</div>
-                                )}
-                                <div className="text-xs text-gray-500 mt-1">
-                                  단축 URL: {window.location.host}/{link.shortCode}
+
+                                {/* 콘텐츠 영역 */}
+                                <div className="flex-1 min-w-0">
+                                  {/* 제목 */}
+                                  <h3 className="font-semibold text-gray-900 text-sm truncate mb-1 group-hover:text-primary transition-colors">
+                                    {link.title}
+                                  </h3>
+                                  
+                                  {/* 설명 */}
+                                  {link.description && (
+                                    <p className="text-xs text-gray-600 line-clamp-2 mb-2 leading-relaxed">
+                                      {link.description}
+                                    </p>
+                                  )}
+                                  
+                                  {/* URL */}
+                                  <div className="flex items-center gap-1 mb-2">
+                                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    <span className="text-xs text-gray-500 truncate font-mono">
+                                      {window.location.host}/{link.shortCode}
+                                    </span>
+                                  </div>
+                                  
+                                  {/* 통계 */}
+                                  <div className="flex items-center gap-4 text-xs">
+                                    <div className="flex items-center gap-1 text-blue-600">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                      </svg>
+                                      <span>내 방문: {link.ownerVisits || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-green-600">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                      </svg>
+                                      <span>외부 방문: {link.externalVisits || 0}</span>
+                                    </div>
+                                  </div>
                                 </div>
-                                <div className="text-xs text-blue-600 mt-1">
-                                  내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+
+                                {/* 액션 버튼 */}
+                                <div className="flex-shrink-0">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(link.originalUrl, '_blank');
+                                    }}
+                                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                    title="링크 열기"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                  </button>
                                 </div>
                               </div>
                             </div>
                           )}
                           
-                          {/* Simple Style */}
+                          {/* Simple Style - 개선된 디자인 */}
                           {link.style === 'simple' && (
-                            <div 
-                              className="bg-white rounded-lg border p-3 cursor-pointer hover:bg-gray-50 transition-colors" 
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
+                            <div className="group bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+                              {/* 이미지 영역 */}
                               {(link.customImageUrl || link.imageUrl) && (
-                                <img 
-                                  src={link.customImageUrl || link.imageUrl} 
-                                  alt={link.title}
-                                  className="w-full h-20 object-cover rounded mb-2"
-                                />
-                              )}
-                              <div className="text-sm font-medium text-gray-800 truncate mb-2 hover:text-[#A0825C]">{link.title}</div>
-                              {link.description && (
-                                <div className="text-xs text-gray-600 mb-2 line-clamp-2">{link.description}</div>
-                              )}
-                              <div className="text-xs text-gray-500 mb-1">
-                                단축 URL: {window.location.host}/{link.shortCode}
-                              </div>
-                              <div className="text-xs text-blue-600 mb-2">
-                                내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
-                              </div>
-                              <div className="w-full h-2 bg-gray-300 rounded"></div>
-                            </div>
-                          )}
-                          
-                          {/* Card Style */}
-                          {link.style === 'card' && (
-                            <div 
-                              className="bg-gray-400 rounded-lg h-32 flex flex-col justify-center p-3 relative cursor-pointer hover:bg-gray-500 transition-colors" 
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
-                              {(link.customImageUrl || link.imageUrl) && (
-                                <img 
-                                  src={link.customImageUrl || link.imageUrl} 
-                                  alt={link.title}
-                                  className="absolute inset-0 w-full h-full object-cover rounded-lg"
-                                />
-                              )}
-                              <div className="relative z-10 bg-black bg-opacity-50 text-white p-2 rounded">
-                                <div className="text-sm font-medium truncate">{link.title}</div>
-                                {link.description && (
-                                  <div className="text-xs opacity-90 mt-1 line-clamp-1">{link.description}</div>
-                                )}
-                                <div className="text-xs text-gray-300 mt-1">
-                                  단축 URL: {window.location.host}/{link.shortCode}
+                                <div className="relative">
+                                  <img 
+                                    src={link.customImageUrl || link.imageUrl} 
+                                    alt={link.title}
+                                    className="w-full h-32 object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                  
+                                  {/* 액션 버튼 - 이미지 위 */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(link.originalUrl, '_blank');
+                                    }}
+                                    className="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:text-gray-900 rounded-lg transition-all shadow-sm"
+                                    title="링크 열기"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                  </button>
                                 </div>
-                                <div className="text-xs text-blue-200 mt-1">
-                                  내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
-                                </div>
-                              </div>
-                              <div className="absolute bottom-2 right-2 w-6 h-6 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-                                <div className="w-3 h-3 border-2 border-white rounded-full"></div>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Background Style */}
-                          {link.style === 'background' && (
-                            <div 
-                              className="h-32 flex flex-col justify-center p-3 relative rounded-lg cursor-pointer hover:opacity-90 transition-opacity overflow-hidden" 
-                              style={{
-                                backgroundImage: (link.customImageUrl || link.imageUrl) 
-                                  ? `url(${link.customImageUrl || link.imageUrl})` 
-                                  : 'repeating-linear-gradient(45deg, #f5f5f5, #f5f5f5 10px, #e0e0e0 10px, #e0e0e0 20px)',
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                backgroundRepeat: 'no-repeat'
-                              }}
-                              onClick={() => window.open(link.originalUrl, '_blank')}
-                            >
-                              {/* Dark overlay for text readability */}
-                              <div className="absolute inset-0 bg-black bg-opacity-40 rounded-lg"></div>
+                              )}
                               
-                              <div className="relative z-10 text-white">
-                                <div className="text-sm font-medium truncate mb-2 drop-shadow-lg">{link.title}</div>
+                              {/* 콘텐츠 영역 */}
+                              <div className="p-4">
+                                {/* 제목 */}
+                                <h3 className="font-semibold text-gray-900 text-sm mb-2 group-hover:text-primary transition-colors line-clamp-1">
+                                  {link.title}
+                                </h3>
+                                
+                                {/* 설명 */}
                                 {link.description && (
-                                  <div className="text-xs text-gray-200 mb-2 line-clamp-1 drop-shadow-lg">{link.description}</div>
+                                  <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                                    {link.description}
+                                  </p>
                                 )}
-                                <div className="text-xs text-gray-300 drop-shadow-lg">
-                                  단축 URL: {window.location.host}/{link.shortCode}
+                                
+                                {/* URL */}
+                                <div className="flex items-center gap-1 mb-3 p-2 bg-gray-50 rounded-lg">
+                                  <svg className="w-3 h-3 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                  </svg>
+                                  <span className="text-xs text-gray-500 truncate font-mono">
+                                    {window.location.host}/{link.shortCode}
+                                  </span>
                                 </div>
-                                <div className="text-xs text-blue-200 drop-shadow-lg">
-                                  내 방문: {link.ownerVisits || 0} · 외부 방문: {link.externalVisits || 0}
+                                
+                                {/* 통계 */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3 text-xs">
+                                    <div className="flex items-center gap-1 text-blue-600">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                      </svg>
+                                      <span>{link.ownerVisits || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-green-600">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                      </svg>
+                                      <span>{link.externalVisits || 0}</span>
+                                    </div>
+                                  </div>
+                                  
+                                  {/* 이미지가 없을 때 액션 버튼 */}
+                                  {!(link.customImageUrl || link.imageUrl) && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        window.open(link.originalUrl, '_blank');
+                                      }}
+                                      className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                                      title="링크 열기"
+                                    >
+                                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                      </svg>
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Card Style - 개선된 디자인 */}
+                          {link.style === 'card' && (
+                            <div className="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden h-48">
+                              {/* 배경 이미지 */}
+                              <div className="absolute inset-0">
+                                {(link.customImageUrl || link.imageUrl) ? (
+                                  <img 
+                                    src={link.customImageUrl || link.imageUrl} 
+                                    alt={link.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="w-full h-full bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50"></div>
+                                )}
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                              </div>
+
+                              {/* 액션 버튼 - 우측 상단 */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(link.originalUrl, '_blank');
+                                }}
+                                className="absolute top-3 right-3 z-20 p-2 bg-white/90 backdrop-blur-sm text-gray-700 hover:bg-white hover:text-gray-900 rounded-full transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                                title="링크 열기"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </button>
+
+                              {/* 콘텐츠 영역 - 하단 */}
+                              <div className="absolute bottom-0 left-0 right-0 z-10 p-4">
+                                {/* 제목 */}
+                                <h3 className="font-bold text-white text-base mb-2 drop-shadow-lg line-clamp-2">
+                                  {link.title}
+                                </h3>
+                                
+                                {/* 설명 */}
+                                {link.description && (
+                                  <p className="text-sm text-gray-200 mb-3 line-clamp-2 drop-shadow-lg">
+                                    {link.description}
+                                  </p>
+                                )}
+                                
+                                {/* URL과 통계를 한 줄에 */}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-1 flex-1 min-w-0">
+                                    <svg className="w-3 h-3 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                    <span className="text-xs text-gray-300 truncate font-mono drop-shadow-lg">
+                                      {window.location.host}/{link.shortCode}
+                                    </span>
+                                  </div>
+                                  
+                                  {/* 통계 */}
+                                  <div className="flex items-center gap-3 text-xs ml-3">
+                                    <div className="flex items-center gap-1 text-blue-200">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                      </svg>
+                                      <span className="drop-shadow-lg">{link.ownerVisits || 0}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1 text-green-200">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                      </svg>
+                                      <span className="drop-shadow-lg">{link.externalVisits || 0}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* Background Style - 개선된 디자인 */}
+                          {link.style === 'background' && (
+                            <div className="group relative bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden h-40">
+                              {/* 배경 이미지/패턴 */}
+                              <div 
+                                className="absolute inset-0"
+                                style={{
+                                  backgroundImage: (link.customImageUrl || link.imageUrl) 
+                                    ? `url(${link.customImageUrl || link.imageUrl})` 
+                                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                  backgroundSize: 'cover',
+                                  backgroundPosition: 'center',
+                                  backgroundRepeat: 'no-repeat'
+                                }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70"></div>
+                              </div>
+
+                              {/* 액션 버튼 - 우측 상단 */}
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  window.open(link.originalUrl, '_blank');
+                                }}
+                                className="absolute top-3 right-3 z-20 p-2 bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 rounded-full transition-all shadow-sm opacity-0 group-hover:opacity-100"
+                                title="링크 열기"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                              </button>
+
+                              {/* 콘텐츠 영역 - 전체 가운데 */}
+                              <div className="absolute inset-0 flex flex-col justify-center z-10 p-4 text-center">
+                                {/* 제목 */}
+                                <h3 className="font-bold text-white text-lg mb-2 drop-shadow-xl line-clamp-2">
+                                  {link.title}
+                                </h3>
+                                
+                                {/* 설명 */}
+                                {link.description && (
+                                  <p className="text-sm text-gray-100 mb-4 line-clamp-2 drop-shadow-lg opacity-90">
+                                    {link.description}
+                                  </p>
+                                )}
+                                
+                                {/* URL - 가운데 정렬 */}
+                                <div className="flex items-center justify-center gap-1 mb-3 bg-black/30 backdrop-blur-sm rounded-full px-3 py-1 mx-auto">
+                                  <svg className="w-3 h-3 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                  </svg>
+                                  <span className="text-xs text-gray-200 font-mono drop-shadow-lg">
+                                    {window.location.host}/{link.shortCode}
+                                  </span>
+                                </div>
+                                
+                                {/* 통계 - 가운데 정렬 */}
+                                <div className="flex items-center justify-center gap-4 text-xs">
+                                  <div className="flex items-center gap-1 text-blue-200 bg-black/20 backdrop-blur-sm rounded-full px-2 py-1">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    <span className="drop-shadow-lg">{link.ownerVisits || 0}</span>
+                                  </div>
+                                  <div className="flex items-center gap-1 text-green-200 bg-black/20 backdrop-blur-sm rounded-full px-2 py-1">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                                    </svg>
+                                    <span className="drop-shadow-lg">{link.externalVisits || 0}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
