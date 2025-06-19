@@ -826,8 +826,15 @@ export class DatabaseStorage implements IStorage {
   async getActivities(userId: number): Promise<Activity[]> { return []; }
   async createActivity(activity: InsertActivity): Promise<Activity> { throw new Error("Not implemented"); }
 
-  async getSubscriptions(userId: number): Promise<Subscription[]> { return []; }
-  async createSubscription(subscription: InsertSubscription): Promise<Subscription> { throw new Error("Not implemented"); }
+  async getSubscriptions(userId: number): Promise<Subscription[]> {
+    const subscriptions = await db.select().from(subscription).where(eq(subscription.userId, userId));
+    return subscriptions;
+  }
+  
+  async createSubscription(subscriptionData: InsertSubscription): Promise<Subscription> {
+    const [newSubscription] = await db.insert(subscription).values(subscriptionData).returning();
+    return newSubscription;
+  }
 
   async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> { throw new Error("Not implemented"); }
   async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> { return undefined; }
