@@ -531,101 +531,184 @@ export default function LinksPage() {
             새 링크 추가
           </button>
 
-          {/* Links List */}
-          <div className="space-y-3">
-            {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="rounded-xl p-3 animate-pulse" style={{ backgroundColor: 'rgba(239, 229, 220, 0.4)', backdropFilter: 'blur(8px)' }}>
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
-                      <div className="flex-1">
-                        <div className="h-4 rounded w-3/4 mb-2" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
-                        <div className="h-3 rounded w-1/2" style={{ backgroundColor: 'rgba(215, 204, 200, 0.6)' }}></div>
-                      </div>
+          {/* 링크별 누적 방문 섹션 */}
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4" style={{ color: '#4E342E' }}>링크별 누적 방문</h3>
+            
+            <div className="space-y-3">
+              {/* 대시보드 링크 */}
+              <div 
+                className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
+                style={{ 
+                  backgroundColor: 'rgba(239, 229, 220, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  borderColor: 'rgba(141, 110, 99, 0.3)'
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
+                      대시보드
+                    </h4>
+                    <div className="text-sm" style={{ color: '#8D6E63' }}>
+                      /dashboard?utm_source=email
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : links && links.length > 0 ? (
-              <div className="space-y-3">
-                {links.map((link: any) => (
-                  <div 
-                    key={link.id} 
-                    className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
-                    style={{ 
-                      backgroundColor: 'rgba(239, 229, 220, 0.6)',
-                      backdropFilter: 'blur(10px)',
-                      borderColor: 'rgba(141, 110, 99, 0.3)'
-                    }}
-                  >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
-                          {link.title}
-                        </h3>
-                        <div className="text-sm mb-2" style={{ color: '#8D6E63' }}>
-                          /{link.shortCode}
-                        </div>
-                      </div>
-                      
-                      {/* 방문수 뱃지와 복사 아이콘 */}
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="px-3 py-1 rounded-full text-xs font-medium"
-                          style={{ 
-                            backgroundColor: 'rgba(215, 204, 200, 0.8)',
-                            color: '#4E342E'
-                          }}
-                        >
-                          0회 방문
-                        </div>
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
-                            toast({ title: "링크가 복사되었습니다!" });
-                          }}
-                          className="p-2 rounded-lg hover:shadow-md transition-all duration-200"
-                          style={{ backgroundColor: 'rgba(215, 204, 200, 0.7)', backdropFilter: 'blur(8px)' }}
-                        >
-                          <ExternalLink className="w-4 h-4" style={{ color: '#4E342E' }} />
-                        </button>
-                      </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="px-3 py-1 rounded-full text-xs font-medium"
+                      style={{ 
+                        backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                        color: '#4E342E'
+                      }}
+                    >
+                      0회 방문
                     </div>
-                  </div>
-                ))}
-
-                {/* 전체 분석 보기 버튼 */}
-                <div 
-                  className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 text-center cursor-pointer mt-4"
-                  style={{ 
-                    backgroundColor: 'rgba(239, 229, 220, 0.4)',
-                    backdropFilter: 'blur(10px)',
-                    borderColor: 'rgba(141, 110, 99, 0.3)'
-                  }}
-                  onClick={() => {
-                    window.location.href = '/analytics';
-                  }}
-                >
-                  <div className="flex items-center justify-center gap-2" style={{ color: '#4E342E' }}>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                    <span className="font-medium">전체 분석 보기</span>
+                    <button className="p-2 rounded-lg hover:shadow-md transition-all duration-200">
+                      <ExternalLink className="w-5 h-5" style={{ color: '#8D6E63' }} />
+                    </button>
                   </div>
                 </div>
               </div>
-            ) : (
-              <div className="text-center py-12">
-                <ExternalLink className="w-16 h-16 mx-auto mb-4" style={{ color: '#8D6E63' }} />
-                <p className="text-lg font-medium mb-2" style={{ color: '#4E342E' }}>
-                  아직 링크가 없습니다
-                </p>
-                <p className="text-sm" style={{ color: '#A1887F' }}>
-                  첫 번째 링크를 추가해보세요!
-                </p>
+
+              {/* 마켓플레이스 링크 */}
+              <div 
+                className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
+                style={{ 
+                  backgroundColor: 'rgba(239, 229, 220, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  borderColor: 'rgba(141, 110, 99, 0.3)'
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
+                      마켓플레이스
+                    </h4>
+                    <div className="text-sm" style={{ color: '#8D6E63' }}>
+                      /marketplace?category=deals
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="px-3 py-1 rounded-full text-xs font-medium"
+                      style={{ 
+                        backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                        color: '#4E342E'
+                      }}
+                    >
+                      0회 방문
+                    </div>
+                    <button className="p-2 rounded-lg hover:shadow-md transition-all duration-200">
+                      <ExternalLink className="w-5 h-5" style={{ color: '#8D6E63' }} />
+                    </button>
+                  </div>
+                </div>
               </div>
-            )}
+
+              {/* 링크 페이지 */}
+              <div 
+                className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
+                style={{ 
+                  backgroundColor: 'rgba(239, 229, 220, 0.6)',
+                  backdropFilter: 'blur(10px)',
+                  borderColor: 'rgba(141, 110, 99, 0.3)'
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
+                      링크
+                    </h4>
+                    <div className="text-sm" style={{ color: '#8D6E63' }}>
+                      /links?ref=social
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div 
+                      className="px-3 py-1 rounded-full text-xs font-medium"
+                      style={{ 
+                        backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                        color: '#4E342E'
+                      }}
+                    >
+                      0회 방문
+                    </div>
+                    <button className="p-2 rounded-lg hover:shadow-md transition-all duration-200">
+                      <ExternalLink className="w-5 h-5" style={{ color: '#8D6E63' }} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* 동적 링크들 표시 */}
+              {links && Array.isArray(links) && links.length > 0 && links.map((link: any) => (
+                <div 
+                  key={link.id}
+                  className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200"
+                  style={{ 
+                    backgroundColor: 'rgba(239, 229, 220, 0.6)',
+                    backdropFilter: 'blur(10px)',
+                    borderColor: 'rgba(141, 110, 99, 0.3)'
+                  }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg mb-1" style={{ color: '#4E342E' }}>
+                        {link.title}
+                      </h4>
+                      <div className="text-sm" style={{ color: '#8D6E63' }}>
+                        /{link.shortCode}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="px-3 py-1 rounded-full text-xs font-medium"
+                        style={{ 
+                          backgroundColor: 'rgba(215, 204, 200, 0.8)',
+                          color: '#4E342E'
+                        }}
+                      >
+                        0회 방문
+                      </div>
+                      <button 
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/l/${link.shortCode}`);
+                          toast({ title: "링크가 복사되었습니다!" });
+                        }}
+                        className="p-2 rounded-lg hover:shadow-md transition-all duration-200"
+                      >
+                        <ExternalLink className="w-5 h-5" style={{ color: '#8D6E63' }} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* 전체 분석 보기 버튼 */}
+              <div 
+                className="rounded-2xl p-4 border-2 shadow-sm hover:shadow-md transition-all duration-200 text-center cursor-pointer"
+                style={{ 
+                  backgroundColor: 'rgba(239, 229, 220, 0.4)',
+                  backdropFilter: 'blur(10px)',
+                  borderColor: 'rgba(141, 110, 99, 0.3)'
+                }}
+                onClick={() => {
+                  window.location.href = '/analytics';
+                }}
+              >
+                <div className="flex items-center justify-center gap-2" style={{ color: '#4E342E' }}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  <span className="font-medium">전체 분석 보기</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
