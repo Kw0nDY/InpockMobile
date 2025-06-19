@@ -266,6 +266,103 @@ export default function LinksPage() {
                 </div>
               )}
 
+              {/* 카드 미리보기 */}
+              {(title || url || description) && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">미리보기</label>
+                  <div className="border-2 border-dashed border-gray-200 rounded-2xl p-4 bg-gray-50">
+                    {/* Thumbnail Style Preview */}
+                    {selectedStyle === THUMBNAIL && (
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden">
+                        <div className="relative cursor-pointer group">
+                          {urlMetadata?.image && (
+                            <div className="w-full h-32 bg-gray-200 rounded-t-xl overflow-hidden">
+                              <img 
+                                src={urlMetadata.image} 
+                                alt="미리보기" 
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                          )}
+                          <div className="p-4">
+                            <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
+                              {title || "링크 제목"}
+                            </h3>
+                            {description && (
+                              <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                                {description}
+                              </p>
+                            )}
+                            <div className="text-xs text-blue-600 font-medium truncate">
+                              amusefit.co.kr/l/example
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Simple Style Preview */}
+                    {selectedStyle === SIMPLE && (
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden">
+                        <div className="p-4">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                              {description}
+                            </p>
+                          )}
+                          <div className="text-xs text-blue-600 font-medium truncate">
+                            amusefit.co.kr/l/example
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Card Style Preview */}
+                    {selectedStyle === CARD && (
+                      <div className="bg-white shadow-md rounded-xl border border-gray-100 overflow-hidden">
+                        <div className="p-4">
+                          <h3 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-xs text-gray-600 mb-2 line-clamp-2">
+                              {description}
+                            </p>
+                          )}
+                          <div className="text-xs text-blue-600 font-medium truncate">
+                            amusefit.co.kr/l/example
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Background Style Preview */}
+                    {selectedStyle === BACKGROUND && (
+                      <div className="bg-gradient-to-br from-gray-800 via-gray-900 to-black shadow-xl rounded-2xl overflow-hidden">
+                        <div className="p-4 text-white">
+                          <h3 className="text-sm font-bold text-white mb-1 line-clamp-2">
+                            {title || "링크 제목"}
+                          </h3>
+                          {description && (
+                            <p className="text-xs text-white/80 mb-2 line-clamp-2">
+                              {description}
+                            </p>
+                          )}
+                          <div className="inline-block bg-white/10 backdrop-blur-sm rounded-lg px-2 py-1">
+                            <div className="text-xs text-white/90 font-medium truncate">
+                              amusefit.co.kr/l/example
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               {/* 카드 스타일 선택 */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-4">카드 스타일</label>
