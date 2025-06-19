@@ -110,110 +110,165 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <section className="px-6 py-8 text-center">
-        <h2 className="text-2xl font-bold text-dark mb-2 korean-text">피트니스를 더 즐겁게</h2>
-        <h2 className="text-2xl font-bold text-primary mb-4 korean-text">AmuseFit과 함께</h2>
-        <p className="text-gray-600 text-sm mb-2 korean-text">전문 트레이너의 포트폴리오</p>
-        <p className="text-gray-600 text-sm mb-2 korean-text">콘텐츠 공유의 새로운 방식</p>
-        <p className="text-gray-600 text-sm mb-8 korean-text">전문성과 신뢰를 바탕으로 한 연결</p>
-
-        {/* Feature Card 1 - 포트폴리오 관리 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 max-w-sm mx-auto">
-          <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl">📱</span>
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">모바일 포트폴리오</p>
-            <p className="text-sm text-gray-600 mb-3 korean-text">영상, 이미지, 링크를 한곳에</p>
-            <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
-              시작하기
-            </Button>
+        <div className="mb-8">
+          <div className="w-24 h-24 bg-gradient-to-r from-pink-500 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+            <span className="text-white text-4xl">🏃‍♂️</span>
           </div>
         </div>
+        <h2 className="text-3xl font-bold text-dark mb-3 korean-text">피트니스 전문가를 위한</h2>
+        <h2 className="text-3xl font-bold text-primary mb-6 korean-text">올인원 플랫폼</h2>
+        <p className="text-gray-600 text-lg mb-3 korean-text">Instagram Reels 스타일의 콘텐츠 공유</p>
+        <p className="text-gray-600 text-lg mb-3 korean-text">전문성을 어필하는 개인 브랜딩</p>
+        <p className="text-gray-600 text-lg mb-12 korean-text">고객과의 직접적인 연결</p>
 
-        <div className="text-center mb-6">
-          <h3 className="font-bold text-dark mb-1 korean-text">전문 트레이너를 위한 플랫폼</h3>
-          <p className="text-sm text-gray-600 korean-text">9:16 모바일 최적화 콘텐츠 뷰어</p>
-          <p className="text-sm text-gray-600 korean-text">Instagram Reels, YouTube Shorts 스타일</p>
-        </div>
-
-        {/* Feature Card 2 - 콘텐츠 공유 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm mb-6 max-w-sm mx-auto">
-          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl">🎥</span>
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">몰입형 콘텐츠 뷰어</p>
-            <p className="text-sm text-gray-600 mb-3 korean-text">수직형 영상과 이미지 전용</p>
-            <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
-              체험하기
-            </Button>
-          </div>
-        </div>
-
-        <div className="text-center mb-6">
-          <h3 className="font-bold text-dark mb-1 korean-text">개인화된 프로필 페이지</h3>
-          <p className="text-sm text-gray-600 korean-text">트레이너 전용 포트폴리오 관리</p>
-          <p className="text-sm text-gray-600 korean-text">고객과의 직접적인 연결</p>
-        </div>
-
-        {/* Feature Card 3 - 프로필 관리 */}
-        <div className="bg-white rounded-2xl p-6 shadow-sm mb-8 max-w-sm mx-auto">
-          <div className="w-16 h-16 bg-gradient-to-r from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-white text-2xl">👤</span>
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium mb-1 korean-text">개인 브랜딩 툴</p>
-            <p className="text-xs text-gray-600 mb-2">자격증 및 수상 내역</p>
-            <p className="text-xs text-gray-600 mb-2">피트니스 전문성 어필</p>
-            <p className="text-xs text-gray-600 mb-3">맞춤형 프로필 URL</p>
-            <Button className="bg-primary text-white text-sm px-4 py-2 rounded-lg w-full">
-              지금 체험해보기
-            </Button>
-          </div>
-        </div>
-
-        <div className="text-center mb-8">
-          <h3 className="font-bold text-dark mb-1 korean-text">트레이너 전용 디지털 명함</h3>
-          <p className="text-sm text-gray-600 korean-text">QR 코드로 간편한 프로필 공유</p>
-          <p className="text-sm text-gray-600 korean-text">소셜미디어 연동 기능</p>
-          <p className="text-sm text-gray-600 korean-text">방문자 수 추적 및 분석</p>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="space-y-3">
-          <Button 
-            className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full hover:bg-primary/90"
-            onClick={() => setLocation("/login")}
-          >
-            로그인
-          </Button>
-          <Button 
-            variant="outline"
-            className="border-primary text-primary font-medium py-4 px-8 rounded-xl w-full hover:bg-primary/5"
-            onClick={() => setLocation("/signup-step1")}
-          >
-            회원가입
-          </Button>
+        {/* Main Features Section */}
+        <div className="space-y-8 mb-12">
           
-          {/* Demo Link */}
-          <div className="text-center mt-6">
-            <p className="text-sm text-gray-600 mb-2 korean-text">데모 프로필 보기</p>
-            <div className="flex justify-center space-x-4">
+          {/* Feature 1 - 9:16 콘텐츠 뷰어 */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                <span className="text-white text-3xl">📱</span>
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">9:16 몰입형 콘텐츠 뷰어</h3>
+            <p className="text-gray-600 text-center mb-4 korean-text">Instagram Reels, YouTube Shorts와 동일한 세로형 콘텐츠 경험</p>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  터치 한번으로 다음 콘텐츠 이동
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  자동 재생 및 무한 스크롤
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  모바일 최적화된 인터페이스
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Feature 2 - 개인 브랜딩 */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center">
+                <span className="text-white text-3xl">💪</span>
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">전문성 어필 도구</h3>
+            <p className="text-gray-600 text-center mb-4 korean-text">피트니스 전문가로서의 신뢰성과 전문성을 한눈에 보여주세요</p>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  자격증 및 수상 내역 전시
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  개인 소개 및 전문 분야 소개
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  고객 후기 및 성과 사례
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Feature 3 - 올인원 포트폴리오 */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center">
+                <span className="text-white text-3xl">🎯</span>
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">올인원 디지털 포트폴리오</h3>
+            <p className="text-gray-600 text-center mb-4 korean-text">영상, 이미지, 링크를 하나의 플랫폼에서 통합 관리</p>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <ul className="space-y-2 text-sm text-gray-700">
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  운동 영상 및 사진 업로드
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  외부 링크 연결 (SNS, 홈페이지 등)
+                </li>
+                <li className="flex items-center korean-text">
+                  <span className="w-2 h-2 bg-primary rounded-full mr-3"></span>
+                  맞춤형 프로필 URL 제공
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Demo Section */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 mb-8">
+          <h3 className="text-xl font-bold text-dark mb-4 korean-text text-center">실제 트레이너 프로필 체험하기</h3>
+          <p className="text-gray-600 text-center mb-6 korean-text">AmuseFit이 제공하는 프로필 경험을 직접 확인해보세요</p>
+          
+          <div className="grid grid-cols-1 gap-4 max-w-sm mx-auto">
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center mb-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-lg">김</span>
+                </div>
+                <div>
+                  <p className="font-medium korean-text">김철수 트레이너</p>
+                  <p className="text-sm text-gray-500 korean-text">헬스, 크로스핏 전문</p>
+                </div>
+              </div>
               <Button 
-                variant="link"
-                className="text-primary text-sm underline p-0"
+                className="bg-primary text-white w-full rounded-xl py-2"
                 onClick={() => window.open("/demo_user", "_blank")}
               >
-                김철수 트레이너
-              </Button>
-              <Button 
-                variant="link"
-                className="text-primary text-sm underline p-0"
-                onClick={() => window.open("/미라지", "_blank")}
-              >
-                권동영 트레이너
+                프로필 보기
               </Button>
             </div>
+            
+            <div className="bg-white rounded-2xl p-4 shadow-sm">
+              <div className="flex items-center mb-3">
+                <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-white font-bold text-lg">권</span>
+                </div>
+                <div>
+                  <p className="font-medium korean-text">권동영 트레이너</p>
+                  <p className="text-sm text-gray-500 korean-text">요가, 필라테스 전문</p>
+                </div>
+              </div>
+              <Button 
+                className="bg-primary text-white w-full rounded-xl py-2"
+                onClick={() => window.open("/미라지", "_blank")}
+              >
+                프로필 보기
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* CTA Section */}
+        <div className="text-center">
+          <h3 className="text-2xl font-bold text-dark mb-4 korean-text">당신도 시작해보세요</h3>
+          <p className="text-gray-600 mb-8 korean-text">전문 트레이너를 위한 올인원 플랫폼으로 고객과 더 가깝게 연결되세요</p>
+          
+          <div className="space-y-4">
+            <Button 
+              className="bg-primary text-white font-medium py-4 px-8 rounded-xl w-full text-lg hover:bg-primary/90"
+              onClick={() => setLocation("/signup-step1")}
+            >
+              무료로 시작하기
+            </Button>
+            <Button 
+              variant="ghost"
+              className="text-gray-600 font-medium py-2 px-4 w-full"
+              onClick={() => setLocation("/login")}
+            >
+              이미 계정이 있나요? 로그인
+            </Button>
           </div>
         </div>
       </section>
