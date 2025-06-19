@@ -281,21 +281,20 @@ export default function PublicViewPage() {
     return image.filePath || image.mediaUrl || "/placeholder-image.jpg";
   };
 
-  // Smart content type selection - fallback to available content if selected type is empty
+  // Smart content type selection - always respect user's choice, show empty state if needed
   const getEffectiveContentType = () => {
+    // Use user's preferred content type if localContentType is not set and settings are loaded
+    const preferredType = localContentType || settings?.contentType;
+    
+    // Always return the preferred content type, even if it's empty
+    // This allows users to see their chosen content type and add content
+    if (preferredType) return preferredType;
+    
+    // Only fallback when no preference is set
     const hasLinks = links && links.length > 0;
     const hasImages = images && images.length > 0;
     const hasVideos = allVideos && allVideos.length > 0;
     
-    // Use user's preferred content type if localContentType is not set and settings are loaded
-    const preferredType = localContentType || settings?.contentType;
-    
-    // If the preferred content type has content, use it
-    if (preferredType === "links" && hasLinks) return "links";
-    if (preferredType === "image" && hasImages) return "image";
-    if (preferredType === "video" && hasVideos) return "video";
-    
-    // Otherwise, fallback to the first available content type
     if (hasLinks) return "links";
     if (hasImages) return "image";
     if (hasVideos) return "video";
@@ -309,9 +308,22 @@ export default function PublicViewPage() {
   // Initialize localContentType with user's preferred content type when settings load
   useEffect(() => {
     if (settings?.contentType && localContentType === null) {
+      console.log("Initializing localContentType with settings:", settings.contentType);
       setLocalContentType(settings.contentType);
     }
   }, [settings?.contentType, localContentType]);
+
+  // Debug current state
+  useEffect(() => {
+    console.log("Content type state:", {
+      localContentType,
+      settingsContentType: settings?.contentType,
+      effectiveContentType: contentType,
+      hasLinks: links?.length > 0,
+      hasImages: images?.length > 0,
+      hasVideos: allVideos?.length > 0
+    });
+  }, [localContentType, settings?.contentType, contentType, links, images, allVideos]);
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -2296,7 +2308,10 @@ export default function PublicViewPage() {
                   ? "text-primary"
                   : "text-gray-400 hover:text-gray-600"
               }`}
-              onClick={() => setLocalContentType("image")}
+              onClick={() => {
+                console.log("Image tab clicked, setting contentType to image");
+                setLocalContentType("image");
+              }}
             >
               <Image className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">이미지</span>
@@ -2309,7 +2324,10 @@ export default function PublicViewPage() {
                   ? "text-primary"
                   : "text-gray-400 hover:text-gray-600"
               }`}
-              onClick={() => setLocalContentType("video")}
+              onClick={() => {
+                console.log("Video tab clicked, setting contentType to video");
+                setLocalContentType("video");
+              }}
             >
               <Video className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">동영상</span>
@@ -2322,7 +2340,10 @@ export default function PublicViewPage() {
                   ? "text-primary"
                   : "text-gray-400 hover:text-gray-600"
               }`}
-              onClick={() => setLocalContentType("links")}
+              onClick={() => {
+                console.log("Links tab clicked, setting contentType to links");
+                setLocalContentType("links");
+              }}
             >
               <LinkIcon className="w-6 h-6 mb-1" />
               <span className="text-xs korean-text">링크</span>
