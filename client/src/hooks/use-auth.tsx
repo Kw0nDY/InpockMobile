@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   
-  // Initialize user from storage
+  // 저장소에서 사용자 정보 초기화
   useEffect(() => {
     const savedUser = localStorage.getItem('auth_user');
     const rememberMe = localStorage.getItem('auth_remember_me') === 'true';
@@ -39,7 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const parsedUser = JSON.parse(savedUser);
         setUser(parsedUser);
       } catch (error) {
-        console.error('Error parsing saved user:', error);
+        console.error('저장된 사용자 정보 파싱 오류:', error);
         localStorage.removeItem('auth_user');
         localStorage.removeItem('auth_remember_me');
       }

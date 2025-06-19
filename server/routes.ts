@@ -167,7 +167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Login successful for user:", username);
 
-      // Create session (simplified)
+      // 세션 생성 (간소화)
       res.json({
         user: {
           id: user.id,

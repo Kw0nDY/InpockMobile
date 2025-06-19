@@ -33,14 +33,14 @@ export default function SettingsPage() {
     linkTitle: '',
     linkDescription: '',
     linkUrl: '',
-    // 피트니스 정보
+    // 피트니스 전문가 정보
     birthDate: (user as any)?.birthDate || '',
     fitnessAwards: (user as any)?.fitnessAwards || '',
     fitnessCertifications: (user as any)?.fitnessCertifications || '',
     currentGym: (user as any)?.currentGym || '',
     gymAddress: (user as any)?.gymAddress || '',
     fitnessIntro: (user as any)?.fitnessIntro || '',
-    // 회원 정보
+    // 연락처 및 기업 정보
     phone: (user as any)?.phone || '',
     company: (user as any)?.company || ''
   });
@@ -144,7 +144,7 @@ export default function SettingsPage() {
     }));
   };
 
-  // 기존 미디어 업로드 데이터를 불러오기
+  // 기존 미디어 업로드 데이터 조회
   const { data: mediaUploads } = useQuery({
     queryKey: [`/api/media/${user?.id}`],
     enabled: !!user?.id,
