@@ -94,10 +94,10 @@ export default function NotificationDropdown() {
       <Button
         variant="ghost"
         size="sm"
-        className="relative p-2"
+        className="relative p-2 hover:bg-amber-600 group"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <Bell className="w-5 h-5 text-gray-600" />
+        <Bell className="w-5 h-5 text-gray-600 group-hover:text-white" />
         {unreadCount > 0 && (
           <Badge className="absolute -top-1 -right-1 min-w-5 h-5 text-xs bg-red-500 text-white flex items-center justify-center">
             {unreadCount > 99 ? "99+" : unreadCount}
