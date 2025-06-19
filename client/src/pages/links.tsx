@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Plus, X, Eye, TrendingUp, ExternalLink, Trash2, Copy, Upload, Camera, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,6 +37,17 @@ export default function LinksPage() {
   const [urlMetadata, setUrlMetadata] = useState<any>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // URL 변경 시 디바운스된 메타데이터 가져오기
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (url.trim() && url.startsWith('http')) {
+        fetchUrlMetadata(url);
+      }
+    }, 1000);
+
+    return () => clearTimeout(timeoutId);
+  }, [url]);
 
   const { data: linksData, isLoading } = useQuery({
     queryKey: [`/api/links/${user?.id}`],
@@ -197,14 +208,7 @@ export default function LinksPage() {
               <label className="block text-sm font-medium mb-2">URL *</label>
               <Input
                 value={url}
-                onChange={(e) => {
-                  setUrl(e.target.value);
-                  // URL이 변경되면 잠시 후 메타데이터 가져오기
-                  const timeoutId = setTimeout(() => {
-                    fetchUrlMetadata(e.target.value);
-                  }, 1000);
-                  return () => clearTimeout(timeoutId);
-                }}
+                onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com"
                 type="url"
                 required
