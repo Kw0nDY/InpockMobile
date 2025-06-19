@@ -789,7 +789,7 @@ export default function PublicViewPage() {
     switch (contentType) {
       case "links":
         return (
-          <div className="space-y-4">
+          <div className="min-h-screen bg-[#F5F5DC] pt-4 pb-20 px-4">
             {Array.isArray(links) && links.length > 0 ? (
               <div className="space-y-4">
                 {links.map((link: any) => (
@@ -1128,12 +1128,12 @@ export default function PublicViewPage() {
             ) : (
               <div className="h-full flex flex-col items-center justify-center pt-20 pb-32">
                 <div className="text-center">
-                  <LinkIcon className="w-24 h-24 text-gray-400 mx-auto mb-6" />
-                  <h2 className="text-3xl font-bold mb-3 text-gray-600">링크</h2>
-                  <p className="text-lg text-gray-500 text-center max-w-md">
+                  <LinkIcon className="w-24 h-24 text-[#4E342E] mx-auto mb-6" />
+                  <h2 className="text-3xl font-bold mb-3 text-[#4E342E]">링크</h2>
+                  <p className="text-lg text-[#8D6E63] text-center max-w-md">
                     아직 등록된 링크가 없습니다
                   </p>
-                  <p className="text-sm text-gray-400 mt-2">
+                  <p className="text-sm text-[#A1887F] mt-2">
                     곧 새로운 콘텐츠가 추가될 예정입니다
                   </p>
                 </div>
