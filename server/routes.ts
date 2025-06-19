@@ -8,10 +8,8 @@ import express from "express";
 import {
   insertUserSchema,
   insertLinkSchema,
-  insertDealSchema,
   insertUserSettingsSchema,
   insertSubscriptionSchema,
-  insertPasswordResetTokenSchema,
 } from "@shared/schema";
 import { z } from "zod";
 import { randomBytes } from "crypto";

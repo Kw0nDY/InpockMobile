@@ -1,12 +1,9 @@
 import { 
-  users, links, deals, activities, userSettings, subscriptions, passwordResetTokens, mediaUploads, linkVisits,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits,
   type User, type InsertUser,
   type Link, type InsertLink,
-  type Deal, type InsertDeal,
-  type Activity, type InsertActivity,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
-  type PasswordResetToken, type InsertPasswordResetToken,
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit
 } from "@shared/schema";
@@ -54,19 +51,6 @@ export interface IStorage {
   // User-specific methods
   incrementUserVisitCount(userId: number): Promise<void>;
 
-  // Deals
-  getDeals(): Promise<Deal[]>;
-  getUserDeals(userId: number): Promise<Deal[]>;
-  getDealsByCategory(category: string): Promise<Deal[]>;
-  getDeal(id: number): Promise<Deal | undefined>;
-  createDeal(deal: InsertDeal): Promise<Deal>;
-
-
-
-  // Activities
-  getUserActivities(userId: number): Promise<Activity[]>;
-  createActivity(activity: InsertActivity): Promise<Activity>;
-
   // Settings
   getSettings(userId: number): Promise<UserSettings | undefined>;
   getUserSettings(userId: number): Promise<UserSettings | undefined>;
@@ -77,11 +61,6 @@ export interface IStorage {
   getUserSubscription(userId: number): Promise<Subscription | undefined>;
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   updateSubscription(id: number, updates: Partial<Subscription>): Promise<Subscription | undefined>;
-
-  // Password Reset
-  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
-  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
-  markTokenAsUsed(token: string): Promise<void>;
 
   // Media Uploads
   getMediaByUserAndType(userId: number, type: string): Promise<MediaUpload[]>;
@@ -569,9 +548,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
-    const [setting] = await db.select().from(userSettings).where(eq(userSettings.customUrl, customUrl));
-    if (!setting) return undefined;
-    return this.getUser(setting.userId);
+    const [user] = await db.select().from(users).where(eq(users.customUrl, customUrl));
+    return user || undefined;
   }
 
   async getUserByPhone(phone: string): Promise<User | undefined> {

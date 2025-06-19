@@ -40,30 +40,7 @@ export const links = pgTable("links", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const deals = pgTable("deals", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  price: integer("price").notNull(),
-  category: text("category").notNull(),
-  status: text("status").default("active"),
-  company: text("company").notNull(),
-  rating: text("rating").default("4.9"),
-  reviews: integer("reviews").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
-
-
-export const activities = pgTable("activities", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").notNull(),
-  type: text("type").notNull(),
-  title: text("title").notNull(),
-  description: text("description"),
-  timestamp: timestamp("timestamp").defaultNow(),
-});
+// Removed deals and activities tables as they are not used in the current app
 
 export const userSettings = pgTable("user_settings", {
   id: serial("id").primaryKey(),
@@ -75,9 +52,6 @@ export const userSettings = pgTable("user_settings", {
   timezone: text("timezone").default("Seoul (UTC+9)"),
   currency: text("currency").default("KRW (₩)"),
   twoFactorEnabled: boolean("two_factor_enabled").default(false),
-  bio: text("bio"),
-  customUrl: text("custom_url"),
-  contentType: text("content_type").default("links"), // links, image, video
   linkTitle: text("link_title"),
   linkDescription: text("link_description"),
   linkUrl: text("link_url"),
@@ -104,15 +78,6 @@ export const subscriptions = pgTable("subscriptions", {
   currentPeriodEnd: timestamp("current_period_end"),
   cancelAtPeriodEnd: boolean("cancel_at_period_end").default(false),
   createdAt: timestamp("created_at").defaultNow(),
-});
-
-export const passwordResetTokens = pgTable("password_reset_tokens", {
-  id: serial("id").primaryKey(),
-  userId: integer("user_id").references(() => users.id).notNull(),
-  token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-  used: boolean("used").default(false).notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
 export const mediaUploads = pgTable("media_uploads", {
@@ -163,20 +128,7 @@ export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   visitedAt: true,
 });
 
-export const insertDealSchema = createInsertSchema(deals).omit({
-  id: true,
-  status: true,
-  rating: true,
-  reviews: true,
-  createdAt: true,
-});
-
-
-
-export const insertActivitySchema = createInsertSchema(activities).omit({
-  id: true,
-  timestamp: true,
-});
+// Removed deal and activity schemas as tables were deleted
 
 export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
   id: true,
@@ -184,11 +136,6 @@ export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
 });
 
 export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
-  id: true,
-  createdAt: true,
-});
-
-export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
   id: true,
   createdAt: true,
 });
@@ -204,22 +151,11 @@ export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Link = typeof links.$inferSelect;
 export type InsertLink = z.infer<typeof insertLinkSchema>;
 
-export type Deal = typeof deals.$inferSelect;
-export type InsertDeal = z.infer<typeof insertDealSchema>;
-
-
-
-export type Activity = typeof activities.$inferSelect;
-export type InsertActivity = z.infer<typeof insertActivitySchema>;
-
 export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
 
 export type Subscription = typeof subscriptions.$inferSelect;
 export type InsertSubscription = z.infer<typeof insertSubscriptionSchema>;
-
-export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
-export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
 
 export type MediaUpload = typeof mediaUploads.$inferSelect;
 export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
