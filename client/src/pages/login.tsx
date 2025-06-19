@@ -115,7 +115,7 @@ export default function LoginPage() {
               onClick={() => setLocation("/find-id")}
               className="text-primary hover:underline"
             >
-              아이디 찾기
+              닉네임 찾기
             </button>
             <span className="text-gray-300">|</span>
             <button 
