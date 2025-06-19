@@ -14,6 +14,7 @@ import {
 import { z } from "zod";
 import { randomBytes } from "crypto";
 import { generateUniqueUsername, validateUsername } from "./username-utils";
+import { findUserByFlexibleUsername } from "./username-matcher";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -151,8 +152,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { username, password } = loginSchema.parse(req.body);
       console.log("Schema validation passed for username:", username);
 
-      let user = await storage.getUserByUsername(username);
-      console.log("User lookup result:", { found: !!user, username });
+      let user = await findUserByFlexibleUsername(storage, username);
+      console.log("User lookup result:", { found: !!user, username, foundUsername: user?.username });
 
       if (!user) {
         console.log("User not found for username:", username);
