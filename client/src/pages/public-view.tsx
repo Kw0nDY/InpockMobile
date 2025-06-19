@@ -281,7 +281,27 @@ export default function PublicViewPage() {
     return image.filePath || image.mediaUrl || "/placeholder-image.jpg";
   };
 
-  const contentType = localContentType;
+  // Smart content type selection - fallback to available content if selected type is empty
+  const getEffectiveContentType = () => {
+    const hasLinks = links && links.length > 0;
+    const hasImages = images && images.length > 0;
+    const hasVideos = allVideos && allVideos.length > 0;
+    
+    // If the selected content type has content, use it
+    if (localContentType === "links" && hasLinks) return "links";
+    if (localContentType === "image" && hasImages) return "image";
+    if (localContentType === "video" && hasVideos) return "video";
+    
+    // Otherwise, fallback to the first available content type
+    if (hasLinks) return "links";
+    if (hasImages) return "image";
+    if (hasVideos) return "video";
+    
+    // Default to links if nothing is available
+    return "links";
+  };
+
+  const contentType = getEffectiveContentType();
 
   // Auto-refresh every 30 seconds for real-time updates
   useEffect(() => {
@@ -1075,12 +1095,17 @@ export default function PublicViewPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12">
-                <LinkIcon className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                <p className="text-foreground text-lg">링크 없음</p>
-                <p className="text-muted-foreground text-sm mt-2">
-                  아직 등록된 링크가 없습니다.
-                </p>
+              <div className="h-full flex flex-col items-center justify-center pt-20 pb-32">
+                <div className="text-center">
+                  <LinkIcon className="w-24 h-24 text-gray-400 mx-auto mb-6" />
+                  <h2 className="text-3xl font-bold mb-3 text-gray-600">링크</h2>
+                  <p className="text-lg text-gray-500 text-center max-w-md">
+                    아직 등록된 링크가 없습니다
+                  </p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    곧 새로운 콘텐츠가 추가될 예정입니다
+                  </p>
+                </div>
               </div>
             )}
           </div>
