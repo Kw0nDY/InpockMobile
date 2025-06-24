@@ -119,12 +119,21 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - **Database query optimization** with Drizzle insights
 - **User experience tracking** with custom metrics
 
-## Changelog
+## Recent Changes
 
-```
-Changelog:
-- June 24, 2025. Initial setup
-```
+### June 24, 2025
+- ✅ **카카오 OAuth 불완전 회원가입 처리**: 필수 정보 누락 시 자동 리다이렉트
+- ✅ **회원가입 완료 페이지**: 닉네임/이름/전화번호 실시간 유효성 검사  
+- ✅ **인증 시스템 문서화**: ID/비밀번호 찾기 기능 정리 및 가이드 작성
+- 🔧 **세션 관리 오류**: 카카오 로그인 후 세션 설정 문제 해결 필요
+- 📋 **인증 방법 정리**: 전화번호 기반 ID 찾기, 이메일/SMS 기반 비밀번호 재설정
+
+### 구현 완료 기능
+- 카카오 OAuth 로그인 및 사용자 생성
+- 필수 정보 검증 및 추가 회원가입 프로세스
+- ID 찾기 (전화번호 기반)
+- 비밀번호 재설정 토큰 시스템
+- 실시간 닉네임 중복 확인
 
 ## User Preferences
 
