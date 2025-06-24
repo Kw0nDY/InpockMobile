@@ -69,11 +69,8 @@ function Router() {
           <Route path="/links" component={LinksPage} />
           <Route path="/images" component={ImagesPage} />
           <Route path="/videos" component={VideosPage} />
-          <Route path="/service-intro" component={ServiceIntroPage} />
           <Route path="/settings" component={SettingsPage} />
-          <Route path="/chat" component={ChatPage} />
           <Route path="/analytics" component={AnalyticsPage} />
-          <Route path="/contacts" component={ContactsPage} />
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/find-id" component={FindIdPage} />
           <Route path="/reset-password/:token" component={ResetPasswordPage} />
