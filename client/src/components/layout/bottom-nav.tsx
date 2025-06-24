@@ -1,8 +1,10 @@
 import { Home, Image, Video, ExternalLink, Settings } from "lucide-react";
 import { useLocation } from "wouter";
+import { useState } from "react";
 
 export default function BottomNav() {
   const [location, setLocation] = useLocation();
+  const [hoveredPath, setHoveredPath] = useState<string | null>(null);
 
   const navItems = [
     { path: "/dashboard", icon: Home, label: "홈" },
@@ -22,23 +24,43 @@ export default function BottomNav() {
       <div className="flex items-center justify-around py-2">
         {navItems.map(({ path, icon: Icon, label }) => {
           const isActive = location === path;
+          const isHovered = hoveredPath === path;
 
           return (
             <button
               key={path}
               onClick={() => setLocation(path)}
-              className={`group flex flex-col items-center py-2 px-3 transition-all duration-200 rounded-lg ${
-                isActive 
-                  ? "text-amber-800 bg-amber-100/70" 
-                  : "text-gray-500 hover:text-amber-900 hover:bg-amber-100/50"
-              }`}
+              onMouseEnter={() => setHoveredPath(path)}
+              onMouseLeave={() => setHoveredPath(null)}
+              className="flex flex-col items-center py-2 px-3 transition-all duration-200 rounded-lg"
+              style={{
+                backgroundColor: isActive 
+                  ? 'rgb(252 211 77 / 0.7)' 
+                  : isHovered 
+                    ? 'rgb(252 211 77 / 0.5)' 
+                    : 'transparent'
+              }}
             >
-              <Icon className={`w-6 h-6 mb-1 transition-colors ${
-                isActive ? "text-amber-800" : "text-gray-500"
-              } group-hover:text-amber-900`} />
-              <span className={`text-xs korean-text transition-colors ${
-                isActive ? "text-amber-800" : "text-gray-500"
-              } group-hover:text-amber-900`}>{label}</span>
+              <Icon 
+                className="w-6 h-6 mb-1 transition-colors"
+                style={{
+                  color: isActive 
+                    ? '#92400e' 
+                    : isHovered 
+                      ? '#92400e' 
+                      : '#6b7280'
+                }}
+              />
+              <span 
+                className="text-xs korean-text transition-colors"
+                style={{
+                  color: isActive 
+                    ? '#92400e' 
+                    : isHovered 
+                      ? '#92400e' 
+                      : '#6b7280'
+                }}
+              >{label}</span>
             </button>
           );
         })}
