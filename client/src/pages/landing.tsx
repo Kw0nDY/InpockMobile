@@ -112,7 +112,7 @@ export default function LandingPage() {
       <section className="px-6 py-8 text-center">
         <div className="mb-8">
           <div className="w-24 h-24 bg-gradient-to-r from-pink-500 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
-            <span className="text-white text-4xl">🏃‍♂️</span>
+            <span className="text-white text-4xl">🏋️</span>
           </div>
         </div>
         <h2 className="text-3xl font-bold text-dark mb-3 korean-text">피트니스 전문가를 위한</h2>
@@ -128,7 +128,7 @@ export default function LandingPage() {
           <div className="bg-white rounded-3xl p-8 shadow-lg">
             <div className="flex items-center justify-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center">
-                <span className="text-white text-3xl">📱</span>
+                <span className="text-white text-3xl">📺</span>
               </div>
             </div>
             <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">9:16 몰입형 콘텐츠 뷰어</h3>
@@ -155,7 +155,7 @@ export default function LandingPage() {
           <div className="bg-white rounded-3xl p-8 shadow-lg">
             <div className="flex items-center justify-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl flex items-center justify-center">
-                <span className="text-white text-3xl">💪</span>
+                <span className="text-white text-3xl">🏆</span>
               </div>
             </div>
             <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">전문성 어필 도구</h3>
@@ -182,7 +182,7 @@ export default function LandingPage() {
           <div className="bg-white rounded-3xl p-8 shadow-lg">
             <div className="flex items-center justify-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-r from-pink-500 to-orange-500 rounded-2xl flex items-center justify-center">
-                <span className="text-white text-3xl">🎯</span>
+                <span className="text-white text-3xl">💼</span>
               </div>
             </div>
             <h3 className="text-xl font-bold text-dark mb-3 korean-text text-center">올인원 디지털 포트폴리오</h3>
@@ -208,30 +208,30 @@ export default function LandingPage() {
 
         {/* Demo Section */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-3xl p-8 mb-8">
-          <h3 className="text-2xl font-bold text-dark mb-4 korean-text text-center">🎯 서비스 체험하기</h3>
+          <h3 className="text-2xl font-bold text-dark mb-4 korean-text text-center">⚡ 서비스 체험하기</h3>
           <p className="text-gray-600 text-center mb-6 korean-text">실제 트레이너들이 사용하는 AmuseFit 프로필을 직접 체험해보세요</p>
           
           {/* 기능 설명 */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6">
-            <h4 className="text-lg font-semibold text-dark mb-4 korean-text text-center">✨ 체험할 수 있는 기능들</h4>
+            <h4 className="text-lg font-semibold text-dark mb-4 korean-text text-center">💫 체험할 수 있는 기능들</h4>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-pink-400 to-red-400 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-white text-xl">📸</span>
+                  <span className="text-white text-xl">🖼️</span>
                 </div>
                 <p className="font-medium korean-text">이미지 갤러리</p>
                 <p className="text-gray-600 korean-text">운동 사진을 인스타그램 스토리처럼 스와이프하며 감상</p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-indigo-400 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-white text-xl">🎥</span>
+                  <span className="text-white text-xl">🎬</span>
                 </div>
                 <p className="font-medium korean-text">동영상 뷰어</p>
                 <p className="text-gray-600 korean-text">YouTube Shorts처럼 세로형 운동 동영상 시청</p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-400 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <span className="text-white text-xl">🔗</span>
+                  <span className="text-white text-xl">🌐</span>
                 </div>
                 <p className="font-medium korean-text">링크 허브</p>
                 <p className="text-gray-600 korean-text">SNS, 예약 링크 등을 한 곳에서 관리</p>
@@ -254,7 +254,7 @@ export default function LandingPage() {
                 className="bg-primary text-white w-full rounded-xl py-2 korean-text"
                 onClick={() => window.open("/demo_user", "_blank")}
               >
-                📱 모바일 프로필 체험하기
+                📲 모바일 프로필 체험하기
               </Button>
             </div>
             
@@ -272,13 +272,13 @@ export default function LandingPage() {
                 className="bg-primary text-white w-full rounded-xl py-2 korean-text"
                 onClick={() => window.open("/미라지", "_blank")}
               >
-                🧘‍♀️ 요가 프로필 체험하기
+                🧘 요가 프로필 체험하기
               </Button>
             </div>
           </div>
           
           <div className="text-center mt-6">
-            <p className="text-sm text-gray-600 korean-text">💡 각 프로필을 클릭하여 실제 사용자 경험을 확인해보세요</p>
+            <p className="text-sm text-gray-600 korean-text">🔍 각 프로필을 클릭하여 실제 사용자 경험을 확인해보세요</p>
             <p className="text-xs text-gray-500 korean-text mt-1">모바일에서 최적화된 경험을 제공합니다</p>
           </div>
         </div>
