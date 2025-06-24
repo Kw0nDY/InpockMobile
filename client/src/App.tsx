@@ -49,7 +49,7 @@ function Router() {
   // 현재 위치가 공개 프로필 뷰인지 확인 (커스텀 URL 또는 /users/username)
   const isPublicProfileView = location.startsWith("/users/") || 
     (location.match(/^\/[^\/]+$/) && location !== "/" &&
-     !["dashboard", "links", "images", "videos", "settings", "chat", "analytics", "contacts", "marketplace", "manager", "profile", "profile-settings"].includes(location.slice(1)));
+     !["dashboard", "links", "images", "videos", "settings", "chat", "analytics", "contacts", "marketplace", "manager", "profile", "profile-settings", "login", "signup", "signup-step1", "signup-step2", "password-recovery", "service-intro"].includes(location.slice(1)));
   
   const shouldShowBottomNav = !hideNavPages.includes(location) && 
     !location.startsWith("/reset-password/") && 
