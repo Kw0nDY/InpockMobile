@@ -151,8 +151,16 @@ async function sendSendGridEmail(email: string, code: string): Promise<boolean> 
 async function sendRealEmail(email: string, code: string): Promise<boolean> {
   // 1. Brevo 우선 시도 (무료 한도가 가장 많음)
   if (process.env.BREVO_API_KEY) {
+    console.log(`🔄 Brevo로 이메일 발송 시도: ${email}`);
     const success = await sendBrevoEmail(email, code);
-    if (success) return true;
+    if (success) {
+      console.log(`📧 이메일이 발송되었습니다. 다음을 확인해주세요:`);
+      console.log(`   • 받는 주소: ${email}`);
+      console.log(`   • 인증번호: ${code}`);
+      console.log(`   • 스팸 폴더 확인`);
+      console.log(`   • 프로모션 탭 확인 (Gmail)`);
+      return true;
+    }
   }
 
   // 2. Resend 시도 (일 한도 있음)
