@@ -16,7 +16,7 @@ import { randomBytes } from "crypto";
 import { generateUniqueUsername, validateUsername } from "./username-utils";
 import { findUserByFlexibleUsername } from "./username-matcher";
 import { sendSmsCode, verifySmsCode, isPhoneVerified } from "./sms-verification";
-import { sendEmailCode, verifyEmailCode, isEmailVerified } from "./email-verification";
+import { sendEmailCode, verifyEmailCode, isEmailVerified, checkEmailConfig } from "./email-verification";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -37,6 +37,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     };
 
     console.log("OAuth Configuration Check:", config);
+    res.json(config);
+  });
+
+  // 이메일 서비스 설정 확인 엔드포인트
+  app.get("/test/email/config", (req, res) => {
+    const emailStatus = checkEmailConfig();
+    const config = {
+      email: emailStatus,
+      environment: process.env.NODE_ENV || 'development',
+      timestamp: new Date().toISOString()
+    };
+
+    console.log("Email Service Configuration Check:", config);
     res.json(config);
   });
 
