@@ -33,21 +33,11 @@ import ResetPasswordNewPage from "./pages/reset-password-new";
 import PublicViewPage from "./pages/public-view";
 import PublicImageView from "./pages/public-image-view";
 import ResetPasswordPage from "./pages/reset-password";
+import ServiceIntroPage from "./pages/service-intro";
 import NotFound from "./pages/not-found";
 
 // 레이아웃 컴포넌트
 import BottomNav from "./components/layout/bottom-nav";
-
-// 서비스 체험 리다이렉트 컴포넌트
-function ServiceIntroRedirect() {
-  const [, setLocation] = useLocation();
-  
-  useEffect(() => {
-    setLocation("/demo_user");
-  }, [setLocation]);
-  
-  return null;
-}
 
 function Router() {
   const [location] = useLocation();
@@ -90,7 +80,7 @@ function Router() {
           <Route path="/verify-email" component={VerifyEmailPage} />
           <Route path="/reset-password-new" component={ResetPasswordNewPage} />
           <Route path="/oauth/kakao/callback" component={KakaoCallback} />
-          <Route path="/service-intro" component={ServiceIntroRedirect} />
+          <Route path="/service-intro" component={ServiceIntroPage} />
           <Route path="/users/:username" component={PublicViewPage} />
           <Route path="/users/:username/images" component={PublicImageView} />
           <Route path="/:customUrl" component={PublicViewPage} />
