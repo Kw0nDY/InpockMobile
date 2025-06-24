@@ -174,10 +174,15 @@ export default function VerifyEmailPage() {
             <Mail className="w-8 h-8 text-amber-600" />
           </div>
           <h2 className="text-xl font-bold mb-2 korean-text">이메일 인증</h2>
-          <p className="text-gray-600 text-sm korean-text mb-4">
-            {email}로 전송된<br />
-            6자리 인증번호를 입력해주세요.
-          </p>
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
+            <p className="text-sm text-amber-800 text-center mb-1">
+              {email}로 인증번호를 발송했습니다.
+            </p>
+            <p className="text-xs text-amber-600 text-center">
+              이메일이 오지 않으면 <strong>워크플로우 콘솔</strong>에서<br />
+              "📧 이메일 인증번호" 를 찾아 6자리 번호를 확인하세요.
+            </p>
+          </div>
           <p className="text-amber-600 text-sm font-medium">
             남은 시간: {formatTime(timeLeft)}
           </p>

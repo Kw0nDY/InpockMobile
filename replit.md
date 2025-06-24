@@ -138,9 +138,9 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - 카카오 OAuth 로그인 및 사용자 생성
 - 필수 정보 검증 및 추가 회원가입 프로세스
 - ID 찾기 (전화번호 → SMS 인증)
-- 비밀번호 재설정 (이메일/전화번호 → 인증)
+- 비밀번호 재설정 (이메일/전화번호 → 인증) - 콘솔 모드로 완전 작동
 - 실시간 닉네임 중복 확인
-- Resend API 연동 (실제 이메일 발송)
+- Brevo API 연동 (실제 이메일 발송, 콘솔 백업)
 
 ### 프로젝트 문서화
 - ✅ **개발 로드맵 문서**: 단계별 개발 계획 및 우선순위 정리
