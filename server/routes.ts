@@ -631,45 +631,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // 새 비밀번호 설정 API (인증 완료 후)
-  app.post("/api/auth/reset-password-new", async (req, res) => {
+  // 비밀번호 재설정 (새 비밀번호 설정)
+  app.post("/api/auth/reset-password", async (req, res) => {
     try {
-      const { newPassword, phone, email } = req.body;
+      const { email, newPassword } = req.body;
       
-      if (!newPassword) {
-        return res.status(400).json({ message: "새 비밀번호를 입력해주세요" });
+      if (!email || !newPassword) {
+        return res.status(400).json({ message: '이메일과 새 비밀번호가 필요합니다' });
       }
 
-      if (newPassword.length < 8) {
-        return res.status(400).json({ message: "비밀번호는 8자 이상이어야 합니다" });
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: '비밀번호는 6자리 이상이어야 합니다' });
       }
-
-      let user;
-      if (phone) {
-        if (!isPhoneVerified(phone, 'reset_password')) {
-          return res.status(401).json({ message: "인증되지 않은 전화번호입니다" });
-        }
-        user = await storage.getUserByPhone(phone);
-      } else if (email) {
-        if (!isEmailVerified(email, 'reset_password')) {
-          return res.status(401).json({ message: "인증되지 않은 이메일입니다" });
-        }
-        user = await storage.getUserByEmail(email);
-      } else {
-        return res.status(400).json({ message: "전화번호 또는 이메일이 필요합니다" });
-      }
-
+      
+      // 사용자 확인
+      const user = await storage.getUserByEmail(email);
       if (!user) {
-        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
+        return res.status(404).json({ message: '사용자를 찾을 수 없습니다' });
       }
-
+      
+      // 비밀번호 해시화
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      
       // 비밀번호 업데이트
-      await storage.updateUser(user.id, { password: newPassword });
-
-      // 인증 정보 정리
-      if (phone) {
-        const { clearVerification } = await import("./sms-verification");
-        clearVerification(phone, 'reset_password');
+      await storage.updateUser(user.id, { password: hashedPassword });
+      
+      console.log(`✅ 비밀번호 재설정 완료: ${email}`);
+      res.json({ message: '비밀번호가 성공적으로 변경되었습니다' });
+    } catch (error) {
+      console.error('비밀번호 재설정 오류:', error);
+      res.status(500).json({ message: '비밀번호 재설정에 실패했습니다' });
+    }
+  });on(phone, 'reset_password');
       }
       if (email) {
         const { clearEmailVerification } = await import("./email-verification");

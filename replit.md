@@ -128,6 +128,8 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ✅ **이메일 배달 문제 완전 해결**: 콘솔 백업 + 실제 이메일 발송으로 100% 작동 보장
 - ⚠️ **이메일 수신 문제**: Brevo API 정상 발송하나 Gmail/Naver 모든 서비스에서 스팸 필터링
 - ✅ **실용적 해결책**: 콘솔 인증번호로 100% 작동하는 완전한 인증 시스템
+- ✅ **새 비밀번호 설정 페이지**: 인증 완료 후 안전한 비밀번호 재설정 구현
+- ✅ **SMS 인증 시스템**: 전화번호 기반 인증번호 발송 및 확인 시스템
 - ✅ **다중 이메일 서비스 지원**: Brevo(우선) → Resend → SendGrid 자동 폴백
 - ✅ **프론트엔드 오류 완전 해결**: forgotPasswordMutation 참조 모두 제거
 - ✅ **카카오 OAuth 불완전 회원가입 처리**: 필수 정보 누락 시 자동 리다이렉트
@@ -141,6 +143,8 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - 필수 정보 검증 및 추가 회원가입 프로세스
 - ID 찾기 (전화번호 → SMS 인증)
 - 비밀번호 재설정 (이메일/전화번호 → 인증) - 완전 작동 및 테스트 완료
+- 새 비밀번호 설정 페이지 - 안전한 비밀번호 정책 및 UI/UX
+- SMS 인증 시스템 - 콘솔 기반 개발 모드 구현
 - 실시간 닉네임 중복 확인
 - Brevo API 연동 (실제 이메일 발송, 콘솔 백업)
 
