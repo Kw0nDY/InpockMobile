@@ -38,18 +38,15 @@ export default function KakaoCallback() {
         }
 
         // 카카오 인증 코드로 사용자 정보 요청
-        const response = await apiRequest('POST', '/api/oauth/kakao/callback', {
-          code,
-          redirectUri: `${window.location.origin}/oauth/kakao/callback`
+        const response = await apiRequest('POST', '/api/auth/kakao/token', {
+          code
         });
 
         if (response.user) {
           setUser(response.user);
 
-          // 필수 정보 완성도 체크
-          const isComplete = !!(response.user.username && response.user.phone && response.user.name);
-          
-          if (!isComplete) {
+          // 서버에서 전달된 registrationComplete 상태 확인
+          if (!response.registrationComplete) {
             toast({
               title: "추가 정보 입력 필요",
               description: "서비스 이용을 위해 추가 정보를 입력해주세요.",

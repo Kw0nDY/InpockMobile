@@ -347,12 +347,13 @@ export function setupKakaoAuth(app: Express) {
         });
       } else {
         console.log('Creating new user for Kakao ID:', userData.id);
-        // Create new user
+        // Create new user with incomplete required fields to trigger registration completion
         isNewUser = true;
         user = await storage.createUser({
-          username: `kakao_${userData.id}`,
+          username: '', // Leave empty to require completion
           email: email,
           name: nickname,
+          phone: '', // Leave empty to require completion
           password: '', // OAuth users don't need passwords
           role: 'user',
           provider: 'kakao',
@@ -361,10 +362,14 @@ export function setupKakaoAuth(app: Express) {
         });
       }
 
+      // Check if registration is complete
+      const isRegistrationComplete = !!(user.username && user.phone && user.name);
+      
       res.json({ 
         success: true, 
         user: user,
         isNewUser: isNewUser,
+        registrationComplete: isRegistrationComplete,
         message: isNewUser ? 'Account created successfully' : 'Login successful'
       });
 
@@ -456,8 +461,16 @@ export function setupKakaoAuth(app: Express) {
 
       console.log('카카오 로그인 성공:', { userId: user!.id, email: user!.email });
       
-      // Redirect to home page after successful login
-      res.redirect('/?login_success=true');
+      // Check if registration needs completion
+      const isRegistrationComplete = !!(user!.username && user!.phone && user!.name);
+      
+      if (!isRegistrationComplete) {
+        // Redirect to complete registration page
+        res.redirect('/complete-registration?oauth_success=true');
+      } else {
+        // Redirect to dashboard for complete users
+        res.redirect('/dashboard?login_success=true');
+      }
 
     } catch (error) {
       console.error('Kakao auth error:', error);
