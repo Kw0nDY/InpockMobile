@@ -27,13 +27,11 @@ export default function BottomNav() {
             <button
               key={path}
               onClick={() => setLocation(path)}
-              className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                isActive ? "text-primary" : "text-gray-400 hover:text-white"
+              className={`flex flex-col items-center py-2 px-3 transition-colors rounded-lg ${
+                isActive ? "text-primary" : "text-gray-400 hover:text-primary hover:bg-primary/10"
               }`}
             >
-              <Icon className={`w-6 h-6 mb-1 transition-colors ${
-                isActive ? "" : "hover:text-white"
-              }`} />
+              <Icon className="w-6 h-6 mb-1 transition-colors" />
               <span className="text-xs korean-text">{label}</span>
             </button>
           );
