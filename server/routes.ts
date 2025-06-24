@@ -651,7 +651,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // 비밀번호 해시화
-      const bcrypt = require("bcrypt");
+      const bcrypt = await import("bcrypt");
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       
       // 비밀번호 업데이트

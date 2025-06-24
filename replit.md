@@ -138,6 +138,7 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ✅ **회원가입 완료 페이지**: 닉네임/이름/전화번호 실시간 유효성 검사  
 - ✅ **인증 시스템 문서화**: ID/비밀번호 찾기 기능 정리 및 가이드 작성
 - 🔧 **세션 관리 오류**: 카카오 로그인 후 세션 설정 문제 해결 필요
+- ⚠️ **Twilio SMS 문제**: 계정 연결 성공하나 전화번호 API 인식 불가 (개발 모드로 완전 작동)
 
 ### 구현 완료 기능
 - 실제 인증 시스템 (SMS/이메일)
