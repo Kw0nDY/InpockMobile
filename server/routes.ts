@@ -15,6 +15,8 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { generateUniqueUsername, validateUsername } from "./username-utils";
 import { findUserByFlexibleUsername } from "./username-matcher";
+import { sendSmsCode, verifySmsCode, isPhoneVerified } from "./sms-verification";
+import { sendEmailCode, verifyEmailCode, isEmailVerified } from "./email-verification";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -477,6 +479,194 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Get current user error:", error);
       res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // SMS 인증번호 발송 API
+  app.post("/api/auth/send-sms-code", async (req, res) => {
+    try {
+      const { phone, purpose } = req.body;
+      
+      if (!phone || !purpose) {
+        return res.status(400).json({ message: "전화번호와 목적을 입력해주세요" });
+      }
+
+      if (!['find_id', 'reset_password'].includes(purpose)) {
+        return res.status(400).json({ message: "올바르지 않은 목적입니다" });
+      }
+
+      // 전화번호 형식 검증
+      const phoneRegex = /^01[0-9]{8,9}$/;
+      if (!phoneRegex.test(phone)) {
+        return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다" });
+      }
+
+      // 사용자 존재 확인 (보안상 실제로는 항상 성공 응답)
+      const user = await storage.getUserByPhone(phone);
+      if (!user && purpose === 'find_id') {
+        return res.status(404).json({ message: "등록된 전화번호를 찾을 수 없습니다" });
+      }
+
+      if (!user && purpose === 'reset_password') {
+        return res.status(404).json({ message: "등록된 전화번호를 찾을 수 없습니다" });
+      }
+
+      const result = await sendSmsCode(phone, purpose);
+      if (result.success) {
+        res.json({ message: result.message });
+      } else {
+        res.status(500).json({ message: result.message });
+      }
+    } catch (error) {
+      console.error("SMS 발송 오류:", error);
+      res.status(500).json({ message: "인증번호 발송 중 오류가 발생했습니다" });
+    }
+  });
+
+  // SMS 인증번호 확인 API
+  app.post("/api/auth/verify-sms-code", async (req, res) => {
+    try {
+      const { phone, code, purpose } = req.body;
+      
+      if (!phone || !code || !purpose) {
+        return res.status(400).json({ message: "모든 필드를 입력해주세요" });
+      }
+
+      const result = await verifySmsCode(phone, code, purpose);
+      
+      if (result.verified) {
+        // 아이디 찾기인 경우 사용자명 반환
+        if (purpose === 'find_id') {
+          const user = await storage.getUserByPhone(phone);
+          if (user) {
+            res.json({ 
+              verified: true, 
+              message: result.message,
+              data: { userId: user.username }
+            });
+          } else {
+            res.status(404).json({ verified: false, message: "사용자를 찾을 수 없습니다" });
+          }
+        } else {
+          res.json({ verified: true, message: result.message });
+        }
+      } else {
+        res.status(400).json({ verified: false, message: result.message });
+      }
+    } catch (error) {
+      console.error("SMS 인증 확인 오류:", error);
+      res.status(500).json({ message: "인증 확인 중 오류가 발생했습니다" });
+    }
+  });
+
+  // 이메일 인증번호 발송 API
+  app.post("/api/auth/send-email-code", async (req, res) => {
+    try {
+      const { email, purpose } = req.body;
+      
+      if (!email || !purpose) {
+        return res.status(400).json({ message: "이메일과 목적을 입력해주세요" });
+      }
+
+      if (purpose !== 'reset_password') {
+        return res.status(400).json({ message: "올바르지 않은 목적입니다" });
+      }
+
+      // 이메일 형식 검증
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "올바른 이메일 형식이 아닙니다" });
+      }
+
+      // 사용자 존재 확인
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(404).json({ message: "등록된 이메일을 찾을 수 없습니다" });
+      }
+
+      const result = await sendEmailCode(email, purpose);
+      if (result.success) {
+        res.json({ message: result.message });
+      } else {
+        res.status(500).json({ message: result.message });
+      }
+    } catch (error) {
+      console.error("이메일 발송 오류:", error);
+      res.status(500).json({ message: "인증번호 발송 중 오류가 발생했습니다" });
+    }
+  });
+
+  // 이메일 인증번호 확인 API
+  app.post("/api/auth/verify-email-code", async (req, res) => {
+    try {
+      const { email, code, purpose } = req.body;
+      
+      if (!email || !code || !purpose) {
+        return res.status(400).json({ message: "모든 필드를 입력해주세요" });
+      }
+
+      const result = await verifyEmailCode(email, code, purpose);
+      
+      if (result.verified) {
+        res.json({ verified: true, message: result.message });
+      } else {
+        res.status(400).json({ verified: false, message: result.message });
+      }
+    } catch (error) {
+      console.error("이메일 인증 확인 오류:", error);
+      res.status(500).json({ message: "인증 확인 중 오류가 발생했습니다" });
+    }
+  });
+
+  // 새 비밀번호 설정 API (인증 완료 후)
+  app.post("/api/auth/reset-password-new", async (req, res) => {
+    try {
+      const { newPassword, phone, email } = req.body;
+      
+      if (!newPassword) {
+        return res.status(400).json({ message: "새 비밀번호를 입력해주세요" });
+      }
+
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "비밀번호는 8자 이상이어야 합니다" });
+      }
+
+      let user;
+      if (phone) {
+        if (!isPhoneVerified(phone, 'reset_password')) {
+          return res.status(401).json({ message: "인증되지 않은 전화번호입니다" });
+        }
+        user = await storage.getUserByPhone(phone);
+      } else if (email) {
+        if (!isEmailVerified(email, 'reset_password')) {
+          return res.status(401).json({ message: "인증되지 않은 이메일입니다" });
+        }
+        user = await storage.getUserByEmail(email);
+      } else {
+        return res.status(400).json({ message: "전화번호 또는 이메일이 필요합니다" });
+      }
+
+      if (!user) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
+      }
+
+      // 비밀번호 업데이트
+      await storage.updateUser(user.id, { password: newPassword });
+
+      // 인증 정보 정리
+      if (phone) {
+        const { clearVerification } = await import("./sms-verification");
+        clearVerification(phone, 'reset_password');
+      }
+      if (email) {
+        const { clearEmailVerification } = await import("./email-verification");
+        clearEmailVerification(email, 'reset_password');
+      }
+
+      res.json({ message: "비밀번호가 성공적으로 변경되었습니다" });
+    } catch (error) {
+      console.error("비밀번호 재설정 오류:", error);
+      res.status(500).json({ message: "비밀번호 변경 중 오류가 발생했습니다" });
     }
   });
 

@@ -109,7 +109,7 @@ export default function FindIdPage() {
               variant="outline"
               className="w-full py-3 rounded-lg font-medium"
             >
-              {findIdMutation.isPending ? "재전송 중..." : "문자 재전송"}
+              {sendSmsCodeMutation.isPending ? "재전송 중..." : "문자 재전송"}
             </Button>
 
             <Button
