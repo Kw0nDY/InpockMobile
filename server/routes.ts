@@ -650,8 +650,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: '사용자를 찾을 수 없습니다' });
       }
       
-      // 비밀번호 해시화 
-      const bcrypt = await import("bcrypt");
+      // 비밀번호 해시화
+      const bcrypt = require("bcrypt");
       const hashedPassword = await bcrypt.hash(newPassword, 10);
       
       // 비밀번호 업데이트
