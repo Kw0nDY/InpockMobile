@@ -45,20 +45,31 @@ export default function KakaoCallback() {
         if (response.user) {
           setUser(response.user);
 
-          // 서버에서 전달된 registrationComplete 상태 확인
-          if (!response.registrationComplete) {
+          // 필수 정보 완성도 체크
+          const hasRequiredFields = response.user.phone && response.user.name && response.user.name.trim().length > 0;
+          
+          if (!hasRequiredFields) {
             toast({
-              title: "추가 정보 입력 필요",
+              title: "추가 정보 필요",
               description: "서비스 이용을 위해 추가 정보를 입력해주세요.",
             });
             setLocation('/complete-registration');
-          } else {
-            toast({
-              title: "로그인 성공",
-              description: `안녕하세요, ${response.user.name || response.user.username}님!`,
-            });
-            setLocation('/dashboard');
+            return;
           }
+
+          // 필수 정보가 모두 있으면 대시보드로 이동
+          toast({
+            title: "로그인 성공",
+            description: "카카오 로그인이 완료되었습니다.",
+          });
+          setLocation('/');
+        } else {
+          toast({
+            title: "로그인 실패",
+            description: "사용자 정보를 가져올 수 없습니다.",
+            variant: "destructive",
+          });
+          setLocation('/login');
         }
       } catch (error) {
         console.error('Kakao callback error:', error);

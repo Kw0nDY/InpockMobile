@@ -78,7 +78,9 @@ function Router() {
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/find-id" component={FindIdPage} />
           <Route path="/reset-password/:token" component={ResetPasswordPage} />
-          <Route path="/complete-registration" component={CompleteRegistrationPage} />
+          <Route path="/complete-registration">
+            <CompleteRegistrationPage />
+          </Route>
           <Route path="/oauth/kakao/callback" component={KakaoCallback} />
           <Route path="/users/:username" component={PublicViewPage} />
           <Route path="/users/:username/images" component={PublicImageView} />

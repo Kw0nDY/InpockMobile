@@ -430,6 +430,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         phone: phone.replace(/-/g, "")
       });
 
+      if (!updatedUser) {
+        return res.status(500).json({ message: "사용자 정보 업데이트에 실패했습니다" });
+      }
+
       res.json({ 
         message: "회원가입이 완료되었습니다",
         user: {
