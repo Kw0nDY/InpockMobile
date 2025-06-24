@@ -148,11 +148,6 @@ export const insertLinkSchema = createInsertSchema(links).omit({
 });
 
 // Schema for media uploads
-export const insertMediaSchema = createInsertSchema(mediaUploads).omit({
-  id: true,
-  createdAt: true,
-});
-
 // Schema for link visits tracking
 export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   id: true,
@@ -165,18 +160,19 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
   createdAt: true,
 });
 
-// Removed deal and activity schemas as tables were deleted
-
+// Schema for user settings
 export const insertUserSettingsSchema = createInsertSchema(userSettings).omit({
   id: true,
   updatedAt: true,
 });
 
+// Schema for subscriptions
 export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   id: true,
   createdAt: true,
 });
 
+// Schema for media uploads (consolidated)
 export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
   id: true,
   createdAt: true,

@@ -26,12 +26,12 @@ const signupSchema = z.object({
   path: ["confirmPassword"]
 });
 
-type SignupForm = z.infer<typeof signupSchema>;
+// Removed redundant type definition - using inline types
 
 export default function SignupStep2() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [formData, setFormData] = useState<SignupForm>({
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
@@ -42,10 +42,10 @@ export default function SignupStep2() {
     currentGym: "",
     gymPosition: ""
   });
-  const [errors, setErrors] = useState<Partial<Record<keyof SignupForm, string>>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const signupMutation = useMutation({
-    mutationFn: async (data: SignupForm) => {
+    mutationFn: async (data: any) => {
       console.log("Attempting signup with data:", {
         username: data.username,
         email: data.email,
@@ -161,7 +161,7 @@ export default function SignupStep2() {
 
   const isFormValid = () => {
     // Check all required fields are filled
-    const requiredFields: (keyof SignupForm)[] = ['username', 'email', 'password', 'confirmPassword', 'name', 'phone', 'dateOfBirth'];
+    const requiredFields = ['username', 'email', 'password', 'confirmPassword', 'name', 'phone', 'dateOfBirth'] as const;
     const allFieldsFilled = requiredFields.every(field => {
       const value = formData[field];
       return value && value.trim() !== '';
