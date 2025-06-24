@@ -135,6 +135,12 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - 비밀번호 재설정 토큰 시스템
 - 실시간 닉네임 중복 확인
 
+### 프로젝트 문서화
+- ✅ **개발 로드맵 문서**: 단계별 개발 계획 및 우선순위 정리
+- ✅ **기술 명세서**: 시스템 아키텍처, API 명세, 보안 정책 문서화
+- ✅ **API 레퍼런스**: 현재 및 필요 API 목록 정리
+- ✅ **인증 시스템 가이드**: ID/비밀번호 찾기 기능 상세 가이드
+
 ## User Preferences
 
 ```
