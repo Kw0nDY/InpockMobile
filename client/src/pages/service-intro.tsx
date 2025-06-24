@@ -23,7 +23,7 @@ export default function ServiceIntroPage() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-[#F5F5DC]">
+    <div className="min-h-screen bg-white">
       {/* Mobile Header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="px-4 py-3 flex items-center justify-between">
