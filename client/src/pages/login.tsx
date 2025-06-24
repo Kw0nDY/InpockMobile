@@ -153,17 +153,15 @@ export default function LoginPage() {
             <button 
               type="button" 
               onClick={() => setLocation("/find-id")}
-              className="flex items-center px-4 py-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/5 hover:border-primary/40 font-medium transition-all duration-200"
+              className="px-4 py-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/5 hover:border-primary/40 font-medium transition-all duration-200"
             >
-              <HelpCircle className="w-4 h-4 mr-2" />
               아이디 찾기
             </button>
             <button 
               type="button" 
               onClick={() => setLocation("/forgot-password")}
-              className="flex items-center px-4 py-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/5 hover:border-primary/40 font-medium transition-all duration-200"
+              className="px-4 py-2 text-primary border border-primary/20 rounded-lg hover:bg-primary/5 hover:border-primary/40 font-medium transition-all duration-200"
             >
-              <HelpCircle className="w-4 h-4 mr-2" />
               비밀번호 찾기
             </button>
           </div>
