@@ -141,6 +141,7 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ✅ **실용적 해결책**: 다른 사이트들과 동일한 수준의 이메일 인증 제공
 - ✅ **SMS 인증 시스템 완성**: 개발 모드로 100% 작동, 콘솔에서 인증번호 확인
 - ✅ **SMS 우선 설정**: 비밀번호 찾기에서 SMS를 기본 선택으로 변경
+- ✅ **환경변수 정리**: 사용하지 않는 API 키들 제거 (RESEND, EmailJS 등)
 - ⚠️ **Twilio SMS 문제**: 계정 연결 성공하나 전화번호 API 인식 불가 (개발 모드로 완전 작동)
 
 ### 구현 완료 기능
