@@ -8,10 +8,14 @@ export const users = pgTable("users", {
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
   password: text("password"),
+  // Required fields from signup
   name: text("name").notNull(),
-  phone: text("phone"),
-  company: text("company"),
-  role: text("role").default("user"),
+  phone: text("phone").notNull(), // 필수로 변경
+  birthDate: text("birth_date").notNull(), // 필수로 변경
+  // Optional fitness fields from signup
+  currentGym: text("current_gym"), // 소속 헬스장명
+  gymPosition: text("gym_position"), // 직급
+  // Profile and system fields
   avatar: text("avatar"),
   profileImageUrl: text("profile_image_url"),
   introVideoUrl: text("intro_video_url"),
@@ -21,14 +25,14 @@ export const users = pgTable("users", {
   visitCount: integer("visit_count").default(0),
   provider: text("provider").default("local"),
   providerId: text("provider_id"),
-  // Fitness-related fields
-  birthDate: text("birth_date"),
+  // Additional fitness fields (for profile settings)
   fitnessAwards: text("fitness_awards"),
   fitnessCertifications: text("fitness_certifications"),
-  currentGym: text("current_gym"),
   gymAddress: text("gym_address"),
-  gymPosition: text("gym_position"), // 체육관 사원(계급)
   fitnessIntro: text("fitness_intro"),
+  // Legacy fields (deprecated)
+  company: text("company"), // 회사명 -> 소속 헬스장명으로 대체됨
+  role: text("role").default("user"), // 역할 -> 직급으로 대체됨
   createdAt: timestamp("created_at").defaultNow(),
 });
 

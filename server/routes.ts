@@ -215,25 +215,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/register", async (req, res) => {
     try {
-      const userData = insertUserSchema.parse(req.body);
+      console.log("Registration request body:", req.body);
+      
+      // Required fields validation
+      const requiredFields = ['username', 'email', 'password', 'name', 'phone', 'birthDate'];
+      const missingFields = requiredFields.filter(field => !req.body[field] || req.body[field].trim() === '');
+      
+      if (missingFields.length > 0) {
+        return res.status(400).json({ 
+          message: `필수 항목이 누락되었습니다: ${missingFields.join(', ')}` 
+        });
+      }
 
       // Validate username format
-      const usernameValidation = validateUsername(userData.username);
+      const usernameValidation = validateUsername(req.body.username);
       if (!usernameValidation.valid) {
         return res.status(400).json({ message: usernameValidation.message });
       }
 
       // Check if user exists by email
-      const existingUserByEmail = await storage.getUserByEmail(userData.email);
+      const existingUserByEmail = await storage.getUserByEmail(req.body.email);
       if (existingUserByEmail) {
         return res.status(409).json({ message: "이미 존재하는 이메일입니다" });
       }
 
       // Check if username is taken
-      const existingUserByUsername = await storage.getUserByUsername(userData.username);
+      const existingUserByUsername = await storage.getUserByUsername(req.body.username);
       if (existingUserByUsername) {
         return res.status(409).json({ message: "이미 사용중인 닉네임입니다" });
       }
+
+      // Create user with new schema
+      const userData = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+        name: req.body.name,
+        phone: req.body.phone,
+        birthDate: req.body.birthDate,
+        currentGym: req.body.currentGym || null,
+        gymPosition: req.body.gymPosition || null,
+        // Set defaults for optional fields
+        company: req.body.currentGym || null, // Legacy field for compatibility
+        role: req.body.gymPosition || "user", // Legacy field for compatibility
+      };
 
       const user = await storage.createUser(userData);
 
@@ -243,8 +268,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           username: user.username,
           email: user.email,
           name: user.name,
-          company: user.company,
-          role: user.role,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          currentGym: user.currentGym,
+          gymPosition: user.gymPosition,
         },
       });
     } catch (error) {
