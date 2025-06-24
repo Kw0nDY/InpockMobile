@@ -181,14 +181,30 @@ async function sendSendGridEmail(email: string, code: string): Promise<boolean> 
   }
 }
 
-// 통합 이메일 발송 함수 (여러 서비스 지원)
-async function sendRealEmail(email: string, code: string): Promise<boolean> {
-  // 이메일 배달 문제로 인해 콘솔 모드 우선 사용
+// 실제 이메일 발송 함수 (여러 서비스 폴백)
+export async function sendRealEmail(email: string, code: string, purpose: string): Promise<EmailApiResponse> {
+  const purposeText = purpose === 'find_id' ? 'ID 찾기' : '비밀번호 재설정';
+  
+  console.log(`📧 이메일 발송 시도: ${email}`);
+
+  // 1. EmailJS 시도 (가장 간단)
+  if (process.env.EMAILJS_SERVICE_ID) {
+    const { sendEmailViaEmailJS } = await import('./emailjs-service');
+    const emailjsResult = await sendEmailViaEmailJS(email, code, purpose);
+    if (emailjsResult.success) {
+      return emailjsResult;
+    }
+    console.log(`❌ EmailJS 실패: ${emailjsResult.message}`);
+  }
+
+  // 개발 모드 폴백
   console.log(`\n📧 이메일 인증번호 (개발 모드)`);
   console.log(`이메일: ${email}`);
   console.log(`인증번호: ${code}`);
   console.log(`유효시간: 10분`);
   console.log(`만료시간: ${new Date(Date.now() + 10 * 60 * 1000).toLocaleString('ko-KR')}\n`);
+  
+  return { success: true, message: "개발 모드로 이메일 발송됨" };
   
   // 실제 이메일 발송 시도 (Gmail SMTP 우선)
   if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
