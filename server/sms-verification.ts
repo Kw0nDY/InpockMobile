@@ -43,7 +43,16 @@ export async function sendSmsCode(phone: string, purpose: 'find_id' | 'reset_pas
       verified: false
     });
 
-    // 실제 SMS 발송 시도
+    // 실제 SMS 발송 시도 (한국 서비스 우선)
+    const { sendKoreanSms } = await import('./korean-sms-service');
+    const koreanSmsResult = await sendKoreanSms(phone, code, purpose);
+    
+    if (koreanSmsResult.success) {
+      console.log(`✅ 한국 SMS 발송 성공: ${phone}`);
+      return { success: true, message: "인증번호가 SMS로 발송되었습니다." };
+    }
+    
+    // 한국 SMS 실패 시 Twilio 시도
     const { sendRealSms } = await import('./sms-service');
     const smsResult = await sendRealSms(phone, code, purpose);
     
