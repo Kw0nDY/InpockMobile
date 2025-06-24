@@ -31,9 +31,10 @@ AmuseFit is a comprehensive business networking platform specifically designed f
 ## Key Components
 
 ### Authentication System
-- **Local Authentication**: Username/password with session management
+- **Local Authentication**: Username/password with bcrypt hashing and session management
 - **OAuth Integration**: Kakao social login with CSRF protection
-- **Password Recovery**: Email/SMS-based password reset
+- **Password Recovery**: Real email/SMS verification with 6-digit codes and secure token system
+- **Multi-Provider Support**: Twilio SMS, SendGrid/NodeMailer/Resend email services
 - **User Management**: Profile management with fitness-specific fields
 
 ### Content Management
@@ -119,6 +120,9 @@ AmuseFit is a comprehensive business networking platform specifically designed f
 ## Changelog
 
 - June 24, 2025. Initial setup
+- June 24, 2025. Implemented complete password/ID recovery system with real SMS/email verification
+- June 24, 2025. Fixed routing conflicts between password recovery and public profiles
+- June 24, 2025. Added multi-provider authentication services (Twilio, SendGrid, NodeMailer, Resend)
 
 ## User Preferences
 
