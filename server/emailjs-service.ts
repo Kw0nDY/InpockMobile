@@ -9,9 +9,15 @@ interface EmailJSResponse {
 
 export async function sendEmailViaEmailJS(email: string, code: string, purpose: string): Promise<EmailJSResponse> {
   try {
-    if (!process.env.EMAILJS_SERVICE_ID) {
-      throw new Error('EmailJS 설정이 필요합니다 (회원가입 후 Service ID만 복사)');
+    if (!process.env.EMAILJS_SERVICE_ID || !process.env.EMAILJS_TEMPLATE_ID || !process.env.EMAILJS_PUBLIC_KEY) {
+      throw new Error('EmailJS 설정이 필요합니다');
     }
+
+    console.log('EmailJS 설정 확인:', {
+      serviceId: process.env.EMAILJS_SERVICE_ID,
+      templateId: process.env.EMAILJS_TEMPLATE_ID,
+      publicKey: process.env.EMAILJS_PUBLIC_KEY?.substring(0, 5) + '...'
+    });
 
     const purposeText = purpose === 'find_id' ? 'ID 찾기' : '비밀번호 재설정';
     
@@ -27,25 +33,9 @@ export async function sendEmailViaEmailJS(email: string, code: string, purpose: 
         user_id: process.env.EMAILJS_PUBLIC_KEY,
         template_params: {
           to_email: email,
-          to_name: '회원님',
           from_name: 'AmuseFit',
-          subject: `[AmuseFit] ${purposeText} 인증번호`,
-          message: `
-안녕하세요, AmuseFit입니다.
-
-${purposeText} 인증번호를 안내드립니다.
-
-인증번호: ${code}
-
-이 인증번호는 10분간 유효합니다.
-인증번호를 정확히 입력해주세요.
-
-감사합니다.
-AmuseFit
-          `.trim(),
-          verification_code: code,
-          purpose: purposeText,
-          reply_to: 'noreply@amusefit.com'
+          message: `안녕하세요, AmuseFit입니다.\n\n${purposeText} 인증번호: ${code}\n\n이 인증번호는 10분간 유효합니다.\n\n감사합니다.`,
+          verification_code: code
         }
       })
     });
