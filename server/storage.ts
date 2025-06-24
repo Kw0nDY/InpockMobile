@@ -95,18 +95,48 @@ export interface IStorage {
 
 export class DatabaseStorage implements IStorage {
   async getUser(id: number): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user || undefined;
+    try {
+      if (!id || isNaN(id) || id <= 0) {
+        console.warn('Invalid user ID provided:', id);
+        return undefined;
+      }
+      
+      const [user] = await db.select().from(users).where(eq(users.id, id));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by ID:', error);
+      throw new Error(`Failed to fetch user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.email, email));
-    return user || undefined;
+    try {
+      if (!email || typeof email !== 'string' || !email.includes('@')) {
+        console.warn('Invalid email provided:', email);
+        return undefined;
+      }
+      
+      const [user] = await db.select().from(users).where(eq(users.email, email.toLowerCase()));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by email:', error);
+      throw new Error(`Failed to fetch user by email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user || undefined;
+    try {
+      if (!username || typeof username !== 'string' || username.trim().length === 0) {
+        console.warn('Invalid username provided:', username);
+        return undefined;
+      }
+      
+      const [user] = await db.select().from(users).where(eq(users.username, username.trim()));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by username:', error);
+      throw new Error(`Failed to fetch user by username: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
@@ -124,17 +154,78 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(user: InsertUser): Promise<User> {
-    const [newUser] = await db.insert(users).values(user).returning();
-    return newUser;
+    try {
+      // Validate required fields
+      if (!user.username || !user.email || !user.name) {
+        throw new Error('Missing required fields: username, email, and name are mandatory');
+      }
+      
+      // Validate email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(user.email)) {
+        throw new Error('Invalid email format');
+      }
+      
+      // Validate username format (alphanumeric, underscore, hyphen only)
+      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      if (!usernameRegex.test(user.username)) {
+        throw new Error('Username must be 3-20 characters and contain only letters, numbers, underscore, and hyphen');
+      }
+      
+      const [newUser] = await db.insert(users).values({
+        ...user,
+        email: user.email.toLowerCase(),
+        username: user.username.trim(),
+        name: user.name.trim(),
+      }).returning();
+      
+      if (!newUser) {
+        throw new Error('Failed to create user - no data returned');
+      }
+      
+      return newUser;
+    } catch (error) {
+      console.error('Error creating user:', error);
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        throw new Error('Username or email already exists');
+      }
+      throw new Error(`Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async updateUser(id: number, updates: Partial<User>): Promise<User | undefined> {
-    const [updatedUser] = await db
-      .update(users)
-      .set(updates)
-      .where(eq(users.id, id))
-      .returning();
-    return updatedUser || undefined;
+    try {
+      if (!id || isNaN(id) || id <= 0) {
+        throw new Error('Invalid user ID provided');
+      }
+      
+      if (!updates || Object.keys(updates).length === 0) {
+        throw new Error('No updates provided');
+      }
+      
+      // Sanitize updates
+      const sanitizedUpdates = { ...updates };
+      if (sanitizedUpdates.email) {
+        sanitizedUpdates.email = sanitizedUpdates.email.toLowerCase();
+      }
+      if (sanitizedUpdates.username) {
+        sanitizedUpdates.username = sanitizedUpdates.username.trim();
+      }
+      if (sanitizedUpdates.name) {
+        sanitizedUpdates.name = sanitizedUpdates.name.trim();
+      }
+      
+      const [updatedUser] = await db
+        .update(users)
+        .set(sanitizedUpdates)
+        .where(eq(users.id, id))
+        .returning();
+        
+      return updatedUser || undefined;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getLinks(userId: number): Promise<Link[]> {

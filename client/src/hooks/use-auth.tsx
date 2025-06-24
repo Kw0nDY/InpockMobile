@@ -30,30 +30,46 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   
-  // 저장소에서 사용자 정보 초기화
+  // 저장소에서 사용자 정보 초기화 (오류 방지 강화)
   useEffect(() => {
-    const savedUser = localStorage.getItem('auth_user');
-    const rememberMe = localStorage.getItem('auth_remember_me') === 'true';
-    const sessionUser = sessionStorage.getItem('auth_user_session');
-    
-    if (savedUser && rememberMe) {
-      try {
-        const parsedUser = JSON.parse(savedUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('저장된 사용자 정보 파싱 오류:', error);
-        localStorage.removeItem('auth_user');
-        localStorage.removeItem('auth_remember_me');
+    try {
+      const savedUser = localStorage.getItem('auth_user');
+      const rememberMe = localStorage.getItem('auth_remember_me') === 'true';
+      const sessionUser = sessionStorage.getItem('auth_user_session');
+      
+      if (savedUser && rememberMe) {
+        try {
+          const parsedUser = JSON.parse(savedUser);
+          
+          // Validate parsed user data
+          if (parsedUser && typeof parsedUser === 'object' && parsedUser.id && parsedUser.username) {
+            setUser(parsedUser);
+          } else {
+            console.warn('Invalid user data in localStorage, clearing...');
+            localStorage.removeItem('auth_user');
+            localStorage.removeItem('auth_remember_me');
+          }
+        } catch (parseError) {
+          console.error('저장된 사용자 정보 파싱 오류:', parseError);
+          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_remember_me');
+        }
+      } else if (sessionUser) {
+        try {
+          const parsedUser = JSON.parse(sessionUser);
+          
+          // Validate parsed user data
+          if (parsedUser && typeof parsedUser === 'object' && parsedUser.id && parsedUser.username) {
+            setUser(parsedUser);
+          } else {
+            console.warn('Invalid user data in sessionStorage, clearing...');
+            sessionStorage.removeItem('auth_user_session');
+          }
+        } catch (parseError) {
+          console.error('세션 사용자 정보 파싱 오류:', parseError);
+          sessionStorage.removeItem('auth_user_session');
+        }
       }
-    } else if (sessionUser) {
-      try {
-        const parsedUser = JSON.parse(sessionUser);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error('Error parsing session user:', error);
-        sessionStorage.removeItem('auth_user_session');
-      }
-    }
   }, []);
 
   // Save user to localStorage when remember me is enabled
@@ -76,14 +92,78 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async ({ username, password, rememberMe }: { username: string; password: string; rememberMe?: boolean }) => {
-      const response = await apiRequest("POST", "/api/auth/login", { username, password });
-      const data = await response.json();
-      return { data, rememberMe };
+      try {
+        // Input validation
+        if (!username || !password) {
+          throw new Error("사용자명과 비밀번호를 모두 입력해주세요");
+        }
+        
+        if (username.trim().length < 3) {
+          throw new Error("사용자명은 3자 이상이어야 합니다");
+        }
+        
+        if (password.length < 6) {
+          throw new Error("비밀번호는 6자 이상이어야 합니다");
+        }
+        
+        const response = await apiRequest("POST", "/api/auth/login", { 
+          username: username.trim(), 
+          password 
+        });
+        const data = await response.json();
+        
+        // Validate response data
+        if (!data || typeof data !== 'object') {
+          throw new Error("서버에서 잘못된 응답을 받았습니다");
+        }
+        
+        if (!data.user || typeof data.user !== 'object' || !data.user.id || !data.user.username) {
+          throw new Error("로그인 응답에서 유효한 사용자 정보를 찾을 수 없습니다");
+        }
+        
+        return { data, rememberMe };
+      } catch (error) {
+        console.error('로그인 처리 오류:', error);
+        throw error;
+      }
     },
     onSuccess: ({ data, rememberMe }) => {
-      setUser(data.user);
-      saveUserToStorage(data.user, rememberMe || false);
+      try {
+        setUser(data.user);
+        
+        // Store user data with error handling
+        if (rememberMe) {
+          try {
+            localStorage.setItem('auth_user', JSON.stringify(data.user));
+            localStorage.setItem('auth_remember_me', 'true');
+            sessionStorage.removeItem('auth_user_session');
+          } catch (storageError) {
+            console.warn('Failed to save to localStorage:', storageError);
+          }
+        } else {
+          try {
+            sessionStorage.setItem('auth_user_session', JSON.stringify(data.user));
+            localStorage.removeItem('auth_user');
+            localStorage.removeItem('auth_remember_me');
+          } catch (storageError) {
+            console.warn('Failed to save to sessionStorage:', storageError);
+          }
+        }
+      } catch (error) {
+        console.error('Post-login processing error:', error);
+      }
     },
+    onError: (error) => {
+      console.error('로그인 오류:', error);
+      // Clear any stored auth data on login failure
+      try {
+        localStorage.removeItem('auth_user');
+        localStorage.removeItem('auth_remember_me');
+        sessionStorage.removeItem('auth_user_session');
+      } catch (storageError) {
+        console.warn('Failed to clear auth storage:', storageError);
+      }
+    }
   });
 
   const login = async (username: string, password: string, rememberMe?: boolean) => {
@@ -91,13 +171,52 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    setUser(null);
-    saveUserToStorage(null, false);
+    try {
+      setUser(null);
+      
+      // Clear all auth-related storage
+      try {
+        localStorage.removeItem('auth_user');
+        localStorage.removeItem('auth_remember_me');
+        sessionStorage.removeItem('auth_user_session');
+      } catch (storageError) {
+        console.warn('Failed to clear auth storage during logout:', storageError);
+      }
+      
+      // Optional: Call server logout endpoint
+      apiRequest("POST", "/api/auth/logout", {}).catch(error => {
+        console.warn('Server logout failed (but local logout succeeded):', error);
+      });
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force user state clear even if other operations fail
+      setUser(null);
+    }
   };
 
   const checkRegistrationComplete = () => {
-    if (!user) return false;
-    return !!(user.username && user.phone && user.name);
+    try {
+      if (!user || typeof user !== 'object') return false;
+      
+      // Check for required fields with proper validation
+      const hasRequiredFields = !!(
+        user.name && 
+        user.email && 
+        user.username &&
+        typeof user.name === 'string' &&
+        typeof user.email === 'string' &&
+        typeof user.username === 'string' &&
+        user.name.trim().length > 0 &&
+        user.email.includes('@') &&
+        user.username.trim().length >= 3
+      );
+      
+      return hasRequiredFields;
+    } catch (error) {
+      console.error('Error checking registration completion:', error);
+      return false;
+    }
   };
 
   return (

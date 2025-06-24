@@ -222,16 +222,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/auth/register", async (req, res) => {
     try {
-      console.log("Registration request body:", req.body);
+      console.log("Registration request received");
       
-      // Required fields validation
+      // Input validation
+      if (!req.body || typeof req.body !== 'object') {
+        return res.status(400).json({ message: "잘못된 요청 데이터입니다" });
+      }
+      
+      // Required fields validation with detailed checks
       const requiredFields = ['username', 'email', 'password', 'name', 'phone', 'birthDate'];
-      const missingFields = requiredFields.filter(field => !req.body[field] || req.body[field].trim() === '');
+      const missingFields = requiredFields.filter(field => {
+        const value = req.body[field];
+        return !value || typeof value !== 'string' || value.trim() === '';
+      });
       
       if (missingFields.length > 0) {
         return res.status(400).json({ 
           message: `필수 항목이 누락되었습니다: ${missingFields.join(', ')}` 
         });
+      }
+      
+      // Email format validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(req.body.email)) {
+        return res.status(400).json({ message: "올바른 이메일 형식이 아닙니다" });
+      }
+      
+      // Password strength validation
+      if (req.body.password.length < 6) {
+        return res.status(400).json({ message: "비밀번호는 6자 이상이어야 합니다" });
+      }
+      
+      // Phone format validation (Korean phone numbers)
+      const phoneRegex = /^(01[016789])-?(\d{3,4})-?(\d{4})$/;
+      if (!phoneRegex.test(req.body.phone.replace(/[-\s]/g, ''))) {
+        return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다" });
       }
 
       // Validate username format
@@ -269,6 +294,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const user = await storage.createUser(userData);
 
+      if (!user || !user.id) {
+        throw new Error("사용자 생성에 실패했습니다");
+      }
+
+      // Return safe user data (exclude sensitive information)
       res.status(201).json({
         user: {
           id: user.id,
@@ -280,6 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           currentGym: user.currentGym,
           gymPosition: user.gymPosition,
         },
+        message: "회원가입이 완료되었습니다"
       });
     } catch (error) {
       res.status(400).json({ message: "Invalid request data" });
