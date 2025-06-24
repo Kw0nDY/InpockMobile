@@ -29,8 +29,8 @@ export default function BottomNav() {
               onClick={() => setLocation(path)}
               className={`flex flex-col items-center py-2 px-3 transition-all duration-200 rounded-lg ${
                 isActive 
-                  ? "text-amber-800 bg-amber-50/80" 
-                  : "text-gray-500 hover:text-amber-800 hover:bg-stone-100/60"
+                  ? "text-amber-800 bg-amber-100/70" 
+                  : "text-gray-500 hover:text-amber-900 hover:bg-amber-100/50"
               }`}
             >
               <Icon className="w-6 h-6 mb-1 transition-colors" />
