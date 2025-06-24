@@ -171,10 +171,10 @@ export default function FindIdPage() {
 
           <Button
             type="submit"
-            disabled={findIdMutation.isPending}
+            disabled={sendSmsCodeMutation.isPending}
             className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
           >
-            {findIdMutation.isPending ? "아이디 찾는 중..." : "아이디 찾기"}
+            {sendSmsCodeMutation.isPending ? "인증번호 발송 중..." : "인증번호 받기"}
           </Button>
         </form>
 
