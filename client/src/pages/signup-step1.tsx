@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowRight, Shield, FileText, Eye, Bell, X } from "lucide-react";
+import { ArrowRight, Shield, FileText, Eye, Bell, X, Check, UserPlus } from "lucide-react";
 import KakaoLoginButton from "@/components/ui/kakao-login-button";
 
 export default function SignupStep1() {
@@ -227,7 +227,7 @@ export default function SignupStep1() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-white" />
+            <UserPlus className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-800 korean-text mb-2">약관 동의</h1>
           <p className="text-gray-600 korean-text">서비스 이용을 위해 약관에 동의해주세요</p>

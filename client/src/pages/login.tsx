@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LogIn, User, Lock, HelpCircle, Dumbbell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -78,12 +78,18 @@ export default function LoginPage() {
         <button className="p-2" onClick={() => setLocation("/")}>
           <ArrowLeft className="w-6 h-6 text-gray-600" />
         </button>
-        <h1 className="text-lg font-medium text-gray-900">AmuseFit</h1>
+        <div className="flex items-center space-x-2">
+          <Dumbbell className="w-6 h-6 text-primary" />
+          <h1 className="text-lg font-medium text-gray-900">AmuseFit</h1>
+        </div>
         <div className="w-10"></div>
       </header>
 
       <div className="px-6 py-8">
-        <div className="mb-8">
+        <div className="mb-8 text-center">
+          <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <LogIn className="w-8 h-8 text-white" />
+          </div>
           <h2 className="text-2xl font-bold mb-2 korean-text text-gray-900">로그인</h2>
           <p className="text-gray-600 text-sm korean-text">
             AmuseFit 계정으로 로그인하세요.
@@ -92,7 +98,8 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-6" autoComplete="off" data-form-type="other">
           <div>
-            <Label htmlFor="username" className="block text-sm font-medium mb-2 text-gray-700">
+            <Label htmlFor="username" className="flex items-center text-sm font-medium mb-2 text-gray-700">
+              <User className="w-4 h-4 mr-2 text-primary" />
               닉네임
             </Label>
             <Input
@@ -112,8 +119,9 @@ export default function LoginPage() {
           <div>
             <Label
               htmlFor="password"
-              className="block text-sm font-medium mb-2 text-gray-700"
+              className="flex items-center text-sm font-medium mb-2 text-gray-700"
             >
+              <Lock className="w-4 h-4 mr-2 text-primary" />
               비밀번호
             </Label>
             <Input
@@ -145,16 +153,18 @@ export default function LoginPage() {
             <button 
               type="button" 
               onClick={() => setLocation("/find-id")}
-              className="text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
+              className="flex items-center text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
             >
+              <HelpCircle className="w-4 h-4 mr-1" />
               아이디 찾기
             </button>
             <span className="text-gray-300">|</span>
             <button 
               type="button" 
               onClick={() => setLocation("/forgot-password")}
-              className="text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
+              className="flex items-center text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
             >
+              <HelpCircle className="w-4 h-4 mr-1" />
               비밀번호 찾기
             </button>
           </div>
