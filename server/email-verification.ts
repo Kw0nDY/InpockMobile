@@ -68,7 +68,7 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
         'api-key': process.env.BREVO_API_KEY!
       },
       body: JSON.stringify({
-        sender: { name: 'AmuseFit', email: 'noreply@amusefit.com' },
+        sender: { name: 'AmuseFit', email: 'onboarding@resend.dev' },
         to: [{ email }],
         subject: '[AmuseFit] 인증번호',
         htmlContent: html,
@@ -102,7 +102,7 @@ async function sendResendEmail(email: string, code: string): Promise<boolean> {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'AmuseFit <noreply@amusefit.com>',
+        from: 'AmuseFit <onboarding@resend.dev>',
         to: [email],
         subject: '[AmuseFit] 인증번호',
         html,
@@ -133,7 +133,7 @@ async function sendSendGridEmail(email: string, code: string): Promise<boolean> 
     
     await sgMail.send({
       to: email,
-      from: 'noreply@amusefit.com',
+      from: 'onboarding@resend.dev',
       subject: '[AmuseFit] 인증번호',
       html,
       text

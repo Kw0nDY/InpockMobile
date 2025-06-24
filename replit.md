@@ -123,7 +123,7 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 
 ### June 24, 2025
 - ✅ **실제 SMS/이메일 인증 시스템 구현**: 6자리 코드, 시간 제한, 재전송 기능
-- ✅ **Resend API 연동**: 월 3,000통 무료 이메일 발송 서비스 통합
+- ✅ **Resend API 연동**: 월 3,000통 무료 이메일 발송 서비스 통합 (테스트 도메인)
 - ✅ **다중 이메일 서비스 지원**: Brevo, Resend, SendGrid 자동 폴백
 - ✅ **카카오 OAuth 불완전 회원가입 처리**: 필수 정보 누락 시 자동 리다이렉트
 - ✅ **회원가입 완료 페이지**: 닉네임/이름/전화번호 실시간 유효성 검사  

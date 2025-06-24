@@ -149,11 +149,11 @@ export default function ForgotPasswordPage() {
           <div className="space-y-4">
             <Button
               onClick={handleResend}
-              disabled={forgotPasswordMutation.isPending}
+              disabled={sendEmailCodeMutation.isPending || sendSmsCodeMutation.isPending}
               variant="outline"
               className="w-full py-3 rounded-lg font-medium"
             >
-              {forgotPasswordMutation.isPending ? "재전송 중..." : 
+              {(sendEmailCodeMutation.isPending || sendSmsCodeMutation.isPending) ? "재전송 중..." : 
                 contactMethod === "email" ? "이메일 재전송" : "문자 재전송"
               }
             </Button>
@@ -260,10 +260,10 @@ export default function ForgotPasswordPage() {
 
           <Button
             type="submit"
-            disabled={forgotPasswordMutation.isPending}
+            disabled={sendEmailCodeMutation.isPending || sendSmsCodeMutation.isPending}
             className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90 disabled:opacity-50"
           >
-            {forgotPasswordMutation.isPending ? "전송 중..." : "비밀번호 재설정 링크 전송"}
+            {(sendEmailCodeMutation.isPending || sendSmsCodeMutation.isPending) ? "인증번호 발송 중..." : "인증번호 받기"}
           </Button>
         </form>
 
