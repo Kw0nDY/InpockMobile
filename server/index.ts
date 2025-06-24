@@ -1,8 +1,11 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Resend API 설정 완료
 
 // Increase request size limits
 app.use(express.json({ limit: '50mb' }));
