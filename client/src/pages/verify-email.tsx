@@ -174,14 +174,18 @@ export default function VerifyEmailPage() {
             <Mail className="w-8 h-8 text-amber-600" />
           </div>
           <h2 className="text-xl font-bold mb-2 korean-text">이메일 인증</h2>
-          <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4">
-            <p className="text-sm text-amber-800 text-center mb-1">
-              {email}로 인증번호를 발송했습니다.
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+            <p className="text-sm text-blue-800 text-center mb-2 font-medium">
+              {email}로 인증번호를 발송했습니다
             </p>
-            <p className="text-xs text-amber-600 text-center">
-              이메일이 오지 않으면 <strong>워크플로우 콘솔</strong>에서<br />
-              "📧 이메일 인증번호" 를 찾아 6자리 번호를 확인하세요.
-            </p>
+            <div className="bg-white rounded p-3 border border-blue-100">
+              <p className="text-xs text-blue-700 text-center leading-relaxed">
+                <strong>이메일이 오지 않았나요?</strong><br />
+                Replit 화면 우측의 <strong>"워크플로우 콘솔"</strong>에서<br />
+                "📧 이메일 인증번호" 항목을 찾아<br />
+                <strong>6자리 인증번호</strong>를 확인하세요
+              </p>
+            </div>
           </div>
           <p className="text-amber-600 text-sm font-medium">
             남은 시간: {formatTime(timeLeft)}

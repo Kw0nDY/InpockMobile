@@ -190,16 +190,68 @@ async function sendRealEmail(email: string, code: string): Promise<boolean> {
   console.log(`유효시간: 10분`);
   console.log(`만료시간: ${new Date(Date.now() + 10 * 60 * 1000).toLocaleString('ko-KR')}\n`);
   
-  // 백그라운드에서 Brevo 이메일 발송 시도
-  if (process.env.BREVO_API_KEY) {
-    sendBrevoEmail(email, code).then(success => {
-      if (success) {
-        console.log(`📮 실제 이메일도 ${email}로 발송되었습니다.`);
-        console.log(`   스팸 폴더, 프로모션 탭도 확인해보세요.`);
-      }
-    }).catch(error => {
-      console.log('이메일 발송 시도 완료');
-    });
+  // 실제 이메일 발송 시도 (Gmail SMTP 우선)
+  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
+    try {
+      const nodemailer = require('nodemailer');
+      
+      const transporter = nodemailer.createTransporter({
+        service: 'gmail',
+        auth: {
+          user: process.env.GMAIL_USER,
+          pass: process.env.GMAIL_APP_PASSWORD
+        }
+      });
+
+      const mailOptions = {
+        from: `"AmuseFit 인증" <${process.env.GMAIL_USER}>`,
+        to: email,
+        subject: '🔐 AmuseFit 계정 인증번호',
+        html: `
+          <div style="max-width: 500px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #8B4513; margin: 0;">AmuseFit</h1>
+              <p style="color: #666; margin: 5px 0;">피트니스 비즈니스 플랫폼</p>
+            </div>
+            
+            <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 30px; text-align: center;">
+              <h2 style="color: #495057; margin: 0 0 20px 0;">계정 인증번호</h2>
+              <div style="background: #ffffff; border: 2px solid #8B4513; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <span style="font-size: 32px; font-weight: bold; color: #8B4513; letter-spacing: 6px;">${code}</span>
+              </div>
+              <p style="color: #6c757d; margin: 0; font-size: 14px;">
+                이 인증번호는 <strong>10분간</strong> 유효합니다.
+              </p>
+            </div>
+            
+            <div style="margin-top: 20px; padding: 15px; background: #fff3cd; border-radius: 6px;">
+              <p style="color: #856404; margin: 0; font-size: 13px; text-align: center;">
+                본인이 요청하지 않았다면 이 이메일을 무시하세요.
+              </p>
+            </div>
+          </div>
+        `,
+        text: `AmuseFit 계정 인증번호: ${code}\n\n이 번호는 10분간 유효합니다.\n\n본인이 요청하지 않았다면 무시하세요.`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.log('Gmail SMTP 발송 실패:', error.message);
+        } else {
+          console.log(`📮 Gmail SMTP로 실제 이메일 발송 성공: ${email}`);
+          console.log(`   메시지 ID: ${info.messageId}`);
+        }
+      });
+    } catch (error) {
+      console.log('Gmail SMTP 설정 오류:', error.message);
+    }
+  } else {
+    // Brevo 백업 발송
+    if (process.env.BREVO_API_KEY) {
+      sendBrevoEmail(email, code).catch(() => {
+        console.log('백업 이메일 발송 시도 완료');
+      });
+    }
   }
   
   return true; // 콘솔 모드이므로 항상 성공으로 처리

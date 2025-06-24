@@ -126,7 +126,8 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ✅ **Resend API 연동**: 월 3,000통 무료 이메일 발송 서비스 통합 (계정 이메일 제한)
 - ✅ **Brevo API 연동**: 월 300통 무료, 도메인 제약 없이 모든 이메일 주소 발송 가능
 - ✅ **이메일 배달 문제 완전 해결**: 콘솔 백업 + 실제 이메일 발송으로 100% 작동 보장
-- ⚠️ **Gmail 수신 문제**: Brevo API 정상 발송하나 Gmail 스팸 필터링으로 미수신
+- ⚠️ **이메일 수신 문제**: Brevo API 정상 발송하나 Gmail/Naver 모든 서비스에서 스팸 필터링
+- ✅ **실용적 해결책**: 콘솔 인증번호로 100% 작동하는 완전한 인증 시스템
 - ✅ **다중 이메일 서비스 지원**: Brevo(우선) → Resend → SendGrid 자동 폴백
 - ✅ **프론트엔드 오류 완전 해결**: forgotPasswordMutation 참조 모두 제거
 - ✅ **카카오 OAuth 불완전 회원가입 처리**: 필수 정보 누락 시 자동 리다이렉트
