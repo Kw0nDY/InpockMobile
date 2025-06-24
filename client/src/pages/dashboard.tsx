@@ -30,8 +30,15 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { user, checkRegistrationComplete } = useAuth();
   const [, setLocation] = useLocation();
+
+  // 필수 정보 미완성 시 회원가입 완료 페이지로 리다이렉트
+  useEffect(() => {
+    if (user && !checkRegistrationComplete()) {
+      setLocation('/complete-registration');
+    }
+  }, [user, checkRegistrationComplete, setLocation]);
 
   const queryClient = useQueryClient();
   const { toast } = useToast();

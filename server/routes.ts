@@ -306,6 +306,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check username availability
+  app.post("/api/auth/check-username", async (req, res) => {
+    try {
+      const { username } = req.body;
+      
+      if (!username) {
+        return res.status(400).json({ message: "닉네임을 입력해주세요." });
+      }
+
+      const existingUser = await storage.getUserByUsername(username);
+      res.json({ 
+        available: !existingUser,
+        message: existingUser ? "이미 사용중인 닉네임입니다" : "사용 가능한 닉네임입니다"
+      });
+    } catch (error) {
+      console.error("Username check error:", error);
+      res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+  });
+
+  // Check if user needs to complete registration
+  app.get("/api/auth/check-registration/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const user = await storage.getUser(parseInt(userId));
+      
+      if (!user) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+      }
+
+      const isComplete = !!(user.username && user.phone && user.name);
+      const missingFields = [];
+      
+      if (!user.username) missingFields.push('username');
+      if (!user.phone) missingFields.push('phone');
+      if (!user.name) missingFields.push('name');
+
+      res.json({
+        isComplete,
+        missingFields,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          name: user.name,
+          phone: user.phone
+        }
+      });
+    } catch (error) {
+      console.error("Registration check error:", error);
+      res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+  });
+
   // Find ID by phone number
   app.post("/api/auth/find-id", async (req, res) => {
     try {

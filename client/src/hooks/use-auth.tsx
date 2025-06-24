@@ -7,6 +7,7 @@ interface User {
   username: string;
   email: string;
   name: string;
+  phone?: string;
   company?: string;
   role: string;
   bio?: string;
@@ -21,6 +22,7 @@ interface AuthContextType {
   logout: () => void;
   setUser: (user: User | null) => void;
   isLoading: boolean;
+  checkRegistrationComplete: () => boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -93,6 +95,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     saveUserToStorage(null, false);
   };
 
+  const checkRegistrationComplete = () => {
+    if (!user) return false;
+    return !!(user.username && user.phone && user.name);
+  };
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -100,7 +107,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login, 
         logout, 
         setUser,
-        isLoading: loginMutation.isPending 
+        isLoading: loginMutation.isPending,
+        checkRegistrationComplete
       }}
     >
       {children}
