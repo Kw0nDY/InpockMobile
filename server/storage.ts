@@ -1,5 +1,5 @@
 import { 
-  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, passwordResetTokens,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, verificationCodes,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
@@ -7,7 +7,7 @@ import {
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit,
   type Notification, type InsertNotification,
-  type PasswordResetToken, type InsertPasswordResetToken
+  type VerificationCode, type InsertVerificationCode
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
