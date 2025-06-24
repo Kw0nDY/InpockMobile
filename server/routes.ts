@@ -13,8 +13,6 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { randomBytes } from "crypto";
-import { AuthServiceFactory, AuthCodeManager } from "./auth-services";
-import bcrypt from "bcryptjs";
 import { generateUniqueUsername, validateUsername } from "./username-utils";
 import { findUserByFlexibleUsername } from "./username-matcher";
 
@@ -162,8 +160,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Invalid credentials" });
       }
 
-      const isPasswordValid = await bcrypt.compare(password, user.password);
-      if (!isPasswordValid) {
+      if (user.password !== password) {
         console.log("Password mismatch for user:", username);
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -773,186 +770,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Password/Username Recovery API
-  app.post("/api/auth/find-username", async (req, res) => {
-    try {
-      const { email, phone } = req.body;
-      
-      if (!email && !phone) {
-        return res.status(400).json({ message: "이메일 또는 전화번호를 입력해주세요" });
-      }
-
-      let user;
-      if (email) {
-        user = await storage.getUserByEmail(email);
-      } else if (phone) {
-        user = await storage.getUserByPhone(phone);
-      }
-
-      if (!user) {
-        return res.status(404).json({ message: "해당 정보로 등록된 계정을 찾을 수 없습니다" });
-      }
-
-      // 사용자명의 일부만 표시 (보안)
-      const maskedUsername = user.username.substring(0, 2) + '*'.repeat(user.username.length - 2);
-      
-      res.json({ 
-        message: "계정을 찾았습니다",
-        username: maskedUsername,
-        email: user.email ? user.email.replace(/(.{2}).*(@.*)/, '$1***$2') : null
-      });
-    } catch (error) {
-      console.error("Username finding error:", error);
-      res.status(500).json({ message: "서버 오류가 발생했습니다" });
-    }
-  });
-
-  app.post("/api/auth/send-reset-code", async (req, res) => {
-    try {
-      const { email, phone, type } = req.body;
-      
-      if (!email && !phone) {
-        return res.status(400).json({ message: "이메일 또는 전화번호를 입력해주세요" });
-      }
-
-      if (!type || !['email', 'sms'].includes(type)) {
-        return res.status(400).json({ message: "인증 방법을 선택해주세요" });
-      }
-
-      let user;
-      if (type === 'email' && email) {
-        user = await storage.getUserByEmail(email);
-      } else if (type === 'sms' && phone) {
-        user = await storage.getUserByPhone(phone);
-      }
-
-      if (!user) {
-        return res.status(404).json({ message: "해당 정보로 등록된 계정을 찾을 수 없습니다" });
-      }
-
-      // 6자리 인증 코드 생성
-      const code = AuthCodeManager.generateCode();
-      const expiresAt = AuthCodeManager.getExpiryTime(10); // 10분 유효
-
-      // 데이터베이스에 인증 코드 저장
-      await storage.createVerificationCode({
-        phone: type === 'sms' ? phone : null,
-        email: type === 'email' ? email : null,
-        code,
-        type,
-        purpose: 'password_reset',
-        expiresAt,
-        verified: false,
-        attempts: 0
-      });
-
-      // 인증 코드 발송
-      if (type === 'email') {
-        const emailService = AuthServiceFactory.createEmailService();
-        const template = AuthCodeManager.getEmailTemplate(code, 'password_reset');
-        const sent = await emailService.sendEmail(email, template.subject, template.content);
-        
-        if (!sent) {
-          return res.status(500).json({ message: "이메일 발송에 실패했습니다" });
-        }
-      } else if (type === 'sms') {
-        const smsService = AuthServiceFactory.createSMSService();
-        const message = AuthCodeManager.getSMSTemplate(code, 'password_reset');
-        const sent = await smsService.sendSMS(phone, message);
-        
-        if (!sent) {
-          return res.status(500).json({ message: "SMS 발송에 실패했습니다" });
-        }
-      }
-
-      res.json({ 
-        message: "인증 코드가 발송되었습니다",
-        expiresIn: 600 // 초 단위
-      });
-    } catch (error) {
-      console.error("Reset code sending error:", error);
-      res.status(500).json({ message: "서버 오류가 발생했습니다" });
-    }
-  });
-
-  app.post("/api/auth/verify-reset-code", async (req, res) => {
-    try {
-      const { code, type, email, phone } = req.body;
-      
-      if (!code || !type) {
-        return res.status(400).json({ message: "인증 코드와 인증 방법을 입력해주세요" });
-      }
-
-      // 인증 코드 확인
-      const verificationCode = await storage.getVerificationCode(code, type, 'password_reset');
-      
-      if (!verificationCode) {
-        return res.status(400).json({ message: "유효하지 않거나 만료된 인증 코드입니다" });
-      }
-
-      if ((verificationCode.attempts || 0) >= 3) {
-        return res.status(429).json({ message: "인증 시도 횟수를 초과했습니다. 새 코드를 요청해주세요" });
-      }
-
-      // 인증 코드가 일치하는지 확인
-      if (verificationCode.code !== code) {
-        await storage.incrementCodeAttempts(verificationCode.id);
-        return res.status(400).json({ message: "인증 코드가 일치하지 않습니다" });
-      }
-
-      // 인증 성공 처리
-      await storage.markCodeAsVerified(verificationCode.id);
-      
-      // 임시 토큰 생성 (비밀번호 재설정용)
-      const resetToken = AuthCodeManager.generateSecureToken();
-      
-      res.json({ 
-        message: "인증이 완료되었습니다",
-        resetToken,
-        expiresIn: 900 // 15분 유효
-      });
-    } catch (error) {
-      console.error("Code verification error:", error);
-      res.status(500).json({ message: "서버 오류가 발생했습니다" });
-    }
-  });
-
-  app.post("/api/auth/reset-password", async (req, res) => {
-    try {
-      const { resetToken, newPassword, email, phone } = req.body;
-      
-      if (!resetToken || !newPassword) {
-        return res.status(400).json({ message: "모든 필드를 입력해주세요" });
-      }
-
-      if (newPassword.length < 6) {
-        return res.status(400).json({ message: "비밀번호는 최소 6자 이상이어야 합니다" });
-      }
-
-      let user;
-      if (email) {
-        user = await storage.getUserByEmail(email);
-      } else if (phone) {
-        user = await storage.getUserByPhone(phone);
-      }
-
-      if (!user) {
-        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
-      }
-
-      // 비밀번호 해시화
-      const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-      // 비밀번호 업데이트
-      await storage.updateUser(user.id, { password: hashedPassword });
-
-      res.json({ message: "비밀번호가 성공적으로 변경되었습니다" });
-    } catch (error) {
-      console.error("Password reset error:", error);
-      res.status(500).json({ message: "서버 오류가 발생했습니다" });
-    }
-  });
-
   // Settings routes
   app.get("/api/settings/:userId", async (req, res) => {
     try {
@@ -1274,18 +1091,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { identifier } = req.params;
       
-      // Exclude reserved routes from public profile lookup
-      const reservedRoutes = [
-        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
-        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
-        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
-        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
-      ];
-      
-      if (reservedRoutes.includes(identifier)) {
-        return res.status(404).json({ message: "Route not found" });
-      }
-      
       let user = await storage.getUserByCustomUrl(identifier);
       if (!user) {
         user = await storage.getUserByUsername(identifier);
@@ -1318,18 +1123,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/public/:identifier/links", async (req, res) => {
     try {
       const { identifier } = req.params;
-      
-      // Exclude reserved routes from public profile lookup
-      const reservedRoutes = [
-        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
-        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
-        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
-        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
-      ];
-      
-      if (reservedRoutes.includes(identifier)) {
-        return res.status(404).json({ message: "Route not found" });
-      }
       
       let user = await storage.getUserByCustomUrl(identifier);
       if (!user) {
@@ -1427,7 +1220,82 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Forgot Password routes
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const { email } = z.object({ email: z.string().email() }).parse(req.body);
+      
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        // Return success even if user doesn't exist for security
+        return res.json({ message: "If an account with that email exists, a reset link has been sent." });
+      }
 
+      // Generate secure random token
+      const token = randomBytes(32).toString('hex');
+      const expiresAt = new Date(Date.now() + 30 * 60 * 1000); // 30 minutes
+
+      // Store reset token
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+        used: false,
+      });
+
+      // In a real application, you would send an email here
+      // For demo purposes, we'll log the reset link
+      console.log(`Password reset link: ${process.env.REPLIT_DEV_DOMAIN ? 
+        `https://${process.env.REPLIT_DEV_DOMAIN}` : 
+        'http://localhost:5000'}/reset-password/${token}`);
+
+      res.json({ message: "If an account with that email exists, a reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
+
+  app.get("/api/auth/verify-reset-token/:token", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const resetToken = await storage.getPasswordResetToken(token);
+      
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      res.json({ valid: true });
+    } catch (error) {
+      console.error("Token verification error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const { password, token } = z.object({
+        password: z.string().min(8),
+        token: z.string()
+      }).parse(req.body);
+
+      const resetToken = await storage.getPasswordResetToken(token);
+      if (!resetToken) {
+        return res.status(400).json({ message: "Invalid or expired token" });
+      }
+
+      // Update user password
+      await storage.updateUser(resetToken.userId, { password });
+      
+      // Mark token as used
+      await storage.markTokenAsUsed(token);
+
+      res.json({ message: "Password reset successful" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(400).json({ message: "Invalid request" });
+    }
+  });
 
   // User routes
   app.get("/api/user/:id", async (req, res) => {
@@ -1724,18 +1592,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/public/:identifier", async (req, res) => {
     try {
       const { identifier } = req.params;
-      
-      // Exclude reserved routes from public profile lookup
-      const reservedRoutes = [
-        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
-        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
-        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
-        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
-      ];
-      
-      if (reservedRoutes.includes(identifier)) {
-        return res.status(404).json({ message: "Route not found" });
-      }
       
       // Debug storage state
       const allUsers = await storage.getAllUsers();

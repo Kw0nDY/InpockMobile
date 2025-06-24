@@ -1,5 +1,5 @@
 import { 
-  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, verificationCodes,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, passwordResetTokens,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
@@ -7,7 +7,7 @@ import {
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit,
   type Notification, type InsertNotification,
-  type VerificationCode, type InsertVerificationCode
+  type PasswordResetToken, type InsertPasswordResetToken
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
@@ -83,11 +83,10 @@ export interface IStorage {
   markNotificationAsRead(id: number): Promise<void>;
   getUnreadNotificationCount(userId: number): Promise<number>;
 
-  // Verification Codes
-  createVerificationCode(code: InsertVerificationCode): Promise<VerificationCode>;
-  getVerificationCode(code: string, type: 'sms' | 'email', purpose: string): Promise<VerificationCode | undefined>;
-  markCodeAsVerified(id: number): Promise<void>;
-  incrementCodeAttempts(id: number): Promise<void>;
+  // Password Reset Tokens
+  createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
+  getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined>;
+  markTokenAsUsed(token: string): Promise<void>;
 
   // Media Order Management
   updateMediaOrder(userId: number, mediaIds: number[]): Promise<void>;
@@ -388,43 +387,28 @@ export class DatabaseStorage implements IStorage {
     return result.count;
   }
 
-  // Verification Codes (SMS/Email)
-  async createVerificationCode(code: InsertVerificationCode): Promise<VerificationCode> {
-    const [newCode] = await db
-      .insert(verificationCodes)
-      .values(code)
+  // Password Reset Tokens
+  async createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [newToken] = await db
+      .insert(passwordResetTokens)
+      .values(token)
       .returning();
-    return newCode;
+    return newToken;
   }
 
-  async getVerificationCode(code: string, type: 'sms' | 'email', purpose: string): Promise<VerificationCode | undefined> {
-    const [verificationCode] = await db
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [resetToken] = await db
       .select()
-      .from(verificationCodes)
-      .where(
-        and(
-          eq(verificationCodes.code, code),
-          eq(verificationCodes.type, type),
-          sql`${verificationCodes.purpose} = ${purpose}`,
-          eq(verificationCodes.verified, false),
-          gte(verificationCodes.expiresAt, new Date())
-        )
-      );
-    return verificationCode || undefined;
+      .from(passwordResetTokens)
+      .where(eq(passwordResetTokens.token, token));
+    return resetToken || undefined;
   }
 
-  async markCodeAsVerified(id: number): Promise<void> {
+  async markTokenAsUsed(token: string): Promise<void> {
     await db
-      .update(verificationCodes)
-      .set({ verified: true })
-      .where(eq(verificationCodes.id, id));
-  }
-
-  async incrementCodeAttempts(id: number): Promise<void> {
-    await db
-      .update(verificationCodes)
-      .set({ attempts: sql`${verificationCodes.attempts} + 1` })
-      .where(eq(verificationCodes.id, id));
+      .update(passwordResetTokens)
+      .set({ used: true })
+      .where(eq(passwordResetTokens.token, token));
   }
 
   // Media Order Management

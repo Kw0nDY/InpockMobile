@@ -180,28 +180,17 @@ export default function LoginPage() {
           <KakaoLoginButton variant="login" />
         </div>
 
-        <div className="text-center mb-8 space-y-2">
-          <div>
-            <p className="text-sm text-gray-600 korean-text">
-              계정이 없으신가요?
-            </p>
-            <button
-              type="button"
-              onClick={() => setLocation("/signup-step1")}
-              className="text-primary font-medium korean-text hover:underline"
-            >
-              회원가입
-            </button>
-          </div>
-          <div>
-            <button
-              type="button"
-              onClick={() => setLocation("/password-recovery")}
-              className="text-sm text-gray-500 korean-text hover:text-primary hover:underline"
-            >
-              아이디/비밀번호 찾기
-            </button>
-          </div>
+        <div className="text-center mb-8">
+          <p className="text-sm text-gray-600 korean-text">
+            계정이 없으신가요?
+          </p>
+          <button
+            type="button"
+            onClick={() => setLocation("/signup-step1")}
+            className="text-primary font-medium korean-text hover:underline"
+          >
+            회원가입
+          </button>
         </div>
 
         {/* AmuseFit Service Section */}

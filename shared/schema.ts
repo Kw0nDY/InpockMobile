@@ -31,19 +31,6 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const verificationCodes = pgTable("verification_codes", {
-  id: serial("id").primaryKey(),
-  phone: text("phone"),
-  email: text("email"),
-  code: text("code").notNull(),
-  type: text("type", { enum: ['sms', 'email'] }).notNull(),
-  purpose: text("purpose", { enum: ['password_reset', 'phone_verify', 'email_verify'] }).notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
-  verified: boolean("verified").default(false),
-  attempts: integer("attempts").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-});
-
 export const links = pgTable("links", {
   id: serial("id").primaryKey(),
   userId: integer("user_id").notNull(),
@@ -130,7 +117,14 @@ export const linkVisits = pgTable("link_visits", {
   visitedAt: timestamp("visited_at").defaultNow(),
 });
 
-
+export const passwordResetTokens = pgTable("password_reset_tokens", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
 
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -153,7 +147,10 @@ export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   visitedAt: true,
 });
 
-
+export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
+  id: true,
+  createdAt: true,
+});
 
 // Removed deal and activity schemas as tables were deleted
 
@@ -172,15 +169,8 @@ export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
   createdAt: true,
 });
 
-export const insertVerificationCodeSchema = createInsertSchema(verificationCodes).omit({
-  id: true,
-  createdAt: true,
-});
-
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
-export type VerificationCode = typeof verificationCodes.$inferSelect;
-export type InsertVerificationCode = z.infer<typeof insertVerificationCodeSchema>;
 
 export type Link = typeof links.$inferSelect;
 export type InsertLink = z.infer<typeof insertLinkSchema>;
@@ -257,3 +247,5 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
 
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
+export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
+export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
