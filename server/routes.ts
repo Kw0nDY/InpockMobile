@@ -312,8 +312,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         message: "회원가입이 완료되었습니다"
       });
-    } catch (error) {
-      res.status(400).json({ message: "Invalid request data" });
+    } catch (error: any) {
+      console.error("Registration error:", error);
+
+      // Handle specific error types
+      if (error.message?.includes('duplicate key') || error.message?.includes('already exists')) {
+        if (error.message.includes('email')) {
+          return res.status(409).json({ message: "이미 사용중인 이메일입니다" });
+        }
+        if (error.message.includes('username')) {
+          return res.status(409).json({ message: "이미 사용중인 닉네임입니다" });
+        }
+        return res.status(409).json({ message: "이미 존재하는 계정 정보입니다" });
+      }
+
+      if (error.name === "ZodError") {
+        return res.status(400).json({
+          message: "입력 데이터 검증에 실패했습니다",
+          details: error.errors?.map((e: any) => e.message).join(', ') || "알 수 없는 검증 오류"
+        });
+      }
+
+      // Database connection errors
+      if (error.message?.includes('connection') || error.message?.includes('timeout')) {
+        return res.status(503).json({ message: "데이터베이스 연결 오류입니다. 잠시 후 다시 시도해주세요" });
+      }
+
+      // Generic error handling
+      const statusCode = error.statusCode || 500;
+      const message = error.message || "회원가입 처리 중 오류가 발생했습니다";
+      
+      res.status(statusCode).json({ 
+        message,
+        ...(process.env.NODE_ENV === 'development' && { debug: error.stack })
+      });
     }
   });
 

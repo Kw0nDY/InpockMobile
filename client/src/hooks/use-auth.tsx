@@ -70,6 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           sessionStorage.removeItem('auth_user_session');
         }
       }
+    } catch (storageError) {
+      console.error('localStorage/sessionStorage access error:', storageError);
+    }
   }, []);
 
   // Save user to localStorage when remember me is enabled
