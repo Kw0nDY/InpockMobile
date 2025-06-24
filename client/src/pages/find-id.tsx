@@ -15,23 +15,26 @@ export default function FindIdPage() {
   const [isPhoneSent, setIsPhoneSent] = useState(false);
   const [foundId, setFoundId] = useState<string | null>(null);
 
-  const findIdMutation = useMutation({
+  // SMS 인증번호 발송
+  const sendSmsCodeMutation = useMutation({
     mutationFn: async (phone: string) => {
-      const response = await apiRequest("POST", "/api/auth/find-id", { phone });
+      const response = await apiRequest("POST", "/api/auth/send-sms-code", { 
+        phone, 
+        purpose: "find_id" 
+      });
       return response.json();
     },
-    onSuccess: (data) => {
-      setIsPhoneSent(true);
-      setFoundId(data.userId || null);
+    onSuccess: (data, phone) => {
       toast({
-        title: "아이디 찾기 완료",
-        description: "등록된 전화번호로 아이디 정보를 전송했습니다.",
+        title: "인증번호 발송",
+        description: "입력하신 전화번호로 인증번호를 전송했습니다.",
       });
+      setLocation(`/verify-sms?phone=${encodeURIComponent(phone)}&purpose=find_id`);
     },
     onError: (error: any) => {
       toast({
-        title: "찾기 실패",
-        description: error.message || "아이디 찾기 중 오류가 발생했습니다.",
+        title: "발송 실패",
+        description: error.message || "인증번호 발송 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     },
@@ -102,7 +105,7 @@ export default function FindIdPage() {
           <div className="space-y-4">
             <Button
               onClick={handleResendSms}
-              disabled={findIdMutation.isPending}
+              disabled={sendSmsCodeMutation.isPending}
               variant="outline"
               className="w-full py-3 rounded-lg font-medium"
             >

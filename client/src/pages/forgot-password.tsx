@@ -17,24 +17,51 @@ export default function ForgotPasswordPage() {
   const [phone, setPhone] = useState("");
   const [isSent, setIsSent] = useState(false);
 
-  const forgotPasswordMutation = useMutation({
-    mutationFn: async (data: { email?: string; phone?: string }) => {
-      const response = await apiRequest("POST", "/api/auth/forgot-password", data);
+  // 이메일 인증번호 발송
+  const sendEmailCodeMutation = useMutation({
+    mutationFn: async (email: string) => {
+      const response = await apiRequest("POST", "/api/auth/send-email-code", { 
+        email, 
+        purpose: "reset_password" 
+      });
       return response.json();
     },
-    onSuccess: () => {
-      setIsSent(true);
+    onSuccess: (data, email) => {
       toast({
-        title: "전송 완료",
-        description: contactMethod === "email" 
-          ? "비밀번호 재설정 링크를 이메일로 전송했습니다."
-          : "비밀번호 재설정 링크를 문자로 전송했습니다.",
+        title: "인증번호 발송",
+        description: "입력하신 이메일로 인증번호를 전송했습니다.",
       });
+      setLocation(`/verify-email?email=${encodeURIComponent(email)}&purpose=reset_password`);
     },
     onError: (error: any) => {
       toast({
-        title: "전송 실패",
-        description: error.message || "전송 중 오류가 발생했습니다.",
+        title: "발송 실패",
+        description: error.message || "인증번호 발송 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // SMS 인증번호 발송
+  const sendSmsCodeMutation = useMutation({
+    mutationFn: async (phone: string) => {
+      const response = await apiRequest("POST", "/api/auth/send-sms-code", { 
+        phone, 
+        purpose: "reset_password" 
+      });
+      return response.json();
+    },
+    onSuccess: (data, phone) => {
+      toast({
+        title: "인증번호 발송",
+        description: "입력하신 전화번호로 인증번호를 전송했습니다.",
+      });
+      setLocation(`/verify-sms?phone=${encodeURIComponent(phone)}&purpose=reset_password`);
+    },
+    onError: (error: any) => {
+      toast({
+        title: "발송 실패",
+        description: error.message || "인증번호 발송 중 오류가 발생했습니다.",
         variant: "destructive",
       });
     },

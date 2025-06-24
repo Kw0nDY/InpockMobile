@@ -30,6 +30,9 @@ import ForgotPasswordPage from "./pages/forgot-password";
 import FindIdPage from "./pages/find-id";
 import ProfilePage from "./pages/profile";
 import CompleteRegistrationPage from "./pages/complete-registration";
+import VerifySmsPage from "./pages/verify-sms";
+import VerifyEmailPage from "./pages/verify-email";
+import ResetPasswordNewPage from "./pages/reset-password-new";
 
 import PublicViewPage from "./pages/public-view";
 import PublicImageView from "./pages/public-image-view";
@@ -81,6 +84,9 @@ function Router() {
           <Route path="/complete-registration">
             <CompleteRegistrationPage />
           </Route>
+          <Route path="/verify-sms" component={VerifySmsPage} />
+          <Route path="/verify-email" component={VerifyEmailPage} />
+          <Route path="/reset-password-new" component={ResetPasswordNewPage} />
           <Route path="/oauth/kakao/callback" component={KakaoCallback} />
           <Route path="/users/:username" component={PublicViewPage} />
           <Route path="/users/:username/images" component={PublicImageView} />
