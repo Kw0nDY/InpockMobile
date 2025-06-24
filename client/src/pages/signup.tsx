@@ -262,18 +262,35 @@ export default function SignupPage() {
                 )}
               </div>
 
-              {/* Referral Code */}
-              <div className="space-y-2">
-                <Label htmlFor="referralCode" className="text-sm font-medium text-gray-700">
-                  추천인 코드 (선택사항)
-                </Label>
-                <Input
-                  id="referralCode"
-                  type="text"
-                  placeholder="추천인 코드가 있다면 입력해주세요"
-                  className="border-gray-200 focus:border-orange-400 focus:ring-orange-400"
-                  {...form.register("referralCode")}
-                />
+              {/* Optional Fields Section */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-medium text-gray-700">선택 항목</h3>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="currentGym" className="text-sm font-medium text-gray-600">
+                    소속 헬스장명
+                  </Label>
+                  <Input
+                    id="currentGym"
+                    type="text"
+                    placeholder="현재 소속된 헬스장명을 입력해주세요"
+                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-400"
+                    {...form.register("currentGym")}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="gymPosition" className="text-sm font-medium text-gray-600">
+                    직급
+                  </Label>
+                  <Input
+                    id="gymPosition"
+                    type="text"
+                    placeholder="헬스장에서의 직급을 입력해주세요"
+                    className="border-gray-200 focus:border-orange-400 focus:ring-orange-400"
+                    {...form.register("gymPosition")}
+                  />
+                </div>
               </div>
 
               {/* Terms Agreement */}
