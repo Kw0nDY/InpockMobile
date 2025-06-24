@@ -250,7 +250,8 @@ export default function SignupStep2() {
 
               {/* Email */}
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="email" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <Mail className="w-4 h-4 mr-2 text-primary" />
                   이메일 *
                 </label>
                 <Input
@@ -269,7 +270,8 @@ export default function SignupStep2() {
 
               {/* Password */}
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="password" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <Lock className="w-4 h-4 mr-2 text-primary" />
                   비밀번호 *
                 </label>
                 <Input
@@ -288,7 +290,8 @@ export default function SignupStep2() {
 
               {/* Confirm Password */}
               <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="confirmPassword" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <Lock className="w-4 h-4 mr-2 text-primary" />
                   비밀번호 확인 *
                 </label>
                 <Input
@@ -307,7 +310,8 @@ export default function SignupStep2() {
 
               {/* Name */}
               <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="name" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <User className="w-4 h-4 mr-2 text-primary" />
                   이름 *
                 </label>
                 <Input
@@ -325,7 +329,8 @@ export default function SignupStep2() {
 
               {/* Phone (Required) */}
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="phone" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <Phone className="w-4 h-4 mr-2 text-primary" />
                   전화번호 *
                 </label>
                 <Input
@@ -343,7 +348,8 @@ export default function SignupStep2() {
 
               {/* Date of Birth (Required) */}
               <div>
-                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                <label htmlFor="dateOfBirth" className="flex items-center text-sm font-medium text-gray-700 korean-text mb-2">
+                  <Calendar className="w-4 h-4 mr-2 text-primary" />
                   생년월일 *
                 </label>
                 <Input
@@ -364,7 +370,8 @@ export default function SignupStep2() {
                 
                 {/* Current Gym (Optional) */}
                 <div>
-                  <label htmlFor="currentGym" className="block text-sm font-medium text-gray-600 korean-text mb-2">
+                  <label htmlFor="currentGym" className="flex items-center text-sm font-medium text-gray-600 korean-text mb-2">
+                    <Building2 className="w-4 h-4 mr-2 text-primary" />
                     소속 헬스장명
                   </label>
                   <Input
@@ -379,7 +386,8 @@ export default function SignupStep2() {
 
                 {/* Gym Position (Optional) */}
                 <div>
-                  <label htmlFor="gymPosition" className="block text-sm font-medium text-gray-600 korean-text mb-2">
+                  <label htmlFor="gymPosition" className="flex items-center text-sm font-medium text-gray-600 korean-text mb-2">
+                    <Briefcase className="w-4 h-4 mr-2 text-primary" />
                     직급
                   </label>
                   <Input
@@ -409,7 +417,7 @@ export default function SignupStep2() {
           >
             {signupMutation.isPending ? (
               <div className="flex items-center justify-center">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                <Loader2 className="animate-spin w-5 h-5 mr-2" />
                 <span className="korean-text">회원가입 중...</span>
               </div>
             ) : (
