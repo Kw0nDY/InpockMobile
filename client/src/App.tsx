@@ -11,7 +11,6 @@ import { initGA } from "./lib/analytics";
 // 페이지 컴포넌트들
 import LandingPage from "./pages/landing";
 import LoginPage from "./pages/login";
-import SignupPage from "./pages/signup";
 import SignupStep1 from "./pages/signup-step1";
 import SignupStep2 from "./pages/signup-step2";
 import DashboardPage from "./pages/dashboard";
@@ -66,7 +65,7 @@ function Router() {
         <Switch>
           <Route path="/" component={LandingPage} />
           <Route path="/login" component={LoginPage} />
-          <Route path="/signup" component={SignupPage} />
+          <Route path="/signup" component={SignupStep1} />
           <Route path="/signup-step1" component={SignupStep1} />
           <Route path="/signup-step2" component={SignupStep2} />
           <Route path="/dashboard" component={DashboardPage} />

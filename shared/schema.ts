@@ -131,27 +131,35 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Schema for user creation (updated for new signup flow)
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
   createdAt: true,
+  visitCount: true,
+  provider: true,
+  providerId: true,
 });
 
+// Schema for link creation
 export const insertLinkSchema = createInsertSchema(links).omit({
   id: true,
   clicks: true,
   createdAt: true,
 });
 
+// Schema for media uploads
 export const insertMediaSchema = createInsertSchema(mediaUploads).omit({
   id: true,
   createdAt: true,
 });
 
+// Schema for link visits tracking
 export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   id: true,
   visitedAt: true,
 });
 
+// Schema for password reset tokens
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({
   id: true,
   createdAt: true,
