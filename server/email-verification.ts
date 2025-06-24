@@ -68,14 +68,40 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
         'api-key': process.env.BREVO_API_KEY!
       },
       body: JSON.stringify({
-        sender: { name: 'AmuseFit 피트니스', email: 'hello@amusefit.service' },
-        to: [{ email }],
-        subject: '인증번호 안내 - AmuseFit',
-        htmlContent: html,
-        textContent: text,
-        headers: {
-          'Reply-To': 'support@amusefit.service'
-        }
+        sender: { 
+          name: '피트니스 인증', 
+          email: 'verify@fitness-platform.com' 
+        },
+        to: [{ 
+          email: email,
+          name: '사용자' 
+        }],
+        subject: `계정 보안 인증 - 코드 ${code.substring(0,2)}****`,
+        htmlContent: `
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #2563eb; margin: 0;">계정 보안 인증</h1>
+            </div>
+            
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 30px; text-align: center;">
+              <h2 style="color: #1e293b; margin: 0 0 20px 0;">인증번호</h2>
+              <div style="background: #ffffff; border: 2px solid #3b82f6; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <span style="font-size: 32px; font-weight: bold; color: #1e40af; letter-spacing: 8px;">${code}</span>
+              </div>
+              <p style="color: #64748b; margin: 0; font-size: 14px;">
+                이 인증번호는 <strong>10분간</strong> 유효합니다.
+              </p>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #fef3c7; border-radius: 8px;">
+              <p style="color: #92400e; margin: 0; font-size: 14px; text-align: center;">
+                <strong>보안 안내:</strong> 본인이 요청하지 않았다면 이 이메일을 무시하세요.
+              </p>
+            </div>
+          </div>
+        `,
+        textContent: `계정 보안 인증\n\n인증번호: ${code}\n\n이 번호는 10분간 유효합니다.\n\n본인이 요청하지 않았다면 무시하세요.`,
+        replyTo: { email: 'support@fitness-platform.com' }
       })
     });
 
