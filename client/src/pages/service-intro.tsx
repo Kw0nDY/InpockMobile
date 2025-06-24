@@ -13,7 +13,10 @@ import {
   Star,
   TrendingUp,
   Shield,
-  Zap
+  Zap,
+  Heart,
+  Target,
+  Sparkles
 } from "lucide-react";
 
 export default function ServiceIntroPage() {
@@ -21,234 +24,230 @@ export default function ServiceIntroPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
-      {/* Header */}
+      {/* Mobile Header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => setLocation("/login")}
-            className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+            className="flex items-center text-gray-600 hover:text-primary transition-colors p-2 -ml-2"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            돌아가기
+            <ArrowLeft className="w-5 h-5 mr-1" />
+            <span className="korean-text text-sm">돌아가기</span>
           </button>
-          <h1 className="text-xl font-bold text-gray-900 korean-text">AmuseFit 서비스 소개</h1>
-          <div className="w-20"></div>
+          <h1 className="text-lg font-bold text-gray-900 korean-text">서비스 소개</h1>
+          <div className="w-16"></div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-12">
-          <div className="w-24 h-24 bg-gradient-to-r from-primary to-amber-600 rounded-3xl mx-auto mb-6 flex items-center justify-center">
-            <Zap className="w-12 h-12 text-white" />
+      <div className="px-4 pb-8">
+        {/* Hero Section - Mobile Optimized */}
+        <div className="text-center py-8 mb-8">
+          <div className="w-20 h-20 bg-gradient-to-r from-primary to-amber-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+            <Sparkles className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 korean-text">
+          <h1 className="text-2xl font-bold text-gray-900 mb-3 korean-text leading-tight">
             피트니스 전문가를 위한
             <br />
-            올인원 플랫폼
+            <span className="text-primary">스마트 프로필</span>
           </h1>
-          <p className="text-xl text-gray-600 korean-text max-w-2xl mx-auto">
-            AmuseFit으로 당신의 피트니스 비즈니스를 한 단계 업그레이드하세요. 
-            콘텐츠 관리부터 고객 소통까지, 모든 것이 하나로 통합됩니다.
+          <p className="text-gray-600 korean-text text-sm leading-relaxed max-w-sm mx-auto">
+            운동 영상, 사진, 링크를 한 곳에서 관리하고
+            <br />
+            고객에게 전문성을 어필하세요
           </p>
         </div>
 
-        {/* Main Features */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-          {/* Feature 1 - 콘텐츠 관리 */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
-              <Play className="w-8 h-8 text-blue-600" />
+        {/* Main Features - Compact Cards */}
+        <div className="space-y-4 mb-8">
+          {/* 콘텐츠 관리 */}
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center shrink-0">
+                <Play className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 korean-text">
+                  멀티미디어 콘텐츠
+                </h3>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center korean-text">
+                    <Video className="w-3.5 h-3.5 text-primary mr-2" />
+                    운동 동영상 업로드
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <ImageIcon className="w-3.5 h-3.5 text-primary mr-2" />
+                    Before/After 사진
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <LinkIcon className="w-3.5 h-3.5 text-primary mr-2" />
+                    SNS 및 외부 링크
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              멀티미디어 콘텐츠 관리
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <Video className="w-4 h-4 text-primary mr-3" />
-                운동 동영상 업로드 및 관리
-              </li>
-              <li className="flex items-center korean-text">
-                <ImageIcon className="w-4 h-4 text-primary mr-3" />
-                Before/After 사진 갤러리
-              </li>
-              <li className="flex items-center korean-text">
-                <LinkIcon className="w-4 h-4 text-primary mr-3" />
-                외부 링크 통합 관리
-              </li>
-            </ul>
           </div>
 
-          {/* Feature 2 - 모바일 최적화 */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mb-6">
-              <Smartphone className="w-8 h-8 text-green-600" />
+          {/* 모바일 최적화 */}
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-green-50 rounded-lg flex items-center justify-center shrink-0">
+                <Smartphone className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 korean-text">
+                  모바일 최적화
+                </h3>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center korean-text">
+                    <Star className="w-3.5 h-3.5 text-primary mr-2" />
+                    Instagram Reels 스타일
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <Target className="w-3.5 h-3.5 text-primary mr-2" />
+                    터치 친화적 인터페이스
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <Zap className="w-3.5 h-3.5 text-primary mr-2" />
+                    빠른 로딩 속도
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              모바일 퍼스트 디자인
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <Star className="w-4 h-4 text-primary mr-3" />
-                Instagram Reels 스타일 UI
-              </li>
-              <li className="flex items-center korean-text">
-                <Star className="w-4 h-4 text-primary mr-3" />
-                터치 최적화 인터페이스
-              </li>
-              <li className="flex items-center korean-text">
-                <Star className="w-4 h-4 text-primary mr-3" />
-                빠른 로딩 속도
-              </li>
-            </ul>
           </div>
 
-          {/* Feature 3 - 전문성 어필 */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
-              <Trophy className="w-8 h-8 text-purple-600" />
+          {/* 전문성 어필 */}
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-purple-50 rounded-lg flex items-center justify-center shrink-0">
+                <Trophy className="w-6 h-6 text-purple-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 korean-text">
+                  전문성 브랜딩
+                </h3>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center korean-text">
+                    <Shield className="w-3.5 h-3.5 text-primary mr-2" />
+                    자격증 및 수상 내역
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <Heart className="w-3.5 h-3.5 text-primary mr-2" />
+                    고객 후기 관리
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <TrendingUp className="w-3.5 h-3.5 text-primary mr-2" />
+                    개인 브랜드 구축
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              전문성 브랜딩
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <Shield className="w-4 h-4 text-primary mr-3" />
-                자격증 및 수상 내역 전시
-              </li>
-              <li className="flex items-center korean-text">
-                <Users className="w-4 h-4 text-primary mr-3" />
-                고객 후기 및 성과 사례
-              </li>
-              <li className="flex items-center korean-text">
-                <TrendingUp className="w-4 h-4 text-primary mr-3" />
-                개인 브랜드 구축
-              </li>
-            </ul>
           </div>
 
-          {/* Feature 4 - 분석 도구 */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center mb-6">
-              <BarChart3 className="w-8 h-8 text-orange-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              실시간 분석
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <BarChart3 className="w-4 h-4 text-primary mr-3" />
-                방문자 통계 및 분석
-              </li>
-              <li className="flex items-center korean-text">
-                <TrendingUp className="w-4 h-4 text-primary mr-3" />
-                콘텐츠 성과 측정
-              </li>
-              <li className="flex items-center korean-text">
-                <Users className="w-4 h-4 text-primary mr-3" />
-                고객 행동 패턴 분석
-              </li>
-            </ul>
-          </div>
-
-          {/* Feature 5 - 맞춤형 URL */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mb-6">
-              <LinkIcon className="w-8 h-8 text-indigo-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              개인 맞춤 URL
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <LinkIcon className="w-4 h-4 text-primary mr-3" />
-                기억하기 쉬운 개인 URL
-              </li>
-              <li className="flex items-center korean-text">
-                <Shield className="w-4 h-4 text-primary mr-3" />
-                브랜드 일관성 유지
-              </li>
-              <li className="flex items-center korean-text">
-                <TrendingUp className="w-4 h-4 text-primary mr-3" />
-                마케팅 효과 극대화
-              </li>
-            </ul>
-          </div>
-
-          {/* Feature 6 - 고객 소통 */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-            <div className="w-16 h-16 bg-teal-100 rounded-xl flex items-center justify-center mb-6">
-              <Users className="w-8 h-8 text-teal-600" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4 korean-text">
-              효율적 고객 관리
-            </h3>
-            <ul className="space-y-3 text-gray-600">
-              <li className="flex items-center korean-text">
-                <Users className="w-4 h-4 text-primary mr-3" />
-                통합 고객 관리 시스템
-              </li>
-              <li className="flex items-center korean-text">
-                <Star className="w-4 h-4 text-primary mr-3" />
-                실시간 알림 기능
-              </li>
-              <li className="flex items-center korean-text">
-                <Shield className="w-4 h-4 text-primary mr-3" />
-                안전한 소통 환경
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* Success Stories */}
-        <div className="bg-white rounded-3xl p-8 mb-16 shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center korean-text">
-            실제 트레이너들의 성공 사례
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">150%</div>
-              <p className="text-gray-600 korean-text">고객 문의 증가</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">3x</div>
-              <p className="text-gray-600 korean-text">콘텐츠 조회수 향상</p>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-primary mb-2">80%</div>
-              <p className="text-gray-600 korean-text">업무 효율성 개선</p>
+          {/* 실시간 분석 */}
+          <div className="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center shrink-0">
+                <BarChart3 className="w-6 h-6 text-orange-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-gray-900 mb-2 korean-text">
+                  실시간 분석
+                </h3>
+                <div className="space-y-1.5 text-sm text-gray-600">
+                  <div className="flex items-center korean-text">
+                    <BarChart3 className="w-3.5 h-3.5 text-primary mr-2" />
+                    방문자 통계
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <TrendingUp className="w-3.5 h-3.5 text-primary mr-2" />
+                    콘텐츠 성과 측정
+                  </div>
+                  <div className="flex items-center korean-text">
+                    <Users className="w-3.5 h-3.5 text-primary mr-2" />
+                    고객 행동 분석
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Call to Action */}
-        <div className="bg-gradient-to-r from-primary to-amber-600 rounded-3xl p-8 text-center text-white mb-8">
-          <h2 className="text-2xl font-bold mb-4 korean-text">
-            지금 바로 AmuseFit을 체험해보세요
+        {/* Success Stories - Mobile Optimized */}
+        <div className="bg-white rounded-xl p-6 mb-8 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-bold text-gray-900 mb-6 text-center korean-text">
+            실제 성과 데이터
           </h2>
-          <p className="text-lg mb-8 korean-text opacity-90">
-            실제 트레이너 프로필을 통해 AmuseFit의 모든 기능을 미리 체험해보실 수 있습니다
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary mb-1">+150%</div>
+              <p className="text-gray-600 korean-text text-xs">고객 문의</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary mb-1">3배</div>
+              <p className="text-gray-600 korean-text text-xs">조회수</p>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary mb-1">80%</div>
+              <p className="text-gray-600 korean-text text-xs">효율성 개선</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Why AmuseFit Section */}
+        <div className="bg-gradient-to-r from-primary/10 to-amber-600/10 rounded-xl p-6 mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 text-center korean-text">
+            왜 AmuseFit인가?
+          </h2>
+          <div className="space-y-3 text-sm text-gray-700">
+            <div className="flex items-center korean-text">
+              <Sparkles className="w-4 h-4 text-primary mr-3 shrink-0" />
+              Instagram과 YouTube 스타일의 직관적 UI
+            </div>
+            <div className="flex items-center korean-text">
+              <Target className="w-4 h-4 text-primary mr-3 shrink-0" />
+              피트니스 업계에 특화된 기능들
+            </div>
+            <div className="flex items-center korean-text">
+              <Shield className="w-4 h-4 text-primary mr-3 shrink-0" />
+              안전하고 신뢰할 수 있는 플랫폼
+            </div>
+            <div className="flex items-center korean-text">
+              <Heart className="w-4 h-4 text-primary mr-3 shrink-0" />
+              고객과의 진정한 소통 도구
+            </div>
+          </div>
+        </div>
+
+        {/* Call to Action - Mobile Optimized */}
+        <div className="bg-gradient-to-r from-primary to-amber-600 rounded-xl p-6 text-center text-white mb-6">
+          <h2 className="text-xl font-bold mb-3 korean-text">
+            지금 바로 체험해보세요
+          </h2>
+          <p className="text-sm mb-6 korean-text opacity-90 leading-relaxed">
+            실제 트레이너 프로필로 AmuseFit의
+            <br />
+            모든 기능을 미리 체험할 수 있습니다
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="space-y-3">
             <Button
               onClick={() => setLocation("/demo_user")}
-              className="bg-white text-primary hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
+              className="w-full bg-white text-primary hover:bg-gray-100 py-3 text-base font-semibold korean-text"
             >
               데모 프로필 체험하기
             </Button>
             <Button
               onClick={() => setLocation("/signup-step1")}
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary px-8 py-3 text-lg font-semibold"
+              className="w-full border-white text-white hover:bg-white hover:text-primary py-3 text-base font-semibold korean-text"
             >
-              무료 회원가입
+              무료 회원가입 시작
             </Button>
           </div>
         </div>
 
         {/* Footer */}
-        <div className="text-center text-gray-500 korean-text">
-          <p>AmuseFit - 피트니스 전문가를 위한 최고의 선택</p>
+        <div className="text-center text-gray-500 korean-text text-xs">
+          <p>AmuseFit - 피트니스 전문가의 성공 파트너</p>
         </div>
       </div>
     </div>
