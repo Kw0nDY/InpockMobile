@@ -138,8 +138,9 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ✅ **회원가입 완료 페이지**: 닉네임/이름/전화번호 실시간 유효성 검사  
 - ✅ **인증 시스템 문서화**: ID/비밀번호 찾기 기능 정리 및 가이드 작성
 - 🔧 **세션 관리 오류**: 카카오 로그인 후 세션 설정 문제 해결 필요
-- ⚠️ **EmailJS 제한**: 브라우저 전용 서비스로 서버에서 사용 불가
-- ✅ **Gmail SMTP 연동**: Nodemailer로 실제 이메일 발송 가능 (앱 비밀번호 필요)
+- ⚠️ **SendGrid 제한**: 신규 회원 가입 중단으로 사용 불가
+- ✅ **Mailgun 연동**: 월 5000통 무료, 받은편지함 직접 배달
+- ✅ **현재 Brevo 작동**: 실제 이메일 발송 중 (스팸함 배달)
 - ⚠️ **Twilio SMS 문제**: 계정 연결 성공하나 전화번호 API 인식 불가 (개발 모드로 완전 작동)
 
 ### 구현 완료 기능

@@ -187,34 +187,34 @@ export async function sendRealEmail(email: string, code: string, purpose: string
   
   console.log(`📧 이메일 발송 시도: ${email}`);
 
-  // 1. Gmail SMTP 시도 (가장 확실한 방법)
-  if (process.env.GMAIL_USER && process.env.GMAIL_APP_PASSWORD) {
-    const { sendEmailViaNodemailer } = await import('./simple-email-services');
-    const gmailResult = await sendEmailViaNodemailer(email, code, purpose);
-    if (gmailResult.success) {
-      return gmailResult;
+  // 1. SendGrid 시도 (다른 사이트들이 가장 많이 사용)
+  if (process.env.SENDGRID_API_KEY) {
+    const { sendEmailViaSendGrid } = await import('./sendgrid-simple');
+    const sendgridResult = await sendEmailViaSendGrid(email, code, purpose);
+    if (sendgridResult.success) {
+      return sendgridResult;
     }
-    console.log(`❌ Gmail SMTP 실패: ${gmailResult.message}`);
+    console.log(`❌ SendGrid 실패: ${sendgridResult.message}`);
   }
 
-  // 2. Brevo API 개선된 버전 시도
+  // 2. Mailgun 시도 (대안)
+  if (process.env.MAILGUN_API_KEY) {
+    const { sendEmailViaMailgun } = await import('./sendgrid-simple');
+    const mailgunResult = await sendEmailViaMailgun(email, code, purpose);
+    if (mailgunResult.success) {
+      return mailgunResult;
+    }
+    console.log(`❌ Mailgun 실패: ${mailgunResult.message}`);
+  }
+
+  // 3. 현재 Brevo 시도 (이미 작동하지만 스팸함 배달)
   if (process.env.BREVO_API_KEY) {
     const { sendEmailViaBrevoImproved } = await import('./simple-email-services');
     const brevoResult = await sendEmailViaBrevoImproved(email, code, purpose);
     if (brevoResult.success) {
       return brevoResult;
     }
-    console.log(`❌ Brevo 개선 버전 실패: ${brevoResult.message}`);
-  }
-
-  // 3. Outlook SMTP 시도
-  if (process.env.OUTLOOK_USER && process.env.OUTLOOK_PASSWORD) {
-    const { sendEmailViaFreeSMTP } = await import('./simple-email-services');
-    const outlookResult = await sendEmailViaFreeSMTP(email, code, purpose);
-    if (outlookResult.success) {
-      return outlookResult;
-    }
-    console.log(`❌ Outlook SMTP 실패: ${outlookResult.message}`);
+    console.log(`❌ Brevo 실패: ${brevoResult.message}`);
   }
 
   // 개발 모드 폴백
