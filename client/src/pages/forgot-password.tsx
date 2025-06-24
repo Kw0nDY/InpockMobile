@@ -62,7 +62,20 @@ export default function ForgotPasswordPage() {
         });
         return;
       }
-      forgotPasswordMutation.mutate({ phone });
+      
+      // 전화번호 형식 검증
+      const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
+      const cleanPhone = phone.replace(/-/g, "");
+      if (!phoneRegex.test(cleanPhone)) {
+        toast({
+          title: "전화번호 형식 오류",
+          description: "올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      forgotPasswordMutation.mutate({ phone: cleanPhone });
     }
   };
 
@@ -70,7 +83,8 @@ export default function ForgotPasswordPage() {
     if (contactMethod === "email") {
       forgotPasswordMutation.mutate({ email });
     } else {
-      forgotPasswordMutation.mutate({ phone });
+      const cleanPhone = phone.replace(/-/g, "");
+      forgotPasswordMutation.mutate({ phone: cleanPhone });
     }
   };
 
@@ -157,8 +171,8 @@ export default function ForgotPasswordPage() {
           </div>
           <h2 className="text-xl font-bold mb-2 korean-text">비밀번호 찾기</h2>
           <p className="text-gray-600 text-sm korean-text">
-            등록된 연락처로 비밀번호 재설정<br />
-            링크를 전송해드립니다.
+            등록된 이메일 또는 전화번호로<br />
+            비밀번호 재설정 방법을 안내해드립니다.
           </p>
         </div>
 

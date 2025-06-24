@@ -145,15 +145,15 @@ export default function LoginPage() {
             <button 
               type="button" 
               onClick={() => setLocation("/find-id")}
-              className="text-primary hover:underline"
+              className="text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
             >
-              닉네임 찾기
+              아이디 찾기
             </button>
             <span className="text-gray-300">|</span>
             <button 
               type="button" 
               onClick={() => setLocation("/forgot-password")}
-              className="text-primary hover:underline"
+              className="text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
             >
               비밀번호 찾기
             </button>

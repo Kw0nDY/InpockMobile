@@ -48,11 +48,24 @@ export default function FindIdPage() {
       return;
     }
     
-    findIdMutation.mutate(phone);
+    // 전화번호 형식 검증
+    const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
+    const cleanPhone = phone.replace(/-/g, "");
+    if (!phoneRegex.test(cleanPhone)) {
+      toast({
+        title: "전화번호 형식 오류",
+        description: "올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    findIdMutation.mutate(cleanPhone);
   };
 
   const handleResendSms = () => {
-    findIdMutation.mutate(phone);
+    const cleanPhone = phone.replace(/-/g, "");
+    findIdMutation.mutate(cleanPhone);
   };
 
   if (isPhoneSent) {
@@ -132,8 +145,8 @@ export default function FindIdPage() {
           </div>
           <h2 className="text-xl font-bold mb-2 korean-text">아이디 찾기</h2>
           <p className="text-gray-600 text-sm korean-text">
-            가입 시 등록한 전화번호를 입력하면<br />
-            아이디 정보를 전송해드립니다.
+            가입 시 등록한 전화번호를 입력하시면<br />
+            아이디 정보를 알려드립니다.
           </p>
         </div>
 
