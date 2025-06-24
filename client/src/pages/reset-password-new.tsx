@@ -1,48 +1,51 @@
 import { useState } from "react";
-import { ArrowLeft, Lock, Eye, EyeOff, CheckCircle } from "lucide-react";
+import { useLocation } from "wouter";
+import { ArrowLeft, Eye, EyeOff, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 
-export default function ResetPasswordNewPage() {
+export default function ResetPasswordNew() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  
-  // URL에서 파라미터 가져오기
-  const urlParams = new URLSearchParams(window.location.search);
-  const phone = urlParams.get('phone');
-  const email = urlParams.get('email');
-  
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
+  // URL에서 이메일 파라미터 가져오기
+  const urlParams = new URLSearchParams(window.location.search);
+  const email = urlParams.get('email') || '';
+
+  // 비밀번호 유효성 검사
+  const isPasswordValid = password.length >= 6;
+  const doPasswordsMatch = password === confirmPassword;
+  const isFormValid = isPasswordValid && doPasswordsMatch && password.trim() && confirmPassword.trim();
+
+  // 비밀번호 재설정 API 호출
   const resetPasswordMutation = useMutation({
-    mutationFn: async (newPassword: string) => {
-      const response = await apiRequest("POST", "/api/auth/reset-password-new", {
-        newPassword,
-        phone: phone || undefined,
-        email: email || undefined
+    mutationFn: async () => {
+      const response = await apiRequest("POST", "/api/auth/reset-password", {
+        email,
+        newPassword: password
       });
       return response.json();
     },
     onSuccess: () => {
-      setIsCompleted(true);
+      setIsSuccess(true);
       toast({
         title: "비밀번호 변경 완료",
-        description: "새로운 비밀번호로 설정되었습니다.",
+        description: "새로운 비밀번호로 로그인하세요.",
       });
     },
     onError: (error: any) => {
       toast({
-        title: "비밀번호 변경 실패",
-        description: error.message || "비밀번호 변경 중 오류가 발생했습니다.",
+        title: "변경 실패",
+        description: error.message || "비밀번호 변경에 실패했습니다.",
         variant: "destructive",
       });
     },
@@ -50,39 +53,12 @@ export default function ResetPasswordNewPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!password.trim()) {
-      toast({
-        title: "비밀번호 입력 필요",
-        description: "새로운 비밀번호를 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (password.length < 8) {
-      toast({
-        title: "비밀번호 길이 부족",
-        description: "비밀번호는 8자 이상이어야 합니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (password !== confirmPassword) {
-      toast({
-        title: "비밀번호 불일치",
-        description: "비밀번호 확인이 일치하지 않습니다.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    resetPasswordMutation.mutate(password);
+    if (!isFormValid) return;
+    resetPasswordMutation.mutate();
   };
 
-  // 완료 화면
-  if (isCompleted) {
+  // 성공 화면
+  if (isSuccess) {
     return (
       <div className="min-h-screen bg-white">
         <header className="flex items-center justify-between p-4">
@@ -98,18 +74,16 @@ export default function ResetPasswordNewPage() {
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
-            <h2 className="text-xl font-bold mb-2 korean-text text-green-800">
-              비밀번호 변경 완료
-            </h2>
+            <h2 className="text-xl font-bold mb-2 korean-text text-green-800">변경 완료</h2>
             <p className="text-gray-600 text-sm korean-text">
-              새로운 비밀번호로 성공적으로 변경되었습니다.
+              비밀번호가 성공적으로 변경되었습니다.
             </p>
           </div>
 
           <div className="space-y-3">
             <Button
               onClick={() => setLocation("/login")}
-              className="w-full bg-primary text-white py-3 rounded-lg font-medium hover:bg-primary/90"
+              className="w-full bg-primary hover:bg-primary/90 text-white py-4 text-base font-medium korean-text"
             >
               로그인하기
             </Button>
@@ -131,12 +105,9 @@ export default function ResetPasswordNewPage() {
 
       <div className="px-6 py-8">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-8 h-8 text-primary" />
-          </div>
           <h2 className="text-xl font-bold mb-2 korean-text">새 비밀번호 설정</h2>
           <p className="text-gray-600 text-sm korean-text">
-            새로운 비밀번호를 입력해주세요.
+            {email}의 새로운 비밀번호를 설정하세요.
           </p>
         </div>
 
@@ -151,18 +122,21 @@ export default function ResetPasswordNewPage() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-4 pr-12 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="8자 이상 입력하세요"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary pr-12"
+                placeholder="새 비밀번호 입력"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+            {password && !isPasswordValid && (
+              <p className="text-red-500 text-sm mt-1">비밀번호는 6자리 이상이어야 합니다.</p>
+            )}
           </div>
 
           <div>
@@ -175,37 +149,45 @@ export default function ResetPasswordNewPage() {
                 type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full p-4 pr-12 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary"
-                placeholder="비밀번호를 다시 입력하세요"
+                className="w-full p-4 border border-gray-300 rounded-lg focus:border-primary focus:ring-1 focus:ring-primary pr-12"
+                placeholder="비밀번호 확인"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
+            {confirmPassword && !doPasswordsMatch && (
+              <p className="text-red-500 text-sm mt-1">비밀번호가 일치하지 않습니다.</p>
+            )}
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+            <p className="text-blue-800 text-sm">
+              <strong>비밀번호 요구사항:</strong>
+            </p>
+            <ul className="text-blue-700 text-xs mt-1 space-y-1">
+              <li className={isPasswordValid ? "text-green-600" : ""}>
+                • 6자리 이상
+              </li>
+              <li className={doPasswordsMatch && password ? "text-green-600" : ""}>
+                • 비밀번호 확인 일치
+              </li>
+            </ul>
           </div>
 
           <Button
             type="submit"
-            disabled={resetPasswordMutation.isPending}
-            className="w-full bg-primary hover:bg-primary/90 text-white py-4 rounded-lg font-medium text-base"
+            disabled={!isFormValid || resetPasswordMutation.isPending}
+            className="w-full bg-primary hover:bg-primary/90 disabled:bg-gray-300 text-white py-4 text-base font-medium korean-text"
           >
             {resetPasswordMutation.isPending ? "변경 중..." : "비밀번호 변경"}
           </Button>
         </form>
-
-        <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-          <h3 className="font-medium text-blue-800 mb-2">비밀번호 설정 조건</h3>
-          <ul className="text-blue-600 text-sm space-y-1">
-            <li>• 8자 이상 입력해주세요</li>
-            <li>• 영문, 숫자, 특수문자 조합을 권장합니다</li>
-            <li>• 이전에 사용한 비밀번호는 피해주세요</li>
-          </ul>
-        </div>
       </div>
     </div>
   );
