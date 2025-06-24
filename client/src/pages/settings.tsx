@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut, Trash2, Plus } from "lucide-react";
+import { ChevronLeft, Camera, Image, Video, ExternalLink, Copy, Check, LogOut, Trash2, Plus, User, Mail, Smartphone, Calendar, Building2, Briefcase, Award, FileText, MapPin, Edit3, Save, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -712,7 +712,10 @@ export default function SettingsPage() {
 
                 {/* Name */}
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium text-foreground">이름</Label>
+                  <Label htmlFor="name" className="flex items-center text-sm font-medium text-foreground">
+                    <User className="w-4 h-4 mr-2 text-primary" />
+                    이름
+                  </Label>
                   <Input
                     id="name"
                     value={profileData.name}
@@ -724,7 +727,10 @@ export default function SettingsPage() {
 
                 {/* Birth Date */}
                 <div className="space-y-2">
-                  <Label htmlFor="birthDate" className="text-sm font-medium text-foreground">생년월일</Label>
+                  <Label htmlFor="birthDate" className="flex items-center text-sm font-medium text-foreground">
+                    <Calendar className="w-4 h-4 mr-2 text-primary" />
+                    생년월일
+                  </Label>
                   <Input
                     id="birthDate"
                     type="date"
@@ -736,7 +742,10 @@ export default function SettingsPage() {
 
                 {/* Bio */}
                 <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-sm font-medium text-foreground">자기소개</Label>
+                  <Label htmlFor="bio" className="flex items-center text-sm font-medium text-foreground">
+                    <FileText className="w-4 h-4 mr-2 text-primary" />
+                    자기소개
+                  </Label>
                   <Textarea
                     id="bio"
                     value={profileData.bio}
@@ -755,7 +764,10 @@ export default function SettingsPage() {
               <CardContent className="space-y-4 pt-6">
                 {/* 피트니스 자격증 */}
                 <div className="space-y-2">
-                  <Label htmlFor="fitnessCertifications" className="text-sm font-medium text-foreground">자격증</Label>
+                  <Label htmlFor="fitnessCertifications" className="flex items-center text-sm font-medium text-foreground">
+                    <Award className="w-4 h-4 mr-2 text-primary" />
+                    자격증
+                  </Label>
                   <Textarea
                     id="fitnessCertifications"
                     value={profileData.fitnessCertifications}
@@ -768,7 +780,10 @@ export default function SettingsPage() {
 
                 {/* 현재 소속 체육관 */}
                 <div className="space-y-2">
-                  <Label htmlFor="currentGym" className="text-sm font-medium text-foreground">현 소속 체육관</Label>
+                  <Label htmlFor="currentGym" className="flex items-center text-sm font-medium text-foreground">
+                    <Building2 className="w-4 h-4 mr-2 text-primary" />
+                    현 소속 체육관
+                  </Label>
                   <Input
                     id="currentGym"
                     value={profileData.currentGym}
@@ -780,7 +795,10 @@ export default function SettingsPage() {
 
                 {/* 피트니스 수상경력 */}
                 <div className="space-y-2">
-                  <Label htmlFor="fitnessAwards" className="text-sm font-medium text-foreground">수상 내역</Label>
+                  <Label htmlFor="fitnessAwards" className="flex items-center text-sm font-medium text-foreground">
+                    <Award className="w-4 h-4 mr-2 text-primary" />
+                    수상 내역
+                  </Label>
                   <Textarea
                     id="fitnessAwards"
                     value={profileData.fitnessAwards}
