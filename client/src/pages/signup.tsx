@@ -14,6 +14,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 
 const signupSchema = z.object({
+  // 필수 항목
   fullName: z.string()
     .min(2, "이름은 최소 2자 이상이어야 합니다")
     .max(50, "이름은 50자를 초과할 수 없습니다")
@@ -22,8 +23,7 @@ const signupSchema = z.object({
     .email("올바른 이메일 주소를 입력해주세요")
     .min(1, "이메일을 입력해주세요"),
   password: z.string()
-    .min(8, "비밀번호는 최소 8자 이상이어야 합니다")
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "비밀번호는 대문자, 소문자, 숫자를 포함해야 합니다"),
+    .min(6, "비밀번호는 최소 6자 이상이어야 합니다"),
   phoneNumber: z.string()
     .min(10, "올바른 전화번호를 입력해주세요")
     .regex(/^[0-9-+\s()]+$/, "올바른 전화번호 형식이 아닙니다"),
@@ -35,7 +35,9 @@ const signupSchema = z.object({
       const age = today.getFullYear() - birthDate.getFullYear();
       return age >= 14 && age <= 120;
     }, "만 14세 이상이어야 가입 가능합니다"),
-  referralCode: z.string().optional(),
+  // 선택 항목
+  currentGym: z.string().optional(),
+  gymPosition: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, {
     message: "서비스 이용약관에 동의해주세요"
   })
@@ -56,7 +58,8 @@ export default function SignupPage() {
       password: "",
       phoneNumber: "",
       dateOfBirth: "",
-      referralCode: "",
+      currentGym: "",
+      gymPosition: "",
       agreeToTerms: false,
     },
   });
@@ -66,16 +69,15 @@ export default function SignupPage() {
       // Validate data before sending
       const validatedData = signupSchema.parse(data);
       
-      const response = await apiRequest("POST", "/api/auth/signup", {
+      const response = await apiRequest("POST", "/api/auth/register", {
         username: validatedData.email.split("@")[0],
         email: validatedData.email,
         password: validatedData.password,
         name: validatedData.fullName,
-        company: "",
-        role: "user",
-        phoneNumber: validatedData.phoneNumber,
-        dateOfBirth: validatedData.dateOfBirth,
-        referralCode: validatedData.referralCode || null,
+        phone: validatedData.phoneNumber,
+        birthDate: validatedData.dateOfBirth,
+        currentGym: validatedData.currentGym || "",
+        gymPosition: validatedData.gymPosition || "",
       });
       
       if (!response.ok) {
@@ -127,7 +129,7 @@ export default function SignupPage() {
   const isFormValid = 
     watchedFields.fullName?.trim().length >= 2 &&
     watchedFields.email?.includes("@") &&
-    watchedFields.password?.length >= 8 &&
+    watchedFields.password?.length >= 6 &&
     watchedFields.phoneNumber?.length >= 10 &&
     watchedFields.dateOfBirth?.length > 0 &&
     watchedFields.agreeToTerms === true &&

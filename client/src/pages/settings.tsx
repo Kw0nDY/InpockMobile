@@ -39,6 +39,7 @@ export default function SettingsPage() {
     fitnessCertifications: (user as any)?.fitnessCertifications || '',
     currentGym: (user as any)?.currentGym || '',
     gymAddress: (user as any)?.gymAddress || '',
+    gymPosition: (user as any)?.gymPosition || '', // 체육관 사원(계급)
     fitnessIntro: (user as any)?.fitnessIntro || '',
     // 연락처 및 기업 정보
     phone: (user as any)?.phone || '',

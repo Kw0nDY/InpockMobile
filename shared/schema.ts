@@ -27,6 +27,7 @@ export const users = pgTable("users", {
   fitnessCertifications: text("fitness_certifications"),
   currentGym: text("current_gym"),
   gymAddress: text("gym_address"),
+  gymPosition: text("gym_position"), // 체육관 사원(계급)
   fitnessIntro: text("fitness_intro"),
   createdAt: timestamp("created_at").defaultNow(),
 });
