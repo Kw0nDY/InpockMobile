@@ -21,7 +21,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-stone-200/50 bottom-nav-shadow z-50">
-      <div className="flex items-center justify-around py-2">
+      <div className="bottom-nav-container flex items-center justify-around py-2">
         {navItems.map(({ path, icon: Icon, label }) => {
           const isActive = location === path;
           const isHovered = hoveredPath === path;
@@ -42,13 +42,21 @@ export default function BottomNav() {
               }}
             >
               <Icon 
-                className="w-6 h-6 mb-1 transition-colors"
+                className="w-6 h-6 mb-1 transition-colors bottom-nav-icon"
                 style={{
                   color: isActive 
                     ? '#92400e' 
                     : isHovered 
                       ? '#92400e' 
-                      : '#6b7280'
+                      : '#6b7280',
+                  fill: 'none',
+                  stroke: isActive 
+                    ? '#92400e' 
+                    : isHovered 
+                      ? '#92400e' 
+                      : '#6b7280',
+                  strokeWidth: '2px',
+                  background: 'transparent'
                 }}
               />
               <span 
