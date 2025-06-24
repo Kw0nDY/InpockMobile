@@ -61,7 +61,8 @@ async function sendSmsViaTwilio(phone: string, message: string): Promise<SmsApiR
       throw new Error(`Account SID는 'AC'로 시작해야 합니다. 현재: ${accountSid.substring(0, 5)}...`);
     }
 
-    const toNumber = `+82${phone.substring(1)}`; // 한국 국가코드 추가
+    // 한국 전화번호 처리 - Twilio에서 구매한 한국 번호로 발송
+    const toNumber = `+82${phone.substring(1)}`; // 수신번호: 한국 국가코드 추가
     console.log(`📱 SMS 발송 시도: ${phone} -> ${toNumber}`);
 
     const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
@@ -71,8 +72,8 @@ async function sendSmsViaTwilio(phone: string, message: string): Promise<SmsApiR
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-        From: fromNumber,
-        To: toNumber,
+        From: fromNumber, // 발신번호: Twilio에서 구매한 한국 번호
+        To: toNumber,     // 수신번호: 사용자 휴대폰
         Body: message
       })
     });
