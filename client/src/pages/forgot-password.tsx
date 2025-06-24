@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
         });
         return;
       }
-      forgotPasswordMutation.mutate({ email });
+      sendEmailCodeMutation.mutate(email);
     } else {
       if (!phone.trim()) {
         toast({
@@ -102,16 +102,16 @@ export default function ForgotPasswordPage() {
         return;
       }
       
-      forgotPasswordMutation.mutate({ phone: cleanPhone });
+      sendSmsCodeMutation.mutate(cleanPhone);
     }
   };
 
   const handleResend = () => {
     if (contactMethod === "email") {
-      forgotPasswordMutation.mutate({ email });
+      sendEmailCodeMutation.mutate(email);
     } else {
       const cleanPhone = phone.replace(/-/g, "");
-      forgotPasswordMutation.mutate({ phone: cleanPhone });
+      sendSmsCodeMutation.mutate(cleanPhone);
     }
   };
 
