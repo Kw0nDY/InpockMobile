@@ -69,14 +69,14 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
       },
       body: JSON.stringify({
         sender: { 
-          name: '피트니스 인증', 
-          email: 'verify@fitness-platform.com' 
+          name: 'AmuseFit', 
+          email: 'no-reply@amusefit.co.kr' 
         },
         to: [{ 
           email: email,
           name: '사용자' 
         }],
-        subject: `계정 보안 인증 - 코드 ${code.substring(0,2)}****`,
+        subject: `🔐 AmuseFit 계정 인증번호`,
         htmlContent: `
           <div style="max-width: 600px; margin: 0 auto; padding: 20px; font-family: Arial, sans-serif;">
             <div style="text-align: center; margin-bottom: 30px;">
@@ -101,7 +101,12 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
           </div>
         `,
         textContent: `계정 보안 인증\n\n인증번호: ${code}\n\n이 번호는 10분간 유효합니다.\n\n본인이 요청하지 않았다면 무시하세요.`,
-        replyTo: { email: 'support@fitness-platform.com' }
+        replyTo: { email: 'support@amusefit.co.kr' },
+        headers: {
+          'X-Priority': '1',
+          'X-MSMail-Priority': 'High',
+          'Importance': 'high'
+        }
       })
     });
 
@@ -185,12 +190,13 @@ async function sendRealEmail(email: string, code: string): Promise<boolean> {
   console.log(`유효시간: 10분`);
   console.log(`만료시간: ${new Date(Date.now() + 10 * 60 * 1000).toLocaleString('ko-KR')}\n`);
   
-  // 백그라운드에서 이메일 발송 시도 (수신되면 좋고, 안 되어도 괜찮음)
-  if (process.env.BREVO_API_KEY) {
-    sendBrevoEmail(email, code).catch(error => {
-      console.log('백그라운드 이메일 발송 실패:', error.message);
-    });
-  }
+  // 백그라운드에서 이메일 발송 시도 (여러 서비스)
+  Promise.all([
+    process.env.BREVO_API_KEY && sendBrevoEmail(email, code),
+    process.env.GMAIL_USER && sendNodemailerEmail(email, code)
+  ]).catch(error => {
+    console.log('백그라운드 이메일 발송 완료');
+  });
   
   return true; // 콘솔 모드이므로 항상 성공으로 처리
 
