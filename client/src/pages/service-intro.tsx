@@ -23,7 +23,7 @@ export default function ServiceIntroPage() {
   const [, setLocation] = useLocation();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <div className="min-h-screen bg-gradient-to-br from-stone-50 via-neutral-50 to-amber-50/30">
       {/* Mobile Header */}
       <div className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200">
         <div className="px-4 py-3 flex items-center justify-between">
@@ -42,7 +42,7 @@ export default function ServiceIntroPage() {
       <div className="px-4 pb-8">
         {/* Hero Section - Mobile Optimized */}
         <div className="text-center py-8 mb-8">
-          <div className="w-20 h-20 bg-gradient-to-r from-primary to-amber-600 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
+          <div className="w-20 h-20 bg-gradient-to-r from-stone-700 to-amber-700 rounded-2xl mx-auto mb-4 flex items-center justify-center shadow-lg">
             <Sparkles className="w-10 h-10 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3 korean-text leading-tight">
@@ -194,7 +194,7 @@ export default function ServiceIntroPage() {
         </div>
 
         {/* Why AmuseFit Section */}
-        <div className="bg-gradient-to-r from-primary/10 to-amber-600/10 rounded-xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-stone-100 to-amber-50 rounded-xl p-6 mb-8 border border-stone-200/50">
           <h2 className="text-xl font-bold text-gray-900 mb-4 text-center korean-text">
             왜 AmuseFit인가?
           </h2>
@@ -219,7 +219,7 @@ export default function ServiceIntroPage() {
         </div>
 
         {/* Call to Action - Mobile Optimized */}
-        <div className="bg-gradient-to-r from-primary to-amber-600 rounded-xl p-6 text-center text-white mb-6">
+        <div className="bg-gradient-to-r from-stone-800 to-amber-800 rounded-xl p-6 text-center text-white mb-6 shadow-lg">
           <h2 className="text-xl font-bold mb-3 korean-text">
             지금 바로 체험해보세요
           </h2>
@@ -246,7 +246,7 @@ export default function ServiceIntroPage() {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-gray-500 korean-text text-xs">
+        <div className="text-center text-stone-500 korean-text text-xs">
           <p>AmuseFit - 피트니스 전문가의 성공 파트너</p>
         </div>
       </div>
