@@ -103,10 +103,10 @@ async function sendResendEmail(email: string, code: string): Promise<boolean> {
       },
       body: JSON.stringify({
         from: 'AmuseFit <onboarding@resend.dev>',
-        to: [email],
-        subject: '[AmuseFit] 인증번호',
-        html,
-        text
+        to: ['dy.kwon@dxt.co.kr'], // Resend 무료 플랜은 계정 이메일로만 발송 가능
+        subject: `[AmuseFit] ${email} 인증번호`,
+        html: html.replace('본 메일은 발신전용입니다', `실제 수신자: ${email}<br>본 메일은 발신전용입니다`),
+        text: `실제 수신자: ${email}\n\n${text}`
       })
     });
 
