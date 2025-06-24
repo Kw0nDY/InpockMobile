@@ -26,8 +26,7 @@ import ChatPage from "./pages/chat";
 import AnalyticsPage from "./pages/analytics";
 import ContactsPage from "./pages/contacts";
 import KakaoCallback from "./pages/kakao-callback";
-import ForgotPasswordPage from "./pages/forgot-password";
-import FindIdPage from "./pages/find-id";
+import PasswordRecoveryPage from "./pages/password-recovery";
 import ProfilePage from "./pages/profile";
 
 import PublicViewPage from "./pages/public-view";
@@ -45,7 +44,7 @@ function Router() {
   useAnalytics();
   
   // 하단 네비게이션을 표시하지 않을 페이지들
-  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/password-recovery", "/service-intro"];
   
   // 현재 위치가 공개 프로필 뷰인지 확인 (커스텀 URL 또는 /users/username)
   const isPublicProfileView = location.startsWith("/users/") || 
@@ -74,9 +73,7 @@ function Router() {
           <Route path="/chat" component={ChatPage} />
           <Route path="/analytics" component={AnalyticsPage} />
           <Route path="/contacts" component={ContactsPage} />
-          <Route path="/forgot-password" component={ForgotPasswordPage} />
-          <Route path="/find-id" component={FindIdPage} />
-          <Route path="/reset-password/:token" component={ResetPasswordPage} />
+          <Route path="/password-recovery" component={PasswordRecoveryPage} />
           <Route path="/oauth/kakao/callback" component={KakaoCallback} />
           <Route path="/users/:username" component={PublicViewPage} />
           <Route path="/users/:username/images" component={PublicImageView} />
