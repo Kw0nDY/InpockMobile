@@ -1273,6 +1273,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { identifier } = req.params;
       
+      // Exclude reserved routes from public profile lookup
+      const reservedRoutes = [
+        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
+        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
+        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
+        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
+      ];
+      
+      if (reservedRoutes.includes(identifier)) {
+        return res.status(404).json({ message: "Route not found" });
+      }
+      
       let user = await storage.getUserByCustomUrl(identifier);
       if (!user) {
         user = await storage.getUserByUsername(identifier);
@@ -1305,6 +1317,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/public/:identifier/links", async (req, res) => {
     try {
       const { identifier } = req.params;
+      
+      // Exclude reserved routes from public profile lookup
+      const reservedRoutes = [
+        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
+        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
+        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
+        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
+      ];
+      
+      if (reservedRoutes.includes(identifier)) {
+        return res.status(404).json({ message: "Route not found" });
+      }
       
       let user = await storage.getUserByCustomUrl(identifier);
       if (!user) {
@@ -1699,6 +1723,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/public/:identifier", async (req, res) => {
     try {
       const { identifier } = req.params;
+      
+      // Exclude reserved routes from public profile lookup
+      const reservedRoutes = [
+        'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
+        'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
+        'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
+        'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
+      ];
+      
+      if (reservedRoutes.includes(identifier)) {
+        return res.status(404).json({ message: "Route not found" });
+      }
       
       // Debug storage state
       const allUsers = await storage.getAllUsers();

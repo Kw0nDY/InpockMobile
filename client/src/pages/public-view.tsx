@@ -49,6 +49,18 @@ interface UserSettings {
 export default function PublicViewPage() {
   const params = useParams<{ username?: string; customUrl?: string }>();
   const identifier = params.username || params.customUrl || "";
+  
+  // Skip public profile lookup for reserved routes
+  const reservedRoutes = [
+    'login', 'signup', 'signup-step1', 'signup-step2', 'password-recovery', 
+    'service-intro', 'dashboard', 'links', 'images', 'videos', 'settings', 
+    'chat', 'analytics', 'contacts', 'marketplace', 'manager', 'profile',
+    'find-id', 'forgot-password', 'reset-password', 'oauth', 'api', 'auth'
+  ];
+  
+  if (reservedRoutes.includes(identifier)) {
+    return <div>Route not found</div>;
+  }
   // UI State
   const [copiedLink, setCopiedLink] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);

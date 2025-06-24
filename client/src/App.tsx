@@ -64,17 +64,20 @@ function Router() {
           <Route path="/signup" component={SignupPage} />
           <Route path="/signup-step1" component={SignupStep1} />
           <Route path="/signup-step2" component={SignupStep2} />
+          <Route path="/password-recovery" component={PasswordRecoveryPage} />
+          <Route path="/service-intro" component={ServiceIntroPage} />
+          <Route path="/oauth/kakao/callback" component={KakaoCallback} />
           <Route path="/dashboard" component={DashboardPage} />
           <Route path="/links" component={LinksPage} />
           <Route path="/images" component={ImagesPage} />
           <Route path="/videos" component={VideosPage} />
-          <Route path="/service-intro" component={ServiceIntroPage} />
           <Route path="/settings" component={SettingsPage} />
           <Route path="/chat" component={ChatPage} />
           <Route path="/analytics" component={AnalyticsPage} />
           <Route path="/contacts" component={ContactsPage} />
-          <Route path="/password-recovery" component={PasswordRecoveryPage} />
-          <Route path="/oauth/kakao/callback" component={KakaoCallback} />
+          <Route path="/marketplace" component={MarketplacePage} />
+          <Route path="/manager" component={ManagerPage} />
+          <Route path="/profile" component={ProfilePage} />
           <Route path="/users/:username" component={PublicViewPage} />
           <Route path="/users/:username/images" component={PublicImageView} />
           <Route path="/:customUrl" component={PublicViewPage} />
