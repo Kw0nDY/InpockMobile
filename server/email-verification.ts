@@ -187,34 +187,57 @@ export async function sendRealEmail(email: string, code: string, purpose: string
   
   console.log(`📧 이메일 발송 시도: ${email}`);
 
-  // 1. SendGrid 시도 (다른 사이트들이 가장 많이 사용)
-  if (process.env.SENDGRID_API_KEY) {
-    const { sendEmailViaSendGrid } = await import('./sendgrid-simple');
-    const sendgridResult = await sendEmailViaSendGrid(email, code, purpose);
-    if (sendgridResult.success) {
-      return sendgridResult;
-    }
-    console.log(`❌ SendGrid 실패: ${sendgridResult.message}`);
-  }
-
-  // 2. Mailgun 시도 (대안)
-  if (process.env.MAILGUN_API_KEY) {
-    const { sendEmailViaMailgun } = await import('./sendgrid-simple');
-    const mailgunResult = await sendEmailViaMailgun(email, code, purpose);
-    if (mailgunResult.success) {
-      return mailgunResult;
-    }
-    console.log(`❌ Mailgun 실패: ${mailgunResult.message}`);
-  }
-
-  // 3. 현재 Brevo 시도 (이미 작동하지만 스팸함 배달)
+  // Brevo API 시도 (현재 작동 중)
   if (process.env.BREVO_API_KEY) {
-    const { sendEmailViaBrevoImproved } = await import('./simple-email-services');
-    const brevoResult = await sendEmailViaBrevoImproved(email, code, purpose);
-    if (brevoResult.success) {
-      return brevoResult;
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Api-Key': process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+          sender: { 
+            name: 'AmuseFit', 
+            email: 'noreply@amusefit.co.kr' 
+          },
+          to: [{ email: email }],
+          subject: `[AmuseFit] ${purposeText} 인증번호`,
+          htmlContent: `
+            <div style="padding: 20px; font-family: Arial, sans-serif; max-width: 500px;">
+              <h2 style="color: #8B4513;">AmuseFit ${purposeText}</h2>
+              <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center;">
+                <p>인증번호를 안내드립니다:</p>
+                <div style="background: white; padding: 15px; border: 2px solid #8B4513; border-radius: 5px; margin: 15px 0;">
+                  <span style="font-size: 28px; font-weight: bold; color: #8B4513;">${code}</span>
+                </div>
+                <p style="color: #666;">이 인증번호는 10분간 유효합니다.</p>
+                <p style="color: #dc3545; font-size: 12px; margin-top: 15px;">
+                  이메일이 보이지 않나요? <strong>스팸함</strong>을 확인해주세요.
+                </p>
+              </div>
+            </div>
+          `,
+          textContent: `AmuseFit ${purposeText}\n\n인증번호: ${code}\n\n이 인증번호는 10분간 유효합니다.\n\n이메일이 보이지 않는다면 스팸함을 확인해주세요.`
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`✅ Brevo 이메일 발송 성공: ${email}`);
+        return {
+          success: true,
+          message: 'Brevo 이메일 발송 성공',
+          messageId: result.messageId
+        };
+      } else {
+        const error = await response.text();
+        console.log(`❌ Brevo 실패: ${error}`);
+      }
+    } catch (error) {
+      console.log(`❌ Brevo 오류: ${error.message}`);
     }
-    console.log(`❌ Brevo 실패: ${brevoResult.message}`);
   }
 
   // 개발 모드 폴백
