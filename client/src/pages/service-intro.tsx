@@ -237,9 +237,7 @@ export default function ServiceIntroPage() {
             </Button>
             <Button
               onClick={() => setLocation("/signup-step1")}
-              variant="outline"
-              className="w-full border-white text-white hover:bg-white hover:text-[#4E342E] py-3 text-base font-semibold korean-text bg-transparent"
-              style={{ color: 'white' }}
+              className="w-full bg-white text-[#4E342E] hover:bg-gray-100 py-3 text-base font-semibold korean-text"
             >
               무료 회원가입 시작
             </Button>
