@@ -47,9 +47,22 @@ async function sendSmsViaTwilio(phone: string, message: string): Promise<SmsApiR
     const authToken = process.env.TWILIO_AUTH_TOKEN;
     const fromNumber = process.env.TWILIO_PHONE_NUMBER;
 
+    console.log('🔍 Twilio 설정 확인:');
+    console.log(`Account SID: ${accountSid ? accountSid.substring(0, 10) + '...' : '미설정'}`);
+    console.log(`Auth Token: ${authToken ? '설정됨' : '미설정'}`);
+    console.log(`Phone Number: ${fromNumber || '미설정'}`);
+
     if (!accountSid || !authToken || !fromNumber) {
-      throw new Error('Twilio 설정이 누락되었습니다');
+      throw new Error('Twilio 설정이 누락되었습니다. Account SID, Auth Token, Phone Number가 모두 필요합니다.');
     }
+
+    // Account SID 형식 확인
+    if (!accountSid.startsWith('AC')) {
+      throw new Error(`Account SID는 'AC'로 시작해야 합니다. 현재: ${accountSid.substring(0, 5)}...`);
+    }
+
+    const toNumber = `+82${phone.substring(1)}`; // 한국 국가코드 추가
+    console.log(`📱 SMS 발송 시도: ${phone} -> ${toNumber}`);
 
     const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
       method: 'POST',
@@ -59,25 +72,30 @@ async function sendSmsViaTwilio(phone: string, message: string): Promise<SmsApiR
       },
       body: new URLSearchParams({
         From: fromNumber,
-        To: `+82${phone.substring(1)}`, // 한국 국가코드 추가
+        To: toNumber,
         Body: message
       })
     });
 
+    const result = await response.json();
+
     if (response.ok) {
-      const result = await response.json();
+      console.log(`✅ Twilio SMS 발송 성공: ${result.sid}`);
       return {
         success: true,
-        message: 'SMS 발송 성공',
+        message: 'Twilio SMS 발송 성공',
         messageId: result.sid
       };
     } else {
-      const error = await response.json();
-      throw new Error(`Twilio SMS API 오류: ${error.message}`);
+      console.error('❌ Twilio SMS API 오류:', result);
+      throw new Error(`Twilio SMS API 오류: ${result.message} (코드: ${result.code})`);
     }
   } catch (error) {
-    console.error('Twilio SMS 발송 실패:', error);
-    return { success: false, message: 'Twilio SMS 발송 실패' };
+    console.error('❌ Twilio SMS 발송 실패:', error);
+    return { 
+      success: false, 
+      message: `Twilio SMS 발송 실패: ${error.message}` 
+    };
   }
 }
 
