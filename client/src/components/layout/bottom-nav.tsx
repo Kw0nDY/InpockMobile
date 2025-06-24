@@ -34,9 +34,11 @@ export default function BottomNav() {
               }`}
             >
               <Icon className={`w-6 h-6 mb-1 transition-colors ${
-                isActive ? "text-amber-800" : "text-gray-500 group-hover:text-amber-900"
-              }`} />
-              <span className="text-xs korean-text">{label}</span>
+                isActive ? "text-amber-800" : "text-gray-500"
+              } group-hover:text-amber-900`} />
+              <span className={`text-xs korean-text transition-colors ${
+                isActive ? "text-amber-800" : "text-gray-500"
+              } group-hover:text-amber-900`}>{label}</span>
             </button>
           );
         })}
