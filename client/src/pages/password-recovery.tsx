@@ -36,7 +36,7 @@ export default function PasswordRecoveryPage() {
     mutationFn: async (data: { email?: string; phone?: string }) => {
       return await apiRequest('POST', '/api/auth/find-username', data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "아이디 찾기 완료",
         description: `찾은 아이디: ${data.username}`,
@@ -75,7 +75,7 @@ export default function PasswordRecoveryPage() {
     mutationFn: async (data: { code: string; type: VerificationType; email?: string; phone?: string }) => {
       return await apiRequest('POST', '/api/auth/verify-reset-code', data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setResetToken(data.resetToken);
       setStep('reset');
       toast({
