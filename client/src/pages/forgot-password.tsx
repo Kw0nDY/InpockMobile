@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 export default function ForgotPasswordPage() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [contactMethod, setContactMethod] = useState<"email" | "phone">("email");
+  const [contactMethod, setContactMethod] = useState<"email" | "phone">("phone");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [isSent, setIsSent] = useState(false);

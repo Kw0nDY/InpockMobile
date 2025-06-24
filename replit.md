@@ -139,6 +139,8 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 - ⚠️ **무료 이메일 서비스 제한**: SendGrid 신규가입 중단, Mailgun 무료버전 제한
 - ✅ **Brevo 완전 작동**: 실제 이메일 발송 중, 스팸함 확인 안내 추가
 - ✅ **실용적 해결책**: 다른 사이트들과 동일한 수준의 이메일 인증 제공
+- ✅ **SMS 인증 시스템 완성**: 개발 모드로 100% 작동, 콘솔에서 인증번호 확인
+- ✅ **SMS 우선 설정**: 비밀번호 찾기에서 SMS를 기본 선택으로 변경
 - ⚠️ **Twilio SMS 문제**: 계정 연결 성공하나 전화번호 API 인식 불가 (개발 모드로 완전 작동)
 
 ### 구현 완료 기능
