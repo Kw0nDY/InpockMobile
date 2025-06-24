@@ -15,7 +15,7 @@ export async function sendEmailViaEmailJS(email: string, code: string, purpose: 
 
     const purposeText = purpose === 'find_id' ? 'ID 찾기' : '비밀번호 재설정';
     
-    // EmailJS REST API 사용 (클라이언트 라이브러리 없이)
+    // EmailJS REST API 사용
     const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
       method: 'POST',
       headers: {
@@ -23,16 +23,29 @@ export async function sendEmailViaEmailJS(email: string, code: string, purpose: 
       },
       body: JSON.stringify({
         service_id: process.env.EMAILJS_SERVICE_ID,
-        template_id: process.env.EMAILJS_TEMPLATE_ID || 'template_default',
-        user_id: process.env.EMAILJS_PUBLIC_KEY || '',
+        template_id: process.env.EMAILJS_TEMPLATE_ID,
+        user_id: process.env.EMAILJS_PUBLIC_KEY,
         template_params: {
           to_email: email,
           to_name: '회원님',
           from_name: 'AmuseFit',
           subject: `[AmuseFit] ${purposeText} 인증번호`,
-          message: `인증번호: ${code}\n\n이 인증번호는 10분간 유효합니다.\n\n감사합니다.\nAmuseFit`,
+          message: `
+안녕하세요, AmuseFit입니다.
+
+${purposeText} 인증번호를 안내드립니다.
+
+인증번호: ${code}
+
+이 인증번호는 10분간 유효합니다.
+인증번호를 정확히 입력해주세요.
+
+감사합니다.
+AmuseFit
+          `.trim(),
           verification_code: code,
-          purpose: purposeText
+          purpose: purposeText,
+          reply_to: 'noreply@amusefit.com'
         }
       })
     });
