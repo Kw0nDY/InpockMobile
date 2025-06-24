@@ -169,49 +169,24 @@ form[data-form-type="other"] {
   }
 }
 
-/* Bottom navigation specific styles - prevent white hover */
+/* Bottom navigation - prevent any white hover effects */
+.bottom-nav-container * {
+  background: transparent !important;
+}
+
 .bottom-nav-container button:hover svg,
-.bottom-nav-container button:hover path {
-  color: inherit !important;
+.bottom-nav-container button:hover path,
+.bottom-nav-container button svg,
+.bottom-nav-container button path {
+  color: currentColor !important;
   fill: none !important;
   stroke: currentColor !important;
+  background: transparent !important;
 }
 
-/* Other icon hover styles - keep existing behavior for non-nav elements */
-.icon-hover:hover svg:not(.bottom-nav-icon),
-.icon-hover:hover path:not(.bottom-nav-icon *),
-button:not(.bottom-nav-container button):hover svg,
-button:not(.bottom-nav-container button):hover path,
-[role="button"]:not(.bottom-nav-container button):hover svg,
-[role="button"]:not(.bottom-nav-container button):hover path {
-  color: white !important;
-  fill: white !important;
-  stroke: white !important;
-}
+/* Remove white hover effects from navigation buttons */
 
-/* Exclude copy buttons and white background buttons from white icon hover */
-button:hover svg:not(.copy-icon):not(.text-gray-600),
-button:hover path:not(.copy-icon):not(.text-gray-600),
-.btn:hover svg:not(.copy-icon):not(.text-gray-600),
-.btn:hover path:not(.copy-icon):not(.text-gray-600),
-.button:hover svg:not(.copy-icon):not(.text-gray-600),
-.button:hover path:not(.copy-icon):not(.text-gray-600) {
-  color: white !important;
-  fill: white !important;
-  stroke: white !important;
-}
-
-/* Preserve original colors for copy buttons and action buttons with white/light backgrounds */
-button.bg-white\/90:hover svg,
-button.bg-white\/90:hover path,
-button.backdrop-blur-sm:hover svg,
-button.backdrop-blur-sm:hover path,
-button.rounded-full.bg-white\/90:hover svg,
-button.rounded-full.bg-white\/90:hover path,
-.bg-white\/90.backdrop-blur-sm:hover svg,
-.bg-white\/90.backdrop-blur-sm:hover path,
-.rounded-full.bg-white\/90.backdrop-blur-sm:hover svg,
-.rounded-full.bg-white\/90.backdrop-blur-sm:hover path,
+/* Preserve original colors for specific UI elements */
 .text-gray-600,
 svg.text-gray-600,
 path.text-gray-600 {
