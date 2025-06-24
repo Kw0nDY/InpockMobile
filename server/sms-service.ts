@@ -45,7 +45,7 @@ async function sendSmsViaTwilio(phone: string, message: string): Promise<SmsApiR
   try {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
-    const fromNumber = process.env.TWILIO_PHONE_NUMBER;
+    const fromNumber = process.env.TWILIO_PHONE_NUMBER?.replace(/\s+/g, ''); // 공백 자동 제거
 
     console.log('🔍 Twilio 설정 확인:');
     console.log(`Account SID: ${accountSid ? accountSid.substring(0, 10) + '...' : '미설정'}`);
