@@ -2,8 +2,9 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupKakaoAuth } from "./kakao-auth";
-import { upload, handleMediaUpload, serveUploadedFile } from "./upload";
-import { handleFormidableUpload } from "./formidable-upload";
+import { handleProfileUploadDirect } from "./profile-upload";
+import path from 'path';
+import fs from 'fs';
 import express from "express";
 import {
   insertUserSchema,
@@ -26,6 +27,12 @@ const loginSchema = z.object({
 export async function registerRoutes(app: Express): Promise<Server> {
   // Kakao OAuth 인증 설정
   setupKakaoAuth(app);
+
+  // Create uploads directory if it doesn't exist
+  const uploadsDir = path.join(process.cwd(), 'uploads');
+  if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir, { recursive: true });
+  }
 
   // 디버깅용 OAuth 테스트 엔드포인트
   app.get("/test/oauth/config", (req, res) => {
@@ -1720,58 +1727,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Media Upload routes
-  app.post("/api/upload/:userId", upload.single('media'), handleMediaUpload);
+  app.post("/api/upload/:userId", handleProfileUploadDirect);
   
-  // New media upload endpoint for images page
-  app.post("/api/media/upload", upload.single('file'), async (req, res) => {
-    try {
-      const file = req.file;
-      const { userId, type, title, description } = req.body;
-      
-      console.log('Media upload request body:', req.body);
-      console.log('File received:', file ? { name: file.filename, type: file.mimetype } : 'No file');
-      
-      if (!file) {
-        return res.status(400).json({ error: 'No file uploaded' });
-      }
-
-      if (!userId || isNaN(parseInt(userId))) {
-        console.log('Invalid userId received:', userId, 'Type:', typeof userId);
-        return res.status(400).json({ error: 'Invalid user ID' });
-      }
-
-      const userIdInt = parseInt(userId);
-      
-      // Determine media type
-      const mediaType = file.mimetype.startsWith('image/') ? 'image' : 'video';
-      
-      // Create media upload record
-      const mediaUpload = await storage.createMediaUpload({
-        userId: userIdInt,
-        fileName: file.filename,
-        originalName: file.originalname,
-        mimeType: file.mimetype,
-        fileSize: file.size,
-        filePath: `/uploads/${file.filename}`,
-        mediaType,
-        title: title || null,
-        description: description || null,
-        isActive: true
-      });
-
-      res.json({
-        success: true,
-        mediaUpload,
-        fileUrl: `/uploads/${file.filename}`,
-        mediaType
-      });
-    } catch (error) {
-      console.error('Media upload error:', error);
-      res.status(500).json({ error: 'Upload failed' });
-    }
-  });
+  // Media upload endpoint using Busboy
+  app.post("/api/media/upload", handleProfileUploadDirect);
   
-  app.get("/uploads/:filename", serveUploadedFile);
+  // Serve uploaded files
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
   
   app.get("/api/media/:userId", async (req, res) => {
     try {

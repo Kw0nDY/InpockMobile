@@ -173,11 +173,7 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
 });
 
 // Schema for media uploads (consolidated)
-export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
-  id: true,
-  createdAt: true,
-});
-
+// Type exports for all entities
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
 
