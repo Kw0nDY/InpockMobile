@@ -153,7 +153,7 @@ export default function LoginPage() {
             <button 
               type="button" 
               onClick={() => setLocation("/find-id")}
-              className="flex items-center text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
+              className="flex items-center text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-1" />
               아이디 찾기
@@ -162,7 +162,7 @@ export default function LoginPage() {
             <button 
               type="button" 
               onClick={() => setLocation("/forgot-password")}
-              className="flex items-center text-amber-600 hover:text-amber-700 hover:underline font-medium transition-colors"
+              className="flex items-center text-primary hover:text-primary/80 hover:underline font-medium transition-colors"
             >
               <HelpCircle className="w-4 h-4 mr-1" />
               비밀번호 찾기
