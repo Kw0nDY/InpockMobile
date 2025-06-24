@@ -217,7 +217,32 @@ export function setupKakaoAuth(app: Express) {
 
       console.log(`OAuth success: ${isNewUser ? 'Created new user' : 'Updated existing user'} for Kakao ID ${userData.id}`);
       
-      // Redirect to dashboard with success indication
+      // Check if user has required fields (phone, name validation)
+      const hasRequiredFields = user!.phone && user!.name && user!.name.trim().length > 0;
+      
+      if (!hasRequiredFields) {
+        console.log('User missing required fields, redirecting to complete registration');
+        // Store user session for complete-registration page
+        req.session.userId = user!.id;
+        req.session.tempUser = {
+          id: user!.id,
+          email: user!.email,
+          username: user!.username,
+          name: user!.name,
+          profileImageUrl: user!.profileImageUrl
+        };
+        
+        const registrationParams = new URLSearchParams({
+          oauth_success: 'true',
+          needs_completion: 'true',
+          user_id: user!.id.toString()
+        });
+        
+        return res.redirect(`/complete-registration?${registrationParams.toString()}`);
+      }
+      
+      // User has all required fields, proceed to dashboard
+      req.session.userId = user!.id;
       const successParams = new URLSearchParams({
         oauth_success: 'true',
         is_new_user: isNewUser.toString(),

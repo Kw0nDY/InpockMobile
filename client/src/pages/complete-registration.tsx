@@ -1,256 +1,312 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuth } from "@/hooks/use-auth";
-import { useLocation } from "wouter";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
-import { z } from "zod";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 
-const completeRegistrationSchema = z.object({
-  username: z.string().min(3, "닉네임은 최소 3자 이상이어야 합니다").max(20, "닉네임은 최대 20자까지 가능합니다"),
-  phone: z.string().min(10, "올바른 전화번호를 입력해주세요").max(15),
-  name: z.string().min(2, "이름은 최소 2자 이상이어야 합니다").max(50),
-});
-
-export default function CompleteRegistrationPage() {
-  const { user, setUser } = useAuth();
+export default function CompleteRegistration() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   
   const [formData, setFormData] = useState({
-    username: user?.username || '',
-    phone: user?.phone || '',
-    name: user?.name || '',
+    nickname: "",
+    name: "",
+    phone: ""
   });
   
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validation, setValidation] = useState({
+    nickname: { isValid: false, isChecking: false, message: "" },
+    name: { isValid: false, message: "" },
+    phone: { isValid: false, message: "" }
+  });
 
-  // 이미 완료된 사용자는 대시보드로 리다이렉트
+  // Get current user data
+  const { data: currentUser, isLoading } = useQuery({
+    queryKey: ["/api/auth/me"],
+    retry: false,
+  });
+
+  // Check nickname availability
+  const checkNicknameMutation = useMutation({
+    mutationFn: async (nickname: string) => {
+      const response = await apiRequest(`/api/auth/check-nickname`, {
+        method: "POST",
+        body: JSON.stringify({ nickname }),
+        headers: { "Content-Type": "application/json" }
+      });
+      return response;
+    },
+    onSuccess: (data, nickname) => {
+      setValidation(prev => ({
+        ...prev,
+        nickname: {
+          isValid: data.available,
+          isChecking: false,
+          message: data.available ? "사용 가능한 닉네임입니다" : "이미 사용 중인 닉네임입니다"
+        }
+      }));
+    },
+    onError: () => {
+      setValidation(prev => ({
+        ...prev,
+        nickname: {
+          isValid: false,
+          isChecking: false,
+          message: "닉네임 확인 중 오류가 발생했습니다"
+        }
+      }));
+    }
+  });
+
+  // Complete registration mutation
+  const completeRegistrationMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      return await apiRequest(`/api/auth/complete-registration`, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
+      });
+    },
+    onSuccess: () => {
+      toast({
+        title: "회원가입 완료",
+        description: "추가 정보가 성공적으로 등록되었습니다.",
+      });
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "등록 실패",
+        description: error.message || "회원가입 완료 중 오류가 발생했습니다.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  // Initialize form with current user data
   useEffect(() => {
-    if (user && user.username && user.phone && user.name) {
-      setLocation('/dashboard');
+    if (currentUser) {
+      setFormData({
+        nickname: currentUser.username || "",
+        name: currentUser.name || "",
+        phone: currentUser.phone || ""
+      });
     }
-  }, [user, setLocation]);
+  }, [currentUser]);
 
-  // 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
+  // Validate nickname with debounce
   useEffect(() => {
-    if (!user) {
-      setLocation('/login');
+    if (formData.nickname && formData.nickname.length >= 2) {
+      const timer = setTimeout(() => {
+        if (formData.nickname !== currentUser?.username) {
+          setValidation(prev => ({
+            ...prev,
+            nickname: { ...prev.nickname, isChecking: true }
+          }));
+          checkNicknameMutation.mutate(formData.nickname);
+        } else {
+          setValidation(prev => ({
+            ...prev,
+            nickname: { isValid: true, isChecking: false, message: "현재 닉네임입니다" }
+          }));
+        }
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (formData.nickname.length > 0) {
+      setValidation(prev => ({
+        ...prev,
+        nickname: { isValid: false, isChecking: false, message: "닉네임은 2자 이상이어야 합니다" }
+      }));
     }
-  }, [user, setLocation]);
+  }, [formData.nickname, currentUser]);
 
-  const validateField = (name: string, value: string) => {
-    try {
-      completeRegistrationSchema.pick({ [name]: true } as any).parse({ [name]: value });
-      setErrors(prev => ({ ...prev, [name]: '' }));
-      return true;
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        setErrors(prev => ({ ...prev, [name]: error.errors[0].message }));
-      }
-      return false;
+  // Validate name
+  useEffect(() => {
+    if (formData.name.trim().length >= 2) {
+      setValidation(prev => ({
+        ...prev,
+        name: { isValid: true, message: "유효한 이름입니다" }
+      }));
+    } else if (formData.name.length > 0) {
+      setValidation(prev => ({
+        ...prev,
+        name: { isValid: false, message: "이름은 2자 이상이어야 합니다" }
+      }));
     }
+  }, [formData.name]);
+
+  // Validate phone
+  useEffect(() => {
+    const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
+    if (phoneRegex.test(formData.phone.replace(/-/g, ""))) {
+      setValidation(prev => ({
+        ...prev,
+        phone: { isValid: true, message: "유효한 전화번호입니다" }
+      }));
+    } else if (formData.phone.length > 0) {
+      setValidation(prev => ({
+        ...prev,
+        phone: { isValid: false, message: "올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)" }
+      }));
+    }
+  }, [formData.phone]);
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
-    // 실시간 유효성 검사
-    if (value.trim()) {
-      validateField(name, value);
-    }
-  };
-
-  const checkUsernameAvailable = async (username: string) => {
-    if (!username || username.length < 3) return false;
-    
-    try {
-      const response = await apiRequest('POST', '/api/auth/check-username', { username });
-      return response.available;
-    } catch (error) {
-      console.error('Username check error:', error);
-      return false;
-    }
-  };
-
-  const handleUsernameBlur = async () => {
-    const { username } = formData;
-    if (!validateField('username', username)) return;
-    
-    const isAvailable = await checkUsernameAvailable(username);
-    if (!isAvailable) {
-      setErrors(prev => ({ ...prev, username: '이미 사용중인 닉네임입니다' }));
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (isSubmitting) return;
-    
-    try {
-      // 전체 폼 유효성 검사
-      completeRegistrationSchema.parse(formData);
-      
-      // 닉네임 중복 체크
-      const isUsernameAvailable = await checkUsernameAvailable(formData.username);
-      if (!isUsernameAvailable) {
-        setErrors(prev => ({ ...prev, username: '이미 사용중인 닉네임입니다' }));
-        return;
-      }
-      
-      setIsSubmitting(true);
-      
-      // 사용자 정보 업데이트
-      const response = await apiRequest('PATCH', `/api/user/${user?.id}`, {
-        username: formData.username,
-        phone: formData.phone,
-        name: formData.name,
+    if (!validation.nickname.isValid || !validation.name.isValid || !validation.phone.isValid) {
+      toast({
+        title: "입력 확인",
+        description: "모든 필수 정보를 올바르게 입력해주세요.",
+        variant: "destructive",
       });
-      
-      if (response.user) {
-        setUser(response.user);
-        toast({
-          title: "회원가입 완료",
-          description: "추가 정보가 성공적으로 등록되었습니다.",
-        });
-        setLocation('/dashboard');
-      }
-      
-    } catch (error) {
-      if (error instanceof z.ZodError) {
-        const fieldErrors: Record<string, string> = {};
-        error.errors.forEach(err => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as string] = err.message;
-          }
-        });
-        setErrors(fieldErrors);
-      } else {
-        toast({
-          title: "오류 발생",
-          description: "회원가입 완료 중 오류가 발생했습니다. 다시 시도해주세요.",
-          variant: "destructive",
-        });
-      }
-    } finally {
-      setIsSubmitting(false);
+      return;
     }
+
+    completeRegistrationMutation.mutate(formData);
   };
 
-  const getMissingFields = () => {
-    const missing = [];
-    if (!user?.username) missing.push('닉네임');
-    if (!user?.phone) missing.push('전화번호');
-    if (!user?.name) missing.push('이름');
-    return missing;
+  const getValidationIcon = (field: keyof typeof validation) => {
+    const fieldValidation = validation[field];
+    if (field === 'nickname' && fieldValidation.isChecking) {
+      return <Loader2 className="h-4 w-4 animate-spin text-gray-400" />;
+    }
+    if (fieldValidation.isValid) {
+      return <CheckCircle className="h-4 w-4 text-green-500" />;
+    }
+    if (fieldValidation.message) {
+      return <AlertCircle className="h-4 w-4 text-red-500" />;
+    }
+    return null;
   };
 
-  if (!user) {
-    return null; // 로딩 중이거나 리다이렉트 중
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-amber-600" />
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-amber-50 to-orange-100 flex items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-foreground">
-            회원가입 완료
-          </CardTitle>
-          <p className="text-muted-foreground mt-2">
-            카카오 로그인이 완료되었습니다.<br />
-            서비스 이용을 위해 추가 정보를 입력해주세요.
-          </p>
-          {getMissingFields().length > 0 && (
-            <p className="text-sm text-orange-600 mt-2">
-              필요한 정보: {getMissingFields().join(', ')}
-            </p>
-          )}
+          <CardTitle className="text-2xl font-bold text-amber-900">회원가입 완료</CardTitle>
+          <CardDescription className="text-amber-700">
+            서비스 이용을 위해 추가 정보를 입력해주세요
+          </CardDescription>
         </CardHeader>
-        
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* 닉네임 */}
+            {/* Nickname Field */}
             <div className="space-y-2">
-              <Label htmlFor="username">닉네임 *</Label>
-              <Input
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleInputChange}
-                onBlur={handleUsernameBlur}
-                placeholder="사용할 닉네임을 입력하세요"
-                className={errors.username ? "border-red-500" : ""}
-              />
-              {errors.username && (
-                <p className="text-sm text-red-500">{errors.username}</p>
-              )}
-            </div>
-
-            {/* 이름 */}
-            <div className="space-y-2">
-              <Label htmlFor="name">이름 *</Label>
-              <Input
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="실명을 입력하세요"
-                className={errors.name ? "border-red-500" : ""}
-              />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name}</p>
-              )}
-            </div>
-
-            {/* 전화번호 */}
-            <div className="space-y-2">
-              <Label htmlFor="phone">전화번호 *</Label>
-              <Input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="010-1234-5678"
-                className={errors.phone ? "border-red-500" : ""}
-              />
-              {errors.phone && (
-                <p className="text-sm text-red-500">{errors.phone}</p>
-              )}
-            </div>
-
-            {/* 카카오에서 가져온 정보 표시 */}
-            {user.email && (
-              <div className="space-y-2">
-                <Label>이메일 (카카오 연동)</Label>
+              <Label htmlFor="nickname" className="text-amber-800 font-medium">
+                닉네임 *
+              </Label>
+              <div className="relative">
                 <Input
-                  value={user.email}
-                  disabled
-                  className="bg-muted text-muted-foreground"
+                  id="nickname"
+                  type="text"
+                  value={formData.nickname}
+                  onChange={(e) => handleInputChange("nickname", e.target.value)}
+                  placeholder="사용할 닉네임을 입력하세요"
+                  className="pr-10 border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  required
                 />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  {getValidationIcon('nickname')}
+                </div>
               </div>
-            )}
+              {validation.nickname.message && (
+                <p className={`text-sm ${validation.nickname.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {validation.nickname.message}
+                </p>
+              )}
+            </div>
+
+            {/* Name Field */}
+            <div className="space-y-2">
+              <Label htmlFor="name" className="text-amber-800 font-medium">
+                이름 *
+              </Label>
+              <div className="relative">
+                <Input
+                  id="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange("name", e.target.value)}
+                  placeholder="실명을 입력하세요"
+                  className="pr-10 border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  required
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  {getValidationIcon('name')}
+                </div>
+              </div>
+              {validation.name.message && (
+                <p className={`text-sm ${validation.name.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {validation.name.message}
+                </p>
+              )}
+            </div>
+
+            {/* Phone Field */}
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-amber-800 font-medium">
+                전화번호 *
+              </Label>
+              <div className="relative">
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange("phone", e.target.value)}
+                  placeholder="010-1234-5678"
+                  className="pr-10 border-amber-200 focus:border-amber-400 focus:ring-amber-400"
+                  required
+                />
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  {getValidationIcon('phone')}
+                </div>
+              </div>
+              {validation.phone.message && (
+                <p className={`text-sm ${validation.phone.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                  {validation.phone.message}
+                </p>
+              )}
+            </div>
 
             <Button
               type="submit"
-              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-              disabled={isSubmitting || Object.values(errors).some(error => error !== '')}
+              className="w-full bg-amber-600 hover:bg-amber-700 text-white py-2 mt-6"
+              disabled={
+                completeRegistrationMutation.isPending ||
+                !validation.nickname.isValid ||
+                !validation.name.isValid ||
+                !validation.phone.isValid ||
+                validation.nickname.isChecking
+              }
             >
-              {isSubmitting ? '등록 중...' : '회원가입 완료'}
+              {completeRegistrationMutation.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  완료 중...
+                </>
+              ) : (
+                "회원가입 완료"
+              )}
             </Button>
           </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-xs text-muted-foreground">
-              회원가입을 완료하면 서비스 이용약관 및 개인정보 처리방침에 동의하는 것으로 간주됩니다.
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

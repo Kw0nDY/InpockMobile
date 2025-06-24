@@ -306,7 +306,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Check username availability
+  // Check username availability (for signup)
   app.post("/api/auth/check-username", async (req, res) => {
     try {
       const { username } = req.body;
@@ -357,6 +357,122 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Registration check error:", error);
       res.status(500).json({ message: "서버 오류가 발생했습니다." });
+    }
+  });
+
+  // 닉네임 중복 확인 엔드포인트 (완료 페이지용)
+  app.post("/api/auth/check-nickname", async (req, res) => {
+    try {
+      const { nickname } = req.body;
+      
+      if (!nickname || nickname.length < 2) {
+        return res.status(400).json({ 
+          available: false, 
+          message: "닉네임은 2자 이상이어야 합니다" 
+        });
+      }
+
+      const existingUser = await storage.getUserByUsername(nickname);
+      const available = !existingUser;
+      
+      res.json({ 
+        available,
+        message: available ? "사용 가능한 닉네임입니다" : "이미 사용 중인 닉네임입니다"
+      });
+    } catch (error) {
+      console.error("Nickname check error:", error);
+      res.status(500).json({ message: "Server error" });
+    }
+  });
+
+  // 회원가입 완료 엔드포인트
+  app.post("/api/auth/complete-registration", async (req, res) => {
+    try {
+      const { nickname, name, phone } = req.body;
+      
+      // 세션에서 사용자 ID 가져오기
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "로그인이 필요합니다" });
+      }
+
+      // 입력 데이터 검증
+      if (!nickname || nickname.length < 2) {
+        return res.status(400).json({ message: "닉네임은 2자 이상이어야 합니다" });
+      }
+      
+      if (!name || name.trim().length < 2) {
+        return res.status(400).json({ message: "이름은 2자 이상이어야 합니다" });
+      }
+      
+      const phoneRegex = /^01[0-9]-?[0-9]{4}-?[0-9]{4}$/;
+      if (!phone || !phoneRegex.test(phone.replace(/-/g, ""))) {
+        return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다" });
+      }
+
+      // 닉네임 중복 확인 (현재 사용자의 닉네임이 아닌 경우만)
+      const currentUser = await storage.getUser(userId);
+      if (!currentUser) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
+      }
+      
+      if (nickname !== currentUser.username) {
+        const existingUser = await storage.getUserByUsername(nickname);
+        if (existingUser) {
+          return res.status(400).json({ message: "이미 사용 중인 닉네임입니다" });
+        }
+      }
+
+      // 사용자 정보 업데이트
+      const updatedUser = await storage.updateUser(userId, {
+        username: nickname,
+        name: name.trim(),
+        phone: phone.replace(/-/g, "")
+      });
+
+      res.json({ 
+        message: "회원가입이 완료되었습니다",
+        user: {
+          id: updatedUser.id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          phone: updatedUser.phone,
+          role: updatedUser.role
+        }
+      });
+    } catch (error) {
+      console.error("Complete registration error:", error);
+      res.status(500).json({ message: "회원가입 완료 중 오류가 발생했습니다" });
+    }
+  });
+
+  // 현재 로그인된 사용자 정보 엔드포인트
+  app.get("/api/auth/me", async (req, res) => {
+    try {
+      const userId = req.session.userId;
+      if (!userId) {
+        return res.status(401).json({ message: "로그인이 필요합니다" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다" });
+      }
+
+      res.json({
+        id: user.id,
+        username: user.username,
+        email: user.email,
+        name: user.name,
+        phone: user.phone,
+        role: user.role,
+        profileImageUrl: user.profileImageUrl,
+        company: user.company
+      });
+    } catch (error) {
+      console.error("Get current user error:", error);
+      res.status(500).json({ message: "Server error" });
     }
   });
 
