@@ -190,13 +190,17 @@ async function sendRealEmail(email: string, code: string): Promise<boolean> {
   console.log(`유효시간: 10분`);
   console.log(`만료시간: ${new Date(Date.now() + 10 * 60 * 1000).toLocaleString('ko-KR')}\n`);
   
-  // 백그라운드에서 이메일 발송 시도 (여러 서비스)
-  Promise.all([
-    process.env.BREVO_API_KEY && sendBrevoEmail(email, code),
-    process.env.GMAIL_USER && sendNodemailerEmail(email, code)
-  ]).catch(error => {
-    console.log('백그라운드 이메일 발송 완료');
-  });
+  // 백그라운드에서 Brevo 이메일 발송 시도
+  if (process.env.BREVO_API_KEY) {
+    sendBrevoEmail(email, code).then(success => {
+      if (success) {
+        console.log(`📮 실제 이메일도 ${email}로 발송되었습니다.`);
+        console.log(`   스팸 폴더, 프로모션 탭도 확인해보세요.`);
+      }
+    }).catch(error => {
+      console.log('이메일 발송 시도 완료');
+    });
+  }
   
   return true; // 콘솔 모드이므로 항상 성공으로 처리
 
