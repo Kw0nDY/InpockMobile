@@ -14,12 +14,13 @@ import { z } from "zod";
 const signupSchema = z.object({
   username: z.string().min(3, "사용자명은 3자 이상이어야 합니다").max(20, "사용자명은 20자 이하여야 합니다"),
   email: z.string().email("올바른 이메일 주소를 입력해주세요"),
-  password: z.string().min(8, "비밀번호는 8자 이상이어야 합니다"),
+  password: z.string().min(6, "비밀번호는 6자 이상이어야 합니다"),
   confirmPassword: z.string(),
   name: z.string().min(2, "이름은 2자 이상이어야 합니다"),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-  role: z.string().min(1, "역할을 선택해주세요")
+  phone: z.string().min(10, "올바른 전화번호를 입력해주세요"), // 필수로 변경
+  dateOfBirth: z.string().min(1, "생년월일을 입력해주세요"), // 필수 추가
+  currentGym: z.string().optional(), // 선택 항목
+  gymPosition: z.string().optional() // 선택 항목
 }).refine((data) => data.password === data.confirmPassword, {
   message: "비밀번호가 일치하지 않습니다",
   path: ["confirmPassword"]
@@ -37,8 +38,9 @@ export default function SignupStep2() {
     confirmPassword: "",
     name: "",
     phone: "",
-    company: "",
-    role: ""
+    dateOfBirth: "",
+    currentGym: "",
+    gymPosition: ""
   });
   const [errors, setErrors] = useState<Partial<Record<keyof SignupForm, string>>>({});
 
@@ -53,14 +55,15 @@ export default function SignupStep2() {
         role: data.role
       });
       
-      const response = await apiRequest("POST", "/api/auth/signup", {
+      const response = await apiRequest("POST", "/api/auth/register", {
         username: data.username,
         email: data.email,
         password: data.password,
         name: data.name,
-        phone: data.phone || "",
-        company: data.company || "",
-        role: data.role
+        phone: data.phone,
+        birthDate: data.dateOfBirth,
+        currentGym: data.currentGym || "",
+        gymPosition: data.gymPosition || ""
       });
       
       const result = await response.json();
@@ -158,7 +161,7 @@ export default function SignupStep2() {
 
   const isFormValid = () => {
     // Check all required fields are filled
-    const requiredFields: (keyof SignupForm)[] = ['username', 'email', 'password', 'confirmPassword', 'name', 'role'];
+    const requiredFields: (keyof SignupForm)[] = ['username', 'email', 'password', 'confirmPassword', 'name', 'phone', 'dateOfBirth'];
     const allFieldsFilled = requiredFields.every(field => {
       const value = formData[field];
       return value && value.trim() !== '';
@@ -168,7 +171,7 @@ export default function SignupStep2() {
     const passwordsMatch = formData.password === formData.confirmPassword && formData.password.length > 0;
     
     // Check password length
-    const passwordValid = formData.password.length >= 8;
+    const passwordValid = formData.password.length >= 6;
     
     // Check email format (basic validation)
     const emailValid = formData.email.includes('@') && formData.email.includes('.');
@@ -178,6 +181,9 @@ export default function SignupStep2() {
     
     // Check name length
     const nameValid = formData.name.length >= 2;
+    
+    // Check phone length
+    const phoneValid = formData.phone.length >= 10;
     
     // Debug logging
     console.log('Form validation check:', {
@@ -193,12 +199,13 @@ export default function SignupStep2() {
         password: formData.password ? '***' : '',
         confirmPassword: formData.confirmPassword ? '***' : '',
         name: formData.name,
-        role: formData.role
+        phone: formData.phone,
+        dateOfBirth: formData.dateOfBirth
       },
       errors
     });
     
-    return allFieldsFilled && passwordsMatch && passwordValid && emailValid && usernameValid && nameValid;
+    return allFieldsFilled && passwordsMatch && passwordValid && emailValid && usernameValid && nameValid && phoneValid;
   };
 
   return (
@@ -270,7 +277,7 @@ export default function SignupStep2() {
                   type="password"
                   value={formData.password}
                   onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="8자 이상 입력하세요"
+                  placeholder="6자 이상 입력하세요"
                   autoComplete="new-password"
                   className={`w-full ${errors.password ? 'border-red-500' : ''}`}
                 />
@@ -316,57 +323,74 @@ export default function SignupStep2() {
                 )}
               </div>
 
-              {/* Phone (Optional) */}
+              {/* Phone (Required) */}
               <div>
                 <label htmlFor="phone" className="block text-sm font-medium text-gray-700 korean-text mb-2">
-                  전화번호
+                  전화번호 *
                 </label>
                 <Input
                   id="phone"
                   type="tel"
                   value={formData.phone}
                   onChange={(e) => handleInputChange('phone', e.target.value)}
-                  placeholder="010-0000-0000 (선택사항)"
-                  className="w-full"
+                  placeholder="010-0000-0000"
+                  className={`w-full ${errors.phone ? 'border-red-500' : ''}`}
                 />
+                {errors.phone && (
+                  <p className="text-red-500 text-xs mt-1 korean-text">{errors.phone}</p>
+                )}
               </div>
 
-              {/* Company (Optional) */}
+              {/* Date of Birth (Required) */}
               <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 korean-text mb-2">
-                  회사명
+                <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 korean-text mb-2">
+                  생년월일 *
                 </label>
                 <Input
-                  id="company"
-                  type="text"
-                  value={formData.company}
-                  onChange={(e) => handleInputChange('company', e.target.value)}
-                  placeholder="회사명 (선택사항)"
-                  className="w-full"
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  className={`w-full ${errors.dateOfBirth ? 'border-red-500' : ''}`}
                 />
+                {errors.dateOfBirth && (
+                  <p className="text-red-500 text-xs mt-1 korean-text">{errors.dateOfBirth}</p>
+                )}
               </div>
 
-              {/* Role */}
-              <div>
-                <label htmlFor="role" className="block text-sm font-medium text-gray-700 korean-text mb-2">
-                  역할 *
-                </label>
-                <Select onValueChange={(value) => handleInputChange('role', value)}>
-                  <SelectTrigger className={`w-full ${errors.role ? 'border-red-500' : ''}`}>
-                    <SelectValue placeholder="역할을 선택하세요" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="entrepreneur">창업가</SelectItem>
-                    <SelectItem value="marketer">마케터</SelectItem>
-                    <SelectItem value="developer">개발자</SelectItem>
-                    <SelectItem value="designer">디자이너</SelectItem>
-                    <SelectItem value="student">학생</SelectItem>
-                    <SelectItem value="other">기타</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.role && (
-                  <p className="text-red-500 text-xs mt-1 korean-text">{errors.role}</p>
-                )}
+              {/* Optional Fields Section */}
+              <div className="space-y-4 border-t pt-4">
+                <h3 className="text-sm font-medium text-gray-700">선택 항목</h3>
+                
+                {/* Current Gym (Optional) */}
+                <div>
+                  <label htmlFor="currentGym" className="block text-sm font-medium text-gray-600 korean-text mb-2">
+                    소속 헬스장명
+                  </label>
+                  <Input
+                    id="currentGym"
+                    type="text"
+                    value={formData.currentGym}
+                    onChange={(e) => handleInputChange('currentGym', e.target.value)}
+                    placeholder="현재 소속된 헬스장명을 입력해주세요"
+                    className="w-full"
+                  />
+                </div>
+
+                {/* Gym Position (Optional) */}
+                <div>
+                  <label htmlFor="gymPosition" className="block text-sm font-medium text-gray-600 korean-text mb-2">
+                    직급
+                  </label>
+                  <Input
+                    id="gymPosition"
+                    type="text"
+                    value={formData.gymPosition}
+                    onChange={(e) => handleInputChange('gymPosition', e.target.value)}
+                    placeholder="헬스장에서의 직급을 입력해주세요"
+                    className="w-full"
+                  />
+                </div>
               </div>
             </form>
           </CardContent>
