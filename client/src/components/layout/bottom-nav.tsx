@@ -18,7 +18,7 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-gray-100 bottom-nav-shadow z-50">
+    <nav className="fixed bottom-0 left-1/2 transform -translate-x-1/2 w-full max-w-md bg-white border-t border-stone-200/50 bottom-nav-shadow z-50">
       <div className="flex items-center justify-around py-2">
         {navItems.map(({ path, icon: Icon, label }) => {
           const isActive = location === path;
@@ -27,8 +27,10 @@ export default function BottomNav() {
             <button
               key={path}
               onClick={() => setLocation(path)}
-              className={`flex flex-col items-center py-2 px-3 transition-colors rounded-lg ${
-                isActive ? "text-primary" : "text-gray-400 hover:text-primary hover:bg-primary/10"
+              className={`flex flex-col items-center py-2 px-3 transition-all duration-200 rounded-lg ${
+                isActive 
+                  ? "text-amber-800 bg-gradient-to-t from-amber-100 to-stone-50" 
+                  : "text-gray-500 hover:text-amber-900 hover:bg-gradient-to-t hover:from-stone-100 hover:to-amber-50 hover:shadow-sm"
               }`}
             >
               <Icon className="w-6 h-6 mb-1 transition-colors" />
