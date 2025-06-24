@@ -68,11 +68,14 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
         'api-key': process.env.BREVO_API_KEY!
       },
       body: JSON.stringify({
-        sender: { name: 'AmuseFit', email: 'onboarding@resend.dev' },
+        sender: { name: 'AmuseFit 피트니스', email: 'hello@amusefit.service' },
         to: [{ email }],
-        subject: '[AmuseFit] 인증번호',
+        subject: '인증번호 안내 - AmuseFit',
         htmlContent: html,
-        textContent: text
+        textContent: text,
+        headers: {
+          'Reply-To': 'support@amusefit.service'
+        }
       })
     });
 
@@ -154,11 +157,12 @@ async function sendRealEmail(email: string, code: string): Promise<boolean> {
     console.log(`🔄 Brevo로 이메일 발송 시도: ${email}`);
     const success = await sendBrevoEmail(email, code);
     if (success) {
-      console.log(`📧 이메일이 발송되었습니다. 다음을 확인해주세요:`);
-      console.log(`   • 받는 주소: ${email}`);
-      console.log(`   • 인증번호: ${code}`);
-      console.log(`   • 스팸 폴더 확인`);
-      console.log(`   • 프로모션 탭 확인 (Gmail)`);
+      // 이메일 배달 문제가 발생할 수 있으므로 항상 콘솔에도 출력
+      console.log(`\n📧 이메일 발송 완료 (백업용 인증번호)`);
+      console.log(`이메일: ${email}`);
+      console.log(`인증번호: ${code}`);
+      console.log(`유효시간: 10분`);
+      console.log(`\n⚠️  이메일을 받지 못했다면 위 인증번호를 사용하세요\n`);
       return true;
     }
   }
