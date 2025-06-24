@@ -33,12 +33,7 @@ export default function DashboardPage() {
   const { user, checkRegistrationComplete } = useAuth();
   const [, setLocation] = useLocation();
 
-  // 필수 정보 미완성 시 회원가입 완료 페이지로 리다이렉트
-  useEffect(() => {
-    if (user && !checkRegistrationComplete()) {
-      setLocation('/complete-registration');
-    }
-  }, [user, checkRegistrationComplete, setLocation]);
+  // 회원가입 완료 리다이렉트 제거 - 이미 로그인된 사용자는 그대로 진행
 
   const queryClient = useQueryClient();
   const { toast } = useToast();

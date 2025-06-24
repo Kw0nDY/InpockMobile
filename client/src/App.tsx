@@ -29,7 +29,7 @@ import KakaoCallback from "./pages/kakao-callback";
 import ForgotPasswordPage from "./pages/forgot-password";
 import FindIdPage from "./pages/find-id";
 import ProfilePage from "./pages/profile";
-import CompleteRegistrationPage from "./pages/complete-registration";
+
 import VerifySmsPage from "./pages/verify-sms";
 import VerifyEmailPage from "./pages/verify-email";
 import ResetPasswordNewPage from "./pages/reset-password-new";
@@ -49,7 +49,7 @@ function Router() {
   useAnalytics();
   
   // 하단 네비게이션을 표시하지 않을 페이지들
-  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro", "/complete-registration"];
+  const hideNavPages = ["/login", "/signup", "/signup-step1", "/signup-step2", "/", "/forgot-password", "/find-id", "/reset-password", "/service-intro"];
   
   // 현재 위치가 공개 프로필 뷰인지 확인 (커스텀 URL 또는 /users/username)
   const isPublicProfileView = location.startsWith("/users/") || 
@@ -81,9 +81,7 @@ function Router() {
           <Route path="/forgot-password" component={ForgotPasswordPage} />
           <Route path="/find-id" component={FindIdPage} />
           <Route path="/reset-password/:token" component={ResetPasswordPage} />
-          <Route path="/complete-registration">
-            <CompleteRegistrationPage />
-          </Route>
+
           <Route path="/verify-sms" component={VerifySmsPage} />
           <Route path="/verify-email" component={VerifyEmailPage} />
           <Route path="/reset-password-new" component={ResetPasswordNewPage} />
