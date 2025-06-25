@@ -76,11 +76,7 @@ export interface IStorage {
   // Additional methods
   getAllLinks(): Promise<Link[]>;
   
-  // Notifications
-  createNotification(notification: InsertNotification): Promise<Notification>;
-  getUserNotifications(userId: number): Promise<Notification[]>;
-  markNotificationAsRead(id: number): Promise<void>;
-  getUnreadNotificationCount(userId: number): Promise<number>;
+  // Additional utility methods
 
   // Password Reset Tokens
   createPasswordResetToken(token: InsertPasswordResetToken): Promise<PasswordResetToken>;
