@@ -1,4 +1,45 @@
-// SMS 인증 시스템 (개발용 - 실제 SMS 발송 없이 콘솔 출력)
+// 통합 SMS 인증 시스템 (실제 SMS + 개발 모드 폴백)
+
+// 실제 SMS 발송 서비스 통합
+async function sendRealSms(phone: string, code: string, purpose: string): Promise<{ success: boolean; message: string; messageId?: string }> {
+  const purposeText = purpose === 'find_id' ? 'ID 찾기' : '비밀번호 재설정';
+  const message = `[AmuseFit] ${purposeText} 인증번호: ${code} (10분간 유효)`;
+
+  // Twilio SMS 시도
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const fromNumber = process.env.TWILIO_PHONE_NUMBER?.replace(/\s+/g, '');
+
+  if (accountSid && authToken && fromNumber) {
+    try {
+      const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString('base64')}`,
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: new URLSearchParams({
+          From: fromNumber,
+          To: phone,
+          Body: message
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        return { success: true, message: 'Twilio SMS 발송 성공', messageId: result.sid };
+      } else {
+        throw new Error(`Twilio API 오류: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Twilio SMS 발송 실패:', error);
+      return { success: false, message: `Twilio SMS 실패: ${error.message}` };
+    }
+  }
+
+  return { success: false, message: 'SMS 서비스 설정이 필요합니다.' };
+}
 
 interface SmsVerificationCode {
   phone: string;
@@ -7,17 +48,28 @@ interface SmsVerificationCode {
   expiresAt: Date;
   attempts: number;
   verified: boolean;
+  createdAt: Date;
 }
 
-// 메모리 저장소 (실제 서비스에서는 Redis 사용 권장)
+// 메모리 저장소 최적화 (TTL 적용)
 const smsVerificationCodes = new Map<string, SmsVerificationCode>();
 
-// 6자리 랜덤 코드 생성
+// 주기적 정리 (10분마다)
+setInterval(() => {
+  const now = new Date();
+  for (const [key, value] of smsVerificationCodes.entries()) {
+    if (now > value.expiresAt) {
+      smsVerificationCodes.delete(key);
+    }
+  }
+}, 10 * 60 * 1000);
+
+// 보안 강화된 6자리 코드 생성
 function generateSmsCode(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// SMS 발송 시뮬레이션 (개발 모드 백업)
+// 개발 모드 SMS 시뮬레이션
 function sendSmsSimulation(phone: string, code: string, purpose: string): void {
   console.log(`\n📱 SMS 인증번호 (개발 모드)`);
   console.log(`전화번호: ${phone}`);

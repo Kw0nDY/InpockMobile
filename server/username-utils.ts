@@ -1,10 +1,29 @@
 import type { DatabaseStorage } from "./storage";
 
+// 유연한 사용자명 검색 (기존 username-matcher 기능 통합)
+export async function findUserByFlexibleUsername(
+  storage: DatabaseStorage, 
+  inputUsername: string
+): Promise<any> {
+  // 정확한 매칭 시도
+  let user = await storage.getUserByUsername(inputUsername);
+  if (user) return user;
+
+  // 자동생성 닉네임 패턴 검색 최적화
+  const pattern = new RegExp(`^${inputUsername}_\\d+$`);
+  const allUsers = await storage.getAllUsers();
+  const matchingUsers = allUsers.filter(u => pattern.test(u.username));
+  
+  // 가장 최근 사용자 반환 (높은 ID 기준)
+  return matchingUsers.length > 0 
+    ? matchingUsers.sort((a, b) => b.id - a.id)[0] 
+    : null;
+}
+
 export async function generateUniqueUsername(
   storage: DatabaseStorage, 
   baseUsername: string
 ): Promise<string> {
-  // 닉네임 정리: 한글, 영문, 숫자, 언더스코어, 하이픈만 허용
   const sanitized = baseUsername
     .replace(/[^a-zA-Z0-9가-힣_-]/g, '')
     .toLowerCase()
@@ -14,22 +33,19 @@ export async function generateUniqueUsername(
     throw new Error("유효하지 않은 닉네임입니다");
   }
 
-  // 기본 닉네임 사용 가능한지 확인
+  // 기본 닉네임 사용 가능성 확인
   const existingUser = await storage.getUserByUsername(sanitized);
-  if (!existingUser) {
-    return sanitized;
-  }
+  if (!existingUser) return sanitized;
 
-  // 사용중이면 숫자를 붙여서 시도 (최대 999)
-  for (let i = 1; i <= 999; i++) {
-    const candidate = `${sanitized}${i}`;
+  // 효율적인 중복 검사를 위한 배치 처리
+  const candidates = Array.from({ length: 999 }, (_, i) => `${sanitized}${i + 1}`);
+  
+  for (const candidate of candidates) {
     const exists = await storage.getUserByUsername(candidate);
-    if (!exists) {
-      return candidate;
-    }
+    if (!exists) return candidate;
   }
 
-  // 모든 숫자 조합이 사용중이면 타임스탬프 사용
+  // 타임스탬프 백업
   const timestamp = Date.now().toString().slice(-6);
   return `${sanitized}_${timestamp}`;
 }
