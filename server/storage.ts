@@ -1,12 +1,11 @@
 import { 
-  users, links, userSettings, subscriptions, mediaUploads, linkVisits, notifications, passwordResetTokens,
+  users, links, userSettings, subscriptions, mediaUploads, linkVisits, passwordResetTokens,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit,
-  type Notification, type InsertNotification,
   type PasswordResetToken, type InsertPasswordResetToken
 } from "@shared/schema";
 import { db } from "./db";

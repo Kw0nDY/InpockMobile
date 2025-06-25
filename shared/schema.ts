@@ -153,12 +153,6 @@ export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
   createdAt: true,
 });
 
-// Schema for notifications
-export const insertNotificationSchema = createInsertSchema(notifications).omit({
-  id: true,
-  createdAt: true,
-});
-
 // Schema for link visits tracking
 export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   id: true,
@@ -182,6 +176,8 @@ export const insertSubscriptionSchema = createInsertSchema(subscriptions).omit({
   id: true,
   createdAt: true,
 });
+
+
 
 // Type exports for all entities
 export type User = typeof users.$inferSelect;

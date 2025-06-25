@@ -253,10 +253,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "비밀번호는 8자 이상이어야 합니다" });
       }
       
-      // Password complexity check
+      // Password complexity check (alphanumeric required)
       const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)/;
       if (!passwordRegex.test(password)) {
         return res.status(400).json({ message: "비밀번호는 영문과 숫자를 포함해야 합니다" });
+      }
+      
+      // Check for common weak passwords
+      const weakPasswords = ['password', '12345678', 'qwerty123', 'admin123'];
+      if (weakPasswords.includes(password.toLowerCase())) {
+        return res.status(400).json({ message: "더 안전한 비밀번호를 사용해주세요" });
       }
       
       // Enhanced phone format validation (Korean phone numbers)
