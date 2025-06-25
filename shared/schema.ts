@@ -266,7 +266,45 @@ export const notificationsRelations = relations(notifications, ({ one }) => ({
   }),
 }));
 
+// Profile visits tracking table
+export const profileVisits = pgTable("profile_visits", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  visitorIp: text("visitor_ip").notNull(),
+  userAgent: text("user_agent"),
+  referer: text("referer"),
+  visitedAt: timestamp("visited_at").defaultNow().notNull(),
+});
+
+// Active sessions tracking table
+export const activeSessions = pgTable("active_sessions", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  sessionId: text("session_id").notNull(),
+  lastActivity: timestamp("last_activity").defaultNow().notNull(),
+  isActive: boolean("is_active").default(true).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Deals tracking table
+export const deals = pgTable("deals", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status", { enum: ['active', 'completed', 'cancelled'] }).default("active"),
+  value: integer("value"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export type Notification = typeof notifications.$inferSelect;
 export type InsertNotification = typeof notifications.$inferInsert;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = typeof passwordResetTokens.$inferInsert;
+export type ProfileVisit = typeof profileVisits.$inferSelect;
+export type InsertProfileVisit = typeof profileVisits.$inferInsert;
+export type ActiveSession = typeof activeSessions.$inferSelect;
+export type InsertActiveSession = typeof activeSessions.$inferInsert;
+export type Deal = typeof deals.$inferSelect;
+export type InsertDeal = typeof deals.$inferInsert;
