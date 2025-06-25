@@ -183,7 +183,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // bcrypt를 사용한 비밀번호 검증
       const bcrypt = await import("bcrypt");
+      console.log("Comparing password:", password, "with hash:", user.password?.substring(0, 20) + "...");
       const isValidPassword = await bcrypt.compare(password, user.password);
+      console.log("Password comparison result:", isValidPassword);
       
       if (!isValidPassword) {
         console.log("Password mismatch for user:", username);
