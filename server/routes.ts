@@ -2168,5 +2168,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   const httpServer = createServer(app);
+  // 공개 프로필 페이지 (가장 마지막에 위치)
+  app.get("/:customUrl", async (req, res) => {
+    try {
+      const { customUrl } = req.params;
+      
+      console.log(`Public profile request for: ${customUrl}`);
+      console.log(`Request IP: ${req.ip}`);
+      console.log(`User Agent: ${req.get('User-Agent')}`);
+      
+      // 시스템 라우트들은 건너뛰기
+      if (['api', 'assets', 'static', 'favicon.ico', '_next', 'webpack-hmr'].includes(customUrl) || 
+          customUrl.startsWith('@') || customUrl.includes('.')) {
+        return res.status(404).send("Not Found");
+      }
+
+      const user = await storage.getUserByCustomUrl(customUrl);
+      if (!user) {
+        console.log(`User not found for customUrl: ${customUrl}`);
+        return res.status(404).send("Profile not found");
+      }
+
+      console.log(`Found user: ${user.username} (ID: ${user.id})`);
+
+      // 방문 기록
+      try {
+        const visitorIp = req.ip || req.connection?.remoteAddress || req.socket?.remoteAddress || 'unknown';
+        const userAgent = req.get('User-Agent') || '';
+        const referer = req.get('Referer') || '';
+        
+        console.log(`Recording visit from IP: ${visitorIp}`);
+        
+        await storage.recordProfileVisit(user.id, visitorIp, userAgent, referer);
+        console.log(`Profile visit recorded for user ${user.id}`);
+        
+        // 사용자의 방문 카운트 증가
+        await storage.incrementUserVisitCount(user.id);
+        console.log(`Visit count incremented for user ${user.id}`);
+      } catch (visitError) {
+        console.error("Failed to record profile visit:", visitError);
+        // 방문 기록 실패해도 프로필은 보여줌
+      }
+
+      // 사용자 설정 가져오기
+      const settings = await storage.getUserSettings(user.id);
+      const links = await storage.getLinks(user.id);
+      const mediaUploads = await storage.getUserMediaUploads(user.id);
+
+      // HTML 응답
+      res.send(`
+        <!DOCTYPE html>
+        <html lang="ko">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>${user.name || user.username} - AmuseFit</title>
+          <meta name="description" content="${user.bio || `${user.name || user.username}의 프로필`}">
+          <meta property="og:title" content="${user.name || user.username} - AmuseFit">
+          <meta property="og:description" content="${user.bio || `${user.name || user.username}의 프로필`}">
+          ${user.profileImage ? `<meta property="og:image" content="${user.profileImage}">` : ''}
+          <meta property="og:type" content="profile">
+          <link rel="stylesheet" href="/assets/index.css">
+        </head>
+        <body>
+          <div id="root"></div>
+          <script>
+            window.__INITIAL_DATA__ = {
+              user: ${JSON.stringify(user)},
+              settings: ${JSON.stringify(settings)},
+              links: ${JSON.stringify(links)},
+              mediaUploads: ${JSON.stringify(mediaUploads)},
+              isPublicView: true
+            };
+          </script>
+          <script type="module" src="/assets/index.js"></script>
+        </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error("Error serving public profile:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+
   return httpServer;
 }

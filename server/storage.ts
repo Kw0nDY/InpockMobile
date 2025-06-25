@@ -649,24 +649,39 @@ export class DatabaseStorage implements IStorage {
 
   async recordProfileVisit(userId: number, visitorIp: string, userAgent?: string, referer?: string): Promise<void> {
     try {
-      // 프로필 방문 기록 추가
+      console.log(`Recording profile visit: userId=${userId}, ip=${visitorIp}`);
+      
       await db.insert(profileVisits).values({
         userId,
         visitorIp,
         userAgent,
         referer,
+        visitedAt: new Date()
       });
-
-      // 사용자의 프로필 방문 카운트 증가
-      await db
-        .update(users)
-        .set({ 
-          profileVisitCount: sql`${users.profileVisitCount} + 1`,
-          updatedAt: new Date()
-        })
-        .where(eq(users.id, userId));
+      
+      console.log(`Profile visit recorded successfully for user ${userId}`);
     } catch (error) {
       console.error("Error recording profile visit:", error);
+      throw new Error(`Failed to record profile visit: ${error}`);
+    }
+  }
+
+  async incrementUserVisitCount(userId: number): Promise<void> {
+    try {
+      console.log(`Incrementing visit count for user ${userId}`);
+      
+      const result = await db
+        .update(users)
+        .set({ 
+          profileVisitCount: sql`COALESCE(${users.profileVisitCount}, 0) + 1`
+        })
+        .where(eq(users.id, userId))
+        .returning({ newCount: users.profileVisitCount });
+      
+      console.log(`Visit count updated. New count: ${result[0]?.newCount || 'unknown'}`);
+    } catch (error) {
+      console.error("Error incrementing user visit count:", error);
+      throw new Error(`Failed to increment user visit count: ${error}`);
     }
   }
 
