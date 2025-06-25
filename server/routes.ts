@@ -2168,7 +2168,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // 공개 프로필 페이지 (가장 마지막에 위치, httpServer 생성 전에)
-  app.get("/:customUrl", async (req, res) => {
+  app.get("/:customUrl", async (req, res, next) => {
     try {
       const { customUrl } = req.params;
       
