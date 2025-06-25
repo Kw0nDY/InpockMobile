@@ -2167,8 +2167,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  const httpServer = createServer(app);
-  // 공개 프로필 페이지 (가장 마지막에 위치)
+  // 공개 프로필 페이지 (가장 마지막에 위치, httpServer 생성 전에)
   app.get("/:customUrl", async (req, res) => {
     try {
       const { customUrl } = req.params;
@@ -2177,16 +2176,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Request IP: ${req.ip}`);
       console.log(`User Agent: ${req.get('User-Agent')}`);
       
-      // 시스템 라우트들은 건너뛰기
-      if (['api', 'assets', 'static', 'favicon.ico', '_next', 'webpack-hmr'].includes(customUrl) || 
-          customUrl.startsWith('@') || customUrl.includes('.')) {
-        return res.status(404).send("Not Found");
+      // 시스템 라우트들은 건너뛰기 - Vite 개발 서버 요청도 포함
+      if (['api', 'assets', 'static', 'favicon.ico', '_next', 'webpack-hmr', 'src', 'node_modules'].includes(customUrl) || 
+          customUrl.startsWith('@') || customUrl.includes('.') || customUrl.startsWith('__vite')) {
+        return next();
       }
 
       const user = await storage.getUserByCustomUrl(customUrl);
       if (!user) {
         console.log(`User not found for customUrl: ${customUrl}`);
-        return res.status(404).send("Profile not found");
+        return next(); // Let Vite handle non-profile routes
       }
 
       console.log(`Found user: ${user.username} (ID: ${user.id})`);
@@ -2251,5 +2250,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  const httpServer = createServer(app);
   return httpServer;
 }
