@@ -1185,6 +1185,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Business Dashboard API Routes
+  app.get("/api/dashboard/stats/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      // Get real-time business stats
+      const activeUsers = await storage.getActiveUsersCount();
+      const userDeals = await storage.getUserDealsCount(userId);
+      const profileVisits = await storage.getUserProfileVisitCount(userId);
+      
+      res.json({
+        stats: {
+          connections: activeUsers,
+          deals: userDeals,
+          visits: profileVisits
+        },
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Dashboard stats error:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  // Notification API Routes
+  app.get("/api/notifications/:userId", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const notifications = await storage.getUserNotifications(userId);
+      res.json(notifications);
+    } catch (error) {
+      console.error("Notifications fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get("/api/notifications/:userId/unread-count", async (req, res) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      const count = await storage.getUnreadNotificationCount(userId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Unread count error:", error);
+      res.status(500).json({ message: "Failed to get unread count" });
+    }
+  });
+
+  app.post("/api/notifications/:notificationId/read", async (req, res) => {
+    try {
+      const notificationId = parseInt(req.params.notificationId);
+      await storage.markNotificationAsRead(notificationId);
+      res.json({ message: "Notification marked as read" });
+    } catch (error) {
+      console.error("Mark notification read error:", error);
+      res.status(500).json({ message: "Failed to mark notification as read" });
+    }
+  });
+
   // Deal routes
   app.get("/api/deals", async (req, res) => {
     try {

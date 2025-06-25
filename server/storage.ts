@@ -1,15 +1,17 @@
 import { 
   users, links, userSettings, subscriptions, mediaUploads, linkVisits, passwordResetTokens,
+  notifications,
   type User, type InsertUser,
   type Link, type InsertLink,
   type UserSettings, type InsertUserSettings,
   type Subscription, type InsertSubscription,
   type MediaUpload, type InsertMediaUpload,
   type LinkVisit, type InsertLinkVisit,
-  type PasswordResetToken, type InsertPasswordResetToken
+  type PasswordResetToken, type InsertPasswordResetToken,
+  type Notification, type InsertNotification
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, and, gte, sql, inArray } from "drizzle-orm";
+import { eq, desc, and, gte, sql, inArray, lt } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -756,6 +758,54 @@ export class DatabaseStorage implements IStorage {
         );
     } catch (error) {
       console.error("Error cleaning up inactive sessions:", error);
+    }
+  }
+
+  // Notification methods
+  async getUserNotifications(userId: number): Promise<Notification[]> {
+    try {
+      const userNotifications = await db
+        .select()
+        .from(notifications)
+        .where(eq(notifications.userId, userId))
+        .orderBy(desc(notifications.createdAt))
+        .limit(50);
+      
+      return userNotifications;
+    } catch (error) {
+      console.error("Error getting user notifications:", error);
+      return [];
+    }
+  }
+
+  async getUnreadNotificationCount(userId: number): Promise<number> {
+    try {
+      const result = await db
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(notifications)
+        .where(
+          and(
+            eq(notifications.userId, userId),
+            eq(notifications.isRead, false)
+          )
+        );
+      
+      return result[0]?.count || 0;
+    } catch (error) {
+      console.error("Error getting unread notification count:", error);
+      return 0;
+    }
+  }
+
+  async markNotificationAsRead(notificationId: number): Promise<void> {
+    try {
+      await db
+        .update(notifications)
+        .set({ isRead: true })
+        .where(eq(notifications.id, notificationId));
+    } catch (error) {
+      console.error("Error marking notification as read:", error);
+      throw new Error(`Failed to mark notification as read: ${error}`);
     }
   }
 }
