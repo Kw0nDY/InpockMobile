@@ -122,6 +122,7 @@ AmuseFit is a comprehensive fitness business networking platform built with mode
 ## Recent Changes
 
 ### June 25, 2025 - 대기업 수준 품질 개선 및 사용자 경험 최적화 완료
+- ✅ **공개 프로필 방문 추적 시스템**: 외부 링크 접속 시 실시간 방문 횟수 증가 구현
 - ✅ **전체 코드베이스 리팩토링**: 중복 파일 제거, 보안 강화, 성능 최적화
 - ✅ **서버 보안 강화**: 
   - 비밀번호 복잡성 검증 (8자 이상, 영문+숫자 필수)

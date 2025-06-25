@@ -144,13 +144,31 @@ export class DatabaseStorage implements IStorage {
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
     try {
+      console.log(`Looking for user with customUrl: ${customUrl}`);
+      
       if (!customUrl || typeof customUrl !== 'string' || customUrl.trim().length === 0) {
         console.warn('Invalid custom URL provided:', customUrl);
         return undefined;
       }
       
-      const [user] = await db.select().from(users).where(eq(users.customUrl, customUrl.trim()));
-      return user || undefined;
+      // userSettings 테이블에서 customUrl로 userId를 찾고, 해당 사용자 정보를 가져옴
+      const result = await db
+        .select({
+          user: users,
+        })
+        .from(users)
+        .innerJoin(userSettings, eq(users.id, userSettings.userId))
+        .where(eq(userSettings.customUrl, customUrl.trim()))
+        .limit(1);
+
+      console.log(`Found ${result.length} users for customUrl: ${customUrl}`);
+      
+      if (result.length > 0) {
+        console.log(`User found: ${result[0].user.username} (ID: ${result[0].user.id})`);
+        return result[0].user;
+      }
+
+      return undefined;
     } catch (error) {
       console.error('Error fetching user by custom URL:', error);
       throw new Error(`Failed to fetch user by custom URL: ${error instanceof Error ? error.message : 'Unknown error'}`);
