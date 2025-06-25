@@ -42,12 +42,18 @@ export function VideoModal({ src, children }: VideoModalProps) {
   const [isMuted, setIsMuted] = useState(false);
 
   const handlePlayPause = (videoElement: HTMLVideoElement) => {
-    if (isPlaying) {
-      videoElement.pause();
-    } else {
-      videoElement.play();
+    try {
+      if (isPlaying) {
+        videoElement.pause();
+      } else {
+        videoElement.play().catch(error => {
+          console.error('Video play error:', error);
+        });
+      }
+      setIsPlaying(!isPlaying);
+    } catch (error) {
+      console.error('Video control error:', error);
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handleMuteToggle = (videoElement: HTMLVideoElement) => {

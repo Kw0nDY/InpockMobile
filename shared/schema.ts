@@ -148,6 +148,17 @@ export const insertLinkSchema = createInsertSchema(links).omit({
 });
 
 // Schema for media uploads
+export const insertMediaUploadSchema = createInsertSchema(mediaUploads).omit({
+  id: true,
+  createdAt: true,
+});
+
+// Schema for notifications
+export const insertNotificationSchema = createInsertSchema(notifications).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Schema for link visits tracking
 export const insertLinkVisitSchema = createInsertSchema(linkVisits).omit({
   id: true,

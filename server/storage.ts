@@ -194,10 +194,20 @@ export class DatabaseStorage implements IStorage {
         throw new Error('Invalid email format');
       }
       
-      // Validate username format (alphanumeric, underscore, hyphen only)
-      const usernameRegex = /^[a-zA-Z0-9_-]{3,20}$/;
+      // Enhanced username validation (Korean + alphanumeric)
+      const usernameRegex = /^[a-zA-Z0-9가-힣_-]{2,20}$/;
       if (!usernameRegex.test(user.username)) {
-        throw new Error('Username must be 3-20 characters and contain only letters, numbers, underscore, and hyphen');
+        throw new Error('Username must be 2-20 characters and contain only letters, numbers, Korean characters, underscore, and hyphen');
+      }
+      
+      // Additional phone validation if provided
+      if (user.phone) {
+        const phoneRegex = /^01[016789]\d{7,8}$/;
+        const normalizedPhone = user.phone.replace(/[-\s]/g, '');
+        if (!phoneRegex.test(normalizedPhone)) {
+          throw new Error('Invalid phone number format');
+        }
+        user.phone = normalizedPhone; // Store normalized format
       }
       
       const [newUser] = await db.insert(users).values({
@@ -231,16 +241,42 @@ export class DatabaseStorage implements IStorage {
         throw new Error('No updates provided');
       }
       
-      // Sanitize updates
+      // Enhanced data sanitization with security checks
       const sanitizedUpdates = { ...updates };
+      
+      // Email sanitization
       if (sanitizedUpdates.email) {
-        sanitizedUpdates.email = sanitizedUpdates.email.toLowerCase();
+        const email = sanitizedUpdates.email.toLowerCase().trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          throw new Error('Invalid email format');
+        }
+        sanitizedUpdates.email = email;
       }
+      
+      // Username sanitization
       if (sanitizedUpdates.username) {
-        sanitizedUpdates.username = sanitizedUpdates.username.trim();
+        const username = sanitizedUpdates.username.trim();
+        const usernameRegex = /^[a-zA-Z0-9가-힣_-]{2,20}$/;
+        if (!usernameRegex.test(username)) {
+          throw new Error('Invalid username format');
+        }
+        sanitizedUpdates.username = username;
       }
+      
+      // Name sanitization (prevent XSS)
       if (sanitizedUpdates.name) {
-        sanitizedUpdates.name = sanitizedUpdates.name.trim();
+        sanitizedUpdates.name = sanitizedUpdates.name.trim().replace(/<[^>]*>/g, '');
+      }
+      
+      // Phone normalization
+      if (sanitizedUpdates.phone) {
+        const normalizedPhone = sanitizedUpdates.phone.replace(/[-\s]/g, '');
+        const phoneRegex = /^01[016789]\d{7,8}$/;
+        if (!phoneRegex.test(normalizedPhone)) {
+          throw new Error('Invalid phone number format');
+        }
+        sanitizedUpdates.phone = normalizedPhone;
       }
       
       const [updatedUser] = await db
