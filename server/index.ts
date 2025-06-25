@@ -97,10 +97,13 @@ app.use((req, res, next) => {
     
     if (!demoUser) {
       console.log("Creating demo user on startup...");
+      const bcrypt = await import("bcrypt");
+      const hashedPassword = await bcrypt.hash("password123", 10);
+      
       demoUser = await storage.createUser({
         username: "demo_user",
         email: "demo@amusefit.com",
-        password: "password123",
+        password: hashedPassword,
         name: "김철수",
         company: "AmuseFit Korea",
         role: "user",
