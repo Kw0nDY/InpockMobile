@@ -274,15 +274,28 @@ export default function SignupStep2() {
                   <Lock className="w-4 h-4 mr-2 text-primary" />
                   비밀번호 *
                 </label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => handleInputChange('password', e.target.value)}
-                  placeholder="6자 이상 입력하세요"
-                  autoComplete="new-password"
-                  className={`w-full ${errors.password ? 'border-red-500' : ''}`}
-                />
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => handleInputChange('password', e.target.value)}
+                    placeholder="6자 이상 입력하세요"
+                    autoComplete="new-password"
+                    className={`w-full pr-10 ${errors.password ? 'border-red-500' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
                 {errors.password && (
                   <p className="text-red-500 text-xs mt-1 korean-text">{errors.password}</p>
                 )}
@@ -294,15 +307,28 @@ export default function SignupStep2() {
                   <Lock className="w-4 h-4 mr-2 text-primary" />
                   비밀번호 확인 *
                 </label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                  placeholder="비밀번호를 다시 입력하세요"
-                  autoComplete="new-password"
-                  className={`w-full ${errors.confirmPassword ? 'border-red-500' : ''}`}
-                />
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.confirmPassword}
+                    onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+                    placeholder="비밀번호를 다시 입력하세요"
+                    autoComplete="new-password"
+                    className={`w-full pr-10 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
                 {errors.confirmPassword && (
                   <p className="text-red-500 text-xs mt-1 korean-text">{errors.confirmPassword}</p>
                 )}

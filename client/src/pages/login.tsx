@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowLeft, LogIn, User, Lock, HelpCircle, Dumbbell } from "lucide-react";
+import { ArrowLeft, LogIn, User, Lock, HelpCircle, Dumbbell, Eye, EyeOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -125,18 +125,31 @@ export default function LoginPage() {
               <Lock className="w-4 h-4 mr-2 text-primary" />
               비밀번호
             </Label>
-            <Input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
-              placeholder="••••••••"
-              autoComplete="off"
-              data-lpignore="true"
-              data-form-type="other"
-              required
-            />
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full p-4 pr-12 border border-gray-300 rounded-lg bg-white focus:border-primary focus:ring-1 focus:ring-primary"
+                placeholder="••••••••"
+                autoComplete="off"
+                data-lpignore="true"
+                data-form-type="other"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between text-sm mb-2">
