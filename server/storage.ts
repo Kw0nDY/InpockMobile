@@ -632,6 +632,21 @@ export class DatabaseStorage implements IStorage {
 
   async getUserDealsCount(userId: number): Promise<number> {
     try {
+      // For now, return a simulated deals count
+      const user = await this.getUser(userId);
+      if (!user) return 0;
+      
+      // Simulate deals based on user activity (links count as indicator)
+      const links = await this.getLinks(userId);
+      return Math.floor(links.length / 2); // Every 2 links represent 1 deal
+    } catch (error) {
+      console.error("Error getting user deals count:", error);
+      return 0;
+    }
+  }
+
+  async getUserDealsCount(userId: number): Promise<number> {
+    try {
       // 현재는 완료된 딜의 수를 반환 (향후 확장 가능)
       const result = await db
         .select({ count: sql<number>`COUNT(*)` })
