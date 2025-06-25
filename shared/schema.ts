@@ -198,6 +198,15 @@ export type InsertMediaUpload = z.infer<typeof insertMediaUploadSchema>;
 export type LinkVisit = typeof linkVisits.$inferSelect;
 export type InsertLinkVisit = z.infer<typeof insertLinkVisitSchema>;
 
+export type ProfileVisit = typeof profileVisits.$inferSelect;
+export type InsertProfileVisit = typeof profileVisits.$inferInsert;
+
+export type ActiveSession = typeof activeSessions.$inferSelect;
+export type InsertActiveSession = typeof activeSessions.$inferInsert;
+
+export type Deal = typeof deals.$inferSelect;
+export type InsertDeal = typeof deals.$inferInsert;
+
 export type LinkStyle = 'thumbnail' | 'simple' | 'card' | 'background';
 export const LINK_STYLES = ['thumbnail', 'simple', 'card', 'background'] as const;
 

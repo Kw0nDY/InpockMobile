@@ -86,6 +86,14 @@ export interface IStorage {
   // Media Order Management
   updateMediaOrder(userId: number, mediaIds: number[]): Promise<void>;
   reorderUserMedia(userId: number, fromIndex: number, toIndex: number): Promise<MediaUpload[]>;
+
+  // Business Dashboard Analytics
+  getActiveUsersCount(): Promise<number>;
+  getUserDealsCount(userId: number): Promise<number>;
+  getUserProfileVisitCount(userId: number): Promise<number>;
+  recordProfileVisit(userId: number, visitorIp: string, userAgent?: string, referer?: string): Promise<void>;
+  updateActiveSession(userId: number, sessionId: string): Promise<void>;
+  cleanupInactiveSessions(): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
