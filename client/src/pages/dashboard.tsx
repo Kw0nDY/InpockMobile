@@ -15,6 +15,9 @@ import {
   Dumbbell,
   User,
   Clock,
+  Eye,
+  DollarSign,
+  Activity,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -45,6 +48,38 @@ export default function DashboardPage() {
     queryKey: [`/api/dashboard/stats/${user?.id}`],
     enabled: !!user?.id,
   });
+
+  // 비즈니스 대시보드 지표 조회
+  const { data: dashboardAnalytics, refetch: refetchAnalytics } = useQuery({
+    queryKey: [`/api/dashboard/analytics/${user?.id}`],
+    enabled: !!user?.id,
+    refetchInterval: 30000, // 30초마다 자동 새로고침
+  });
+
+  // 세션 활동 업데이트
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const sessionId = `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    const updateSession = async () => {
+      try {
+        await apiRequest(`/api/user/${user.id}/session`, {
+          method: 'POST',
+          body: { sessionId }
+        });
+      } catch (error) {
+        console.error('Failed to update session:', error);
+      }
+    };
+
+    updateSession();
+    const sessionInterval = setInterval(updateSession, 5 * 60 * 1000);
+
+    return () => {
+      clearInterval(sessionInterval);
+    };
+  }, [user?.id]);
 
   const { data: userData } = useQuery({
     queryKey: [`/api/user/${user?.id}`],

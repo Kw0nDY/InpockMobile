@@ -593,6 +593,138 @@ export class DatabaseStorage implements IStorage {
     
     return userMedia;
   }
+
+  // Business Dashboard Analytics 구현
+  async getActiveUsersCount(): Promise<number> {
+    try {
+      // 최근 15분 이내에 활동한 사용자 수 계산
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+      
+      const result = await db
+        .select({ count: sql<number>`COUNT(DISTINCT ${activeSessions.userId})` })
+        .from(activeSessions)
+        .where(
+          and(
+            eq(activeSessions.isActive, true),
+            gte(activeSessions.lastActivity, fifteenMinutesAgo)
+          )
+        );
+      
+      return result[0]?.count || 0;
+    } catch (error) {
+      console.error("Error getting active users count:", error);
+      return 0;
+    }
+  }
+
+  async getUserDealsCount(userId: number): Promise<number> {
+    try {
+      // 현재는 완료된 딜의 수를 반환 (향후 확장 가능)
+      const result = await db
+        .select({ count: sql<number>`COUNT(*)` })
+        .from(deals)
+        .where(
+          and(
+            eq(deals.userId, userId),
+            eq(deals.status, 'completed')
+          )
+        );
+      
+      return result[0]?.count || 0;
+    } catch (error) {
+      console.error("Error getting user deals count:", error);
+      return 0;
+    }
+  }
+
+  async getUserProfileVisitCount(userId: number): Promise<number> {
+    try {
+      const user = await this.getUser(userId);
+      return user?.profileVisitCount || 0;
+    } catch (error) {
+      console.error("Error getting user profile visit count:", error);
+      return 0;
+    }
+  }
+
+  async recordProfileVisit(userId: number, visitorIp: string, userAgent?: string, referer?: string): Promise<void> {
+    try {
+      // 프로필 방문 기록 추가
+      await db.insert(profileVisits).values({
+        userId,
+        visitorIp,
+        userAgent,
+        referer,
+      });
+
+      // 사용자의 프로필 방문 카운트 증가
+      await db
+        .update(users)
+        .set({ 
+          profileVisitCount: sql`${users.profileVisitCount} + 1`,
+          updatedAt: new Date()
+        })
+        .where(eq(users.id, userId));
+    } catch (error) {
+      console.error("Error recording profile visit:", error);
+    }
+  }
+
+  async updateActiveSession(userId: number, sessionId: string): Promise<void> {
+    try {
+      // 기존 세션 업데이트 또는 새 세션 생성
+      const existingSession = await db
+        .select()
+        .from(activeSessions)
+        .where(
+          and(
+            eq(activeSessions.userId, userId),
+            eq(activeSessions.sessionId, sessionId)
+          )
+        )
+        .limit(1);
+
+      if (existingSession.length > 0) {
+        // 기존 세션 활동 시간 업데이트
+        await db
+          .update(activeSessions)
+          .set({ 
+            lastActivity: new Date(),
+            isActive: true
+          })
+          .where(eq(activeSessions.id, existingSession[0].id));
+      } else {
+        // 새 세션 생성
+        await db.insert(activeSessions).values({
+          userId,
+          sessionId,
+          lastActivity: new Date(),
+          isActive: true,
+        });
+      }
+    } catch (error) {
+      console.error("Error updating active session:", error);
+    }
+  }
+
+  async cleanupInactiveSessions(): Promise<void> {
+    try {
+      // 30분 이상 비활성 세션을 비활성화
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      
+      await db
+        .update(activeSessions)
+        .set({ isActive: false })
+        .where(
+          and(
+            eq(activeSessions.isActive, true),
+            lt(activeSessions.lastActivity, thirtyMinutesAgo)
+          )
+        );
+    } catch (error) {
+      console.error("Error cleaning up inactive sessions:", error);
+    }
+  }
 }
 
 export const storage = new DatabaseStorage();

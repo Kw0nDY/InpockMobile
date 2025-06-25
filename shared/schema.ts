@@ -23,6 +23,7 @@ export const users = pgTable("users", {
   customUrl: text("custom_url"),
   contentType: text("content_type").default("links"),
   visitCount: integer("visit_count").default(0),
+  profileVisitCount: integer("profile_visit_count").default(0),
   provider: text("provider").default("local"),
   providerId: text("provider_id"),
   // Additional fitness fields (for profile settings)
