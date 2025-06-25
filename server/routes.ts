@@ -14,8 +14,7 @@ import {
 } from "@shared/schema";
 import { z } from "zod";
 import { randomBytes } from "crypto";
-import { generateUniqueUsername, validateUsername } from "./username-utils";
-import { findUserByFlexibleUsername } from "./username-matcher";
+import { generateUniqueUsername, validateUsername, findUserByFlexibleUsername } from "./username-utils";
 import { sendSmsCode, verifySmsCode } from "./sms-verification";
 import { sendEmailCode, verifyEmailCode } from "./email-verification";
 
@@ -248,15 +247,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "올바른 이메일 형식이 아닙니다" });
       }
       
-      // Password strength validation
-      if (req.body.password.length < 6) {
-        return res.status(400).json({ message: "비밀번호는 6자 이상이어야 합니다" });
+      // Enhanced password security validation
+      const password = req.body.password;
+      if (password.length < 8) {
+        return res.status(400).json({ message: "비밀번호는 8자 이상이어야 합니다" });
       }
       
-      // Phone format validation (Korean phone numbers)
+      // Password complexity check
+      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)/;
+      if (!passwordRegex.test(password)) {
+        return res.status(400).json({ message: "비밀번호는 영문과 숫자를 포함해야 합니다" });
+      }
+      
+      // Enhanced phone format validation (Korean phone numbers)
       const phoneRegex = /^(01[016789])-?(\d{3,4})-?(\d{4})$/;
-      if (!phoneRegex.test(req.body.phone.replace(/[-\s]/g, ''))) {
-        return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다" });
+      const normalizedPhone = req.body.phone.replace(/[-\s]/g, '');
+      if (!phoneRegex.test(normalizedPhone)) {
+        return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)" });
       }
 
       // Validate username format
@@ -277,19 +284,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(409).json({ message: "이미 사용중인 닉네임입니다" });
       }
 
-      // Create user with new schema
+      // Create user with enhanced data sanitization
       const userData = {
-        username: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        name: req.body.name,
-        phone: req.body.phone,
-        birthDate: req.body.birthDate,
-        currentGym: req.body.currentGym || null,
-        gymPosition: req.body.gymPosition || null,
+        username: req.body.username.trim().toLowerCase(),
+        email: req.body.email.trim().toLowerCase(),
+        password: req.body.password, // Will be hashed in storage layer
+        name: req.body.name.trim(),
+        phone: normalizedPhone,
+        birthDate: req.body.birthDate.trim(),
+        currentGym: req.body.currentGym ? req.body.currentGym.trim() : null,
+        gymPosition: req.body.gymPosition ? req.body.gymPosition.trim() : null,
         // Set defaults for optional fields
-        company: req.body.currentGym || null, // Legacy field for compatibility
-        role: req.body.gymPosition || "user", // Legacy field for compatibility
+        company: req.body.currentGym ? req.body.currentGym.trim() : null, // Legacy field
+        role: req.body.gymPosition ? req.body.gymPosition.trim() : "user", // Legacy field
       };
 
       const user = await storage.createUser(userData);

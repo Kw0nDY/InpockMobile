@@ -140,17 +140,45 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByCustomUrl(customUrl: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.customUrl, customUrl));
-    return user || undefined;
+    try {
+      if (!customUrl || typeof customUrl !== 'string' || customUrl.trim().length === 0) {
+        console.warn('Invalid custom URL provided:', customUrl);
+        return undefined;
+      }
+      
+      const [user] = await db.select().from(users).where(eq(users.customUrl, customUrl.trim()));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by custom URL:', error);
+      throw new Error(`Failed to fetch user by custom URL: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getUserByPhone(phone: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.phone, phone));
-    return user || undefined;
+    try {
+      if (!phone || typeof phone !== 'string' || phone.trim().length === 0) {
+        console.warn('Invalid phone provided:', phone);
+        return undefined;
+      }
+      
+      // Normalize phone number (remove spaces and hyphens)
+      const normalizedPhone = phone.replace(/[-\s]/g, '');
+      const [user] = await db.select().from(users).where(eq(users.phone, normalizedPhone));
+      return user || undefined;
+    } catch (error) {
+      console.error('Error fetching user by phone:', error);
+      throw new Error(`Failed to fetch user by phone: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async getAllUsers(): Promise<User[]> {
-    return await db.select().from(users);
+    try {
+      // Add reasonable limit to prevent memory issues in production
+      return await db.select().from(users).limit(10000);
+    } catch (error) {
+      console.error('Error fetching all users:', error);
+      throw new Error(`Failed to fetch users: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   async createUser(user: InsertUser): Promise<User> {

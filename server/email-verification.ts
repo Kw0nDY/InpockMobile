@@ -1,4 +1,4 @@
-// 이메일 인증 시스템 (개발용 - 실제 이메일 발송 없이 콘솔 출력)
+// 통합 이메일 인증 시스템 (실제 이메일 + 개발 모드 폴백)
 
 interface EmailVerificationCode {
   email: string;
@@ -7,10 +7,21 @@ interface EmailVerificationCode {
   expiresAt: Date;
   attempts: number;
   verified: boolean;
+  createdAt: Date;
 }
 
-// 메모리 저장소 (실제 서비스에서는 Redis 사용 권장)
+// 메모리 저장소 최적화 (TTL 적용)
 const emailVerificationCodes = new Map<string, EmailVerificationCode>();
+
+// 주기적 정리 (10분마다)
+setInterval(() => {
+  const now = new Date();
+  for (const [key, value] of emailVerificationCodes.entries()) {
+    if (now > value.expiresAt) {
+      emailVerificationCodes.delete(key);
+    }
+  }
+}, 10 * 60 * 1000);
 
 // 6자리 랜덤 코드 생성
 function generateVerificationCode(): string {

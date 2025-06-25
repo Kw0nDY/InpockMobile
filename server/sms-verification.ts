@@ -79,58 +79,65 @@ function sendSmsSimulation(phone: string, code: string, purpose: string): void {
   console.log(`만료시간: ${new Date(Date.now() + 10 * 60 * 1000).toLocaleString('ko-KR')}\n`);
 }
 
-// SMS 인증번호 발송
+// SMS 인증번호 발송 (실제 SMS + 개발 모드 자동 폴백)
 export async function sendSmsCode(phone: string, purpose: 'find_id' | 'reset_password'): Promise<{ success: boolean; message: string }> {
   try {
-    const code = generateSmsCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10분 유효
-    
+    // 중복 요청 방지 (1분 쿨다운)
     const key = `${phone}-${purpose}`;
-    smsVerificationCodes.set(key, {
+    const existing = smsVerificationCodes.get(key);
+    if (existing && (Date.now() - existing.createdAt.getTime()) < 60000) {
+      return { success: false, message: "1분 후에 다시 요청해주세요." };
+    }
+
+    const code = generateSmsCode();
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 10 * 60 * 1000); // 10분 유효
+    
+    const verificationData: SmsVerificationCode = {
       phone,
       code,
       purpose,
       expiresAt,
       attempts: 0,
-      verified: false
-    });
+      verified: false,
+      createdAt: now
+    };
 
-    // 실제 SMS 발송 시도 (한국 서비스 우선)
-    const { sendKoreanSms } = await import('./korean-sms-service');
-    const koreanSmsResult = await sendKoreanSms(phone, code, purpose);
-    
-    if (koreanSmsResult.success) {
-      console.log(`✅ 한국 SMS 발송 성공: ${phone}`);
-      return { success: true, message: "인증번호가 SMS로 발송되었습니다." };
-    }
-    
-    // 한국 SMS 실패 시 Twilio 시도
-    const { sendRealSms } = await import('./sms-service');
+    // 실제 SMS 발송 시도
     const smsResult = await sendRealSms(phone, code, purpose);
     
     if (smsResult.success) {
+      smsVerificationCodes.set(key, verificationData);
       console.log(`✅ 실제 SMS 발송 성공: ${phone}`);
-      return { success: true, message: "인증번호가 SMS로 발송되었습니다." };
-    } else {
-      // 실제 SMS 실패 시 개발 모드로 폴백
-      console.log(`⚠️ 실제 SMS 실패 - 개발 모드로 폴백: ${smsResult.message}`);
-      sendSmsSimulation(phone, code, purpose);
-      return { success: true, message: "인증번호가 발송되었습니다. (개발 모드)" };
+      return { success: true, message: "인증번호가 발송되었습니다." };
     }
+    
+    // 실제 SMS 실패 시 개발 모드 자동 폴백
+    console.log(`⚠️ 실제 SMS 발송 실패, 개발 모드로 전환: ${phone}`);
+    console.log(`SMS 서비스 응답: ${smsResult.message}`);
+    
+    smsVerificationCodes.set(key, verificationData);
+    sendSmsSimulation(phone, code, purpose);
+    return { success: true, message: "인증번호가 발송되었습니다. (개발 모드)" };
+    
   } catch (error) {
-    console.error('SMS 발송 오류:', error);
-    // 오류 발생 시에도 개발 모드로 폴백
+    console.error('SMS 발송 시스템 오류:', error);
+    
+    // 시스템 오류 시에도 개발 모드 보장
     const code = generateSmsCode();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+    const now = new Date();
     const key = `${phone}-${purpose}`;
+    
     smsVerificationCodes.set(key, {
       phone,
       code,
       purpose,
-      expiresAt,
+      expiresAt: new Date(now.getTime() + 10 * 60 * 1000),
       attempts: 0,
-      verified: false
+      verified: false,
+      createdAt: now
     });
+    
     sendSmsSimulation(phone, code, purpose);
     return { success: true, message: "인증번호가 발송되었습니다. (개발 모드)" };
   }
