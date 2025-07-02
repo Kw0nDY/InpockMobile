@@ -10,13 +10,20 @@ interface EmailVerificationCode {
   createdAt: Date;
 }
 
+interface EmailApiResponse {
+  success: boolean;
+  message: string;
+  messageId?: string;
+}
+
 // 메모리 저장소 최적화 (TTL 적용)
 const emailVerificationCodes = new Map<string, EmailVerificationCode>();
 
 // 주기적 정리 (10분마다)
 setInterval(() => {
   const now = new Date();
-  for (const [key, value] of emailVerificationCodes.entries()) {
+  const entries = Array.from(emailVerificationCodes.entries());
+  for (const [key, value] of entries) {
     if (now > value.expiresAt) {
       emailVerificationCodes.delete(key);
     }
@@ -246,8 +253,8 @@ export async function sendRealEmail(email: string, code: string, purpose: string
         const error = await response.text();
         console.log(`❌ Brevo 실패: ${error}`);
       }
-    } catch (error) {
-      console.log(`❌ Brevo 오류: ${error.message}`);
+    } catch (error: any) {
+      console.log(`❌ Brevo 오류: ${error?.message || error}`);
     }
   }
 
@@ -356,13 +363,14 @@ export async function sendEmailCode(email: string, purpose: 'reset_password'): P
       purpose,
       expiresAt,
       attempts: 0,
-      verified: false
+      verified: false,
+      createdAt: new Date()
     });
 
     // 실제 이메일 발송 시도 (여러 서비스 지원)
-    const emailSent = await sendRealEmail(email, code);
+    const emailResult = await sendRealEmail(email, code, purpose);
     
-    if (emailSent) {
+    if (emailResult.success) {
       return { success: true, message: "인증번호가 이메일로 발송되었습니다." };
     } else {
       // 모든 서비스 실패 시 개발 모드로 폴백

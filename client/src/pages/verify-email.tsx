@@ -20,6 +20,7 @@ export default function VerifyEmailPage() {
   const [verificationCode, setVerificationCode] = useState("");
   const [timeLeft, setTimeLeft] = useState(600); // 10분
   const [isVerified, setIsVerified] = useState(false);
+  const [devCode, setDevCode] = useState<string | null>(null);
 
   // 타이머
   useEffect(() => {
@@ -28,6 +29,25 @@ export default function VerifyEmailPage() {
       return () => clearTimeout(timer);
     }
   }, [timeLeft]);
+
+  // 개발 환경에서 인증번호 가져오기
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && email) {
+      fetchDevCode();
+    }
+  }, [email]);
+
+  const fetchDevCode = async () => {
+    try {
+      const response = await fetch(`/api/auth/dev-get-code?email=${encodeURIComponent(email)}&purpose=reset_password`);
+      const data = await response.json();
+      if (data.success) {
+        setDevCode(data.code);
+      }
+    } catch (error) {
+      console.log('개발 코드 조회 실패:', error);
+    }
+  };
 
   // 인증 코드 확인
   const verifyCodeMutation = useMutation({
@@ -178,6 +198,24 @@ export default function VerifyEmailPage() {
             <p className="text-sm text-blue-800 text-center mb-2 font-medium">
               {email}로 인증번호를 발송했습니다
             </p>
+            {devCode && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mt-3">
+                <p className="text-xs text-yellow-800 text-center mb-1">
+                  개발 환경 전용 (콘솔 확인)
+                </p>
+                <div className="text-center">
+                  <span className="text-lg font-mono font-bold text-yellow-900 bg-yellow-100 px-3 py-1 rounded">
+                    {devCode}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setVerificationCode(devCode)}
+                  className="text-xs text-yellow-700 hover:text-yellow-900 mt-2 w-full text-center border border-yellow-300 rounded py-1 hover:bg-yellow-100"
+                >
+                  자동 입력
+                </button>
+              </div>
+            )}
             <div className="bg-white rounded p-3 border border-blue-100">
               <p className="text-xs text-blue-700 text-center leading-relaxed">
                 <strong>이메일이 오지 않았나요?</strong><br />

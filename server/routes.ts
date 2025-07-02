@@ -16,7 +16,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { generateUniqueUsername, validateUsername, findUserByFlexibleUsername } from "./username-utils";
 import { sendSmsCode, verifySmsCode } from "./sms-verification";
-import { sendEmailCode, verifyEmailCode, getDevCode } from "./email-verification";
+import { sendEmailCode, verifyEmailCode, getDevCode } from "./email-verification-simple";
 
 const loginSchema = z.object({
   username: z.string().min(1),
