@@ -634,11 +634,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // 사용자 존재 확인 - 정규화된 번호와 하이픈 포함된 번호 모두 확인
+      console.log(`SMS 발송 요청: 입력된 번호=${phone}, 정규화된 번호=${normalizedPhone}`);
+      
       let user = await storage.getUserByPhone(normalizedPhone);
+      console.log(`정규화된 번호로 검색 결과: ${user ? '찾음' : '못찾음'}`);
+      
       if (!user) {
         // 하이픈 포함된 형식으로도 검색 (데이터베이스에 하이픈 포함 저장된 경우)
         const phoneWithHyphen = normalizedPhone.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3');
+        console.log(`하이픈 포함 형식으로 재검색: ${phoneWithHyphen}`);
         user = await storage.getUserByPhone(phoneWithHyphen);
+        console.log(`하이픈 포함 번호로 검색 결과: ${user ? '찾음' : '못찾음'}`);
       }
       
       if (!user && purpose === 'find_id') {
