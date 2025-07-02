@@ -32,6 +32,59 @@ async function sendRealEmail(email: string, code: string): Promise<{ success: bo
   // Brevo API를 사용한 실제 이메일 발송
   if (process.env.BREVO_API_KEY) {
     try {
+      const senderEmail = 'dy.kwon@dxt.co.kr';
+      console.log(`🔍 실제 사용할 발신자: ${senderEmail}`);
+      
+      const requestBody = {
+        sender: { 
+          name: 'AmuseFit', 
+          email: senderEmail 
+        },
+        to: [{ email: email }],
+        subject: `[AmuseFit] 비밀번호 재설정 인증번호`,
+        htmlContent: `
+          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa;">
+            <div style="background: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h1 style="color: #8B4513; margin: 0; font-size: 28px; font-weight: bold;">AmuseFit</h1>
+                <p style="color: #666; margin: 5px 0 0 0; font-size: 14px;">피트니스 비즈니스 플랫폼</p>
+              </div>
+              
+              <div style="text-align: center; margin-bottom: 30px;">
+                <h2 style="color: #333; margin: 0 0 10px 0; font-size: 24px;">비밀번호 재설정</h2>
+                <p style="color: #666; margin: 0; font-size: 16px;">아래 인증번호를 입력하여 새 비밀번호를 설정하세요</p>
+              </div>
+              
+              <div style="background: linear-gradient(135deg, #f8f4e6 0%, #f0e6d2 100%); border: 2px solid #8B4513; border-radius: 12px; padding: 30px; text-align: center; margin: 30px 0;">
+                <p style="color: #8B4513; margin: 0 0 15px 0; font-size: 16px; font-weight: 600;">인증번호</p>
+                <div style="font-size: 36px; font-weight: bold; color: #8B4513; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+                  ${code}
+                </div>
+                <p style="color: #8B4513; margin: 15px 0 0 0; font-size: 14px;">유효시간: <strong>10분</strong></p>
+              </div>
+              
+              <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 30px 0;">
+                <h3 style="color: #856404; margin: 0 0 10px 0; font-size: 16px; font-weight: 600;">보안 안내</h3>
+                <ul style="color: #856404; margin: 0; padding-left: 20px; font-size: 14px; line-height: 1.6;">
+                  <li>인증번호를 타인에게 알려주지 마세요</li>
+                  <li>본인이 요청하지 않았다면 이 이메일을 무시하세요</li>
+                  <li>문의사항은 고객센터로 연락해주세요</li>
+                </ul>
+              </div>
+              
+              <div style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee;">
+                <p style="color: #999; font-size: 12px; margin: 0;">
+                  본 메일은 발신전용입니다. 문의사항은 고객센터를 이용해주세요.
+                </p>
+              </div>
+            </div>
+          </div>
+        `,
+        textContent: `AmuseFit 비밀번호 재설정\n\n인증번호: ${code}\n\n이 인증번호는 10분간 유효합니다.\n인증번호를 타인에게 알려주지 마세요.`
+      };
+      
+      console.log(`📧 요청 본문 확인:`, JSON.stringify({ sender: requestBody.sender }, null, 2));
+      
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
@@ -39,11 +92,7 @@ async function sendRealEmail(email: string, code: string): Promise<{ success: bo
           'Content-Type': 'application/json',
           'api-key': process.env.BREVO_API_KEY
         },
-        body: JSON.stringify({
-          sender: { 
-            name: 'AmuseFit', 
-            email: 'dy.kwon@dxt.co.kr' 
-          },
+        body: JSON.stringify(requestBody)
           to: [{ email: email }],
           subject: `[AmuseFit] 비밀번호 재설정 인증번호`,
           htmlContent: `
