@@ -754,7 +754,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const result = await verifyEmailCode(email, code, purpose);
       
-      if (result.verified) {
+      if (result.success) {
         res.json({ verified: true, message: result.message });
       } else {
         res.status(400).json({ verified: false, message: result.message });
