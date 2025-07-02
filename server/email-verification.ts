@@ -475,3 +475,32 @@ export function checkEmailConfig(): { configured: boolean; message: string; serv
     services
   };
 }
+
+// 개발 환경용 인증번호 조회 함수
+export function getDevCode(email: string, purpose: string): { success: boolean; code?: string; message: string; timeLeft?: number } {
+  if (process.env.NODE_ENV === 'production') {
+    return { success: false, message: "Production 환경에서는 사용할 수 없습니다" };
+  }
+
+  const key = `${email}-${purpose}`;
+  const storedCode = emailVerificationCodes.get(key);
+
+  if (!storedCode) {
+    return { success: false, message: "발송된 인증번호가 없습니다. 먼저 인증번호를 요청해주세요." };
+  }
+
+  const now = new Date();
+  if (now > storedCode.expiresAt) {
+    emailVerificationCodes.delete(key);
+    return { success: false, message: "인증번호가 만료되었습니다" };
+  }
+
+  const timeLeft = Math.floor((storedCode.expiresAt.getTime() - now.getTime()) / 1000);
+
+  return {
+    success: true,
+    code: storedCode.code,
+    message: "개발 모드 인증번호",
+    timeLeft
+  };
+}

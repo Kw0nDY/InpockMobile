@@ -16,7 +16,7 @@ import { z } from "zod";
 import { randomBytes } from "crypto";
 import { generateUniqueUsername, validateUsername, findUserByFlexibleUsername } from "./username-utils";
 import { sendSmsCode, verifySmsCode } from "./sms-verification";
-import { sendEmailCode, verifyEmailCode } from "./email-verification";
+import { sendEmailCode, verifyEmailCode, getDevCode } from "./email-verification";
 
 const loginSchema = z.object({
   username: z.string().min(1),
@@ -744,6 +744,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("이메일 인증 확인 오류:", error);
       res.status(500).json({ message: "인증 확인 중 오류가 발생했습니다" });
+    }
+  });
+
+  // 개발 환경용 인증번호 확인 API (개발 모드에서만 사용)
+  app.get("/api/auth/dev-get-code", async (req, res) => {
+    if (process.env.NODE_ENV === 'production') {
+      return res.status(403).json({ message: "Production에서는 사용할 수 없습니다" });
+    }
+
+    try {
+      const { email, purpose } = req.query;
+      
+      if (!email || !purpose) {
+        return res.status(400).json({ message: "이메일과 목적을 입력해주세요" });
+      }
+
+      const result = getDevCode(email as string, purpose as string);
+      res.json(result);
+    } catch (error) {
+      console.error("개발 코드 조회 오류:", error);
+      res.status(500).json({ message: "코드 조회 중 오류가 발생했습니다" });
     }
   });
 
