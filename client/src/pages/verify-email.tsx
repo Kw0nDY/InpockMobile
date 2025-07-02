@@ -30,9 +30,9 @@ export default function VerifyEmailPage() {
     }
   }, [timeLeft]);
 
-  // 개발 환경에서 인증번호 가져오기
+  // 개발 환경에서 인증번호 가져오기 (localhost에서만)
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development' && email) {
+    if (window.location.hostname === 'localhost' && email) {
       fetchDevCode();
     }
   }, [email]);
