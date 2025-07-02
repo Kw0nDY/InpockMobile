@@ -210,15 +210,19 @@ export async function sendRealEmail(email: string, code: string, purpose: string
   
   console.log(`📧 이메일 발송 시도: ${email}`);
 
-  // Brevo API 시도 (현재 작동 중)
+  // Brevo API 시도 - 상세 디버깅
   if (process.env.BREVO_API_KEY) {
     try {
+      console.log(`🔍 Brevo API 호출 시작`);
+      console.log(`🔑 API 키 길이: ${process.env.BREVO_API_KEY.length}자`);
+      console.log(`📮 수신자: ${email}`);
+      
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
-          'Api-Key': process.env.BREVO_API_KEY
+          'api-key': process.env.BREVO_API_KEY
         },
         body: JSON.stringify({
           sender: { 
@@ -246,25 +250,37 @@ export async function sendRealEmail(email: string, code: string, purpose: string
         })
       });
 
+      console.log(`📊 응답 상태: ${response.status} ${response.statusText}`);
+      
       if (response.ok) {
         const result = await response.json();
         console.log(`✅ Brevo 이메일 발송 성공: ${email}`);
+        console.log(`📧 메시지 ID: ${result.messageId}`);
+        console.log(`📋 응답 상세:`, JSON.stringify(result, null, 2));
         return {
           success: true,
-          message: 'Brevo 이메일 발송 성공',
+          message: 'Brevo 이메일 실제 발송 완료',
           messageId: result.messageId
         };
       } else {
-        const error = await response.text();
-        console.log(`❌ Brevo 실패: ${error}`);
+        const errorText = await response.text();
+        console.log(`❌ Brevo API 실패 (${response.status}): ${errorText}`);
+        
+        let errorDetails;
+        try {
+          errorDetails = JSON.parse(errorText);
+          console.log(`🔍 에러 상세:`, JSON.stringify(errorDetails, null, 2));
+        } catch (e) {
+          console.log(`📄 에러 원문: ${errorText}`);
+        }
       }
     } catch (error: any) {
       console.log(`❌ Brevo 오류: ${error?.message || error}`);
     }
   }
 
-  // 개발 모드 폴백
-  console.log(`\n📧 이메일 인증번호 (개발 모드)`);
+  // 모든 이메일 서비스 실패 시만 개발 모드 폴백
+  console.log(`\n📧 이메일 인증번호 (개발 모드 - 모든 서비스 실패)`);
   console.log(`이메일: ${email}`);
   console.log(`인증번호: ${code}`);
   console.log(`유효시간: 10분`);
