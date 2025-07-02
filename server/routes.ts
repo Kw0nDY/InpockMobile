@@ -614,7 +614,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // SMS 인증번호 발송 API
   app.post("/api/auth/send-sms-code", async (req, res) => {
     try {
-      const { phone, purpose } = req.body;
+      let { phone, purpose } = req.body;
       
       if (!phone || !purpose) {
         return res.status(400).json({ message: "전화번호와 목적을 입력해주세요" });
@@ -624,14 +624,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "올바르지 않은 목적입니다" });
       }
 
-      // 전화번호 형식 검증
-      const phoneRegex = /^01[0-9]{8,9}$/;
-      if (!phoneRegex.test(phone)) {
+      // 전화번호 정규화 (하이픈, 공백 제거)
+      const normalizedPhone = phone.replace(/[-\s]/g, '');
+      
+      // 전화번호 형식 검증 (010-1234-5678 → 01012345678)
+      const phoneRegex = /^010\d{8}$/;
+      if (!phoneRegex.test(normalizedPhone)) {
         return res.status(400).json({ message: "올바른 전화번호 형식이 아닙니다" });
       }
 
-      // 사용자 존재 확인 (보안상 실제로는 항상 성공 응답)
-      const user = await storage.getUserByPhone(phone);
+      // 사용자 존재 확인 - 정규화된 번호와 하이픈 포함된 번호 모두 확인
+      let user = await storage.getUserByPhone(normalizedPhone);
+      if (!user) {
+        // 하이픈 포함된 형식으로도 검색 (데이터베이스에 하이픈 포함 저장된 경우)
+        const phoneWithHyphen = normalizedPhone.replace(/^(\d{3})(\d{4})(\d{4})$/, '$1-$2-$3');
+        user = await storage.getUserByPhone(phoneWithHyphen);
+      }
+      
       if (!user && purpose === 'find_id') {
         return res.status(404).json({ message: "등록된 전화번호를 찾을 수 없습니다" });
       }
@@ -639,6 +648,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!user && purpose === 'reset_password') {
         return res.status(404).json({ message: "등록된 전화번호를 찾을 수 없습니다" });
       }
+
+      // SMS 발송 시에는 정규화된 번호 사용
+      phone = normalizedPhone;
 
       const result = await sendSmsCode(phone, purpose);
       if (result.success) {
