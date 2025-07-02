@@ -5,11 +5,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, User, Check } from "lucide-react";
+import { ArrowLeft, User, Check, Mail, Phone, Building2, Eye, EyeOff, Lock, Calendar, Briefcase, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { UsernameInput } from "@/components/ui/username-input";
 import { z } from "zod";
+
+interface SignupForm {
+  username: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  name: string;
+  phone: string;
+  dateOfBirth: string;
+  currentGym: string;
+  gymPosition: string;
+}
 
 const signupSchema = z.object({
   username: z.string().min(3, "사용자명은 3자 이상이어야 합니다").max(20, "사용자명은 20자 이하여야 합니다"),
@@ -42,7 +54,9 @@ export default function SignupStep2() {
     currentGym: "",
     gymPosition: ""
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof SignupForm, string>>>({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const signupMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -112,10 +126,11 @@ export default function SignupStep2() {
     
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined
-      }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
     }
     
     // Real-time validation for password confirmation
