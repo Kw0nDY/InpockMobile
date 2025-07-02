@@ -5,7 +5,50 @@ async function sendRealSms(phone: string, code: string, purpose: string): Promis
   const purposeText = purpose === 'find_id' ? 'ID 찾기' : '비밀번호 재설정';
   const message = `[AmuseFit] ${purposeText} 인증번호: ${code} (10분간 유효)`;
 
-  // Twilio SMS 시도
+  // Brevo SMS 시도 (우선순위 1)
+  if (process.env.BREVO_API_KEY) {
+    try {
+      console.log(`📱 Brevo SMS 발송 시도: ${phone}`);
+      
+      const response = await fetch('https://api.brevo.com/v3/transactionalSMS/sms', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'api-key': process.env.BREVO_API_KEY
+        },
+        body: JSON.stringify({
+          type: 'transactional',
+          unicodeEnabled: true,
+          sender: 'AmuseFit',
+          recipient: phone,
+          content: message
+        })
+      });
+
+      console.log(`📊 Brevo SMS 응답 상태: ${response.status}`);
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log(`✅ Brevo SMS 발송 성공: ${phone}`);
+        console.log(`📧 메시지 ID: ${result.reference}`);
+        return {
+          success: true,
+          message: 'Brevo SMS 발송 성공',
+          messageId: result.reference
+        };
+      } else {
+        const errorText = await response.text();
+        console.log(`❌ Brevo SMS 실패 (${response.status}): ${errorText}`);
+        // Brevo 실패 시 Twilio로 폴백
+      }
+    } catch (error: any) {
+      console.log(`❌ Brevo SMS 오류: ${error?.message || error}`);
+      // 오류 시 Twilio로 폴백
+    }
+  }
+
+  // Twilio SMS 시도 (폴백)
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_PHONE_NUMBER?.replace(/\s+/g, '');
