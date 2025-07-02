@@ -140,10 +140,11 @@ export default function SignupStep2() {
         confirmPassword: '비밀번호가 일치하지 않습니다'
       }));
     } else if (field === 'confirmPassword' && formData.password === value) {
-      setErrors(prev => ({
-        ...prev,
-        confirmPassword: undefined
-      }));
+      setErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.confirmPassword;
+        return newErrors;
+      });
     }
   };
 
