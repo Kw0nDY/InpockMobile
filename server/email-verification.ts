@@ -227,7 +227,7 @@ export async function sendRealEmail(email: string, code: string, purpose: string
         body: JSON.stringify({
           sender: { 
             name: 'AmuseFit', 
-            email: 'amusefit.service@gmail.com' 
+            email: 'dy.kwon@dxt.co.kr' 
           },
           to: [{ email: email }],
           subject: `[AmuseFit] ${purposeText} 인증번호`,
