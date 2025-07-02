@@ -141,8 +141,11 @@ export async function verifyEmailCode(
     return { success: false, message: "시도 횟수를 초과했습니다. 다시 요청해주세요." };
   }
   
+  console.log(`🔍 인증번호 비교 - 입력: '${code}', 저장됨: '${storedCode.code}'`);
+  
   if (storedCode.code !== code) {
     storedCode.attempts++;
+    console.log(`❌ 인증번호 불일치 - 시도 횟수: ${storedCode.attempts}`);
     return { success: false, message: "인증번호가 일치하지 않습니다." };
   }
   
@@ -154,6 +157,9 @@ export async function verifyEmailCode(
 // 개발용 코드 확인 함수
 export function getDevCode(email: string, purpose: string): { success: boolean; code?: string; message: string; timeLeft?: number } {
   const key = `${email}-${purpose}`;
+  console.log(`🔍 저장된 모든 키들:`, Array.from(emailCodes.keys()));
+  console.log(`🔍 검색하는 키: '${key}'`);
+  
   const storedCode = emailCodes.get(key);
   
   if (!storedCode) {
