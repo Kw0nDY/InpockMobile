@@ -42,7 +42,7 @@ async function sendRealEmail(email: string, code: string): Promise<{ success: bo
         body: JSON.stringify({
           sender: { 
             name: 'AmuseFit', 
-            email: 'noreply@amusefit.com' 
+            email: 'dy.kwon@dxt.co.kr' 
           },
           to: [{ email: email }],
           subject: `[AmuseFit] 비밀번호 재설정 인증번호`,
