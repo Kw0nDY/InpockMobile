@@ -88,7 +88,7 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
       body: JSON.stringify({
         sender: { 
           name: 'AmuseFit', 
-          email: 'no-reply@amusefit.co.kr' 
+          email: 'amusefit.service@gmail.com' 
         },
         to: [{ 
           email: email,
@@ -128,12 +128,17 @@ async function sendBrevoEmail(email: string, code: string): Promise<boolean> {
       })
     });
 
+    console.log('🔍 Brevo API 응답 상태:', response.status);
+    
     if (response.ok) {
+      const result = await response.json();
       console.log(`✅ Brevo 이메일 발송 성공: ${email}`);
+      console.log('📧 메시지 ID:', result.messageId);
       return true;
     } else {
       const error = await response.text();
-      console.error('Brevo 이메일 발송 실패:', error);
+      console.error('❌ Brevo 이메일 발송 실패:', response.status, error);
+      console.error('🔑 API 키 상태:', process.env.BREVO_API_KEY ? '존재함' : '없음');
       return false;
     }
   } catch (error) {
