@@ -115,7 +115,7 @@ export default function LandingPage() {
             <Dumbbell className="text-white w-12 h-12" />
           </div>
         </div>
-        <h2 className="text-3xl font-bold text-dark mb-3 korean-text">피트니스 전문가를 위한</h2>
+        <h2 className="text-3xl font-bold text-dark mb-3 korean-text">헬스 트레이너를 위한</h2>
         <h2 className="text-3xl font-bold text-primary mb-6 korean-text">올인원 플랫폼</h2>
         <p className="text-gray-600 text-lg mb-3 korean-text">Instagram Reels 스타일의 콘텐츠 공유</p>
         <p className="text-gray-600 text-lg mb-3 korean-text">전문성을 어필하는 개인 브랜딩</p>
